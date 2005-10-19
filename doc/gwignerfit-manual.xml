@@ -1,0 +1,2838 @@
+<?xml version="1.0"?>
+<!DOCTYPE article PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN" 
+  "http://www.oasis-open.org/docbook/xml/4.4/docbookx.dtd" [
+<!--"/usr/share/sgml/docbook/xml-dtd-4.4-1.0-26/docbookx.dtd" [ -->
+	<!ENTITY legal SYSTEM "legal.xml">
+	<!ENTITY appversion "2005-10-14">
+	<!ENTITY manrevision "1.0">
+	<!ENTITY date "August 2005">
+	<!ENTITY app "<application>GWignerFit</application>">
+]>
+
+<!-- 
+      (Do not remove this comment block.)
+  Maintained by the GNOME Documentation Project
+  http://developer.gnome.org/projects/gdp
+  Template version: 2.0 beta
+  Template last modified Apr 11, 2002
+-->
+
+<!-- ============= Document Header ============================= -->
+<article id="index" lang="en">
+
+<articleinfo> 
+	<title>&app; Manual</title>       
+	
+	<copyright> 
+		<year>2004</year> 
+		<year>2005</year> 
+		<holder>Florian Sch&auml;fer</holder> 
+	</copyright> 
+	<publisher> 
+		<publishername> Technische Universit&auml;t Darmstadt </publishername> 
+	</publisher> 
+
+	&legal;
+
+	<authorgroup> 
+		<author> 
+			<firstname>Florian</firstname> 
+			<surname>Sch&auml;fer</surname> 
+			<affiliation> 
+				<orgname>Technische Universit&auml;t Darmstadt</orgname> 
+				<address> <email>schaefer@ikp.tu-darmstadt.de</email> </address> 
+			</affiliation> 
+		</author> 
+      
+<!-- This is appropriate place for other contributors: translators,
+     maintainers,  etc. Commented out by default.
+     
+      <othercredit role="translator">
+		<firstname>Latin</firstname> 
+		<surname>Translator 1</surname> 
+		<affiliation> 
+	  		<orgname>Latin Translation Team</orgname> 
+	  		<address> <email>translator@gnome.org</email> </address> 
+		</affiliation>
+		<contrib>Latin translation</contrib>
+      </othercredit>
+-->
+	</authorgroup>
+
+
+<!-- According to GNU FDL, revision history is mandatory if you are -->
+<!-- modifying/reusing someone else's document.  If not, you can omit it. -->
+<!-- Remember to remove the &manrevision; entity from the revision entries other -->
+<!-- than the current revision. -->
+<!--
+	<revhistory>
+		<revision> 
+			<revnumber>GWignerFit Manual V&manrevision;</revnumber> 
+			<date>April 2005</date> 
+			<revdescription> 
+				<para role="author">Florian Sch&auml;fer
+					<email>schaefer@ikp.tu-darmstadt.de</email>
+				</para>
+			</revdescription> 
+		</revision> 
+	</revhistory> 
+-->
+	<releaseinfo>This manual describes version &appversion; of GWignerFit.
+	</releaseinfo> 
+	<legalnotice> 
+      <title>Feedback</title> 
+      <para>To report a bug or make a suggestion regarding the &app; application or
+	      this manual, please contact the author via electronic mail 
+	      <email>schaefer@ikp.tu-darmstadt.de</email>.
+      </para>
+<!-- Translators may also add here feedback address for translations -->
+	</legalnotice> 
+</articleinfo> 
+
+<!-- ============= Document Body ============================= -->
+<!-- ============= Introduction ============================== -->
+<sect1 id="gwignerfit-introduction"> 
+	<title>Introduction</title> 
+	<para>&app; provides an easy to use interface to analyze complex spectra of
+		microwave resonators taken with vectorial network analyzers such as the
+		HP8510C. Its primary aim is to provide a means to fit a theoretical curve
+		to a given dataset in order to extract crucial parameters such as
+		resonance frequencies and widths.</para>
+
+	<para>Some of &app;'s features:</para>
+
+	<itemizedlist> 
+		<listitem> 
+			<para>Versatile methods of data visualisation.</para>
+		</listitem> 
+		<listitem> 
+			<para>Support for transmission and reflection spectra.</para>
+		</listitem> 
+		<listitem> 
+			<para>"Unlimited" number of resonances for the theory.</para>
+		</listitem> 
+		<listitem> 
+			<para>Possibility to overlay several spectra for better
+				comparison.</para>
+		</listitem> 
+		<listitem>
+			<para>Implemented Fast Fourier Transform for visualisation of the
+				time domain.</para>
+		</listitem> 
+		<listitem>
+			<para>The most common spectral statistics can be calculated and
+				visualized in real time.</para>
+		</listitem> 
+		<listitem>
+			<para>Spectral data can be measured directly through a HP8510 compatible
+				network analyzer.</para>
+		</listitem>
+	</itemizedlist> 
+</sect1>
+
+<!-- =========== Getting Started ============================== -->
+<sect1 id="gwignerfit-getting-started"> 
+	<title>Getting Started</title> 
+	<para>This section will show you the very first steps with &app;. It will
+		explain how to start the application and give a short overview about how
+		the main window is structured.</para>
+
+	<sect2 id="gwignerfit-start">
+	<title>To Start &app;</title>
+	<para>The best way to start <application>&app;</application> is to start it
+		from a command line. To do this open a terminal and type the
+		following command, then press <keycap>Return</keycap>:</para>
+	<para> 
+		<command>
+			gwignerfit
+			<replaceable>datafile1.dat datafile2.dat</replaceable>
+		</command>
+	</para> 
+	<para>where the optional filenames
+		<replaceable>datafileX.dat</replaceable> can be the names of
+		resonance datafiles that you want to use. A description of the required
+		datafile format can be found in <xref linkend="gwf-datafile-format" />.
+	</para> 
+	<para>&app; opens the first datafile as the main dataset. Each further
+		file will be added as an overlayed graph (see <xref linkend="gwf-overlay" /> 
+		for further information on overlays). </para> 
+	</sect2>
+
+	<sect2 id="gwignerfit-when-start">
+		<title>When You Start &app;</title>
+    <para>When you start <application>&app;</application>, the window shown in 
+			<xref linkend="mainwindow-start"/> is displayed.</para>
+
+		<figure id="mainwindow-start"> 
+			<title>&app; Start Up Window</title> 
+			<screenshot> 
+				<mediaobject> 
+					<imageobject>
+						<imagedata fileref="figures/gwf_start_window.eps" scale="45" format="EPS"/>
+					</imageobject>
+					<imageobject>
+						<imagedata fileref="figures/gwf_start_window.png" format="PNG"/> 
+					</imageobject>
+					<textobject> 
+						<phrase>Shows &app; main window. Contains titlebar, menubar,
+							graph view area, parameter area and statusbar. </phrase> 
+					</textobject> 
+				</mediaobject> 
+			</screenshot> 
+		</figure>
+
+    <para>The &app; main window contains the following elements:</para>
+		<variablelist>
+			<varlistentry>
+				<term>Window title</term>
+				<listitem>
+					<para>The title displays the title of the application, &app;, the
+						name of the currently loaded dataset or session file and an
+						asterisk if there are any unsaved changes.</para>
+				</listitem>
+			</varlistentry>
+			<varlistentry>
+				<term>Menubar</term>
+				<listitem>
+					<para>The menus of the menubar contain all of the commands you need
+						in order to work with &app;. Learn more about the menubar in
+						<xref linkend="gwignerfit-menubar" />.</para>
+				</listitem>
+			</varlistentry>
+			<varlistentry>
+				<term>Graph view area</term>
+				<listitem>
+					<para>This is perhaps the most important part of the main window of
+						&app;. If a dataset is loaded it will be displayed here along with
+						the theoretical curve and any overlayed datasets. A detailed
+						description of the graph view area can be found in 
+						<xref linkend="gwf-graph-view-area" />.
+					</para>
+				</listitem>
+			</varlistentry>
+			<varlistentry>
+				<term>Parameter area</term>
+				<listitem>
+					<para>All relevant parameters are displayed here. Global parameters
+						(<guilabel>Phase</guilabel>, <guilabel>Scale</guilabel>,
+						<guilabel>Tau</guilabel>, <guilabel>Min</guilabel>,
+						<guilabel>Max</guilabel>) are displayed on the left side.  The
+						individual parameters for each resonance
+						(<guilabel>frequency</guilabel>, <guilabel>width</guilabel>,
+						<guilabel>amplitude</guilabel>, <guilabel>phase</guilabel>) will be
+						shown on the table at the right. The parameter area is explained in
+						<xref linkend="gwf-res-list" />.
+					</para>
+				</listitem>
+			</varlistentry>
+			<varlistentry>
+				<term>Statusbar</term>
+				<listitem>
+					<para>The statusbar displays information about the current activities
+						of &app; and it gives feedback about the result of a operation,
+						i.e. saving a file. Each message the statusbar holds will be
+						cleared after five seconds.</para>
+				</listitem>
+			</varlistentry>
+		</variablelist>
+	</sect2>
+</sect1>
+
+<!-- ================ Menubar description ================== -->
+<sect1 id="gwignerfit-menubar">
+	<title>The Menubar</title>
+	<para>
+		The Menubar allows access to nearly all relevant actions of &app;.
+	</para>
+	<sect2 id="gwf-file-menu">
+		<title>The <guimenu>File</guimenu> menu</title>
+		<para>
+			With the <guimenu>File</guimenu> menu you can save and load your work,
+			import datafiles, export your results into various formats and quit &app;.
+			In detail you can choose one of the following actions:
+		</para>
+		<variablelist>
+			<varlistentry>
+				<term><guimenuitem>New</guimenuitem></term>
+				<listitem>
+					<para>Basically &app; is resetted to the state it would be in after
+						starting it without any command line arguments. That is, all
+						resonances are deleted as well as the global parameters, all
+						datasets are removed from the memory and the graph view area is
+						cleared.</para>
+				</listitem>
+			</varlistentry>
+			<varlistentry>
+				<term><guimenuitem>Open...</guimenuitem></term>
+				<listitem>
+					<para>Use this menuitem to open a &app; session created by &app;'s
+						save function.</para>
+				</listitem>
+			</varlistentry>
+			<varlistentry>
+				<term><guimenuitem>Save</guimenuitem></term>
+				<listitem>
+					<para>With <guimenuitem>Save</guimenuitem> the current state of your
+						&app; session will be saved. The name of the dataset file, the
+						overlayed files, the global parameters and the parameters of the
+						individual resonances will be saved. If no file and section name
+						have been chosen yet, you will be prompted for them, otherwise
+						their current values will be taken and the corresponding section
+						will be overwritten with your current session. Please refer to
+						<xref linkend="gwignerfit-save-work" /> for further information on
+						&app;'s session files.</para>
+				</listitem>
+			</varlistentry>
+			<varlistentry>
+				<term><guimenuitem>Save as...</guimenuitem></term>
+				<listitem>
+					<para>This does in principle the same as
+						<guimenuitem>Save</guimenuitem> but you will always be asked for a
+						new filename and a new section name.</para>
+				</listitem>
+			</varlistentry>
+			<varlistentry>
+				<term><guimenuitem>Import data...</guimenuitem></term>
+				<listitem>
+					<para>This is perhaps one of the most important items in the
+						<guimenu>File</guimenu> menu. You can import a dataset that you
+						want to work with or a list with resonance frequencies. See
+						<xref linkend="gwf-import" /> and <xref
+						linkend="gwf-import-reslist" /> for further information on
+						datafiles.</para>
+				</listitem>
+			</varlistentry>
+			<varlistentry>
+				<term><guimenuitem>Export</guimenuitem></term>
+				<listitem>
+					<para>For further usage of the knowledge gained by using &app; you
+						can export various aspects of your work here, see
+						<xref linkend="gwf-export" />.</para>
+				</listitem>
+			</varlistentry>
+			<varlistentry>
+				<term><guimenuitem>Quit</guimenuitem></term>
+				<listitem>
+					<para>Quit the application.</para>
+				</listitem>
+			</varlistentry>
+		</variablelist>
+	</sect2>
+	<sect2 id="gwf-spectrum-menu">
+		<title>The <guimenu>Spectrum</guimenu> menu</title>
+		<para>
+			This menu holds actions that are related to the adding of resonances to
+			the theory and fitting them. You may think of the
+			<guimenu>Spectrum</guimenu> menu as doing work <emphasis>on</emphasis>
+			the spectrum. In detail you can choose one of the following actions:
+		</para>
+		<variablelist>
+			<varlistentry>
+				<term><guimenuitem>Fit spectrum</guimenuitem></term>
+				<listitem>
+					<para>This is what &app; is all about. To take a set of parameters
+						and fit a theoretical curve to the dataset. With <guimenuitem>Fit
+						spectrum</guimenuitem> the actual fitting process is
+						initiated. You can learn more about the fit in
+						<xref linkend="gwf-fit" />.</para>
+				</listitem>
+			</varlistentry>
+			<varlistentry>
+				<term><guimenuitem>Undo last fit</guimenuitem></term>
+				<listitem>
+					<para>Sometimes the theory will look worse after a fit has been
+						performed, use undo to revert to the state before the fit.
+						<guimenuitem>Undo last fit</guimenuitem> will always restore the
+						parameter settings from before the last fit. You cannot use undo if
+						no fit has been done yet or if a new dataset has been imported
+						meanwhile.</para>
+				</listitem>
+			</varlistentry>
+			<varlistentry>
+				<term><guimenuitem>Add resonance by click</guimenuitem></term>
+				<listitem>
+					<para>Add a single resonance to the list of resonances. After choosing
+						this item you will have to click with the left mouse button on the
+						graph at the frequency where a new resonance should be added. You
+						are allowed to change the view for this. &app; will then try to
+						calculate some reasonable initial parameters for this resonance and
+						add it to the list.</para>
+				</listitem>
+			</varlistentry>
+			<varlistentry>
+				<term><guimenuitem>Find isolated resonances</guimenuitem></term>
+				<listitem>
+					<para>If the spectrum contains many resonances that are to be fitted
+						it may be very inconvenient to add them all by hand. Use
+						<guimenuitem>Find isolated resonances</guimenuitem> to add all
+						resonances above a certain threshold.</para>
+					<para>&app; now expects you to mark this threshold on the graph.
+						Click with the left mouse button on the graph to mark the height
+						that should be this threshold. &app; will now try to identify all
+						resonances that are higher than this value. For this operation only
+						the frequency range between the Min- and the Max-frequency is
+						considered. Read <xref linkend="gwf-find-res" /> for further
+						information.</para>
+				</listitem>
+			</varlistentry>
+			<varlistentry>
+				<term><guimenuitem>Estimate global parameters</guimenuitem></term>
+				<listitem>
+					<para>Use this to re-estimate the three global parameters Phase,
+						Scale and Tau. The results may not be very exact in may cases but
+						they may provide a starting point.</para>
+				</listitem>
+			</varlistentry>
+			<varlistentry>
+				<term><guimenuitem>Set frequency window</guimenuitem></term>
+				<listitem>
+					<para>There are many operations that are not performed on the whole
+						frequency range of the dataset but only on a smaller part of it.
+						This range is determined by the Min- and Max-frequency global
+						parameters. Use <guimenuitem>Set frequency window</guimenuitem> to
+						change this window.</para>
+					<para>After selecting this item you will have to mark those to
+						frequencies with a click of the left mouse button on the graph. It
+						is mandatory to first mark the lower frequency and then the higher
+						frequency. You are free to change the view during this
+						operation.</para>
+				</listitem>
+			</varlistentry>
+			<varlistentry>
+				<term><guimenuitem>Reflection</guimenuitem> and
+					    <guimenuitem>Transmission</guimenuitem></term>
+				<listitem>
+					<para>&app; tries to guess what kind of spectrum is currently loaded
+						during importing it. Sometimes the algorithm will not decide
+						correctly. Use those two radio-menuitems to change the spectrum
+						type by hand.</para>
+				</listitem>
+			</varlistentry>
+			<varlistentry>
+				<term><guimenuitem>Overlay spectra...</guimenuitem></term>
+				<listitem>
+					<para>It is possible to view more than just on spectrum at the same
+						time. This may be handy if you want to compare certain aspects of
+						several spectra. This menuitem opens the dialog to manage those
+						overlayed spectra. You cannot select this option if no main
+						spectrum has been imported yet. See <xref linkend="gwf-overlay" />
+						for an in depth treatment of overlays.</para>
+				</listitem>
+			</varlistentry>
+			<varlistentry>
+				<term><guimenuitem>Preferences...</guimenuitem></term>
+				<listitem>
+					<para>There are some preferences that change the general behaviour of
+						&app;. You can change them in the preferences dialog, see 
+						<xref linkend="gwignerfit-custom" />.</para>
+				</listitem>
+			</varlistentry>
+		</variablelist>
+	</sect2>
+	<sect2 id="gwf-analyze-menu">
+		<title>The <guimenu>Analyze</guimenu> menu</title>
+		<para>The <guimenu>Analyze</guimenu> menu allows you to perform an even
+			deeper analysis of you spectrum that have nothing to do with finding and
+			fitting resonances in the first place.
+			In detail you can choose one of the following actions:
+		</para>
+		<variablelist>
+			<varlistentry>
+				<term><guimenuitem>Measure distance</guimenuitem></term>
+				<listitem>
+					<para>To measure the frequency interval between two arbitrary points
+						on the spectrum select this item and then click with the left mouse
+						button on the two frequency positions between which you want to
+						know the distance. You may select the higher frequency first, &app;
+						will always calculate the absolute value of the difference. Once
+						again, you are free to change the view during this
+						operation.</para>
+				</listitem>
+			</varlistentry>
+			<varlistentry>
+				<term><guimenuitem>Integrate Spectrum</guimenuitem></term>
+				<listitem>
+					<para><guimenuitem>Integrate Spectrum</guimenuitem> calculates the
+						area under the graph of the main dataset in the given frequency
+						range. You will have to mark the frequency boundaries with clicks
+						of the left mouse button on the graph. You may select the higher
+						frequency first, &app; will always calculate the absolute value of
+						the integral. Once again, you are free to change the view during
+						this operation.</para>
+				</listitem>
+			</varlistentry>
+			<varlistentry>
+				<term><guimenuitem>Fourier transform all</guimenuitem></term>
+				<listitem>
+					<para>The mathematical operation to change between the frequency
+						domain and the time domain is a Fourier transform. Selecting this
+						item you will open a new window that displays the Fourier
+						transformed graphs. An extensive explanation of the time domain and
+						the Fourier transform window is given
+						<xref linkend="gwignerfit-fft" />.</para>
+				</listitem>
+			</varlistentry>
+			<varlistentry>
+				<term><guimenuitem>Fourier transform frqwin</guimenuitem></term>
+				<listitem>
+					<para>This does in principle the same as <guimenuitem>Fourier
+						transform</guimenuitem>. However, it does only take those data
+						values into account that are within the selected Min- and
+						Max-frequency window.</para>
+				</listitem>
+			</varlistentry>
+			<varlistentry>
+				<term><guimenuitem>Spectral statistics</guimenuitem></term>
+				<listitem>
+					<para>This module evaluates the most common statistical properties of
+						resonance lists. Your current list of resonance frequencies will be
+						the source of the analysis. See <xref linkend="gwignerfit-spectral"
+						/> for a thorough explanation of this function.</para>
+				</listitem>
+			</varlistentry>
+		</variablelist>
+	</sect2>
+	<sect2 id="gwf-view-menu">
+		<title>The <guimenu>View</guimenu> menu</title>
+		<para>
+			This menu contains all actions that are connected to what the graph
+			view area shows you.
+			You can choose one of the following actions:
+		</para>
+		<variablelist>
+			<varlistentry>
+				<term><guimenuitem>Absolute value</guimenuitem></term>
+				<listitem>
+					<para>This is the standard view. &app; calculates the absolute values
+						of the given complex parameter sets and displays them. The values
+						are <emphasis>not</emphasis> squared.</para>
+				</listitem>
+			</varlistentry>
+			<varlistentry>
+				<term><guimenuitem>Real part</guimenuitem></term>
+				<listitem>
+					<para>Displays that real part of each graph.</para>
+				</listitem>
+			</varlistentry>
+			<varlistentry>
+				<term><guimenuitem>Imaginary part</guimenuitem></term>
+				<listitem>
+					<para>Displays that imaginary part of each graph.</para>
+				</listitem>
+			</varlistentry>
+			<varlistentry>
+				<term><guimenuitem>Phase</guimenuitem></term>
+				<listitem>
+					<para>Displays that phase of the complex values. &app; calculates it
+						by taking the arctan of the quotient between imaginary and real
+						part of the datasets. The signs of both arguments are used to
+						determine the quadrant of the result that is, the phase takes all
+						values between -&pi; and +&pi;.</para>
+				</listitem>
+			</varlistentry>
+			<varlistentry>
+				<term><guimenuitem>Log power in dB</guimenuitem></term>
+				<listitem>
+					<para>The values calculated with the <guimenuitem>Absolute
+						value</guimenuitem> setting are being squared and converted into a
+						logarithmic scale, the dB scale. The ordinate now reads the values
+						in dB. To prevent possible singularities all values of zero are
+						defined to be -100&nbsp;dB and negative values are reversed in sign
+						before converting them to dB.</para>
+				</listitem>
+			</varlistentry>
+			<varlistentry>
+				<term><guimenuitem>View difference</guimenuitem></term>
+				<listitem>
+					<para>When activating this checkbox the graph view area will not show
+						the individual graphs for the main dataset and the theory any more
+						but calculate the difference between the to datasets first and
+						display the result. The difference is calculated by subtracting the
+						complex values of the theory graph from the complex values of the
+						main dataset. The graph of this difference is purple in colour.
+					</para>
+				</listitem>
+			</varlistentry>
+			<varlistentry>
+				<term><guimenuitem>Zoom selection</guimenuitem></term>
+				<listitem>
+					<para>Changes the range of the displayed frequencies so that the
+						whole frequency window between the Min- and Max-frequency fits
+						nicely onto the graph view area.</para>
+				</listitem>
+			</varlistentry>
+		</variablelist>
+	</sect2>
+	<sect2>
+		<title>The <guimenu>Help</guimenu> menu</title>
+		<para>
+			This menu is supposed to give the user some help in his working with
+			&app;, however, right now its functionality is rather limited.
+			Only one menuitem is present at the moment:
+		</para>
+		<variablelist>
+			<varlistentry>
+				<term><guimenuitem>About</guimenuitem></term>
+				<listitem>
+					<para>This item will open the obligatory hall of fame window.</para>
+				</listitem>
+			</varlistentry>
+		</variablelist>
+	</sect2>
+</sect1>
+
+<!-- ================ Handling datasets ==================== -->
+<sect1 id="gwignerfit-datasets">
+	<title>Handling datasets</title>
+	<para>It is &app;'s purpose to make the work with measured data as
+		comfortable as possible. This section will explain how to load some data
+		into &app;, how to use the graph view effectively and how to export your
+		results again.</para>
+
+	<sect2 id="gwf-import">
+		<title>Import Spectrum Data</title>
+		<para>The starting point for many of your &app; sessions will be to import
+			some spectrum data. You can do this by choosing
+			<menuchoice> 
+	  		<guimenu>File</guimenu> 
+	  		<guimenuitem>Import</guimenuitem> 
+				<guimenuitem>Spectrum data...</guimenuitem> 
+			</menuchoice>
+			(the shortcut is
+			<keycombo>
+				<keycap>Ctrl</keycap>
+				<keycap>I</keycap>
+			</keycombo>)
+			from the menubar. A file selector will open where you can browse to and
+			select the name of the file that contains the dataset.</para>
+
+		<para>You can either import the raw spectrum data of the frequency domain
+			or the Fourier transformed data of a time domain spectrum (see 
+			<xref linkend="gwignerfit-fft" />). Both types of spectra must abide by
+			the datafile standard defined in <xref linkend="gwf-datafile-format" />.
+			The preferred extension for datafiles is <filename>.dat</filename>.
+			All datafiles can be compressed with the zlib algorithm, too, which &app;
+			can decompress on the fly. This algorithm is used for example by the Unix
+			<command>gzip</command> command. Compressed datafiles should have the
+			suffix <filename>.dat.gz</filename>.
+		</para>
+
+		<sect3 id="gwf-datafile-format">
+			<title>Datafile Format</title>
+			<para>&app; expects all datafiles to follow the following
+				standard:</para>
+			<itemizedlist> 
+				<listitem>
+					<para>All lines containing actual data must consist of three floating
+						numbers (for the programmers: long floats, a point as the decimal
+						separator) divided by white space, that is any combination of
+						spaces and tabs. The first column represents the frequency measured
+						in Hz or the time of the FFT data in nanoseconds. The second and
+						third column hold the real and imaginary value of the complex
+						S-Parameter value for this frequency or of the complex Fourier
+						coefficient for this time.</para>
+				</listitem>
+				<listitem>
+					<para>A line can start with a hash (a '#'). Those lines will be
+						ignored by &app; and can thus be used for comments.</para>
+				</listitem>
+				<listitem>
+					<para>The file <emphasis>must not</emphasis> contain any other lines
+						than those of the type above. This includes that there must not be
+						any empty lines in the datafile.</para>
+				</listitem>
+				<listitem>
+					<para>&app; expects the frequency/time intervals between two
+						successive lines to be equal, i.e. plus 200&nbsp;KHz between each
+						frequency dataset.</para>
+				</listitem>
+				<listitem>
+					<para>The following applies only to time domain data: The first two
+						lines of the datafile <emphasis>must</emphasis> look very much like
+						this: 
+						<screen>
+# FFT of 'filename.dat' measured data
+# Source frequency range: 2.000000000 - 8.438000000 GHz
+						</screen>
+						The string <replaceable>filename.dat</replaceable> should hold the
+						filename of the original frequency domain dataset. The values of
+						the second line, <replaceable>2.000000000</replaceable> and
+						<replaceable>8.438000000</replaceable> in this example, must be
+						equal to the first and last frequency datapoint of the original
+						datafile.</para>
+					<para>The number of datapoints in the file must be one more than a
+						power of two (like 3, 5, 9, 17, 33) and the time range must be
+						centered around time t=0&nbsp;ns.</para>
+					<para>However, you do not need to worry too much about this datafile 
+						format. If you use &app;'s export function (see
+						<xref linkend="gwf-fft-file-menu" />) everything will be set up
+						correctly.</para>
+				</listitem>
+			</itemizedlist>
+			<para>A valid frequency domain spectrum datafile could look like this:</para>
+			<screen>
+# A test measurement
+8026000000.000000 0.027552 -0.001667
+8026200000.000000 -0.027308 -0.000603
+8026400000.000000 -0.027080 0.000438
+8026600000.000000 -0.026746 0.001457
+			</screen>
+			<para>A valid time domain spectrum datafile could start like this:</para>
+			<screen>
+# FFT of 'test_measurement.dat' measured data
+# Source frequency range: 1.910000000 - 2.598564295 GHz
+# t[ns]            Re            Im
+ -580.918882	   -0.710359	    0.388424
+ -579.784275	   -0.517703	   -0.016882
+ -578.649667	   -0.205626	   -0.183095
+ -577.515060	    0.263812	    0.299154
+			</screen>
+		</sect3>
+	</sect2>
+	
+	<sect2 id="gwf-import-reslist">
+		<title>Import a Resonance Frequency List</title>
+		<para>It will eventually happen that you already have a list with
+			resonance frequencies that you would like to use for your further work
+			(i.e. for a spectral analysis, see <xref linkend="gwignerfit-spectral" />).
+			You can import such a list with the function
+			<menuchoice> 
+	  		<guimenu>File</guimenu> 
+	  		<guimenuitem>Import</guimenuitem> 
+				<guimenuitem>Resonance list...</guimenuitem> 
+			</menuchoice>
+			from the menubar of the main window. However, your resonance list file
+			will have to stick to the following rules:
+		</para>
+		<itemizedlist>
+			<listitem>
+				<para>All lines that are either empty (not even white space) or start
+					with a hash ("#") will be ignored by &app;.
+				</para>
+			</listitem>
+			<listitem>
+				<para>All lines containing actual data must consist of one or two
+					numbers. If there is only one column of numbers those numbers have to
+					be the resonance frequency in Hz or in GHz (that is the file has just
+					one frequency per line). If there are two columns, the second one has
+					to contain the frequency information. The first one is then expected
+					to consist of integer numbers that increase by one with every line
+					(and thus could be the number of the resonance). &app; will try to
+					outsmart itself and autodetect what format the datafile follows.
+				</para>
+			</listitem>
+		</itemizedlist>
+		<para>The imported resonances will be added to your resonance list. The
+			width and amplitude parameters will be set to some default value so that
+			the resonances will be visible and a fit will not fail with a numerical
+			exception. &app; will, however, not try to find more sensible values for
+			those parameters, this is left up to you. A resonance frequency list can
+			be imported, too, if there is no main spectrum datafile loaded.
+		</para>
+	</sect2>
+		
+	<sect2 id="gwf-overlay">
+		<title>Overlay Data</title>
+		<para>Besides having the main dataset and the theoretical graph you can add
+			further datafiles to your graph. &app; calls those graphs
+			<emphasis>overlays</emphasis>. This section will show you how to use them
+			effectively.</para>
+		<para>For all operations with overlays you will need to open the Overlay
+			Window, you can do this by choosing
+			<menuchoice> 
+	  		<guimenu>Spectrum</guimenu> 
+				<guimenuitem>Overlay spectra...</guimenuitem> 
+			</menuchoice>
+			from the menubar.
+		</para>
+
+		<figure id="overlay-fig"> 
+			<title>The Overlay Window</title> 
+			<screenshot> 
+				<mediaobject> 
+					<imageobject><imagedata
+						fileref="figures/gwf_overlay_window.eps" scale="50" format="EPS"/> 
+					</imageobject>
+					<imageobject><imagedata
+						fileref="figures/gwf_overlay_window.png" format="PNG"/> 
+					</imageobject>
+					<textobject> 
+						<phrase>Shows the Overlay Window.</phrase>
+					</textobject> 
+				</mediaobject> 
+			</screenshot> 
+		</figure>
+
+		<para>The Overlay Window (as shown in <xref linkend="overlay-fig" />)
+			contains the following elements:</para>
+
+		<variablelist>
+			<varlistentry>
+				<term><interface>List of all overlays</interface></term>
+				<listitem>
+					<para>This list shows the filenames of all overlayed datasets that
+						are currently loaded and therefore displayed, too. Whenever you
+						intend to do something with a dataset select it in this list. It is
+						possible to select several datasets at the same time.</para>
+					<para>Each filename has a coloured bar prepended. This bar shows the
+						colour of the dataset in the graph (with a light grey as the
+						default colour). You can do a double click on a row to change this
+						colour. Those graphs that are selected in the list will be drawn in
+						a darker variant of this colour.</para>
+				</listitem>
+			</varlistentry>
+			<varlistentry>
+				<term><guibutton>OK</guibutton></term>
+				<listitem>
+					<para>Closes the Overlay Window. Otherwise nothing special
+						happens.</para>
+				</listitem>
+			</varlistentry>
+			<varlistentry>
+				<term><guibutton>Add</guibutton></term>
+				<listitem>
+					<para>Adds a new dataset to the list of overlayed graphs. Pressing
+						this button will open a file selector dialog where you can select
+						one or several datasets to be loaded. The overlayed datasets do
+						<emphasis>not</emphasis> need to have the same frequency points as
+						the main dataset.</para>
+					<para>You can add a time domain spectrum (see <xref
+						linkend="gwf-datafile-format" /> for a description of the required
+						file format) as an overlay, too. &app; will convert it into the
+						frequency domain before adding it.</para>
+				</listitem>
+			</varlistentry>
+			<varlistentry>
+				<term><guibutton>Remove</guibutton></term>
+				<listitem>
+					<para>For <guibutton>Remove</guibutton> to work, you will first have
+						to select those overlays in the overlay list that you want to
+						remove from the graph. After pressing the
+						<guibutton>Remove</guibutton> button the selected datasets will be
+						removed. The files will not be removed physically, they are just
+						removed from the memory of &app;.</para>
+				</listitem>
+			</varlistentry>
+			<varlistentry>
+				<term><guibutton>Activate</guibutton></term>
+				<listitem>
+					<para>With <guibutton>Activate</guibutton> you can exchange the
+						current main dataset with an overlayed graph. To do this you have
+						to select the overlay filename from the overlay list (select
+						exactly one filename) and click the <guibutton>Activate</guibutton>
+						button. The selected overlay graph will become the new main
+						dataset. The former main dataset will replace the former overlay
+						dataset in the overlay list.</para>
+				</listitem>
+			</varlistentry>
+		</variablelist>
+
+		<para>Though this feature calls itself "overlay", those graphs actually
+			appear below all other graphs. The default is that all overlays are
+			displayed in a light grey colour, however, all overlays that are
+			currently selected in the overlay list are shown in a darker shade of
+			grey. This way you can more easily distinguish several overlays if
+			several datasets are overlayed. To change the colour of a graph you can
+			open a colour selection dialog with a double click on filename in the
+			list.</para>
+
+		<para>Everything that has been said about overlays in the main graph
+			view area applies to the Fourier Transform window (see
+			<xref linkend="gwignerfit-fft" />) as well.</para>
+
+	</sect2>
+	<sect2 id="gwf-graph-view-area">
+		<title>The Graph view area</title>
+		<para>To an unfamiliar user &app;'s graph view area may seem a bit
+			confusing at first glance but once you have learned what the different
+			lines are for, it should be quite easy to understand.</para>
+		
+		<figure id="res-graph-view"> 
+			<title>&app; with several datasets</title> 
+			<screenshot> 
+				<mediaobject> 
+					<imageobject><imagedata
+							fileref="figures/gwf_action.eps" scale="45" format="EPS"/> 
+					</imageobject>
+					<imageobject><imagedata
+							fileref="figures/gwf_action.png" format="PNG"/> 
+					</imageobject>
+					<textobject> 
+						<phrase>Shows &app; with several datasets.</phrase>
+					</textobject> 
+				</mediaobject> 
+			</screenshot> 
+		</figure>
+
+		<para>The meaning of the different lines in <xref linkend="res-graph-view" />:
+		</para>
+		<itemizedlist>
+			<listitem>
+				<para>Black: The coordinate axes are in black. The abscissa shows the
+					frequency in GHz, the ordinate is in this screenshot the squared
+					transmission in dB.</para>
+			</listitem>
+			<listitem>
+				<para>Red: The main dataset graph is in red.</para>
+			</listitem>
+			<listitem>
+				<para>Blue: The theory graph is coloured blue.</para>
+			</listitem>
+			<listitem>
+				<para>Grey: Grey is the colour for all overlayed graphs. You can see in
+					the screenshot that there are two grey graphs which translate into
+					two additional overlayed datasets.</para>
+			</listitem>
+			<listitem>
+				<para>Orange: The two vertical orange lines mark the boundaries of the
+					frequency window. They correspond to the Min and Max values in the
+					global parameter area.</para>
+			</listitem>
+			<listitem>
+				<para>Green: As you can see in the resonance list there is one resonance
+					currently selected (it has a blue background). A selected resonance
+					is marked with a green bar in the graph view. The shade of green
+					represents the strength of a single Wigner resonance with a width of
+					the same value as the selected resonance. In short: The green bar
+					visualizes the position and width of the currently selected
+					resonance.</para>
+			</listitem>
+		</itemizedlist>
+
+		<sect3 id="gwf-navigate">
+			<title>Navigating the Graph view</title>
+			<para>You have got several options how to influence the part of the graph
+				that should be shown. You can zoom both axes independently and move the
+				whole viewport around. For nearly all operations a mouse is needed. For
+				optimal handling a three-button mouse with a scroll-wheel is
+				recommended. Working with a two or three button mouse is possible,
+				too, but it is not very comfortable this way.
+			</para>
+
+			<para>Changing the view with the mouse:</para>
+			<variablelist>
+				<varlistentry>
+					<term>Zoom</term>
+					<listitem>
+						<para>You can zoom into and out of the graph using the scroll-wheel
+							of your mouse. To zoom around a certain point position the mouse
+							crosshairs on this point and zoom using the wheel. Scrolling up
+							translates into zooming into the graph whereas scrolling down
+							does the opposite. Zooming this way will only affect the frequency
+							axis, the ordinate will be scaled automatically. The frequency
+							marked by the mouse crosshairs will always stay at the same
+							position on the screen. Holding <keycap>Ctrl</keycap> while
+							scrolling will zoom the ordinate without changing the frequency
+							axis.
+						</para>
+						<para>
+							If you cannot use a scroll-wheel you can zoom in using
+							<keycap>Shift</keycap> + right mouse button and zoom out using
+							<keycap>Ctrl</keycap> + right mouse button. You will not be able
+							to zoom the ordinate this way though.
+						</para>
+						<para>
+							All graphs represent discrete datapoints. The lines you can see
+							do just connect those points by straight lines, they should
+							"guide the eye". Once you have zoomed so much into the graph that
+							the distance between two adjacent datapoints is more than 20
+							pixel, &app; marks the positions of the actual datapoints by short
+							vertical lines. If you do not like this behaviour see <xref
+							linkend="gwignerfit-custom" /> on how to disable those datapoint
+							markers.
+						</para>
+					</listitem>
+				</varlistentry>
+				<varlistentry>
+					<term>Jumping around</term>
+					<listitem>
+						<para>Pressing the middle mouse button will center the graph on the
+							frequency that is currently marked by the mouse crosshairs.
+						</para>
+					</listitem>
+				</varlistentry>
+				<varlistentry>
+					<term>Zoom to frequency window</term>
+					<listitem>
+						<para>To adjust the view in such a way that the whole graph inside
+							the current frequency window (determined by the global Min and Max
+							parameters) fits nicely onto the screen use 
+							<menuchoice> 
+								<guimenu>View</guimenu> 
+								<guimenuitem>Zoom selection</guimenuitem> 
+							</menuchoice>
+							or the corresponding keyboard shortcut <keycap>S</keycap>.
+						</para>
+					</listitem>
+				</varlistentry>
+				<varlistentry>
+					<term>View complete graph</term>
+					<listitem>
+						<para>Pressing <keycap>Ctrl</keycap> + middle mouse button will
+							adjust the view so that the whole graph will be visible.
+						</para>
+					</listitem>
+				</varlistentry>
+			</variablelist>
+
+			<para>One final feature of the graph view area, though it has nothing to
+				do with changing the viewport, should be mentioned here: You can click
+				with the left mouse button anywhere on the graph to mark the position
+				with a small cross. Beside the mark the coordinates of this point will
+				be printed in a (x,y) like style. This is really useful if you want to
+				get a better reading on some special positions on the graph. The mark
+				is not permanent, it will be cleared the next time the graph is being
+				redrawn.</para>
+		</sect3>
+	</sect2>
+
+	<sect2 id="gwf-export">
+		<title>Export your Data</title>
+
+		<para>Aside from saving your work as gwf files you can export only certain
+			information, too. &app; allows you to export selected parameters of your
+			resonances in a tabular fashion, a dataset of the theoretical graph can
+			be created and the current view of the graph view area can be saved as
+			a postscript file.</para>
+
+		<para>You can find the different export methods as a submenu of the
+			<menuchoice> 
+	  		<guimenu>File</guimenu> 
+				<guimenuitem>Export</guimenuitem> 
+			</menuchoice>
+			menu. The three possible actions are:</para>
+
+		<variablelist>
+			<varlistentry>
+				<term><guimenuitem>Resonance data...</guimenuitem></term>
+				<listitem>
+					<para>If you want to export a certain parameter of all resonances,
+						i.e. the widths of all resonances, you can use this function.
+						The calculated standard deviations of the resonance parameters can
+						be displayed, too (see <xref linkend="gwf-fit-err" />). &app; will
+						open a window with a textview where the exported parameters are
+						shown. Below this textview you can select what parameters are to be
+						exported. You are free to select several parameters, i.e. frequency
+						and width. The last checkbox enables the display of error the error
+						estimates.</para>
+					<para>The textview will then display for each resonance a line which
+						contains the selected parameters. If you have selected
+						<guilabel>Add error estimates for each included
+						parameter</guilabel> the errors for each parameter will be
+						displayed in a column directly behind the parameter itself. The
+						order of the list is determined by the current order of the
+						resonance list of the main window. You can select the data now to
+						copy and paste it into an application of your choice or you can use
+						the <guibutton>Save</guibutton> button to save the content of the
+						textview as plain text into a file of your choice.</para>
+				</listitem>
+			</varlistentry>
+			<varlistentry>
+				<term><guimenuitem>Theory Graph data...</guimenuitem></term>
+				<listitem>
+					<para>This will open a file selection dialog asking you for the
+						filename of the dataset that is to be exported. &app; will write
+						into this file the dataset of the complex theoretical graph. The
+						format of this file is the same as for any other dataset that &app;
+						understands.</para>
+				</listitem>
+			</varlistentry>
+			<varlistentry id="gwf-export-ps">
+				<term><guimenuitem>Graph as postscript...</guimenuitem></term>
+				<listitem>
+					<para>For documentation purposes it is sometimes very useful to take
+						some kind of screenshot of a particular graph. This option allows
+						you to save the currently visible graph as a postscript file.</para>
+					<para>The export function depends on the open source program
+						<application>gnuplot</application> and thus only works if it is
+						installed on your system in a location mentioned in your
+						<envar>PATH</envar> environment variable.</para>
+
+					<figure id="export-ps"> 
+						<title>Export graph to postscript window</title> 
+						<screenshot> 
+							<mediaobject> 
+								<imageobject><imagedata
+										fileref="figures/gwf_export_ps.eps" scale="50" format="EPS"/> 
+								</imageobject>
+								<imageobject><imagedata
+										fileref="figures/gwf_export_ps.png" format="PNG"/> 
+								</imageobject>
+								<textobject> 
+									<phrase>Shows &app;'s dialog to export a graph as a postscript.</phrase>
+								</textobject> 
+							</mediaobject> 
+						</screenshot> 
+					</figure>
+
+					<para>The "Export graph to postscript" window contains the following
+						elements (see <xref linkend="export-ps" />):</para>
+
+					<itemizedlist>
+						<listitem>
+							<para><guilabel>Postscript filename</guilabel>:
+								The filename of the postscript file, you can use the
+								<guibutton>Select</guibutton> button to bring up a file
+								selector dialog to select a filename.
+							</para>
+						</listitem>
+						<listitem>
+							<para><guilabel>Title</guilabel>:
+								The title string will be displayed above the graph. Leave it
+								empty if you do not want a title to be shown.
+							</para>
+						</listitem>
+						<listitem>
+							<para><guilabel>Footer</guilabel>:
+								The footer will be included in a smaller font at the lower
+								right of the graph. As you can see &app; will show the name of
+								the datafile here by default but you are free to enter an
+								arbitrary string here, too. If you don't want to have a footer
+								delete any text in the footer textentry.
+							</para>
+						</listitem>
+						<listitem>
+							<para><guilabel>Include theory graph</guilabel>:
+								The blue theory graph will only be included in the postscript
+								if this checkbox is checked.
+							</para>
+						</listitem>
+						<listitem>
+							<para><guilabel>Include overlay graphs</guilabel>:
+								Overlayed graphs will only be included in the postscript if
+								this checkbox is checked.
+							</para>
+						</listitem>
+						<listitem>
+							<para><guilabel>Create legend at</guilabel>:
+								It is optional to include a legend in the postscript. The
+								legend will mark the graphs as "data", "theory" and "overlay".
+								To prevent the legend box from obscuring the graph you can
+								either position it at the <guilabel>top</guilabel> right or at
+								the <guilabel>bottom</guilabel> right of the graph.
+							</para>
+						</listitem>
+					</itemizedlist>
+					
+				</listitem>
+			</varlistentry>
+		</variablelist>
+	</sect2>
+	
+	<sect2 id="gwf-dnd">
+		<title>Drag and drop support</title>
+		<para>&app; supports drag and drop to import datafiles. This functionality
+			is restricted to applications that support the Gtk way of drag and drop,
+			that is all other Gtk and Gnome applications. QT applications which are
+			common to KDE programs use another protocol for drag and drop and are
+			therefore incompatible.</para>
+
+		<para>To import a datafile into &app; just drag and drop it on its main
+			application window. If no main dataset is loaded the file will be
+			imported as a new main dataset. Otherwise it will be added as an
+			overlayed dataset.</para>
+	</sect2>
+</sect1>
+
+<!-- ================ Save and load operation ============== -->
+<sect1 id="gwignerfit-save-work">
+	<title>Load and Save your Work</title>
+	<para>This section explains the concept of saved &app; sessions, how the
+		files are structured and how to actually save and load them.</para>
+
+	<para>The preferred extension for all &app; session files is
+		<filename>.gwf</filename> which is short for &app;. Though you are free to
+		choose any filenames you wish it is recommended to stick to this
+		convention. This manual assumes that saved sessions have the extension
+		<filename>.gwf</filename> and will refer to them as "gwf files".</para>
+
+	<sect2 id="gwf-files">
+		<title>Structure of gwf files</title>
+		<para>&app; session files are simple plain text files that are processed in
+			a line oriented manner. A gwf file can store the state of several
+			sessions. This is done by introducing <emphasis>sections</emphasis>. Each
+			file can contain several sections where each section is an independent
+			entity representing a saved &app; session.</para>
+
+		<para>Each section has an unique <emphasis>label</emphasis> by which the
+			section is identified by &app; and presented to you as the user. A label
+			may be any string (without line breaks). It is recommended that you give
+			the label a meaningful name as it represents some part of your
+			work.</para>
+
+		<para>The typical structure of a gwf file could look like this:</para>
+		<itemizedlist>
+			<listitem>
+				<para>filename: <filename>cavity_1.gwf</filename></para>
+			</listitem>
+			<listitem>
+				<para>sections:</para>
+				<itemizedlist>
+					<listitem>
+						<para>1-4 GHz</para>
+					</listitem>
+					<listitem>
+						<para>4-8 GHz</para>
+					</listitem>
+					<listitem>
+						<para>full spectrum</para>
+					</listitem>
+					<listitem>
+						<para>test (strange resonances)</para>
+					</listitem>
+				</itemizedlist>
+			</listitem>
+		</itemizedlist>
+	</sect2>
+
+	<sect2 id="gwf-save">
+		<title>Save a Session</title>
+		<para>To save a session select
+			<menuchoice> 
+	  		<guimenu>File</guimenu> 
+				<guimenuitem>Save as...</guimenuitem> 
+			</menuchoice>
+			from the menubar. A dialog will ask you for the label of the section.
+			Enter the name and select <guibutton>OK</guibutton>. You will now see a
+			file selector dialog where you can enter the filename of the gwf file.
+			If no filename has been given to this session yet, &app; will propose one
+			by replacing the extension of the datafile by <filename>gwf</filename>.
+			Press <guibutton>OK</guibutton> to continue. Pressing
+			<guibutton>Cancel</guibutton> in any of the two last windows will abort
+			the entire save process, no changes are being made to any files.</para>
+
+		<para>Depending on the filename you selected there are three possible ways
+			how &app; will continue:</para>
+		<itemizedlist>
+			<listitem>
+				<para>The file does not exist. &mdash;
+					A new file is created with the appropriate section.</para>
+			</listitem>
+			<listitem>
+				<para>The file exists but no section with the given label. &mdash;
+					You will be asked whether &app; should append a new section to the
+					file or whether the operation should be aborted. The confirmation
+					dialog can be disabled through the preferences, see
+					<xref linkend="gwignerfit-custom" />.</para>
+			</listitem>
+			<listitem>
+				<para>The file exists and the section exists as well. &mdash;
+					You will be asked whether &app; should overwrite the section of the
+					file or whether the operation should be aborted. &app; will only
+					change the relevant section. The rest of the file will stay
+					unaffected.</para>
+			</listitem>
+		</itemizedlist>
+
+	<para>Once you have done the steps above it is sufficient to use
+		<menuchoice> 
+			<guimenu>File</guimenu> 
+			<guimenuitem>Save</guimenuitem> 
+		</menuchoice>
+		or
+		<keycombo>
+			<keycap>Ctrl</keycap>
+			<keycap>S</keycap>
+		</keycombo>
+		for a quick save with the same file and section names.</para>
+
+	</sect2>
+
+	<sect2 id="gwf-load">
+		<title>Load a Session</title>
+		<para>Loading a file is the reversed counterpart to saving it. Choose
+			<menuchoice> 
+	  		<guimenu>File</guimenu> 
+				<guimenuitem>Load...</guimenuitem> 
+			</menuchoice>
+			from the menubar or press
+			<keycombo>
+				<keycap>Ctrl</keycap>
+				<keycap>O</keycap>
+			</keycombo>
+			and select the filename in the file selector. &app; will now scan the
+			file for available sections. It then displays a small dialog where you
+			can select the label of the section to be loaded.</para>
+	</sect2>
+
+	<sect2 id="gwf-backup">
+		<title>Backup Files</title>
+		<para>Each time you start a fit &app; will try to make a backup of your
+			current parameter set. A new file will be created with the name of your
+			normal session file and an appended tilde ("~") character. In this file a
+			section with the label of your current session will be created where the
+			current state of &app; will be saved. The backup file will be deleted if
+			&app; is closed properly or a new gwf file is opened.</para>
+
+		<para>Please note: The backup function will only work
+			<emphasis>after</emphasis> you have created a gwf file by yourself.
+			Otherwise &app; cannot know where and under which name it should create a
+			backup file.</para>
+
+		<para>Should you now have the need for a disaster recovery you can load the
+			backup file as a normal &app; gwf file and continue your work. The first
+			thing you should do now is to save your work again with the correct
+			filename.</para>
+	</sect2>
+</sect1>
+
+<!-- ================ Work on the spectrum ================= -->
+<sect1 id="gwignerfit-work-spectrum">
+	<title>Work on the Spectrum</title>
+	<para>This section will teach you how to add resonances to your theory and
+		how to fit them effectively. However, nothing replaces personal experience.
+		You should just work with &app; to find out what works best for you.</para>
+
+	<sect2 id="gwf-res-list">
+		<title>The Resonance list</title>
+		<para>The first thing you need to know, is how the parameter area of the
+			main application window works. Typically it may look like
+			<xref linkend="res-list-fig" />.</para>
+
+		<figure id="res-list-fig"> 
+			<title>The resonance list and global parameters</title> 
+			<screenshot> 
+				<mediaobject> 
+					<imageobject><imagedata
+							fileref="figures/gwf_resonance_list.eps" scale="45" format="EPS"/> 
+					</imageobject>
+					<imageobject><imagedata
+							fileref="figures/gwf_resonance_list.png" format="PNG"/> 
+					</imageobject>
+					<textobject> 
+						<phrase>Shows the resonance list part of the main window.</phrase>
+					</textobject> 
+				</mediaobject> 
+			</screenshot> 
+		</figure>
+
+		<sect3 id="gwf-global-param">
+			<title>The Global parameters area</title>
+			<para>The entries of the global parameters area:</para>
+			<itemizedlist>
+				<listitem>
+					<para><guilabel>Phase</guilabel>: The global phase of the spectrum in
+						degree. For transmission data this value is kind of arbitrary since
+						it can be absorbed into the phase values of each resonance.</para>
+				</listitem>
+				<listitem>
+					<para><guilabel>Scale</guilabel>: The whole theory graph is multiplied
+						by this scaling factor. As you can see, it is inactive for
+						transmissions datasets.</para>
+				</listitem>
+				<listitem>
+					<para><guilabel>Tau [ns]</guilabel>: This parameter adds a phase to
+						the theory that increases linear in frequency. It may be
+						interpreted as the time (hence its units in nanoseconds) the signal
+						travels in the connecting cables. As this is a effect in
+						transmission measurements this value is inactive for reflection
+						datasets.</para>
+				</listitem>
+				<listitem>
+					<para><guilabel>Min [GHz]</guilabel>: The lower frequency boundary for
+						the frequency window in GHz.</para>
+				</listitem>
+				<listitem>
+					<para><guilabel>Max [GHz]</guilabel>: The upper frequency boundary for
+						the frequency window in GHz.</para>
+				</listitem>
+			</itemizedlist>
+
+			<para>Each value can be changed by yourself easily. Just change the value
+				of the corresponding entry-box by overwriting it with a new one. Press
+				<keycap>Enter</keycap> to accept the changes.</para>
+		</sect3>
+
+		<sect3 id="gwf-resonance-param">
+			<title>The Resonance data area:</title>
+			<para>This part of the main window shows a list of all resonances that
+				the theory takes into account. Each resonance is defined by four
+				parameters: its resonance frequency, the FWHM width, the amplitude and a
+				phase factor. The last column of the list shows the quality value for
+				the resonance obtained by dividing the resonance frequency through its
+				width.</para>
+
+			<para>You can click on one of the parameter column headers to sort the
+				list by the entries of this column.</para>
+
+			<para>The values of the parameters in the list can be changed in a rather
+				direct way as well. First, select the resonance whose parameter you
+				want to change. Then click once with the left mouse button on the value
+				you want to modify and the appropriate cell will change into an entry
+				field. You can now enter a new value. Press <keycap>Enter</keycap> to
+				accept the changes or <keycap>Esc</keycap> to discard your
+				changes.</para>
+		</sect3>
+
+		<sect3 id="gwf-checkboxes">
+			<title>Checkboxes behind parameters</title>
+			<para>Behind each global and checkbox parameter you will find a checkbox.
+				This checkbox is very important for the fitting procedure. All
+				parameters whose checkboxes are checked are free parameters to be
+				optimised by the fitting algorithm. Those parameters with an unchecked
+				box are considered static and will not be changed. This way you have
+				got a high degree of control on the fitting process which is very
+				important if you want to get good results. To change the state of a
+				checkbox just click on it with the left mouse button.</para>
+
+			<para>The checkboxes of the resonance list can be toggled by clicking on
+				the header above a column of resonances. This will cause all resonances
+				outside the frequency window to be unchecked. The checkboxes of the
+				resonances within will either all be checked or all be unchecked
+				depending on whether there are currently more than half of them checked
+				or unchecked. &app; will thus try to check or uncheck them the way that
+				would have been the most work for you if you would have done it by
+				hand. This may sound complicated now but it is really rather simple.
+				Just give it a try and see for yourself.</para>
+
+			<para>You can make a double click on a resonance row, too. This will have
+				the same effect on this row that a click on the header of a column
+				has for this column. This way one can quickly check or uncheck all
+				resonance parameters of one row.</para>
+		</sect3>
+
+		<sect3 id="gwf-res-popup">
+			<title>The Resonance data popup menu</title>
+
+			<para>If you click with the right mouse button somewhere on the resonance
+				list area a popup menu (<xref linkend="res-list-popup" />) will appear
+				allowing further manipulation of the resonance list.</para>
+			
+			<figure id="res-list-popup"> 
+				<title>The Resonance list popup menu</title> 
+				<screenshot> 
+					<mediaobject> 
+						<imageobject><imagedata
+								fileref="figures/gwf_popup.eps" scale="50" format="EPS"/> 
+						</imageobject>
+						<imageobject><imagedata
+								fileref="figures/gwf_popup.png" format="PNG"/> 
+						</imageobject>
+						<textobject> 
+							<phrase>Shows the resonance list popup menu.</phrase>
+						</textobject> 
+					</mediaobject> 
+				</screenshot> 
+			</figure>
+
+			<para>The popup menu allows you to perform the following
+				operations:</para>
+
+			<variablelist>
+				<varlistentry>
+					<term><guimenuitem>Check all</guimenuitem></term>
+					<listitem>
+						<para>Activates all checkboxes (all boxes are checked) of the
+							resonance list. Thus all parameters are now considered "free" by
+							the fitting algorithm.</para>
+					</listitem>
+				</varlistentry>
+				<varlistentry>
+					<term><guimenuitem>Uncheck all</guimenuitem></term>
+					<listitem>
+						<para>Deactivates all checkboxes (all boxes are cleared) of the
+							resonance list. Not a single resonance parameter would be changed
+							in the next fitting procedure.</para>
+					</listitem>
+				</varlistentry>
+				<varlistentry>
+					<term><guimenuitem>Fit this resonance</guimenuitem></term>
+					<listitem>
+						<para>This is some kind of a shortcut if you only want to optimise
+							the parameters of the currently selected resonance but don't want
+							to uncheck the checkboxes of all other resonance parameters.
+							Choosing this item will start a fitting process that considers
+							only those parameters to be free that are a) of the currently
+							selected resonance and b) whose checkboxs are checked. No global
+							parameters will be changed during the fit.</para>
+					</listitem>
+				</varlistentry>
+				<varlistentry>
+					<term><guimenuitem>Remove resonance</guimenuitem></term>
+					<listitem>
+						<para>Deletes the currently selected resonance from the resonance
+							list and thus from the theory graph. The shortcut
+							<keycap>Delete</keycap> may come in handy for this.</para>
+					</listitem>
+				</varlistentry>
+				<varlistentry>
+					<term><guimenuitem>Clear resonancelist</guimenuitem></term>
+					<listitem>
+						<para>Clears the entire resonancelist, that is all resonances are
+							removed. As this is a rather drastic step a confirmation dialog
+							will ask you to confirm this operation.
+						</para>
+					</listitem>
+				</varlistentry>
+				<varlistentry>
+					<term><guimenuitem>Add resonance by click</guimenuitem></term>
+					<listitem>
+						<para>This is the same as selecting
+							<menuchoice> 
+								<guimenu>Spectrum</guimenu> 
+								<guimenuitem>Add resonance by click</guimenuitem> 
+							</menuchoice>.
+						</para>
+					</listitem>
+				</varlistentry>
+				<varlistentry>
+					<term><guimenuitem>Add empty resonance</guimenuitem></term>
+					<listitem>
+						<para>This will add a resonance to the list whose parameters are
+							all set to zero. You can use this option if you want to add a
+							resonance whose parameter you already know. Just add an empty
+							resonance and adjust the parameters by hand as you wish.</para>
+					</listitem>
+				</varlistentry>
+			</variablelist>
+		</sect3>
+	</sect2>
+
+	<sect2 id="gwf-find-res">
+		<title>Find and Add Resonances</title>
+		<para>The first step to reproduce your spectrum by a good theoretical curve
+			is to add the resonances of the spectrum. You can either add resonances
+			by hand, which may be rather tedious for large spectra, or you can let
+			&app; try to find them for you, which is rather inaccurate as &app; is
+			very likely to miss some resonances. The best way is probably to first
+			use the resonance finder and to add the missed resonances by hand
+			afterwards.</para>
+
+		<para>The automatic resonance finder can be accessed via
+			<menuchoice> 
+				<guimenu>Spectrum</guimenu> 
+				<guimenuitem>Find isolated resonances</guimenuitem> 
+			</menuchoice>
+			or by its shortcut
+			<keycombo>
+				<keycap>Ctrl</keycap>
+				<keycap>R</keycap>
+			</keycombo>.
+			You will now have to select a threshold on the graph. &app; will then
+			consider everything as one resonance that comes from below the threshold,
+			rises above it and then goes below the threshold again. You can enhance
+			your results by applying the resonance finder several times with
+			different thresholds.</para>
+
+		<para>Do not wonder too much if the resonance finder aborts with the
+			message "Resonance finder stopped due to abnormal behaviour". This part
+			of the code sometimes goes "berserk" and this message means that the
+			finder has been aborted in order to prevent infinite loops. Sorry for the
+			inconvenience.</para>
+
+		<para>You can now add the resonances still missing by hand. To add a new
+			resonance at a certain frequency choose
+			<menuchoice> 
+				<guimenu>Spectrum</guimenu> 
+				<guimenuitem>Add resonance by click</guimenuitem> 
+			</menuchoice>
+			or by its shortcut
+			<keycombo>
+				<keycap>Ctrl</keycap>
+				<keycap>A</keycap>
+			</keycombo> 
+			(which you should really consider to remember, as you will need this
+			function quite often). Then click on the graph at the frequency where a
+			new resonance should be added. &app; will now try to find some reasonable
+			initial values for this resonance.</para>
+	</sect2>
+
+	<sect2 id="gwf-fit">
+		<title>Fit!</title>
+		<para>Before starting the actual fitting procedure here are some things you
+			should consider:</para>
+
+		<itemizedlist>
+			<listitem>
+				<para>You should have added all relevant resonances in the frequency
+					area you want to fit, of course.</para>
+			</listitem>
+			<listitem>
+				<para>Adjust the frequency window around the interesting area that all
+					resonances fit nicely into it but do not choose it overly large as
+					additional resonances in the dataset within the frequency window can
+					"irritate" the algorithm. Furthermore using too big frequency windows
+					will increase the time required for the fit unnecessarily.</para>
+			</listitem>
+			<listitem>
+				<para>Think about what parameters are to be made free and which should
+					be kept fixed. The global parameters should only be fitted some times
+					at the beginning of your work. Especially after changing the
+					frequency window so that some of your already fitted theoretical
+					resonances are outside of it, it is recommended to uncheck the boxes
+					behind the global parameters. Changing the global parameters will
+					affect all resonances but the fit algorithm is only aware of those
+					inside the frequency window.</para>
+
+				<para>For the parameters of the resonance list a rule of thumb could
+					be: <emphasis>Start from the right!</emphasis> That means that in a
+					first run you should only make the phase a free parameter as a fit of
+					the width will go grossly wrong if the resonance has a wrong phase.
+					The next run should fit the phase and the amplitude. After this you
+					could check the widths, too. Finally a last run should fit all
+					parameters at once.</para>
+
+				<para>The scenario just described may give you good results in many
+					cases but there is just no general rule. Go and experiment yourself
+					and get a feeling of how things work.</para>
+			</listitem>
+		</itemizedlist>
+			
+		<para>OK, now it's time to rock! Let's fit!</para>
+
+		<para>To start the fitting procedure choose
+			<menuchoice> 
+				<guimenu>Spectrum</guimenu> 
+				<guimenuitem>Fit spectrum</guimenuitem> 
+			</menuchoice>
+			or type the shortcut
+			<keycombo>
+				<keycap>Ctrl</keycap>
+				<keycap>F</keycap>
+			</keycombo>.
+			&app; will now fit the theory to the datapoints within your selected
+			frequency window by varying all parameters that you have selected to be
+			free.</para>
+
+		<para>During the fit you will see a status window (like the one shown in
+			<xref linkend="fit-win" />) which gives some information about the
+			current state of the fit.</para>
+		
+		<figure id="fit-win"> 
+			<title>The fit information window</title> 
+			<screenshot> 
+				<mediaobject> 
+					<imageobject><imagedata
+							fileref="figures/gwf_fit.eps" scale="50" format="EPS"/> 
+					</imageobject>
+					<imageobject><imagedata
+							fileref="figures/gwf_fit.png" format="PNG"/> 
+					</imageobject>
+					<textobject> 
+						<phrase>Shows the information window which appears during a fit.</phrase>
+					</textobject> 
+				</mediaobject> 
+			</screenshot> 
+		</figure>
+
+		<para>The content of the fit information window:</para>
+
+		<variablelist>
+			<varlistentry>
+				<term><guilabel>Frequency range</guilabel></term>
+				<listitem>
+					<para>Only datapoints of the main dataset whose frequencies are within
+						this frequency range are taken into account for this fit. The range
+						is identical to the frequency window you chose with the global Min
+						and Max parameters.
+					</para>
+				</listitem>
+			</varlistentry>
+			<varlistentry>
+				<term><guilabel>Number of datapoints</guilabel></term>
+				<listitem>
+					<para>The frequency range as given above translates into the number of
+						datapoints shown here. More points result in a longer computation.
+					</para>
+				</listitem>
+			</varlistentry>
+			<varlistentry>
+				<term><guilabel>Free parameters</guilabel></term>
+				<listitem>
+					<para>Every variable that &app; is allowed to change during a fit is a
+						free parameter. It is equal to the number of checked boxes in the
+						parameter area of the main window (an exception to this is if you
+						used <guimenuitem>Fit selected resonance</guimenuitem>).
+					</para>
+				</listitem>
+			</varlistentry>
+			<varlistentry>
+				<term><guilabel>Current rms error</guilabel></term>
+				<listitem>
+					<para>To give a measure of the quality of the fit, &app; calculates the
+						root mean square error after each iteration. It is the goal of the
+						fit to minimize this value.
+					</para>
+				</listitem>
+			</varlistentry>
+			<varlistentry>
+				<term><guilabel>Last iteration</guilabel></term>
+				<listitem>
+					<para> The fit algorithm of &app; uses the so called Marquard-Levenberg
+						algorithm. It is an iterative method that tries to find the minimum
+						of the rms error function. It implements varying step sizes in each
+						iteration. If <guilabel>Last iteration</guilabel> states "success"
+						the rms value could be reduced in the last iteration, otherwise
+						"failure" is displayed. If the iteration has been successful it is
+						accepted and the step size is reduced to allow for a finer search
+						grid. Has the iteration "failed" its results are discarded and the
+						step size is increased in order to look for a minimum that may be
+						farther away in the parameter space.
+					</para>
+				</listitem>
+			</varlistentry>
+			<varlistentry>
+				<term><guilabel>Progress bar</guilabel></term>
+				<listitem>
+					<para>It gives a visual representation of the progress of the fit. By
+						default &app; uses 50 iterations for each fit. The text in the
+						progress bar informs you on the number of the current iteration and
+						how many iterations &app; will try to calculate.
+					</para>
+				</listitem>
+			</varlistentry>
+			<varlistentry>
+				<term><guibutton>Take current values</guibutton></term>
+				<listitem>
+					<para>Should the fit take too long to complete or you just want to see
+						the results right now you can stop the fit with this button. &app;
+						will then take the parameter set of the last iteration as the new
+						dataset.
+					</para>
+				</listitem>
+			</varlistentry>
+			<varlistentry>
+				<term><guibutton>Cancel</guibutton></term>
+				<listitem>
+					<para>In case you really want to abort the fit without changing your
+						parameter set press this <guibutton>Cancel</guibutton> button. The
+						fit will be stopped at once and no changes to your parameters will be
+						made.
+					</para>
+				</listitem>
+			</varlistentry>
+		</variablelist>
+
+		<para>One final note about fits: The author of &app; has to admit that &app;
+			is not without errors and bugs. This is especially apparent if you use the
+			fit function. If the program crashes during a fit do not despair but seek
+			help in the automatic backup function. For further information please read
+			<xref linkend="gwf-backup" />.</para>
+
+	</sect2>
+
+	<sect2 id="gwf-fit-check">
+		<title>Check your Fit results</title>
+		<para>After a fitting cycle has been successfully finished, that is either
+			the maximal number of iterations has been reached or <guibutton>Take
+			current values</guibutton> has been used &app; applies some rough sanity
+			checks on the new parameter set. Should a parameter be outside its
+			sensible range you will be asked about what should be done by a
+			dialog.</para>
+
+		<figure id="check-res-win"> 
+			<title>Inspect resonance parameter dialog</title> 
+			<screenshot> 
+				<mediaobject> 
+					<imageobject><imagedata
+							fileref="figures/gwf_check_res.eps" scale="50" format="EPS"/> 
+					</imageobject>
+					<imageobject><imagedata
+							fileref="figures/gwf_check_res.png" format="PNG"/> 
+					</imageobject>
+					<textobject> 
+						<phrase>Shows the dialog that asks the user to check the parameters of a resonance.</phrase>
+					</textobject> 
+				</mediaobject> 
+			</screenshot> 
+		</figure>
+
+		<para>The content of the inspect resonance window (see 
+			<xref linkend="check-res-win" />):</para>
+
+		<variablelist>
+			<varlistentry>
+				<term>Parameters of resonance</term>
+				<listitem>
+					<para>The frequency, width, amplitude and phase of the resonance that
+						should be reviewed is shown. All values that &app; thinks are
+						unreasonable are marked in red.
+					</para>
+				</listitem>
+			</varlistentry>
+			<varlistentry>
+				<term><guilabel>Take old parameters for this resonance</guilabel></term>
+				<listitem>
+					<para>The parameters of this resonance will not be changed. Instead,
+						the four old parameters will still be used.
+					</para>
+				</listitem>
+			</varlistentry>
+			<varlistentry>
+				<term><guilabel>Use those parameters anyway</guilabel></term>
+				<listitem>
+					<para>If you think those parameters are OK, use this option. &app;
+						will then use those values anyway.
+					</para>
+				</listitem>
+			</varlistentry>
+			<varlistentry>
+				<term><guilabel>Skip entire fit, revert to old parameter set</guilabel></term>
+				<listitem>
+					<para>No parameters will be changed (not even any global parameters).
+						This is as if you would have aborted the whole fit before or as if
+						you would not have fitted anything in the first place.
+					</para>
+				</listitem>
+			</varlistentry>
+			<varlistentry>
+				<term><guibutton>OK</guibutton></term>
+				<listitem>
+					<para>You have selected one of the three options above and want to
+						execute it.
+					</para>
+				</listitem>
+			</varlistentry>
+		</variablelist>
+
+		<para>To make it easier for you to decide what to do, the main window will
+			show you the corresponding resonance with its old parameters in the graph
+			view area and the resonance list.</para>
+
+		<para>If you are, after the whole fit procedure is finished, not satisfied
+			with the result of your fit you can still revert to the parameter set you
+			had before the fit via
+			<menuchoice> 
+				<guimenu>Spectrum</guimenu> 
+				<guimenuitem>Undo last fit</guimenuitem> 
+			</menuchoice>
+			or by typing the corresponding shortcut
+			<keycombo>
+				<keycap>Ctrl</keycap>
+				<keycap>Z</keycap>
+			</keycombo>.
+		</para>
+	</sect2>
+
+	<sect2 id="gwf-fit-err">
+		<title>Accuracy of fit parameters</title>
+		<para>What good is a fit result if you don't know the uncertainties of the
+			final parameterset? The fit algorithm calculates a so called "covariance
+			matrix" that can be used to gain information about the parameter
+			uncertainties. &app; gives you the possibility to have a look at those
+			mathematically calculated error estimates. If the errors of the original
+			dataset (the spectrum data from the network analyzer) have a Gaussian
+			distribution, the calculated error estimates denote the standard
+			deviation.</para>
+
+		<para>This standard deviation information is only available after a fit
+			procedure completed successfully <emphasis>by itself</emphasis>, that
+			means there must not have been a numerical error and the fit must not
+			have been stopped by choosing <guibutton>Take current values</guibutton>
+			or <guibutton>Cancel</guibutton>. In fact, &app; is very picky about its
+			error estimates. Any changes in the parameter area will invalidate them
+			and a new fit run is required to update them.</para>
+
+		<para>The actual error estimates can be seen and used for further analysis
+			through the export <guimenuitem>Resonance data...</guimenuitem> menu. See
+			<xref linkend="gwf-export" /> for further explanations.</para>
+	</sect2>
+
+	<sect2 id="gwf-calibrate">
+		<title>Spectrum calibration</title>
+		<para>Doing calibrated measurements with the HP8510C network analyzer is an
+			altogether unpleasant task. To make the process simpler &app; can perform
+			an off-line calibration of reflection and transmission data. The
+			mathematics involved with the calibration are described in the PhD thesis
+			by <ulink url="http://archiv.ub.uni-marburg.de/diss/z2002/0043/">
+			<citetitle>Michael Barth (Marburg, 2001)</citetitle></ulink>, appendix
+			A.2.</para>
+			
+		<para>For the calibration &app; needs additional data which is obtained
+			by measurements of certain standards. This data has to be available for
+			each datapoint of your uncalibrated raw data. For reflection spectra you
+			need calibration measurements with the <emphasis>open</emphasis>,
+			<emphasis>close</emphasis> and <emphasis>load</emphasis> standard
+			attached to the end of your coaxial cable. Transmission calibrations need
+			a so called <emphasis>thru</emphasis> measurement (the two coaxial cables
+			coming from and leading to the network analyzer are connected directly
+			with each other) and an optional <emphasis>isolation</emphasis>
+			measurement which means that both ports have to be isolated to determine
+			the crosstalk.</para>
+
+		<figure id="check-cal-win"> 
+			<title>Calibration dialog</title> 
+			<screenshot> 
+				<mediaobject> 
+					<imageobject><imagedata
+							fileref="figures/gwf_calib.eps" scale="50" format="EPS"/> 
+					</imageobject>
+					<imageobject><imagedata
+							fileref="figures/gwf_calib.png" format="PNG"/> 
+					</imageobject>
+					<textobject> 
+						<phrase>Shows the calibration dialog.</phrase>
+					</textobject> 
+				</mediaobject> 
+			</screenshot> 
+		</figure>
+
+		<para>To perform the calibration open the calibration window via
+			<menuchoice> 
+				<guimenu>Spectrum</guimenu> 
+				<guimenuitem>Calibrate spectrum...</guimenuitem> 
+			</menuchoice>.
+			This dialog is shown in <xref linkend="check-cal-win" />.
+			In this window all the required datafiles must be specified, only the
+			isolation data for transmission calibration is optional. Pressing one of
+			the <guibutton>Select</guibutton> buttons will give you a file selector for
+			the corresponding datafile. The calibrated dataset will be saved into the
+			file given with the <guilabel>Output data file</guilabel> entry. To start
+			the calibration press the <guibutton>OK</guibutton> button. The
+			progressbar informs you about the progress of the calibration. The
+			calibrated data will be displayed in the main graph window after the
+			calibration has finished, either as a new main dataset or as an overlay
+			depending on the number of graphs already being displayed.</para>
+
+		<para>The calibration algorithm needs some knowledge of the standards being
+			used. Currently only the HP 85056A 2.4&nbsp;mm calibration kit is
+			supported by &app;.</para>
+	</sect2>
+</sect1>
+
+<!-- ============= Work in time domain ======================= -->
+<sect1 id="gwignerfit-fft">
+	<title>Working in the Time Domain</title>
+
+	<para>Most measurements on microwave cavities are done in the frequency
+		domain. In the experiment the response of the system is measured for a
+		large range of frequencies. This tells you how the system reacts to a
+		certain frequency but not, what the time development of the energy stored
+		in the cavity looks like. This would be the time domain. Luckily, one can
+		reconstruct this information from the transmission spectrum.</para>
+
+	<para>The interpretation of the time domain is rather simple: Imagine that
+		you send a very short pulse of energy into the system at time t=0. The time
+		domain graph will then tell you after which time how much energy comes out
+		of the system again. The sharpness of your input pulse is defined by the
+		frequency range you measured. The broader it has been, the sharper the
+		pulse gets until it would eventually get a singular delta-peak if you would
+		know the response of the system for all frequencies.</para>
+
+	<para>The mathematical method to switch from the frequency domain into the
+		time domain is the Fourier transformation. &app; uses the Fast Fourier
+		Transform (FFT) to perform this conversion. This is the reason why the
+		window with the time domain information is just called the "FFT window" in
+		&app;.</para>
+
+	<para>To open the FFT window choose
+		<menuchoice> 
+			<guimenu>Analyze</guimenu> 
+			<guimenuitem>Fourier transform all</guimenuitem> 
+		</menuchoice>
+		from the menubar of the main window or type
+		<keycombo>
+			<keycap>Ctrl</keycap>
+			<keycap>T</keycap>
+		</keycombo>.
+		A new window will appear with the Fourier transformed graphs of the main
+		dataset, the theoretical curve and &ndash; in case the are overlayed
+		datasets &ndash; of the overlays as well. You can see an example of this in
+		<xref linkend="fft-win" />.
+		If you choose
+		<menuchoice> 
+			<guimenu>Analyze</guimenu> 
+			<guimenuitem>Fourier transform frqwin</guimenuitem> 
+		</menuchoice>
+		(<keycombo>
+			<keycap>Ctrl</keycap>
+			<keycap>Shift</keycap>
+			<keycap>T</keycap>
+		</keycombo>)
+		you will not get the Fourier transformed graphs of the complete datasets
+		but only of those parts that are within the frequency window defined by the
+		Min- and Max-frequency values.
+	</para>
+
+	<figure id="fft-win"> 
+		<title>The FFT Window</title> 
+		<screenshot> 
+			<mediaobject> 
+				<imageobject><imagedata
+						fileref="figures/gwf_fft.eps" scale="50" format="EPS"/> 
+				</imageobject>
+				<imageobject><imagedata
+						fileref="figures/gwf_fft.png" format="PNG"/> 
+				</imageobject>
+				<textobject> 
+					<phrase>Shows the FFT window with the Fourier transformed graph.</phrase>
+				</textobject> 
+			</mediaobject> 
+		</screenshot> 
+	</figure>
+
+	<sect2 id="gwf-fft-menubar">
+		<title>The Menubar of the FFT Window</title>
+
+		<para>This section will explain the different entries of the FFT window's
+			menubar. You should already be familiar with most of them as they are
+			very similar to those of &app;'s main window.</para>
+
+		<sect3 id="gwf-fft-file-menu">
+			<title>The FFT <guimenu>File</guimenu> menu</title>
+
+			<para>The <guimenu>File</guimenu> menu contains the following
+			entries:</para>
+
+			<variablelist>
+				<varlistentry>
+					<term><guimenuitem>Export</guimenuitem></term>
+					<listitem>
+						<para>You can export the Fourier transformed datasets of the main
+							graph and the theory graph here. Furthermore, the whole graph can
+							be exported as a postscript file, too.
+						</para>
+
+						<para>This menu has the following submenus:</para>
+
+						<itemizedlist> 
+							<listitem> 
+								<para><guimenuitem>Measurement data...</guimenuitem>:
+									Exports the complex data of the Fourier transformed main
+									dataset into a file. You can import the exported data through
+									the normal import function of &app;. The application will
+									detect that the file contains time domain information and
+									give you the possibility to convert it back into the
+									frequency domain.
+								</para>
+							</listitem> 
+							<listitem> 
+								<para><guimenuitem>Theory data...</guimenuitem>:
+									Exports the complex data of the Fourier transformed
+									theoretical curve into a file. This file can then be
+									re-imported, too.
+								</para>
+							</listitem> 
+							<listitem> 
+								<para><guimenuitem>Graph as postscript...</guimenuitem>:
+									Saves the current view of the time domain graph as a
+									postscript file. For a description of the export dialog see
+									<xref linkend="gwf-export-ps" />.
+								</para>
+							</listitem> 
+						</itemizedlist>
+
+					</listitem>
+				</varlistentry>
+				<varlistentry>
+					<term><guimenuitem>Close window</guimenuitem></term>
+					<listitem>
+						<para>Closes the FFT window, &app; will keep on running.</para>
+					</listitem>
+				</varlistentry>
+			</variablelist>
+		</sect3>
+
+		<sect3 id="gwf-fft-analyze-menu">
+			<title>The FFT <guimenu>Analyze</guimenu> menu</title>
+
+			<para>The <guimenu>Analyze</guimenu> menu contains only one entry
+			right now:</para>
+
+			<variablelist>
+				<varlistentry>
+					<term><guimenuitem>Measure distance</guimenuitem></term>
+					<listitem>
+						<para>You can measure the time or length distance (depending on
+							your current abscissa scaling) between two points of the FFT
+							graph. The usage is the same as for the main graph (see 
+							<xref linkend="gwf-analyze-menu" />).
+						</para>
+					</listitem>
+				</varlistentry>
+			</variablelist>
+		</sect3>
+
+		<sect3 id="gwf-fft-view-menu">
+			<title>The FFT <guimenu>View</guimenu> menu</title>
+
+			<para>The <guimenu>View</guimenu> menu contains the following
+			entries:</para>
+
+			<variablelist>
+				<varlistentry>
+					<term><guimenuitem>Absolute value</guimenuitem>, 
+					      <guimenuitem>Real part</guimenuitem>, 
+								<guimenuitem>Imaginary part</guimenuitem>, 
+								<guimenuitem>Phase</guimenuitem> and
+								<guimenuitem>Log power in dB</guimenuitem>
+					</term>
+					<listitem>
+						<para>Choose one of these view types to select which part of the
+							Fourier transformed data should be shown or how it should be
+							presented. The different types of views are identical the ones
+							for the main graph (see <xref linkend="gwf-view-menu" />).</para>
+					</listitem>
+				</varlistentry>
+				<varlistentry>
+					<term><guimenuitem>Abscissa in ns</guimenuitem> and
+					      <guimenuitem>Abscissa in m</guimenuitem>
+					</term>
+					<listitem>
+						<para>Normally the unit of the abscissa of the time domain graph is
+							in nanoseconds (ns). However, by multiplying the values of the
+							axis by the speed of light one can interpret it as a length in
+							meter (m), that is the distance light would travel in vacuum
+							after the given time. Use those two options to switch between the
+							two possible scalings.</para>
+					</listitem>
+				</varlistentry>
+				<varlistentry>
+					<term><guimenuitem>Rectangular window</guimenuitem>,
+					      <guimenuitem>Hamming window</guimenuitem> and
+					      <guimenuitem>Blackman window</guimenuitem>
+					</term>
+					<listitem>
+						<para>Taking the Fourier transform of a finite dataset will always
+							produce artifacts due to missing information. Mathematically this
+							can be described as a convulsion of the complete (infinite)
+							dataset with a certain windowing function. For the standard FFT
+							this window is just a rectangular window selecting the dataset
+							that has actually been measured.
+						</para>
+						<para>The deep slopes at the sides of such a rectangular window
+							produce undesired side lobes. This effect can be reduced by using
+							windowing functions with smoother slopes. They can reduce the
+							side lobes (and thus background noise) but, as a tradeoff, will
+							broaden the main peak, too.
+						</para>
+						<para>&app; gives you the possibility to choose between three such
+							windowing functions. It is recommended to try each of them, so
+							that you can decide which is best suited for your
+							purposes.</para>
+					</listitem>
+				</varlistentry>
+			</variablelist>
+
+		</sect3>
+	</sect2>
+
+	<sect2 id="gwf-fft-graph">
+		<title>The Graph of the FFT Window</title>
+		
+		<para>By and large the graph of the FFT window looks and behaves the same
+			way as the main graph. Of course, you do not see the original data but
+			the result of its Fourier transformation but that is about all the
+			changes there are.</para>
+
+		<para>In particular the following features are similar (see 
+			<xref linkend="gwf-graph-view-area" />, too):</para>
+
+		<itemizedlist>
+			<listitem>
+				<para>Colours: The colours of the different datasets are the same: data
+				is in red, theory in blue, overlays in light grey. Currently selected
+				overlays are drawn in a darker grey.</para>
+			</listitem>
+			<listitem>
+				<para>Navigation: You can zoom and jump through the graph just the way
+					you are used to it by the main graph. All mouse and key bindings have
+					stayed the same.</para>
+			</listitem>
+			<listitem>
+				<para>Markers: Markers can still be set by clicking somewhere on the
+					graph with the left mouse button.</para>
+			</listitem>
+		</itemizedlist>
+		
+		<para>You can keep the FFT window open while working in your main window.
+			All changes will be applied to the Fourier transformed graphs at once so
+			that the display of the FFT window is always up to date.</para>
+		
+	</sect2>
+</sect1>
+
+<!-- ============= Spectral statistics ======================= -->
+<sect1 id="gwignerfit-spectral">
+	<title>Spectral statistics</title>
+	<para>This section will explain how to examine statistical properties of a
+		given set of resonance frequencies using &app;. Those statistics are called
+		<emphasis>spectral statistics</emphasis> because the resonances represent
+		the spectrum of the Laplace operator that describes the electrical field
+		inside the cavity.</para>
+
+	<para>&app; can evaluate the following statistical measures (refer to 
+		<xref linkend="gwf-spectral-view-menu" /> to learn how to choose the
+		statistic to be shown):</para>
+
+	<itemizedlist> 
+		<listitem> 
+			<para>Staircase: This is the most fundamental level statistic. The number
+				of levels up to a certain frequency is given as a function of this
+				frequency. The Weyl formula says that the level density for a two
+				dimensional system should increase like a polynomial of second
+				order. &app; calculates the best fit polynomial, adds it to the
+				graph and displays the corresponding Weyl coefficients.</para>
+		</listitem>
+		<listitem>
+			<para>Fluctuations: If you substract the Weyl curve from the staircase
+				function you will get a function fluctuating around zero. Missing
+				levels will become visible as jumps in this graph.</para>
+		</listitem>
+		<listitem>
+			<para>NND: This is the nearest neighbour distribution which is a
+				statistic of the spacings between adjacent resonance frequencies (that
+				have been unfolded to a mean spacing of unity). The spacings are binned
+				and displayed as a histogram. Random matrix theory provides predictions
+				for Poisson, GOE and GUE like spectra, those can be displayed,
+				too.</para>
+		</listitem>
+		<listitem>
+			<para>Integrated NND: As the name already suggests, this is the
+				integrated version of the NND. Think of it as a information of how many
+				spacings are smaller than the value given on the abscissa. The
+				integrated random matrix predictions can again be included.</para>
+		</listitem>
+		<listitem>
+			<para>Sigma 2: This is one possible measure for correlations on larger
+				scales. It expresses the variance of the number of levels (the
+				ordinate) in intervals of a certain length (the abscissa). This is a
+				rather complex measure and may take some time to calculate depending on
+				the speed of your computer and the number of resonances in your
+				dataset. Poisson, GOE and GUE graphs are available.</para>
+		</listitem>
+		<listitem>
+			<para>Delta 3: The statistical test (also known as Dyson-Metha
+				statistics) measures the long-range correlations, the rigidity of the
+				graph, and thus provides similar information as the Sigma 2 statistics.
+				The idea behind Delta 3 is to approximate the unfolded staircase
+				function (which should be a straight line) by segments of straight
+				lines of a given length (again the abscissa). The average root mean
+				square error of this approximation is the Delta 3 value. A Sigma 2
+				value can be converted into the Delta 3 measure with a simple integral.
+				The theoretical predictions are obtained by numerically integrating the
+				Sigma 2 predictions.</para>
+		</listitem>
+		<listitem>
+			<para>Length spectrum: This is the Fourier-transformed spectrum of the
+				eigenvalue density (where the trivial Weyl contribution has already
+				been substracted). Every peak in this spectrum corresponds according to
+				Gutzwiller's trace formula to a classical periodic orbit. The abscissa
+				gives the length of the orbit in meters.</para>
+		</listitem>
+	</itemizedlist>
+
+	<sect2 id="gwf-spectral-usage">
+		<title>How to use the spectral statistics window</title>
+		<para>You will need to add at least four resonances to your resonance list
+			(see <xref linkend="gwf-find-res" />) before you can use the spectral
+			statistics module. To activate this function and to open the spectral
+			statistics window choose
+			<menuchoice> 
+				<guimenu>Analyze</guimenu> 
+				<guimenuitem>Spectral statistics</guimenuitem> 
+			</menuchoice>
+			from the menubar of the main window or type
+			<keycombo>
+				<keycap>Ctrl</keycap>
+				<keycap>C</keycap>
+			</keycombo>.
+			<figure id="spectral-win"> 
+				<title>The spectral statistics window</title> 
+				<screenshot> 
+					<mediaobject> 
+						<imageobject><imagedata
+								fileref="figures/gwf_spectral.eps" scale="50" format="EPS"/> 
+						</imageobject>
+						<imageobject><imagedata
+								fileref="figures/gwf_spectral.png" format="PNG"/> 
+						</imageobject>
+						<textobject> 
+							<phrase>Shows the spectral statistics window with the default view,
+								the staircase function.</phrase>
+						</textobject> 
+					</mediaobject> 
+				</screenshot> 
+			</figure>
+			Up comes a new window which should look similar to <xref
+			linkend="spectral-win" />. The red graph is the staircase function of your
+			dataset and the blue one is the fitted Weyl function. At the bottom of the
+			window there are three text-entries that display the current coefficients
+			of the Weyl function: The area, the perimeter and a constant offset. The
+			spinbutton labeled <guilabel># 1st res</guilabel> allows you to specify
+			the level number of the resonance with the lowest frequency. If the first
+			frequency	of your considered resonances belongs to  the ground state of
+			your system this entry should display "1". If the lowest frequency
+			represents the first excited state you should set this to "2", and so on.
+			You can change the value of each entry be entering a new number and
+			pressing <keycap>Enter</keycap> or you can use the up and down arrows of
+			the spinbutton. To get back to a best-fit Weyl function press the
+			<guibutton>Fit Weyl</guibutton> button.
+		</para>
+		
+		<figure id="spectral-bottom"> 
+			<title>The alternate bottom of the spectral statistics window</title> 
+			<screenshot> 
+				<mediaobject> 
+					<imageobject><imagedata
+							fileref="figures/gwf_bottom.eps" scale="50" format="EPS"/> 
+					</imageobject>
+					<imageobject><imagedata
+							fileref="figures/gwf_bottom.png" format="PNG"/> 
+					</imageobject>
+					<textobject> 
+						<phrase>If the statistics type is not set to "Staircase" or
+							"Fluctuations" the bottom of the spectral statistics window will
+							look like this.
+						</phrase>
+					</textobject> 
+				</mediaobject> 
+			</screenshot> 
+		</figure>
+
+		<para>The entries described in the last paragraph are only available, if the
+			graph type is set to "Staircase" or "Fluctuations". The bottom of the
+			spectral statistics window will change if one of the other possible
+			statistics is selected (see <xref linkend="spectral-bottom" />). The
+			leftmost entry shows the <guilabel>Number of bins</guilabel> for the NND
+			histogram, it is disabled for the other statistics. You can choose whether
+			the NND and the Integrated NND graphs are to be normalized to one with the
+			<guilabel>normalize</guilabel> checkbox. If you disable it, the ordinate
+			will display the total number of resonances in each bin or up to a certain
+			frequency.
+		</para>
+
+		<para>There are predictions for most of the statistical measures. &app; can
+			overlay them into the graph so that they will provide a means for
+			statistical tests. You can select which predictions are to be included with
+			the checkboxes behind the label <guilabel>Include theory predictions
+			for</guilabel>. The colours of the checkboxes are used in the graph for
+			the corresponding plot.
+		</para>
+
+		<para>&app; keeps the graphs of the spectral statistics window always up to
+			date. This means that every change to your resonance list or the number
+			of resonances to be taken into account have an immediate effect on the
+			statistics graph. This is especially useful in combination with the
+			"Fluctuations" graph as you can see online where a resonance may be
+			missing in your resonance list.
+		</para>
+	</sect2>
+
+	<sect2 id="gwf-spectral-menubar">
+		<title>The Menubar of the Spectral Statistics Window</title>
+		<para>This section will explain the different entries of the menubar of the
+			spectral statistics window.</para>
+
+		<sect3 id="gwf-spectral-file-menu">
+			<title>The spectral statistics <guimenu>File</guimenu> menu</title>
+
+			<para>The <guimenu>File</guimenu> menu contains the following
+			entries:</para>
+
+			<variablelist>
+				<varlistentry>
+					<term><guimenuitem>Export</guimenuitem></term>
+					<listitem>
+						<para>The main task of the spectral statistics module is to
+							calculate several statistical measures for your frequency
+							dataset. You can export the datapoints of the resulting graph
+							here or you can create a postscript of the whole graph.
+						</para>
+
+						<para>This menu has the following submenus:</para>
+
+						<itemizedlist> 
+							<listitem> 
+								<para><guimenuitem>Statistical data...</guimenuitem>:
+									This exports the datapoints (that is the red curve in the
+									graph view) of the currently displayed statistic into a file.
+									&app; will add a descriptive header to the file that explains
+									what statistic has been used and includes the crucial
+									parameters such as Weyl coefficients, number of resonances
+									and frequency range.
+								</para>
+							</listitem> 
+							<listitem> 
+								<para><guimenuitem>Graph as postscript...</guimenuitem>:
+									Saves the current view of the statistics graph as a
+									postscript file. For a description of the export dialog see
+									<xref linkend="gwf-export-ps" /> (the only difference is that
+									you cannot include overlays here, as the statistics module
+									does not know such a thing).
+								</para>
+							</listitem> 
+						</itemizedlist>
+					</listitem>
+				</varlistentry>
+				<varlistentry>
+					<term><guimenuitem>Close window</guimenuitem></term>
+					<listitem>
+						<para>Closes the spectral statistics window, &app; will keep on
+							running.
+						</para>
+					</listitem>
+				</varlistentry>
+			</variablelist>
+		</sect3>
+		
+		<sect3 id="gwf-spectral-selection-menu">
+			<title>The spectral statistics <guimenu>Selection</guimenu> menu</title>
+
+			<para>The <guimenu>Selection</guimenu> menu allows you to specify what
+				resonances are to be taken into account for the statistical analysis.
+				It contains the following entries:</para>
+			
+			<variablelist>
+				<varlistentry>
+					<term><guimenuitem>All resonances</guimenuitem></term>
+					<listitem>
+						<para>The resonance frequency of each resonance in the main
+							resonance list are used for the statistical analysis.
+						</para>
+					</listitem>
+				</varlistentry>
+				<varlistentry>
+					<term><guimenuitem>Windowed resonances</guimenuitem></term>
+					<listitem>
+						<para>All resonances whose frequencies are within the selected Min-
+							and Max-frequency window are included in the analysis.
+						</para>
+					</listitem>
+				</varlistentry>
+				<varlistentry>
+					<term><guimenuitem>Checked resonances</guimenuitem></term>
+					<listitem>
+						<para>Only those resonance frequencies whose checkboxes are checked
+							(that is, they are considered as free parameters for a fit) are
+							to be taken into account.
+						</para>
+					</listitem>
+				</varlistentry>
+			</variablelist>
+		</sect3>
+		
+		<sect3 id="gwf-spectral-view-menu">
+			<title>The spectral statistics <guimenu>View</guimenu> menu</title>
+
+			<para>The <guimenu>View</guimenu> has two tasks. You can change the
+				appearance of the graph (logarithmic or normal scale) and the type of
+				spectral analysis that should be performed.</para>
+
+			<variablelist>
+				<varlistentry>
+					<term><guimenuitem>Normal scale</guimenuitem></term>
+					<listitem>
+						<para>Everything on the statistics graph will be displayed in
+							normal scale.
+						</para>
+					</listitem>
+				</varlistentry>
+				<varlistentry>
+					<term><guimenuitem>Logarithmic scale</guimenuitem></term>
+					<listitem>
+						<para>This option will display cause the graph to be in logarithmic
+							scale which is similar to the dB scale of the main graph.
+							However, the absolute values are <emphasis>not</emphasis> squared
+							before taking the logarithm. This means that there is a factor of
+							two with respect of the "normal" dB scale.
+						</para>
+					</listitem>
+				</varlistentry>
+				<varlistentry>
+					<term><guimenuitem>Staircase</guimenuitem>,
+						    <guimenuitem>Fluctuations</guimenuitem>,
+								<guimenuitem>NND</guimenuitem>,
+								<guimenuitem>Integrated NND</guimenuitem>,
+								<guimenuitem>Sigma 2</guimenuitem>,
+								<guimenuitem>Delta 3</guimenuitem> and
+								<guimenuitem>Length spectrum</guimenuitem>
+					</term>
+					<listitem>
+						<para>&app; will calculate and display the selected spectral
+							measure. See the beginning of <xref linkend="gwignerfit-spectral" />
+							for an explanation of the different statistical measures.
+						</para>
+					</listitem>
+				</varlistentry>
+			</variablelist>
+		</sect3>
+
+	</sect2>
+</sect1>
+
+<!-- ============= Measure data via VNA ====================== -->
+<sect1 id="gwignerfit-vna">
+	<title>Measure Data directly from the Network Analyzer</title>
+	<para>Before you can start to analyze your data you would probably like to
+		measure it first. &app; can help you in doing such a measurement. This
+		section will describe what hard- and software is required and how to use
+		&app;'s measurement dialog.
+	</para>
+
+	<sect2>
+		<title>Required hard- and software</title>
+		<para>&app; is designed to communicate with a HP8510C vectorial network
+			analyzer (VNA). The VNA understands a special set of commands that allow
+			a computer program to "remote control" the device. As each VNA will
+			probably have its own language you will need a compatible device from the
+			HP8510 series.</para>
+
+		<para>The bus system used to communicate with the HP8510 is called IEEE
+			488. This is an industrial standard which allows a large variety of
+			devices to talk to each other. There exist IEEE 488 adapter cards for
+			PCs. Those cards have their own set of commands and driver libraries,
+			too. &app; is again designed to work with a special kind of adapter card,
+			namely those produced by Keithly.</para>
+
+		<para>&app; does not access the IEEE 488 adapter cards directly. It rather
+			sends out commands via a normal TCP/IP network to a special proxy
+			program, <application>Ieee488Proxy</application>, which has been written
+			by the same author as &app;. This proxy has to run on a computer with the
+			Microsoft Windows operating system. The computer needs on the one hand access the to
+			TCP/IP network and on the other hand a built in IEEE 488 adapter
+			card. This card needs to be connected with the VNA, of course.</para>
+
+		<para>To summarize the method of communication between the &app;
+			application and a HP8510 compatible VNA: &app; sends a request over a
+			normal TCP/IP network to a computer that has
+			<application>Ieee488Proxy</application> running. This proxy will convert
+			the request into the IEEE 488 protocol and send it to the VNA. The reply
+			from the VNA will be received by the proxy and sent back to &app; over
+			the network. This way the place of data acquisition and data recording do
+			not need be the same and you are free to run &app; whereever access to
+			the proxy program is possible.</para>
+	</sect2>
+
+	<sect2>
+		<title>The process of measuring</title>
+		<para>The first step to make a measurement is to open the "Measure data
+			from VNA" dialog. This can be done by choosing
+			<menuchoice> 
+				<guimenu>File</guimenu> 
+				<guimenuitem>Import</guimenuitem> 
+				<guimenuitem>Measure data...</guimenuitem>
+			</menuchoice>
+			from the menubar of the main window or by typing the shortcut
+			<keycombo>
+				<keycap>Ctrl</keycap>
+				<keycap>G</keycap>
+			</keycombo>.
+			The dialog should look like the one shown in <xref linkend="vna-win" />.
+			It is divided into four logical groups that will be explained now.
+		</para>
+
+		<figure id="vna-win"> 
+			<title>The "Measure data from VNA" dialog</title> 
+			<screenshot> 
+				<mediaobject> 
+					<imageobject><imagedata
+							fileref="figures/gwf_vna_window.eps" scale="50" format="EPS"/> 
+					</imageobject>
+					<imageobject><imagedata
+							fileref="figures/gwf_vna_window.png" format="PNG"/> 
+					</imageobject>
+					<textobject> 
+						<phrase>Shows the dialog to measure data through the network
+							analyzer.</phrase>
+					</textobject> 
+				</mediaobject> 
+			</screenshot> 
+		</figure>
+
+		<variablelist>
+			<varlistentry>
+				<term><guilabel>I/O-System</guilabel></term>
+				<listitem>
+					<para>This is short for "Input/Output System". Here you can define
+						how &app; can reach the proxy computer and how the measured data
+						should be saved. The <guilabel>Ieee488Proxy host</guilabel> entry
+						holds the hostname or IP of the computer where the
+						<application>Ieee488Proxy</application> program is running. Your
+						computer must be able to contact the proxy computer with this
+						address.
+					</para>
+					<para>The place and name of the generated datafile are specified with
+						the <guilabel>Output path</guilabel> and <guilabel>Output
+						filename</guilabel> entries. The first one contains just the path
+						information and may be empty if the datafile should be created in
+						the directory where you started &app;. The filename entry is
+						mandatory, the name should have the suffix
+						<filename>.dat</filename>. You can use the <guibutton>Select
+						file</guibutton> button to select a path and/or filename through a
+						file chooser dialog. The created datafile can be compressed to save
+						disk space. This is enabled through the <guilabel>Compress output
+						file</guilabel> checkbox. Compressed files will get an additional
+						suffix, <filename>.gz</filename>, which you must not append to the
+						filename yourself. See <xref linkend="gwf-import" /> for more
+						information on compressed datafiles.
+					</para>
+					<para>The generated datafile will contain a header with the most
+						important information of the measurement parameters (like date of
+						measurement, frequency range, averaging, etc.). You can add an
+						additional line to this header with the optional
+						<guilabel>Comment</guilabel> entry. Any text you enter here will be
+						added as a commentary field.
+					</para>
+				</listitem>
+			</varlistentry>
+			<varlistentry>
+				<term><guilabel>Measurement mode</guilabel></term>
+				<listitem>
+					<para>You can choose between two major measurement modes that &app;
+						provides: A whole frequency range can be sweeped or a snapshot of
+						the current VNA display can be taken.
+					</para>
+					<para>The <guilabel>Sweep a frequency range</guilabel> mode allows
+						you to measure a given frequency interval with a certain
+						resolution, averaging, etc. The details will be covered later.
+						Right now it is important to understand, that &app; will
+						<emphasis>reset</emphasis> the VNA (to user preset eight) and
+						<emphasis>change</emphasis> the frequency window during the
+						measurement. That means that any setting that cannot be accessed
+						through the measurement dialog and cannot be saved to user preset
+						eight will be lost during the measurement. This is especially
+						important for calibrated measurements where the frequency window
+						must not be changed.
+					</para>
+					<para>If you cannot use or you do not want to use the sweep mode you
+						can still <guilabel>Take a snapshot</guilabel>. In this mode &app;
+						will try to change as little on the VNA as possible. The data
+						currently being displayed on the VNA will be extracted as complex
+						numbers and written to the datafile. No measurement settings are
+						changed and no calibrations are invalidated. The drawback is that
+						this mode is restricted to the measurement of at most 801
+						datapoints (a restriction of HP8510 VNAs).
+					</para>
+				</listitem>
+			</varlistentry>
+			<varlistentry>
+				<term><guilabel>Frequency sweep settings</guilabel></term>
+				<listitem>
+					<para>The settings of this section are only relevant if
+						<guilabel>Sweep a frequency range</guilabel> has been selected. It
+						will be grayed out for the snapshot mode.
+					</para>
+					<para>The frequency range is defined through the <guilabel>Start
+						frq</guilabel> and <guilabel>Stop frq</guilabel> entries. &app;
+						will sweep this range with the given
+						<guilabel>Resolution</guilabel>. Furthermore, the
+						<guilabel>S-Parameter</guilabel> that the VNA should measure can be
+						chosen. The given <guilabel>Averaging</guilabel> value increases the
+						signal-to-noise ratio but a measurement will take longer, too.
+						Finally, there is the <guilabel>Stimulus</guilabel> entry. It can
+						either be "ramp mode" or "step mode", this refers to the two major
+						frequency generation methods of the VNA. Please refer the manual of
+						your VNA for further information on those modes. A rule of thumb
+						may be that the ramp mode allows for quicker measurements whereas
+						the step mode measures with a higher frequency precision.
+					</para>
+				</listitem>
+			</varlistentry>
+			<varlistentry>
+				<term><guilabel>Status</guilabel></term>
+				<listitem>
+					<para>The status area will provide some feedback during a
+						measurement. The most prominent feature is the progress bar that
+						represents the total progress of the measurement based on
+						calculated time estimates. Those are given in more detail behind
+						the <guilabel>Time estimates</guilabel> label, where the time
+						already passed, the estimated duration for the whole process and
+						the difference between those two times are displayed. Progress bar
+						and time estimates are only available for sweep measurement mode.
+						The snapshot is just too quick for any reasonable estimates.
+					</para>
+					<para>The <guilabel>Network status</guilabel> field describes the
+						state of the connection to the proxy computer and &mdash; after a
+						connection has been established &mdash; gives a rough explanation
+						what the VNA is doing right now.
+					</para>
+				</listitem>
+			</varlistentry>
+		</variablelist>
+
+		<para>To start the measurement press the <guibutton>Start</guibutton>
+			button. &app; will do some sanity checks on your input and commences the
+			measurement thereafter. To close the dialog or to abort a running
+			measurement press the <guibutton>Cancel</guibutton> button.</para>
+
+		<para>During a measurement &app; will display the data received so far in
+			real time on the main graph, either as a main dataset (if there isn't one
+			yet) or as an overlay. You are free to use it just like a normal dataset
+			(e.g. transformation into time domain, switching of active datasets,
+			adding of resonances, fitting, etc.), you can even discard the graph and
+			start with something new. As long as you do not cancel the measurement or
+			quit &app; the measurement will continue.</para>
+
+	</sect2>
+
+</sect1>
+
+<!-- ============= Customization ============================= -->
+<sect1 id="gwignerfit-custom">
+	<title>Customize &app;</title>
+	<para>You can change some aspects of &app; through the preferences dialog
+		that can be accessed via
+		<menuchoice> 
+			<guimenu>Spectrum</guimenu> 
+			<guimenuitem>Preferences...</guimenuitem> 
+		</menuchoice>
+		and which looks like <xref linkend="check-pref-win" />. All preferences are
+		persistent (they are saved in the file <filename>.gwignerfitrc</filename>
+		in your home directory) and will be restored the next time you run &app;.
+	</para>
+
+	<figure id="check-pref-win"> 
+		<title>Preferences dialog</title> 
+		<screenshot> 
+			<mediaobject> 
+				<imageobject><imagedata
+						fileref="figures/gwf_prefs.eps" scale="50" format="EPS"/> 
+				</imageobject>
+				<imageobject><imagedata
+						fileref="figures/gwf_prefs.png" format="PNG"/> 
+				</imageobject>
+				<textobject> 
+					<phrase>Shows the preferences dialog.</phrase>
+				</textobject> 
+			</mediaobject> 
+		</screenshot> 
+	</figure>
+
+	<para>The currently available preferences are:</para>
+	<variablelist>
+		<varlistentry>
+			<term><guilabel>Number of fit iterations</guilabel></term>
+			<listitem>
+				<para>Normally a complete fit procedure consists of 50 iterations of
+					the mathematical algorithm. This value can be changed here. You can
+					choose any integer number between (including) 1 and 100.
+				</para>
+			</listitem>
+		</varlistentry>
+		<varlistentry>
+			<term><guilabel>Detect convergence of fit</guilabel></term>
+			<listitem>
+				<para>Enable this option if &app; should automatically stop a running
+					fit that seems to have converged. A fit is declared to have converged
+					by &app; if there are five consecutive failed iterations and the
+					stepwidth parameter for the first failed iteration has been greater
+					than 10.
+				</para>
+			</listitem>
+		</varlistentry>
+		<varlistentry>
+			<term><guilabel>Unit for width column</guilabel></term>
+			<listitem>
+				<para>The default is to present all width values in the parameter area
+					in MHz. If your spectrum has many very sharp resonances and you do
+					not want all those small numbers you can change the unit to kHz here.
+				</para>
+			</listitem>
+		</varlistentry>
+		<varlistentry>
+			<term><guilabel>Confirm appending of sections</guilabel></term>
+			<listitem>
+				<para>If you save a &app; session by appending it to an already present
+					gwf file, &app; will normally show a confirmation dialog. You can
+					disable this behaviour here. This will <emphasis>not</emphasis>
+					disable the confirmation dialog when you try to overwrite a section.
+				</para>
+			</listitem>
+		</varlistentry>
+		<varlistentry>
+			<term><guilabel>Include overlayed graphs in save file</guilabel></term>
+			<listitem>
+				<para>&app;'s saved sessions will normally include the filenames of all
+					overlayed datasets, too. If you do not want them to be included in
+					the gwf file disable this checkbox.
+				</para>
+			</listitem>
+		</varlistentry>
+		<varlistentry>
+			<term><guilabel>Enable datapoint marker in graphs</guilabel></term>
+			<listitem>
+				<para>If you zoom close enough into a graph with measured data you will
+					get short vertical lines that mark the positions of the datapoints
+					(remember: the lines between the points are just "to guide the eye").
+					Unchecking this box will disable this feature.
+				</para>
+			</listitem>
+		</varlistentry>
+		<varlistentry>
+			<term><guilabel>Sort resonance IDs by frequency</guilabel></term>
+			<listitem>
+				<para>Newly added resonances do normally get an ID which is just the
+					next unused number. Those IDs represent the order in which the
+					resonances have been added to the resonance list. You can enable this
+					options if the IDs should be sorted by the resonance frequencies.
+					This is especially useful for spectral statistics as the IDs can then
+					be interpreted as level numbers (given that you have not missed any
+					levels). Adding a resonance will then increase the IDs of all
+					resonances with a higher resonance frequency by one.
+				</para>
+			</listitem>
+		</varlistentry>
+		<varlistentry>
+			<term><guibutton>Cancel</guibutton></term>
+			<listitem>
+				<para>Close the preferences dialog discarding any changes made.
+				</para>
+			</listitem>
+		</varlistentry>
+		<varlistentry>
+			<term><guibutton>OK</guibutton></term>
+			<listitem>
+				<para>Close the preferences dialog and accept the changes. They will
+					be applied at once. Your new preferences will be saved in &app;'s
+					configuration file.
+				</para>
+			</listitem>
+		</varlistentry>
+	</variablelist>
+</sect1>
+
+<!-- ============= Bugs ================================== -->
+<sect1 id="gwignerfet-bugs">
+  <title>Known Bugs and Limitations</title>
+	<para>Though the author has done his best to make &app; a stable application
+		he was till now not able to make this wish come true.</para>
+
+	<para>&app; will crash occasionally. According to Murphy's Law, it is very
+		likely that this will happen at the worst possible moment.</para>
+	
+<!--
+	<para>&app; will crash from time to time especially while being in the
+		process of fitting your theory. If you export your &app; window through a
+		network to another computer the probability of a crash seems to
+		increase.</para>
+	-->
+	
+	<para>Please make sure to save your work really often and learn how to use
+		the backup function described in <xref linkend="gwf-backup" />.</para>
+
+	<para>The author deeply apologizes for any inconvenience the shortcomings of
+		&app; may cause to you.</para>
+</sect1>
+
+<!-- ============= About ================================== -->
+<!-- This section contains info about the program (not docs), such as author's
+	name(s), web page, license, feedback address. This section is optional:
+	primary place for this info is "About.." box of the program. However, if you
+	do wish to include this info in the manual, this is the place to put it.
+	Alternatively, you can put this information in the title page.-->
+<sect1 id="gwignerfit-about"> 
+	<title>About &app;</title> 
+	<para> &app; was written by Florian Sch&auml;fer.
+		<!--(<email>schaefer@ikp.tu-darmstadt.de</email>)-->
+	</para>
+	<para> To report a bug or make a suggestion regarding the &app; application
+		or this manual, please contact the author via electronic mail
+		<email>schaefer@ikp.tu-darmstadt.de</email>.
+	</para>
+	
+	<para> This program is distributed under the terms of the GNU General
+		Public license as published by the Free Software Foundation; either
+		version 2 of the License, or (at your option)
+		any later version. A copy of this license can be found at this
+		<ulink url="http://www.gnu.org/licenses/gpl.txt" type="help">link</ulink>, 
+		or in the file COPYING included with the source code of this
+		program.</para>
+
+</sect1> 
+</article>
+
+<!--
+ Vim specific formatting information
+ vim:ts=2:sw=2:tw=79
+-->

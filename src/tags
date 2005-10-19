@@ -1,0 +1,540 @@
+!_TAG_FILE_FORMAT	2	/extended format; --format=1 will not append ;" to lines/
+!_TAG_FILE_SORTED	1	/0=unsorted, 1=sorted, 2=foldcase/
+!_TAG_PROGRAM_AUTHOR	Darren Hiebert	/dhiebert@users.sourceforge.net/
+!_TAG_PROGRAM_NAME	Exuberant Ctags	//
+!_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
+!_TAG_PROGRAM_VERSION	5.5.4	//
+ADD_MARK_DISTANCE	gtkspectvis.c	17;"	d	file:
+AMP_COL	export.c	/^	FRQ_COL, WID_COL, AMP_COL, PHAS_COL,$/;"	e	file:
+AMP_COL	resonancelist.c	/^	FRQ_COL, WID_COL, AMP_COL, PHAS_COL,$/;"	e	file:
+ApplyMrqmin	numeric.c	/^int ApplyMrqmin ($/;"	f
+COLOR_GOE	spectral.c	35;"	d	file:
+COLOR_GUE	spectral.c	32;"	d	file:
+COLOR_POISSON	spectral.c	29;"	d	file:
+COORD_BORDER_DIST	gtkspectvis.c	15;"	d	file:
+Cadd	spectral_numeric.c	/^static fcomplex Cadd(fcomplex a, fcomplex b)$/;"	f	file:
+Cdiv	spectral_numeric.c	/^static fcomplex Cdiv(fcomplex a, fcomplex b)$/;"	f	file:
+CheckAmplitudes	numeric.c	/^void CheckAmplitudes (gdouble p[], gint numres)$/;"	f
+Cmul	spectral_numeric.c	/^static fcomplex Cmul(fcomplex a, fcomplex b)$/;"	f	file:
+Complex	spectral_numeric.c	/^static fcomplex Complex(float re, float im)$/;"	f	file:
+ComplexWigner	numeric.c	/^ComplexDouble ComplexWigner (double x, double a[], int ma) {$/;"	f
+DV	dnd.c	28;"	d	file:
+DV	network.c	43;"	d	file:
+DeriveComplexWigner	numeric.c	/^void DeriveComplexWigner (double x, double a[], ComplexDouble *yfit, ComplexDouble dyda[], int ma) {$/;"	f
+EPS	spectral_numeric.c	132;"	d	file:
+EPS	spectral_numeric.c	167;"	d	file:
+EPS	spectral_numeric.c	190;"	d	file:
+EPS	spectral_numeric.c	62;"	d	file:
+EULER	spectral_numeric.c	133;"	d	file:
+EULER	spectral_numeric.c	63;"	d	file:
+ExportTextviewData	export.c	/^} ExportTextviewData;$/;"	t	file:
+FCOMPLEX	spectral_numeric.c	/^typedef struct FCOMPLEX {float r,i;} fcomplex;$/;"	s	file:
+FIT_AMP_COL	export.c	/^	FIT_FRQ_COL, FIT_WID_COL, FIT_AMP_COL, FIT_PHAS_COL,$/;"	e	file:
+FIT_AMP_COL	resonancelist.c	/^	FIT_FRQ_COL, FIT_WID_COL, FIT_AMP_COL, FIT_PHAS_COL,$/;"	e	file:
+FIT_FRQ_COL	export.c	/^	FIT_FRQ_COL, FIT_WID_COL, FIT_AMP_COL, FIT_PHAS_COL,$/;"	e	file:
+FIT_FRQ_COL	resonancelist.c	/^	FIT_FRQ_COL, FIT_WID_COL, FIT_AMP_COL, FIT_PHAS_COL,$/;"	e	file:
+FIT_PHAS_COL	export.c	/^	FIT_FRQ_COL, FIT_WID_COL, FIT_AMP_COL, FIT_PHAS_COL,$/;"	e	file:
+FIT_PHAS_COL	resonancelist.c	/^	FIT_FRQ_COL, FIT_WID_COL, FIT_AMP_COL, FIT_PHAS_COL,$/;"	e	file:
+FIT_WID_COL	export.c	/^	FIT_FRQ_COL, FIT_WID_COL, FIT_AMP_COL, FIT_PHAS_COL,$/;"	e	file:
+FIT_WID_COL	resonancelist.c	/^	FIT_FRQ_COL, FIT_WID_COL, FIT_AMP_COL, FIT_PHAS_COL,$/;"	e	file:
+FPMIN	spectral_numeric.c	136;"	d	file:
+FPMIN	spectral_numeric.c	66;"	d	file:
+FREE_ARG	compl_mrqmin.c	8;"	d	file:
+FREE_ARG	nrutil.c	308;"	d	file:
+FREE_ARG	nrutil.c	9;"	d	file:
+FRQ_COL	export.c	/^	FRQ_COL, WID_COL, AMP_COL, PHAS_COL,$/;"	e	file:
+FRQ_COL	resonancelist.c	/^	FRQ_COL, WID_COL, AMP_COL, PHAS_COL,$/;"	e	file:
+FUNC	spectral_numeric.c	143;"	d	file:
+FUNC	spectral_numeric.c	163;"	d	file:
+FindFWHM	processdata.c	/^static double FindFWHM (DataVector *d, int center, double offset) {$/;"	f	file:
+FindResonance	processdata.c	/^int FindResonance (DataVector *d, char type) $/;"	f
+GP_CMD_SIZE	gnuplot_i.c	37;"	d	file:
+GP_EQ_SIZE	gnuplot_i.c	41;"	d	file:
+GP_TITLE_SIZE	gnuplot_i.c	39;"	d	file:
+GetPhaseAndScale	processdata.c	/^static void GetPhaseAndScale (DataVector *d, double *phase, double *scale) $/;"	f	file:
+GetTauByFFT	processdata.c	/^static void GetTauByFFT (DataVector *d, double *tau, double *phase)$/;"	f	file:
+ID_COL	export.c	/^	ID_COL = 0, $/;"	e	file:
+ID_COL	resonancelist.c	/^	ID_COL = 0, $/;"	e	file:
+IsReflectionSpectrum	processdata.c	/^char IsReflectionSpectrum (DataVector *d) $/;"	f
+JMAX	spectral_numeric.c	168;"	d	file:
+JMAX	spectral_numeric.c	191;"	d	file:
+LAST_SIGNAL	gtkspectvis.c	/^	LAST_SIGNAL$/;"	e	file:
+MAXIT	spectral_numeric.c	134;"	d	file:
+MAXIT	spectral_numeric.c	64;"	d	file:
+MIN_DATAPOINTS_VIEW	gtkspectvis.c	16;"	d	file:
+NRANSI	compl_mrqmin.c	209;"	d	file:
+NRANSI	compl_mrqmin.c	40;"	d	file:
+NR_END	compl_mrqmin.c	7;"	d	file:
+NR_END	nrutil.c	307;"	d	file:
+NR_END	nrutil.c	8;"	d	file:
+N_COLUMNS	export.c	/^	N_COLUMNS$/;"	e	file:
+N_COLUMNS	overlay.c	/^	N_COLUMNS$/;"	e	file:
+N_COLUMNS	resonancelist.c	/^	N_COLUMNS$/;"	e	file:
+NewSpectVis	visualize.c	/^GtkWidget *NewSpectVis (gchar *widget_name, gchar *string1, gchar *string2, gint int1, gint int2)$/;"	f
+NormalisePhase	processdata.c	/^double NormalisePhase(double p)$/;"	f
+ONE	spectral_numeric.c	139;"	d	file:
+ONE	spectral_numeric.c	69;"	d	file:
+OVERLAY_COLOR_B	overlay.c	/^	OVERLAY_COLOR_B,$/;"	e	file:
+OVERLAY_COLOR_G	overlay.c	/^	OVERLAY_COLOR_G,$/;"	e	file:
+OVERLAY_COLOR_R	overlay.c	/^	OVERLAY_COLOR_R,$/;"	e	file:
+OVERLAY_FILE_COL	overlay.c	/^	OVERLAY_FILE_COL,$/;"	e	file:
+OVERLAY_UID	overlay.c	/^	OVERLAY_UID,$/;"	e	file:
+PATH_MAXNAMESZ	gnuplot_i.c	43;"	d	file:
+PHAS_COL	export.c	/^	FRQ_COL, WID_COL, AMP_COL, PHAS_COL,$/;"	e	file:
+PHAS_COL	resonancelist.c	/^	FRQ_COL, WID_COL, AMP_COL, PHAS_COL,$/;"	e	file:
+PIBY2	spectral_numeric.c	135;"	d	file:
+PIBY2	spectral_numeric.c	65;"	d	file:
+P_tmpdir	gnuplot_i.c	47;"	d	file:
+RCmul	spectral_numeric.c	/^fcomplex RCmul(x,a)$/;"	f
+SPECTRAL_D3	spectral.c	26;"	d	file:
+SPECTRAL_FLUC	spectral.c	22;"	d	file:
+SPECTRAL_GRAPH_POINTS	spectral.c	19;"	d	file:
+SPECTRAL_INT_NND	spectral.c	24;"	d	file:
+SPECTRAL_LENGTH	spectral.c	27;"	d	file:
+SPECTRAL_NND	spectral.c	23;"	d	file:
+SPECTRAL_S2	spectral.c	25;"	d	file:
+SPECTRAL_WEYL	spectral.c	21;"	d	file:
+SWAP	compl_mrqmin.c	114;"	d	file:
+SWAP	compl_mrqmin.c	41;"	d	file:
+SWAP	fourier.c	19;"	d	file:
+SWAP	fourier.c	71;"	d	file:
+TMIN	spectral_numeric.c	137;"	d	file:
+TMIN	spectral_numeric.c	67;"	d	file:
+TRUE	spectral_numeric.c	138;"	d	file:
+TRUE	spectral_numeric.c	68;"	d	file:
+VALUE_SELECTED	gtkspectvis.c	/^	VALUE_SELECTED,$/;"	e	file:
+VIEWPORT_CHANGED	gtkspectvis.c	/^	VIEWPORT_CHANGED,$/;"	e	file:
+VNA_CONN_TOUT	network.c	34;"	d	file:
+VNA_ENOLISTE	network.c	38;"	d	file:
+VNA_EQUOTEDS	network.c	39;"	d	file:
+VNA_ESUCCEOI	network.c	41;"	d	file:
+VNA_ESUCCESS	network.c	36;"	d	file:
+VNA_ESYNTAXE	network.c	37;"	d	file:
+VNA_ETIMEOUT	network.c	40;"	d	file:
+VNA_GBIP	network.c	30;"	d	file:
+VNA_GREET_LEN	network.c	31;"	d	file:
+VNA_PORT	network.c	29;"	d	file:
+VNA_RARR_LEN	network.c	33;"	d	file:
+VNA_RECV_TOUT	network.c	35;"	d	file:
+VNA_STAT_LEN	network.c	32;"	d	file:
+WID_COL	export.c	/^	FRQ_COL, WID_COL, AMP_COL, PHAS_COL,$/;"	e	file:
+WID_COL	resonancelist.c	/^	FRQ_COL, WID_COL, AMP_COL, PHAS_COL,$/;"	e	file:
+add_resonance_to_list	resonancelist.c	/^void add_resonance_to_list (Resonance *res)$/;"	f
+ampbut	export.c	/^	GtkToggleButton *idbut, *frqbut, *widbut, *ampbut, *phasbut, *qualbut, *stddevbut;$/;"	m	file:
+bubbleSort	spectral.c	/^static void bubbleSort (gdouble *array, int length)$/;"	f	file:
+c_add	calibrate.c	/^ComplexDouble c_add (ComplexDouble a, ComplexDouble b)$/;"	f
+c_div	calibrate.c	/^ComplexDouble c_div (ComplexDouble a, ComplexDouble b)$/;"	f
+c_exp	calibrate.c	/^ComplexDouble c_exp (gdouble a)$/;"	f
+c_mul	calibrate.c	/^ComplexDouble c_mul (ComplexDouble a, ComplexDouble b)$/;"	f
+c_sub	calibrate.c	/^ComplexDouble c_sub (ComplexDouble a, ComplexDouble b)$/;"	f
+cal_check_entries	calibrate.c	/^static gboolean cal_check_entries ()$/;"	f	file:
+cal_choose_file	calibrate.c	/^static gboolean cal_choose_file (GtkButton *button, gpointer user_data)$/;"	f	file:
+cal_data_type_toggled	calibrate.c	/^void cal_data_type_toggled (GtkToggleButton *togglebutton, gpointer user_data) $/;"	f
+cal_do_calibration	calibrate.c	/^static gboolean cal_do_calibration ()$/;"	f	file:
+cal_get_valid_file	calibrate.c	/^static gchar* cal_get_valid_file (gchar *entry)$/;"	f	file:
+cal_open_win	calibrate.c	/^void cal_open_win ()$/;"	f
+cal_reflection	calibrate.c	/^static DataVector* cal_reflection (DataVector *in, DataVector *opn, DataVector *shrt, DataVector *load)$/;"	f	file:
+cal_set_text	calibrate.c	/^static void cal_set_text (gchar *entry, gchar *text)$/;"	f	file:
+cal_transmission	calibrate.c	/^static DataVector* cal_transmission (DataVector *in, DataVector *thru, DataVector *isol)$/;"	f	file:
+cal_update_progress	calibrate.c	/^static void cal_update_progress (gfloat fraction)$/;"	f	file:
+calculate_global_paramters	processdata.c	/^void calculate_global_paramters (DataVector *d, GlobalParam *gparam)$/;"	f
+calculate_q_func	resonancelist.c	/^void calculate_q_func (GtkTreeViewColumn *col, GtkCellRenderer *renderer, $/;"	f
+cancel_fit_in_progress	callbacks.c	/^gboolean cancel_fit_in_progress (GtkMenuItem *menuitem, gpointer user_data)$/;"	f
+cc	compl_mrqmin.c	/^inline ComplexDouble cc(ComplexDouble x) {$/;"	f
+cdvector	compl_mrqmin.c	/^ComplexDouble *cdvector(long nl, long nh)$/;"	f
+cell_edited_callback	resonancelist.c	/^static gboolean cell_edited_callback (GtkCellRendererText *cell, const gchar *path, gchar *text, gpointer data)$/;"	f	file:
+cell_toggle_callback	resonancelist.c	/^static void cell_toggle_callback (GtkCellRendererToggle *cell, gchar *path, gpointer data)$/;"	f	file:
+check_and_take_parameters	helpers.c	/^gboolean check_and_take_parameters (gdouble *p)$/;"	f
+cisi	spectral_numeric.c	/^void cisi(float x, float *ci, float *si)$/;"	f
+clear_resonancelist	resonancelist.c	/^void clear_resonancelist ()$/;"	f
+cmulti_re	compl_mrqmin.c	/^inline double cmulti_re(ComplexDouble a, ComplexDouble b) {$/;"	f
+column_clicked_callback	resonancelist.c	/^static void column_clicked_callback (GtkTreeViewColumn *column, gpointer user_data)$/;"	f	file:
+column_separator	resonancelist.c	235;"	d	file:
+column_separator	resonancelist.c	394;"	d	file:
+convert_matrix	nrutil.c	/^double **convert_matrix(double *a, long nrl, long nrh, long ncl, long nch)$/;"	f
+convert_matrix	nrutil.c	/^float **convert_matrix(a,nrl,nrh,ncl,nch)$/;"	f
+covsrt	compl_mrqmin.c	/^void covsrt(double **covar, int ma, int ia[], int mfit)$/;"	f
+create_backup	helpers.c	/^void create_backup ()$/;"	f
+create_param_array	numeric.c	/^void create_param_array (GPtrArray *param, GlobalParam *gparam, gint numres, double *p)$/;"	f
+create_param_structs	numeric.c	/^void create_param_structs (GPtrArray *param, GlobalParam *gparam, double *p, gint numres)$/;"	f
+cvector	nrutil.c	/^unsigned char *cvector(long nl, long nh)$/;"	f
+cvector	nrutil.c	/^unsigned char *cvector(nl,nh)$/;"	f
+delete_backup	helpers.c	/^void delete_backup ()$/;"	f
+dialog_message	helpers.c	/^gboolean dialog_message (gchar *format, ...)$/;"	f
+dialog_question	helpers.c	/^gint dialog_question (gchar *format, ...)$/;"	f
+disable_undo	helpers.c	/^void disable_undo ()$/;"	f
+dmatrix	nrutil.c	/^double **dmatrix(long nrl, long nrh, long ncl, long nch)$/;"	f
+dmatrix	nrutil.c	/^double **dmatrix(nrl,nrh,ncl,nch)$/;"	f
+dnd_drag_data_received_handler	dnd.c	/^static void dnd_drag_data_received_handler(GtkWidget *widget,$/;"	f	file:
+dnd_handle_file	dnd.c	/^static void dnd_handle_file (gchar *filename)$/;"	f	file:
+dnd_init	dnd.c	/^void dnd_init(GtkWidget *widget)$/;"	f
+drag_types	dnd.c	/^static GtkTargetEntry drag_types[] =$/;"	v	file:
+dvector	nrutil.c	/^double *dvector(long nl, long nh)$/;"	f
+dvector	nrutil.c	/^double *dvector(nl,nh)$/;"	f
+export_change_exported_data	export.c	/^static void export_change_exported_data (GtkToggleButton *togglebutton, gpointer data)$/;"	f	file:
+export_fill_textview	export.c	/^static void export_fill_textview (GtkWidget *textview, gboolean addid, gboolean addfrq, gboolean addwid, gboolean addamp, gboolean addphas, gboolean addqual, gboolean show_stddev)$/;"	f	file:
+export_graph_ps	export.c	/^gboolean export_graph_ps ()$/;"	f
+export_resonance_data	export.c	/^void export_resonance_data ()$/;"	f
+export_savebutton_clicked	export.c	/^gboolean export_savebutton_clicked (GtkButton *button, gpointer user_data)$/;"	f
+export_select_filename	export.c	/^gboolean export_select_filename (GtkButton *button, gpointer user_data)$/;"	f
+export_text_to_view	export.c	/^static void export_text_to_view (GtkWidget *textview, gchar *format, ...)$/;"	f	file:
+export_theory_graph_data	export.c	/^gboolean export_theory_graph_data (char *filename)$/;"	f
+f3tensor	nrutil.c	/^double ***f3tensor(long nrl, long nrh, long ncl, long nch, long ndl, long ndh)$/;"	f
+f3tensor	nrutil.c	/^float ***f3tensor(nrl,nrh,ncl,nch,ndl,ndh)$/;"	f
+fcomplex	spectral_numeric.c	/^typedef struct FCOMPLEX {float r,i;} fcomplex;$/;"	t	file:
+file_is_writeable	helpers.c	/^gboolean file_is_writeable (gchar *filename)$/;"	f
+find_isolated_resonances	processdata.c	/^gint find_isolated_resonances (gfloat thresh)$/;"	f
+find_resonance_at	processdata.c	/^Resonance *find_resonance_at (double frq, DataVector *d)$/;"	f
+fit	numeric.c	/^void fit (gint *ia)$/;"	f
+fit_cleanup	numeric.c	/^static void fit_cleanup ()$/;"	f	file:
+fit_nrerror	numeric.c	/^gboolean fit_nrerror (gchar error_text[])$/;"	f
+four1	fourier.c	/^static void four1 (gdouble data[], unsigned long nn, int isign)$/;"	f	file:
+fourier_abscissa_in_meter	fourier.c	/^gboolean fourier_abscissa_in_meter (GtkMenuItem *menuitem, gpointer user_data)$/;"	f
+fourier_abscissa_in_ns	fourier.c	/^gboolean fourier_abscissa_in_ns (GtkMenuItem *menuitem, gpointer user_data)$/;"	f
+fourier_add_overlay_graphs	fourier.c	/^static void fourier_add_overlay_graphs ()$/;"	f	file:
+fourier_export_data	fourier.c	/^static void fourier_export_data (DataVector *dataset, gchar *expln)$/;"	f	file:
+fourier_gen_dataset	fourier.c	/^DataVector* fourier_gen_dataset (DataVector *source, gdouble startfrq, gdouble endfrq)$/;"	f
+fourier_handle_value_selected	fourier.c	/^gint fourier_handle_value_selected (GtkSpectVis *spectvis, gdouble *xval, gdouble *yval)$/;"	f
+fourier_handle_viewport_changed	fourier.c	/^void fourier_handle_viewport_changed (GtkSpectVis *spectvis, gchar *zoomtype)$/;"	f
+fourier_inverse_transform	fourier.c	/^DataVector* fourier_inverse_transform (DataVector *d, gdouble fmin, gdouble fmax)$/;"	f
+fourier_open_win	fourier.c	/^void fourier_open_win (gboolean window)$/;"	f
+fourier_set_color	fourier.c	/^void fourier_set_color (gint mainuid, GdkColor color)$/;"	f
+fourier_update_main_graphs	fourier.c	/^void fourier_update_main_graphs ()$/;"	f
+fourier_update_overlay_graphs	fourier.c	/^void fourier_update_overlay_graphs (gint uid, gboolean redraw)$/;"	f
+fourier_view_absolute_part	fourier.c	/^gboolean fourier_view_absolute_part (GtkMenuItem *menuitem, gpointer user_data)$/;"	f
+fourier_view_imaginary_part	fourier.c	/^gboolean fourier_view_imaginary_part (GtkMenuItem *menuitem, gpointer user_data)$/;"	f
+fourier_view_log_power	fourier.c	/^gboolean fourier_view_log_power (GtkMenuItem *menuitem, gpointer user_data)$/;"	f
+fourier_view_phase_part	fourier.c	/^gboolean fourier_view_phase_part (GtkMenuItem *menuitem, gpointer user_data)$/;"	f
+fourier_view_real_part	fourier.c	/^gboolean fourier_view_real_part (GtkMenuItem *menuitem, gpointer user_data)$/;"	f
+fourier_window_data	fourier.c	/^static gdouble fourier_window_data (guint n, guint numpoints)$/;"	f	file:
+free_cdvector	compl_mrqmin.c	/^void free_cdvector(ComplexDouble *v, long nl, long nh)$/;"	f
+free_convert_matrix	nrutil.c	/^void free_convert_matrix(b,nrl,nrh,ncl,nch)$/;"	f
+free_convert_matrix	nrutil.c	/^void free_convert_matrix(double **b, long nrl, long nrh, long ncl, long nch)$/;"	f
+free_cvector	nrutil.c	/^void free_cvector(unsigned char *v, long nl, long nh)$/;"	f
+free_cvector	nrutil.c	/^void free_cvector(v,nl,nh)$/;"	f
+free_datavector	helpers.c	/^void free_datavector (DataVector *vec)$/;"	f
+free_dmatrix	nrutil.c	/^void free_dmatrix(double **m, long nrl, long nrh, long ncl, long nch)$/;"	f
+free_dmatrix	nrutil.c	/^void free_dmatrix(m,nrl,nrh,ncl,nch)$/;"	f
+free_dvector	nrutil.c	/^void free_dvector(double *v, long nl, long nh)$/;"	f
+free_dvector	nrutil.c	/^void free_dvector(v,nl,nh)$/;"	f
+free_f3tensor	nrutil.c	/^void free_f3tensor(double ***t, long nrl, long nrh, long ncl, long nch,$/;"	f
+free_f3tensor	nrutil.c	/^void free_f3tensor(t,nrl,nrh,ncl,nch,ndl,ndh)$/;"	f
+free_imatrix	nrutil.c	/^void free_imatrix(int **m, long nrl, long nrh, long ncl, long nch)$/;"	f
+free_imatrix	nrutil.c	/^void free_imatrix(m,nrl,nrh,ncl,nch)$/;"	f
+free_ivector	nrutil.c	/^void free_ivector(int *v, long nl, long nh)$/;"	f
+free_ivector	nrutil.c	/^void free_ivector(v,nl,nh)$/;"	f
+free_lvector	nrutil.c	/^void free_lvector(unsigned long *v, long nl, long nh)$/;"	f
+free_lvector	nrutil.c	/^void free_lvector(v,nl,nh)$/;"	f
+free_matrix	nrutil.c	/^void free_matrix(float **m, long nrl, long nrh, long ncl, long nch)$/;"	f
+free_matrix	nrutil.c	/^void free_matrix(m,nrl,nrh,ncl,nch)$/;"	f
+free_memory	calibrate.c	383;"	d	file:
+free_memory	calibrate.c	561;"	d	file:
+free_submatrix	nrutil.c	/^void free_submatrix(b,nrl,nrh,ncl,nch)$/;"	f
+free_submatrix	nrutil.c	/^void free_submatrix(double **b, long nrl, long nrh, long ncl, long nch)$/;"	f
+free_vector	nrutil.c	/^void free_vector(float *v, long nl, long nh)$/;"	f
+free_vector	nrutil.c	/^void free_vector(v,nl,nh)$/;"	f
+frqbut	export.c	/^	GtkToggleButton *idbut, *frqbut, *widbut, *ampbut, *phasbut, *qualbut, *stddevbut;$/;"	m	file:
+g_marshal_value_peek_pointer	gtkspectvis.c	19;"	d	file:
+gaussj	compl_mrqmin.c	/^void gaussj(double **a, int n, double **b, int m)$/;"	f
+get_defaultname	helpers.c	/^gchar *get_defaultname (gchar *suffix)$/;"	f
+get_filename	helpers.c	/^gchar *get_filename (const gchar *title, const gchar *defaultname, gchar check)$/;"	f
+get_filename_helper	helpers.c	/^static gboolean get_filename_helper (char *filename, gchar check)$/;"	f	file:
+get_res_iter_by_id	resonancelist.c	/^GtkTreeIter *get_res_iter_by_id (gint wanted_id)$/;"	f
+get_selected_resonance	resonancelist.c	/^gint get_selected_resonance (gboolean failok)$/;"	f
+get_selected_resonance_iter	resonancelist.c	/^gint get_selected_resonance_iter (GtkTreeIter *iter)$/;"	f
+get_unique_frqs	helpers.c	/^GPtrArray *get_unique_frqs ()$/;"	f
+gladexml	gwignerfit.c	/^GladeXML *gladexml;$/;"	v
+gladexml	preferences.c	/^GladeXML *gladexml;$/;"	v
+glob	gwignerfit.c	/^GlobalData *glob = NULL;$/;"	v
+glob	preferences.c	/^GlobalData *glob;$/;"	v
+gnuplot_close	gnuplot_i.c	/^void gnuplot_close(gnuplot_ctrl * handle)$/;"	f
+gnuplot_cmd	gnuplot_i.c	/^void gnuplot_cmd(gnuplot_ctrl *  handle, char *  cmd, ...)$/;"	f
+gnuplot_get_program_path	gnuplot_i.c	/^char * gnuplot_get_program_path(char * pname)$/;"	f
+gnuplot_init	gnuplot_i.c	/^gnuplot_ctrl * gnuplot_init(void)$/;"	f
+gnuplot_plot_equation	gnuplot_i.c	/^void gnuplot_plot_equation($/;"	f
+gnuplot_plot_once	gnuplot_i.c	/^void gnuplot_plot_once($/;"	f
+gnuplot_plot_slope	gnuplot_i.c	/^void gnuplot_plot_slope($/;"	f
+gnuplot_plot_x	gnuplot_i.c	/^void gnuplot_plot_x($/;"	f
+gnuplot_plot_xy	gnuplot_i.c	/^void gnuplot_plot_xy($/;"	f
+gnuplot_resetplot	gnuplot_i.c	/^void gnuplot_resetplot(gnuplot_ctrl * h)$/;"	f
+gnuplot_set_xlabel	gnuplot_i.c	/^void gnuplot_set_xlabel(gnuplot_ctrl * h, char * label)$/;"	f
+gnuplot_set_ylabel	gnuplot_i.c	/^void gnuplot_set_ylabel(gnuplot_ctrl * h, char * label)$/;"	f
+gnuplot_setstyle	gnuplot_i.c	/^void gnuplot_setstyle(gnuplot_ctrl * h, char * plot_style) $/;"	f
+gtk_spect_vis_add_bar	gtkspectvis.c	/^gtk_spect_vis_add_bar (GtkSpectVis *spectvis, gdouble pos, gdouble width, GdkColor color)$/;"	f
+gtk_spect_vis_bars_compare	gtkspectvis.c	/^gtk_spect_vis_bars_compare (gconstpointer a, gconstpointer b)$/;"	f	file:
+gtk_spect_vis_button_press	gtkspectvis.c	/^gtk_spect_vis_button_press (GtkWidget *widget, GdkEventButton *event)$/;"	f	file:
+gtk_spect_vis_button_scroll	gtkspectvis.c	/^gtk_spect_vis_button_scroll (GtkWidget *widget, GdkEventScroll *event)$/;"	f	file:
+gtk_spect_vis_cal_db	gtkspectvis.c	/^gtk_spect_vis_cal_db (ComplexDouble value)$/;"	f	file:
+gtk_spect_vis_class_init	gtkspectvis.c	/^gtk_spect_vis_class_init (GtkSpectVisClass *class)$/;"	f	file:
+gtk_spect_vis_configure	gtkspectvis.c	/^gtk_spect_vis_configure (GtkWidget *widget, GdkEventConfigure *event)$/;"	f	file:
+gtk_spect_vis_data_add	gtkspectvis.c	/^gtk_spect_vis_data_add (GtkSpectVis *spectvis, gdouble *X, ComplexDouble *Y, guint len, GdkColor color, gchar pos)$/;"	f
+gtk_spect_vis_data_gen_uid	gtkspectvis.c	/^gtk_spect_vis_data_gen_uid (GList *list)$/;"	f	file:
+gtk_spect_vis_data_remove	gtkspectvis.c	/^gtk_spect_vis_data_remove (GtkSpectVis *spectvis, guint uid)$/;"	f
+gtk_spect_vis_data_update	gtkspectvis.c	/^gtk_spect_vis_data_update (GtkSpectVis *spectvis, guint uid, gdouble *X, ComplexDouble *Y, guint len)$/;"	f
+gtk_spect_vis_destroy	gtkspectvis.c	/^gtk_spect_vis_destroy (GtkObject *object)$/;"	f	file:
+gtk_spect_vis_draw_bars	gtkspectvis.c	/^gtk_spect_vis_draw_bars (GtkSpectVis *spectvis)$/;"	f	file:
+gtk_spect_vis_draw_coordinates	gtkspectvis.c	/^gtk_spect_vis_draw_coordinates (GtkWidget *widget, gboolean drawit)$/;"	f	file:
+gtk_spect_vis_draw_graphs	gtkspectvis.c	/^gtk_spect_vis_draw_graphs (GtkWidget *widget)$/;"	f	file:
+gtk_spect_vis_draw_graphs_fast	gtkspectvis.c	/^gtk_spect_vis_draw_graphs_fast (GtkSpectVis *spectvis, GdkGC *gc, GtkSpectVisData *data, $/;"	f	file:
+gtk_spect_vis_export_ps	gtkspectvis.c	/^gtk_spect_vis_export_ps (GtkSpectVis *spectvis, GArray *uids, $/;"	f
+gtk_spect_vis_expose	gtkspectvis.c	/^gtk_spect_vis_expose (GtkWidget *widget, GdkEventExpose *event)$/;"	f	file:
+gtk_spect_vis_gen_axis	gtkspectvis.c	/^gtk_spect_vis_gen_axis (gdouble min, gdouble max, guint steps, gdouble *stepsize, gdouble *firsttic, gchar *format)$/;"	f	file:
+gtk_spect_vis_get_axisscale	gtkspectvis.c	/^gtk_spect_vis_get_axisscale (GtkSpectVis *spectvis, gdouble *xscale, gdouble *yscale)$/;"	f
+gtk_spect_vis_get_data_by_uid	gtkspectvis.c	/^gtk_spect_vis_get_data_by_uid (GtkSpectVis *spectvis, guint uid)$/;"	f
+gtk_spect_vis_get_type	gtkspectvis.c	/^gtk_spect_vis_get_type ()$/;"	f
+gtk_spect_vis_init	gtkspectvis.c	/^gtk_spect_vis_init (GtkSpectVis *spectvis)$/;"	f	file:
+gtk_spect_vis_leave_notify	gtkspectvis.c	/^gtk_spect_vis_leave_notify (GtkWidget *widget, GdkEventCrossing *event)$/;"	f	file:
+gtk_spect_vis_mark_point	gtkspectvis.c	/^gtk_spect_vis_mark_point (GtkSpectVis *spectvis, gdouble xval, gdouble yval)$/;"	f
+gtk_spect_vis_marshal_VOID__POINTER	gtkspectvis.c	20;"	d	file:
+gtk_spect_vis_marshal_VOID__POINTER_POINTER	gtkspectvis.c	/^gtk_spect_vis_marshal_VOID__POINTER_POINTER (GClosure * closure,$/;"	f
+gtk_spect_vis_marshal_VOID__VOID	gtkspectvis.c	21;"	d	file:
+gtk_spect_vis_motion_notify	gtkspectvis.c	/^gtk_spect_vis_motion_notify (GtkWidget *widget, GdkEventMotion *event)$/;"	f	file:
+gtk_spect_vis_new	gtkspectvis.c	/^gtk_spect_vis_new ()$/;"	f
+gtk_spect_vis_pixel_to_units	gtkspectvis.c	/^gtk_spect_vis_pixel_to_units (GtkSpectVis *spectvis, gdouble xpix, gdouble ypix, gdouble *xunit, gdouble *yunit)$/;"	f	file:
+gtk_spect_vis_redraw	gtkspectvis.c	/^gtk_spect_vis_redraw (GtkSpectVis *spectvis)$/;"	f
+gtk_spect_vis_remove_bar	gtkspectvis.c	/^gtk_spect_vis_remove_bar (GtkSpectVis *spectvis, guint uid)$/;"	f
+gtk_spect_vis_request_id	gtkspectvis.c	/^gtk_spect_vis_request_id (GtkSpectVis *spectvis, guint oldid, guint newid)$/;"	f
+gtk_spect_vis_set_axisscale	gtkspectvis.c	/^gtk_spect_vis_set_axisscale (GtkSpectVis *spectvis, gdouble xscale, gdouble yscale)$/;"	f
+gtk_spect_vis_set_data_color	gtkspectvis.c	/^gtk_spect_vis_set_data_color (GtkSpectVis *spectvis, guint uid, GdkColor color)$/;"	f
+gtk_spect_vis_set_displaytype	gtkspectvis.c	/^gtk_spect_vis_set_displaytype (GtkSpectVis *spectvis, gchar type)$/;"	f
+gtk_spect_vis_set_graphtype	gtkspectvis.c	/^gtk_spect_vis_set_graphtype (GtkSpectVis *spectvis, guint uid, gchar type)$/;"	f
+gtk_spect_vis_set_invisible_cursor	gtkspectvis.c	/^gtk_spect_vis_set_invisible_cursor (GdkWindow *window)$/;"	f	file:
+gtk_spect_vis_set_visible_cursor	gtkspectvis.c	/^gtk_spect_vis_set_visible_cursor (GtkSpectVis *spectvis)$/;"	f
+gtk_spect_vis_size_request	gtkspectvis.c	/^gtk_spect_vis_size_request (GtkWidget *widget, GtkRequisition *requisition)$/;"	f	file:
+gtk_spect_vis_units_to_pixel	gtkspectvis.c	/^gtk_spect_vis_units_to_pixel (GtkSpectVis *spectvis, gdouble xunit, gdouble yunit, gint *xpix, gint *ypix)$/;"	f	file:
+gtk_spect_vis_viewport_changed	gtkspectvis.c	/^gtk_spect_vis_viewport_changed (GtkSpectVis *spectvis, gchar *type)$/;"	f	file:
+gtk_spect_vis_zoom_x	gtkspectvis.c	/^gtk_spect_vis_zoom_x (GtkSpectVis *spectvis, gdouble center, gdouble factor)$/;"	f
+gtk_spect_vis_zoom_x_all	gtkspectvis.c	/^gtk_spect_vis_zoom_x_all (GtkSpectVis *spectvis)$/;"	f
+gtk_spect_vis_zoom_x_to	gtkspectvis.c	/^gtk_spect_vis_zoom_x_to (GtkSpectVis *spectvis, gdouble min, gdouble max)$/;"	f
+gtk_spect_vis_zoom_y	gtkspectvis.c	/^gtk_spect_vis_zoom_y (GtkSpectVis *spectvis, gdouble center, gdouble factor)$/;"	f
+gtk_spect_vis_zoom_y_all	gtkspectvis.c	/^gtk_spect_vis_zoom_y_all (GtkSpectVis *spectvis)$/;"	f
+i	spectral_numeric.c	/^typedef struct FCOMPLEX {float r,i;} fcomplex;$/;"	m	struct:FCOMPLEX	file:
+idbut	export.c	/^	GtkToggleButton *idbut, *frqbut, *widbut, *ampbut, *phasbut, *qualbut, *stddevbut;$/;"	m	file:
+imatrix	nrutil.c	/^int **imatrix(long nrl, long nrh, long ncl, long nch)$/;"	f
+imatrix	nrutil.c	/^int **imatrix(nrl,nrh,ncl,nch)$/;"	f
+import_data	callbacks.c	/^void import_data (GtkMenuItem *menuitem, gpointer user_data)$/;"	f
+import_datafile	processdata.c	/^DataVector *import_datafile (gchar *filename, gboolean interactive)$/;"	f
+import_resonance_list	resonancelist.c	/^gboolean import_resonance_list (gchar *filename)$/;"	f
+is_datafile	processdata.c	/^gboolean is_datafile (gchar *filename)$/;"	f
+ivector	nrutil.c	/^int *ivector(long nl, long nh)$/;"	f
+ivector	nrutil.c	/^int *ivector(nl,nh)$/;"	f
+lvector	nrutil.c	/^unsigned long *lvector(long nl, long nh)$/;"	f
+lvector	nrutil.c	/^unsigned long *lvector(nl,nh)$/;"	f
+main	gwignerfit.c	/^gint main (gint argc, char *argv[]) $/;"	f
+make_unique_dataset	processdata.c	/^gboolean make_unique_dataset (DataVector *data)$/;"	f
+matrix	nrutil.c	/^float **matrix(long nrl, long nrh, long ncl, long nch)$/;"	f
+matrix	nrutil.c	/^float **matrix(nrl,nrh,ncl,nch)$/;"	f
+mrqcof	compl_mrqmin.c	/^void mrqcof(DataVector *d, double sig[], int ndata, double a[], int ia[],$/;"	f
+mrqmin	compl_mrqmin.c	/^void mrqmin(DataVector *d, double sig[], int ndata, double a[], int ia[],$/;"	f
+n_drag_types	dnd.c	/^static gint n_drag_types = sizeof(drag_types) \/ sizeof(drag_types[0]);$/;"	v	file:
+network_gui_to_struct	network.c	/^static int network_gui_to_struct ()$/;"	f	file:
+network_open_win	network.c	/^void network_open_win ()$/;"	f
+network_struct_to_gui	network.c	/^static void network_struct_to_gui ()$/;"	f	file:
+new_datavector	helpers.c	/^DataVector *new_datavector (guint len)$/;"	f
+nrerror	nrutil.c	/^void nrerror(char error_text[])$/;"	f
+nrerror	nrutil.c	/^void nrerror(error_text)$/;"	f
+nrtexterror	nrutil.c	/^void nrtexterror(char error_text[])$/;"	f
+ok_dialog	callbacks.c	/^void ok_dialog (GtkWidget *entry, gpointer dialog)$/;"	f
+on_add_resonance_activate	callbacks.c	/^void on_add_resonance_activate (GtkMenuItem *menuitem, gpointer user_data)$/;"	f
+on_add_resonance_by_click_activate	callbacks.c	/^void on_add_resonance_by_click_activate (GtkMenuItem *menuitem, gpointer user_data)$/;"	f
+on_calibrate_spectrum_activate	callbacks.c	/^void on_calibrate_spectrum_activate (GtkMenuItem *menuitem, gpointer user_data)$/;"	f
+on_check_all_activate	callbacks.c	/^void on_check_all_activate (GtkMenuItem *menuitem, gpointer user_data)$/;"	f
+on_clear_resonancelist_activate	callbacks.c	/^void on_clear_resonancelist_activate (GtkMenuItem *menuitem, gpointer user_data)$/;"	f
+on_close_dialog	callbacks.c	/^gboolean on_close_dialog (GtkWidget *button)$/;"	f
+on_delete_spectrum	helpers.c	/^void on_delete_spectrum ()$/;"	f
+on_estimate_data_noise_activate	callbacks.c	/^void on_estimate_data_noise_activate (GtkMenuItem *menuitem, gpointer user_data)$/;"	f
+on_estimate_global_parameters_activate	callbacks.c	/^void on_estimate_global_parameters_activate (GtkMenuItem *menuitem, gpointer user_data)$/;"	f
+on_export_ps_activate	callbacks.c	/^void on_export_ps_activate (GtkMenuItem *menuitem, gpointer user_data)$/;"	f
+on_export_resonance_data_activate	callbacks.c	/^void on_export_resonance_data_activate (GtkMenuItem *menuitem, gpointer user_data)$/;"	f
+on_export_theory_graph_data_activate	callbacks.c	/^void on_export_theory_graph_data_activate (GtkMenuItem *menuitem, gpointer user_data)$/;"	f
+on_fft_close_activate	fourier.c	/^void on_fft_close_activate (GtkMenuItem *menuitem, gpointer user_data)$/;"	f
+on_fft_measure_distance_activate	fourier.c	/^void on_fft_measure_distance_activate (GtkMenuItem *menuitem, gpointer user_data)$/;"	f
+on_find_isolated_resonances_activate	callbacks.c	/^void on_find_isolated_resonances_activate (GtkMenuItem *menuitem, gpointer user_data)$/;"	f
+on_fit_activate	callbacks.c	/^void on_fit_activate (GtkMenuItem *menuitem, gpointer user_data)$/;"	f
+on_fit_this_resonance_activate	callbacks.c	/^void on_fit_this_resonance_activate (GtkMenuItem *menuitem, gpointer user_data)$/;"	f
+on_fourier_export_meas_data	fourier.c	/^void on_fourier_export_meas_data (GtkMenuItem *menuitem, gpointer user_data)$/;"	f
+on_fourier_export_ps	fourier.c	/^gboolean on_fourier_export_ps (GtkMenuItem *menuitem, gpointer user_data)$/;"	f
+on_fourier_export_theo_data	fourier.c	/^void on_fourier_export_theo_data (GtkMenuItem *menuitem, gpointer user_data)$/;"	f
+on_fourier_transform_activate	callbacks.c	/^void on_fourier_transform_activate (GtkMenuItem *menuitem, gpointer user_data)$/;"	f
+on_fourier_transform_window_activate	callbacks.c	/^void on_fourier_transform_window_activate (GtkMenuItem *menuitem, gpointer user_data)$/;"	f
+on_fourier_window_change	fourier.c	/^gboolean on_fourier_window_change (GtkMenuItem *menuitem, gpointer user_data)$/;"	f
+on_import_measure_activate	callbacks.c	/^void on_import_measure_activate (GtkMenuItem *menuitem, gpointer user_data)$/;"	f
+on_import_resonance_list_activate	callbacks.c	/^void on_import_resonance_list_activate (GtkMenuItem *menuitem, gpointer user_data)$/;"	f
+on_integrate_spectrum_activate	callbacks.c	/^void on_integrate_spectrum_activate (GtkMenuItem *menuitem, gpointer user_data)$/;"	f
+on_load_spectrum	helpers.c	/^void on_load_spectrum ()$/;"	f
+on_mainwindow_focus_out_event	callbacks.c	/^void on_mainwindow_focus_out_event (GtkWidget *widget, GdkEventFocus *event)$/;"	f
+on_maxfrqentry_changed	callbacks.c	/^gboolean on_maxfrqentry_changed (GtkWidget *entry, GdkEventKey *event, gpointer user_data)$/;"	f
+on_measure_distance_activate	callbacks.c	/^void on_measure_distance_activate (GtkMenuItem *menuitem, gpointer user_data)$/;"	f
+on_minfrqentry_changed	callbacks.c	/^gboolean on_minfrqentry_changed (GtkWidget *entry, GdkEventKey *event, gpointer user_data)$/;"	f
+on_new_activate	callbacks.c	/^void on_new_activate (GtkMenuItem *menuitem, gpointer user_data)$/;"	f
+on_open1_activate	callbacks.c	/^void on_open1_activate (GtkMenuItem *menuitem, gpointer user_data)$/;"	f
+on_open_section_activate	callbacks.c	/^void on_open_section_activate (GtkMenuItem *menuitem, gpointer user_data)$/;"	f
+on_overlay_spectra_activate	callbacks.c	/^void on_overlay_spectra_activate (GtkMenuItem *menuitem, gpointer user_data)$/;"	f
+on_phaseentry_changed	callbacks.c	/^gboolean on_phaseentry_changed (GtkWidget *entry, GdkEventKey *event, gpointer user_data)$/;"	f
+on_preferences_activate	callbacks.c	/^void on_preferences_activate (GtkMenuItem *menuitem, gpointer user_data)$/;"	f
+on_redo_changes_activate	callbacks.c	/^void on_redo_changes_activate (GtkMenuItem *menuitem, gpointer user_data)$/;"	f
+on_reflection_activate	callbacks.c	/^gboolean on_reflection_activate (GtkMenuItem *menuitem, gpointer user_data)$/;"	f
+on_remove_resonance_activate	callbacks.c	/^void on_remove_resonance_activate (GtkMenuItem *menuitem, gpointer user_data)$/;"	f
+on_restreeview_button_press_event	callbacks.c	/^gboolean on_restreeview_button_press_event (GtkWidget *widget, GdkEvent *event)$/;"	f
+on_restreeview_key_press_event	callbacks.c	/^gboolean on_restreeview_key_press_event (GtkWidget *widget, GdkEventKey *event, gpointer user_data)$/;"	f
+on_restreeview_select	callbacks.c	/^void on_restreeview_select (GtkTreeView *treeview, gpointer user_data)$/;"	f
+on_save_activate	callbacks.c	/^void on_save_activate (GtkMenuItem *menuitem, gpointer user_data)$/;"	f
+on_save_as_activate	callbacks.c	/^void on_save_as_activate (GtkMenuItem *menuitem, gpointer user_data)$/;"	f
+on_scaleentry_changed	callbacks.c	/^gboolean on_scaleentry_changed (GtkWidget *entry, GdkEventKey *event, gpointer user_data)$/;"	f
+on_set_frequency_win_activate	callbacks.c	/^void on_set_frequency_win_activate (GtkMenuItem *menuitem, gpointer user_data)$/;"	f
+on_spectral_1st_res_changed	spectral.c	/^void on_spectral_1st_res_changed (GtkSpinButton *spinbutton, gpointer user_data)$/;"	f
+on_spectral_1st_res_keypressed	spectral.c	/^gboolean on_spectral_1st_res_keypressed (GtkWidget *entry, GdkEventKey *event, gpointer user_data)$/;"	f
+on_spectral_bins_changed	spectral.c	/^void on_spectral_bins_changed (GtkSpinButton *spinbutton, gpointer user_data)$/;"	f
+on_spectral_bins_keypressed	spectral.c	/^gboolean on_spectral_bins_keypressed (GtkWidget *entry, GdkEventKey *event, gpointer user_data)$/;"	f
+on_spectral_close_activate	spectral.c	/^void on_spectral_close_activate (GtkMenuItem *menuitem, gpointer user_data)$/;"	f
+on_spectral_export_data	spectral.c	/^gboolean on_spectral_export_data (GtkMenuItem *menuitem, gpointer user_data)$/;"	f
+on_spectral_export_ps	spectral.c	/^gboolean on_spectral_export_ps (GtkMenuItem *menuitem, gpointer user_data)$/;"	f
+on_spectral_fit_button_clicked	spectral.c	/^gboolean on_spectral_fit_button_clicked (GtkWidget *button)$/;"	f
+on_spectral_norm_button_toggled	spectral.c	/^void on_spectral_norm_button_toggled (GtkToggleButton *togglebutton, gpointer user_data)$/;"	f
+on_spectral_predict_button_toggled	spectral.c	/^void on_spectral_predict_button_toggled (GtkToggleButton *togglebutton, gpointer user_data)$/;"	f
+on_spectral_res_sel_change	spectral.c	/^gboolean on_spectral_res_sel_change (GtkMenuItem *menuitem, gpointer user_data)$/;"	f
+on_spectral_scale_change	spectral.c	/^gboolean on_spectral_scale_change (GtkMenuItem *menuitem, gpointer user_data)$/;"	f
+on_spectral_stat_activate	callbacks.c	/^void on_spectral_stat_activate (GtkMenuItem *menuitem, gpointer user_data)$/;"	f
+on_spectral_view_change	spectral.c	/^gboolean on_spectral_view_change (GtkMenuItem *menuitem, gpointer user_data)$/;"	f
+on_tauentry_changed	callbacks.c	/^gboolean on_tauentry_changed (GtkWidget *entry, GdkEventKey *event, gpointer user_data)$/;"	f
+on_transmission_activate	callbacks.c	/^gboolean on_transmission_activate (GtkMenuItem *menuitem, gpointer user_data)$/;"	f
+on_uncheck_all_activate	callbacks.c	/^void on_uncheck_all_activate (GtkMenuItem *menuitem, gpointer user_data)$/;"	f
+on_undo_last_fit_activate	callbacks.c	/^void on_undo_last_fit_activate (GtkMenuItem *menuitem, gpointer user_data)$/;"	f
+on_view_difference_activate	callbacks.c	/^gboolean on_view_difference_activate (GtkMenuItem *menuitem, gpointer user_data)$/;"	f
+on_vna_close_activate	network.c	/^void on_vna_close_activate (GtkMenuItem *menuitem, gpointer user_data)$/;"	f
+on_vna_select_activate	network.c	/^void on_vna_select_activate (GtkButton *button, gpointer user_data)$/;"	f
+on_vna_start_activate	network.c	/^void on_vna_start_activate (GtkMenuItem *menuitem, gpointer user_data)$/;"	f
+on_vna_sweep_mode_change	network.c	/^void on_vna_sweep_mode_change (GtkToggleButton *toggle, gpointer user_data)$/;"	f
+on_zoom_selection_activate	callbacks.c	/^void on_zoom_selection_activate (GtkMenuItem *menuitem, gpointer user_data)$/;"	f
+overlay_add_data	overlay.c	/^gboolean overlay_add_data (DataVector *overlaydata)$/;"	f
+overlay_add_files	overlay.c	/^static gboolean overlay_add_files (GtkWidget *widget, gpointer user_data) $/;"	f	file:
+overlay_add_to_list	overlay.c	/^static void overlay_add_to_list (gchar *filename, guint uid, GdkColor color)$/;"	f	file:
+overlay_close_window	overlay.c	/^gboolean overlay_close_window (GtkWidget *button)$/;"	f
+overlay_color_change	overlay.c	/^gboolean overlay_color_change (GtkWidget *widget, GdkEvent *event)$/;"	f
+overlay_color_column	overlay.c	/^void overlay_color_column (GtkTreeViewColumn *col, GtkCellRenderer *renderer, $/;"	f
+overlay_file	overlay.c	/^gboolean overlay_file (gchar *filename)$/;"	f
+overlay_file_selection	overlay.c	/^void overlay_file_selection ()$/;"	f
+overlay_get_color	overlay.c	/^gboolean overlay_get_color (GdkColor *color, gboolean selected, guint uid, GtkTreeIter *iter)$/;"	f
+overlay_get_data_by_uid	overlay.c	/^DataVector *overlay_get_data_by_uid (guint uid)$/;"	f
+overlay_get_filenames	overlay.c	/^GSList* overlay_get_filenames ()$/;"	f
+overlay_get_iter_by_uid	overlay.c	/^static gboolean overlay_get_iter_by_uid (guint uid, GtkTreeIter *iter)$/;"	f	file:
+overlay_remove_all	overlay.c	/^void overlay_remove_all ()$/;"	f
+overlay_remove_files	overlay.c	/^void overlay_remove_files (GtkWidget *widget, gpointer user_data)$/;"	f
+overlay_remove_from_list	overlay.c	/^static gboolean overlay_remove_from_list (guint uid)$/;"	f	file:
+overlay_selection_changed	overlay.c	/^static void overlay_selection_changed (GtkTreeSelection *treeselection, GtkTreeModel *model)$/;"	f	file:
+overlay_show_window	overlay.c	/^void overlay_show_window ()$/;"	f
+overlay_swap_files	overlay.c	/^void overlay_swap_files (GtkWidget *widget, gpointer user_data)$/;"	f
+param_compare	helpers.c	/^gint param_compare (gconstpointer a_in, gconstpointer b_in)$/;"	f
+parent_class	gtkspectvis.c	/^static GtkWidgetClass *parent_class = NULL;$/;"	v	file:
+parse_commandline	gwignerfit.c	/^void parse_commandline (gint argc, char *argv[])$/;"	f
+phasbut	export.c	/^	GtkToggleButton *idbut, *frqbut, *widbut, *ampbut, *phasbut, *qualbut, *stddevbut;$/;"	m	file:
+prefs_change_win	preferences.c	/^void prefs_change_win ()$/;"	f
+prefs_load	preferences.c	/^void prefs_load (Preferences *prefs)$/;"	f
+prefs_save	preferences.c	/^void prefs_save (Preferences *prefs)$/;"	f
+prefs_set_default	preferences.c	/^void prefs_set_default ()$/;"	f
+qsimp	spectral_numeric.c	/^float qsimp(float (*func)(float,float), float param, float a, float b)$/;"	f
+qualbut	export.c	/^	GtkToggleButton *idbut, *frqbut, *widbut, *ampbut, *phasbut, *qualbut, *stddevbut;$/;"	m	file:
+quit_application	callbacks.c	/^gboolean quit_application (GtkWidget *widget, GdkEvent *event, gpointer data)$/;"	f
+r	spectral_numeric.c	/^typedef struct FCOMPLEX {float r,i;} fcomplex;$/;"	m	struct:FCOMPLEX	file:
+read_datafile	processdata.c	/^gboolean read_datafile (gchar *selected_filename, gboolean called_from_open) $/;"	f
+read_resonancefile	processdata.c	/^gint read_resonancefile (gchar *selected_filename, const gchar *label)$/;"	f
+read_resonancefile_cleanup	processdata.c	605;"	d	file:
+read_resonancefile_cleanup	processdata.c	883;"	d	file:
+remove_resonance	resonancelist.c	/^void remove_resonance (GtkTreeIter iter)$/;"	f
+remove_selected_resonance	resonancelist.c	/^void remove_selected_resonance ()$/;"	f
+reslist_update_widthunit	resonancelist.c	/^void reslist_update_widthunit ()$/;"	f
+resonance_check_all	resonancelist.c	/^void resonance_check_all (gboolean type)$/;"	f
+resonance_toggle_row	resonancelist.c	/^void resonance_toggle_row ()$/;"	f
+save_file	processdata.c	/^gboolean save_file (gchar *filename, gchar *section, gint exists)$/;"	f
+save_file_prepare	processdata.c	/^gboolean save_file_prepare (gchar *selected_filename) $/;"	f
+select_res_by_id	resonancelist.c	/^gboolean select_res_by_id (gint id)$/;"	f
+select_section_dialog	helpers.c	/^gboolean select_section_dialog (gchar *selected_filename, gchar *default_section) $/;"	f
+select_section_ok	callbacks.c	/^gboolean select_section_ok (GtkWidget *button)$/;"	f
+set_busy_cursor	helpers.c	/^void set_busy_cursor (gboolean busy)$/;"	f
+set_icons	gwignerfit.c	/^void set_icons ()$/;"	f
+set_new_main_data	processdata.c	/^void set_new_main_data (DataVector *newdata, gboolean called_from_open)$/;"	f
+set_unsaved_changes	helpers.c	/^void set_unsaved_changes ()$/;"	f
+set_up_resonancelist	resonancelist.c	/^void set_up_resonancelist () $/;"	f
+set_up_undo	helpers.c	/^void set_up_undo ()$/;"	f
+show_about_window	callbacks.c	/^gboolean show_about_window (void)$/;"	f
+show_global_parameters	resonancelist.c	/^void show_global_parameters (GlobalParam *gparam)$/;"	f
+silence_region	processdata.c	/^static void silence_region (DataVector *d, gint n, gint pos, gfloat thresh)$/;"	f	file:
+spect_vis_signals	gtkspectvis.c	/^static guint spect_vis_signals[LAST_SIGNAL] = {0};$/;"	v	file:
+spectral_cal_d3_goe	spectral.c	/^gfloat spectral_cal_d3_goe (gfloat L, gfloat x)$/;"	f
+spectral_cal_d3_gue	spectral.c	/^gfloat spectral_cal_d3_gue (gfloat L, gfloat x)$/;"	f
+spectral_cal_s2_goe	spectral.c	/^gfloat spectral_cal_s2_goe (gfloat L)$/;"	f
+spectral_cal_s2_gue	spectral.c	/^gfloat spectral_cal_s2_gue (gfloat L)$/;"	f
+spectral_delta3	spectral.c	/^static void spectral_delta3 ()$/;"	f	file:
+spectral_fit_weyl	spectral.c	/^static void spectral_fit_weyl (gdouble *res, guint numres, guint offset)$/;"	f	file:
+spectral_get_resonances	spectral.c	/^static gdouble* spectral_get_resonances (guint *numres, gboolean unfold)$/;"	f	file:
+spectral_handle_value_selected	spectral.c	/^gint spectral_handle_value_selected (GtkSpectVis *spectvis, gdouble *xval, gdouble *yval)$/;"	f
+spectral_handle_viewport_changed	spectral.c	/^void spectral_handle_viewport_changed (GtkSpectVis *spectvis, gchar *zoomtype)$/;"	f
+spectral_integrated_nnd	spectral.c	/^static void spectral_integrated_nnd ()$/;"	f	file:
+spectral_length	spectral.c	/^static void spectral_length ()$/;"	f	file:
+spectral_nfluc	spectral.c	/^static void spectral_nfluc ()$/;"	f	file:
+spectral_nnd	spectral.c	/^static void spectral_nnd ()$/;"	f	file:
+spectral_on_area_changed	spectral.c	/^gboolean spectral_on_area_changed (GtkWidget *entry, GdkEventKey *event, gpointer user_data)$/;"	f
+spectral_on_offset_changed	spectral.c	/^gboolean spectral_on_offset_changed (GtkWidget *entry, GdkEventKey *event, gpointer user_data)$/;"	f
+spectral_on_perim_changed	spectral.c	/^gboolean spectral_on_perim_changed (GtkWidget *entry, GdkEventKey *event, gpointer user_data)$/;"	f
+spectral_open_win	spectral.c	/^void spectral_open_win ()$/;"	f
+spectral_remove_graphs	spectral.c	/^static gboolean spectral_remove_graphs ()$/;"	f	file:
+spectral_resonances_changed	spectral.c	/^void spectral_resonances_changed ()$/;"	f
+spectral_sigma2	spectral.c	/^static void spectral_sigma2 ()$/;"	f	file:
+spectral_staircase	spectral.c	/^static void spectral_staircase ()$/;"	f	file:
+spectral_too_few_resonances	spectral.c	/^static void spectral_too_few_resonances ()$/;"	f	file:
+spectral_weyl_val	spectral.c	/^static gdouble spectral_weyl_val (gdouble x)$/;"	f	file:
+start_fit	numeric.c	/^static gint start_fit (gpointer params)$/;"	f	file:
+statusbar_message	helpers.c	/^void statusbar_message (gchar *format, ...)$/;"	f
+statusbar_message_remove	helpers.c	/^static gint statusbar_message_remove (gpointer data)$/;"	f	file:
+stddevbut	export.c	/^	GtkToggleButton *idbut, *frqbut, *widbut, *ampbut, *phasbut, *qualbut, *stddevbut;$/;"	m	file:
+submatrix	nrutil.c	/^double **submatrix(double **a, long oldrl, long oldrh, long oldcl, long oldch,$/;"	f
+submatrix	nrutil.c	/^float **submatrix(a,oldrl,oldrh,oldcl,oldch,newrl,newcl)$/;"	f
+take_current_values	callbacks.c	/^void take_current_values (GtkMenuItem *menuitem, gpointer user_data)$/;"	f
+textview	export.c	/^	GtkWidget *textview;$/;"	m	file:
+trapzd	spectral_numeric.c	/^float trapzd(float (*func)(float,float), float param, float a, float b, int n)$/;"	f
+uncheck_res_out_of_frq_win	resonancelist.c	/^void uncheck_res_out_of_frq_win (gdouble min, gdouble max)$/;"	f
+undo_changes	helpers.c	/^void undo_changes (gchar undo_redo)$/;"	f
+unset_unsaved_changes	helpers.c	/^void unset_unsaved_changes ()$/;"	f
+update_fit_window	helpers.c	/^gboolean update_fit_window (FitWindowParam *fitwinparam)$/;"	f
+update_resonance_list	resonancelist.c	/^void update_resonance_list (GPtrArray *param)$/;"	f
+vector	nrutil.c	/^float *vector(long nl, long nh)$/;"	f
+vector	nrutil.c	/^float *vector(nl,nh)$/;"	f
+view_absolute_part	callbacks.c	/^gboolean view_absolute_part (GtkMenuItem *menuitem, gpointer user_data)$/;"	f
+view_imaginary_part	callbacks.c	/^gboolean view_imaginary_part (GtkMenuItem *menuitem, gpointer user_data)$/;"	f
+view_log_power	callbacks.c	/^gboolean view_log_power (GtkMenuItem *menuitem, gpointer user_data)$/;"	f
+view_phase_part	callbacks.c	/^gboolean view_phase_part (GtkMenuItem *menuitem, gpointer user_data)$/;"	f
+view_real_part	callbacks.c	/^gboolean view_real_part (GtkMenuItem *menuitem, gpointer user_data)$/;"	f
+visualize_background_calc	visualize.c	/^void visualize_background_calc (GtkSpectVisData *data)$/;"	f
+visualize_calculate_difference	visualize.c	/^static void visualize_calculate_difference (ComplexDouble *val, ComplexDouble *diff, guint pos)$/;"	f	file:
+visualize_difference_graph	visualize.c	/^void visualize_difference_graph ()$/;"	f
+visualize_draw_data	visualize.c	/^void visualize_draw_data ()$/;"	f
+visualize_handle_signal_marked	visualize.c	/^gint visualize_handle_signal_marked (GtkSpectVis *spectvis, gdouble *xval, gdouble *yval)$/;"	f
+visualize_handle_viewport_changed	visualize.c	/^void visualize_handle_viewport_changed (GtkSpectVis *spectvis, gchar *zoomtype)$/;"	f
+visualize_newgraph	visualize.c	/^void visualize_newgraph ()$/;"	f
+visualize_remove_difference_graph	visualize.c	/^void visualize_remove_difference_graph ()$/;"	f
+visualize_restore_cursor	visualize.c	/^void visualize_restore_cursor ()$/;"	f
+visualize_stop_background_calc	visualize.c	/^gboolean visualize_stop_background_calc ()$/;"	f
+visualize_theory_graph	visualize.c	/^void visualize_theory_graph ()$/;"	f
+visualize_update_min_max	visualize.c	/^void visualize_update_min_max (gboolean redraw)$/;"	f
+visualize_update_res_bar	visualize.c	/^void visualize_update_res_bar (gboolean redraw)$/;"	f
+visualize_zoom_to_frequency_range	visualize.c	/^void visualize_zoom_to_frequency_range (gdouble min, gdouble max)$/;"	f
+vna_add_data_to_graph	network.c	/^static gboolean vna_add_data_to_graph (DataVector *dvec)$/;"	f	file:
+vna_connect	network.c	/^static int vna_connect (const gchar *host)$/;"	f	file:
+vna_enter	network.c	/^static void vna_enter (int sockfd, char *buf, int len, int addr, int errmask)$/;"	f	file:
+vna_measurement_finished	network.c	/^static gboolean vna_measurement_finished (gpointer data)$/;"	f	file:
+vna_ms_sleep	network.c	/^static void vna_ms_sleep (glong ms)$/;"	f	file:
+vna_receiveall	network.c	/^static int vna_receiveall (int s, char *buf, int len)$/;"	f	file:
+vna_recv_data	network.c	/^static ComplexDouble *vna_recv_data (int points)$/;"	f	file:
+vna_sec_to_hhmmss	network.c	/^static void vna_sec_to_hhmmss (glong sec, gint *h, gint *m, gint *s)$/;"	f	file:
+vna_send_cmd	network.c	/^static int vna_send_cmd (int fd, char *msg, int errmask)$/;"	f	file:
+vna_sendall	network.c	/^static int vna_sendall (int s, char *buf, int len)$/;"	f	file:
+vna_set_netstat	network.c	/^static gboolean vna_set_netstat (gpointer data)$/;"	f	file:
+vna_show_time_estimates	network.c	/^static gboolean vna_show_time_estimates ()$/;"	f	file:
+vna_start	network.c	/^static void vna_start ()$/;"	f	file:
+vna_sweep_cal_sleep	network.c	/^static glong vna_sweep_cal_sleep ()$/;"	f	file:
+vna_sweep_frequency_range	network.c	/^static void vna_sweep_frequency_range ()$/;"	f	file:
+vna_take_snapshot	network.c	/^static void vna_take_snapshot ()$/;"	f	file:
+vna_thread_exit	network.c	/^static void vna_thread_exit (gchar *format, ...)$/;"	f	file:
+vna_update_netstat	network.c	/^static void vna_update_netstat (gchar *format, ...)$/;"	f	file:
+what_to_fit	resonancelist.c	/^void what_to_fit (gint *ia)$/;"	f
+widbut	export.c	/^	GtkToggleButton *idbut, *frqbut, *widbut, *ampbut, *phasbut, *qualbut, *stddevbut;$/;"	m	file:

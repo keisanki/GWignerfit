@@ -1,0 +1,10 @@
+[Desktop Entry]
+Name=GWignerFit
+Comment=Resonance fitprogram
+Comment[de]=Resonanzen Fitprogramm
+Exec=###PREFIX###/bin/gwignerfit
+Icon=###PREFIX###/share/gwignerfit/gwignerfit-48x48.png
+Terminal=false
+Type=Application
+Categories=Application;Science;Physics;GTK
+Encoding=UTF-8
