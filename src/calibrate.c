@@ -70,7 +70,7 @@ static gboolean cal_choose_file (GtkButton *button, gpointer user_data)
 
 	check = 1;
 	if (button == GTK_BUTTON (glade_xml_get_widget (glob->calwin->xmlcal, "cal_out_but")))
-		check = 0;
+		check = 2;
 
 	defaultname = get_defaultname (NULL);
 	filename = get_filename ("Select datafile", defaultname, check);
