@@ -14,8 +14,13 @@ DOCDIR  = doc
 INSTALL = install
 STRIP   = strip
 
+SPEEDOPTIMIZE = "-fomit-frame-pointer -mtune=pentium4"
+
 all:
 	@ for i in $(SUBDIRS); do $(MAKE) GLADEFILE=$(GLADEFILE) ICONPATH=$(ICONPATH) -C $$i $@; done
+
+speed:
+	@ for i in $(SUBDIRS); do $(MAKE) GLADEFILE=$(GLADEFILE) ICONPATH=$(ICONPATH) EXTRACFLAGS=$(SPEEDOPTIMIZE) -C $$i; done
 
 clean:
 	@ for i in $(SUBDIRS); do $(MAKE) -C $$i $@; done

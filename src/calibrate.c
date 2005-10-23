@@ -238,6 +238,7 @@ ComplexDouble c_add (ComplexDouble a, ComplexDouble b)
 
 	c.re = a.re + b.re;
 	c.im = a.im + b.im;
+	c.abs = 0.0;
 
 	return c;
 }
@@ -249,6 +250,7 @@ ComplexDouble c_sub (ComplexDouble a, ComplexDouble b)
 
 	c.re = a.re - b.re;
 	c.im = a.im - b.im;
+	c.abs = 0.0;
 
 	return c;
 }
@@ -260,6 +262,7 @@ ComplexDouble c_mul (ComplexDouble a, ComplexDouble b)
 
 	c.re = a.re*b.re - a.im*b.im;
 	c.im = a.re*b.im + b.re*a.im;
+	c.abs = 0.0;
 
 	return c;
 }
@@ -277,6 +280,7 @@ ComplexDouble c_div (ComplexDouble a, ComplexDouble b)
 	
 	c.re = num.re / denom;
 	c.im = num.im / denom;
+	c.abs = 0.0;
 
 	return c;
 }
@@ -288,6 +292,7 @@ ComplexDouble c_exp (gdouble a)
 
 	c.re = cos (a);
 	c.im = sin (a);
+	c.abs = 0.0;
 
 	return c;
 }

@@ -43,7 +43,8 @@ inline double cmulti_re(ComplexDouble a, ComplexDouble b) {
 void gaussj(double **a, int n, double **b, int m)
 {
 	int *indxc,*indxr,*ipiv;
-	int i,icol,irow,j,k,l,ll;
+	int icol,irow,l;
+	register int k, j, i, ll;
 	double big,dum,pivinv,temp;
 
 	indxc=ivector(1,n);
@@ -97,7 +98,7 @@ void gaussj(double **a, int n, double **b, int m)
 
 void covsrt(double **covar, int ma, int ia[], int mfit)
 {
-	int i,j,k;
+	register int i,j,k;
 	double temp;
 
 	for (i=mfit+1;i<=ma;i++)
@@ -117,7 +118,8 @@ void mrqcof(DataVector *d, double sig[], int ndata, double a[], int ia[],
 	int ma, double **alpha, double beta[], double *chisq,
 	void (*funcs)(double, double [], ComplexDouble *, ComplexDouble [], int))
 {
-	int i,j,k,l,m,mfit=0;
+	int k,mfit=0;
+	register int m, j, l, i;
 	double sig2i;
 	ComplexDouble wt, ymod, dy, *dyda;
 
@@ -159,7 +161,7 @@ void mrqmin(DataVector *d, double sig[], int ndata, double a[], int ia[],
 	int ma, double **covar, double **alpha, double *chisq,
 	void (*funcs)(double, double [], ComplexDouble *, ComplexDouble [], int), double *alamda)
 {
-	int j,k,l;
+	register int j,k,l;
 	static int mfit;
 	static double ochisq,*atry,*beta,*da,**oneda;
 	if (*alamda < 0.0) {

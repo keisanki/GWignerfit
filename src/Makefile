@@ -8,7 +8,7 @@ endif
 SOURCES = gwignerfit.c callbacks.c processdata.c visualize.c helpers.c resonancelist.c compl_mrqmin.c nrutil.c numeric.c gtkspectvis.c overlay.c dnd.c export.c fourier.c gnuplot_i.c spectral.c spectral_numeric.c network.c preferences.c calibrate.c
 OBJS    = ${SOURCES:.c=.o}
 	
-CFLAGS  = `pkg-config gtk+-2.0 --cflags` `pkg-config libglade-2.0 --cflags` `pkg-config gthread-2.0 --cflags` -DGLADEFILE=\"${GLADEFILE}\" -DICONPATH=\"${ICONPATH}\" -O2
+CFLAGS  = `pkg-config gtk+-2.0 --cflags` `pkg-config libglade-2.0 --cflags` `pkg-config gthread-2.0 --cflags` -DGLADEFILE=\"${GLADEFILE}\" -DICONPATH=\"${ICONPATH}\" -O3 ${EXTRACFLAGS}
 LDADD   = `pkg-config gtk+-2.0 --libs` `pkg-config libglade-2.0 --libs` `pkg-config gthread-2.0 --libs`
 DEBUG	= -g -Wall -export-dynamic
 
