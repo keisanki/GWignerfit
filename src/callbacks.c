@@ -985,3 +985,9 @@ void on_calibrate_spectrum_activate (GtkMenuItem *menuitem, gpointer user_data)
 {
 	cal_open_win ();
 }
+
+void on_manual_activate (GtkMenuItem *menuitem, gpointer user_data)
+{
+	dialog_message ("Please refer to the provided user manual, which can be found at\n"
+			"/usr/local/share/doc/gwignerfit/gwignerfit-manual.html");
+}
