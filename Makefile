@@ -14,13 +14,17 @@ DOCDIR  = doc
 INSTALL = install
 STRIP   = strip
 
-SPEEDOPTIMIZE = "-fomit-frame-pointer -mtune=pentium4"
+SPEEDOPTIMIZE = "-march=pentium4"
 
 all:
-	@ for i in $(SUBDIRS); do $(MAKE) GLADEFILE=$(GLADEFILE) ICONPATH=$(ICONPATH) -C $$i $@; done
+	@ for i in $(SUBDIRS); do\
+		$(MAKE) GLADEFILE=$(GLADEFILE) ICONPATH=$(ICONPATH) EXTRACFLAGS="-fomit-frame-pointer $(SPEEDOPTIMIZE)" -C $$i $@;\
+	done
 
-speed:
-	@ for i in $(SUBDIRS); do $(MAKE) GLADEFILE=$(GLADEFILE) ICONPATH=$(ICONPATH) EXTRACFLAGS=$(SPEEDOPTIMIZE) -C $$i; done
+386:
+	@ for i in $(SUBDIRS); do\
+		$(MAKE) GLADEFILE=$(GLADEFILE) ICONPATH=$(ICONPATH) EXTRACFLAGS="-fomit-frame-pointer" -C $$i;\
+	done
 
 clean:
 	@ for i in $(SUBDIRS); do $(MAKE) -C $$i $@; done
@@ -56,7 +60,7 @@ uninstall:
 
 knoppix:
 	$(MAKE) clean
-	$(MAKE) PREFIX=/usr
+	$(MAKE) PREFIX=/usr 386
 	$(MAKE) PREFIX=/usr INSTALLPREFIX=$(KNOPPIXSRC)/usr install
 	$(MAKE) clean
 	$(MAKE) -C doc html
