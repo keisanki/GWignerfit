@@ -919,8 +919,10 @@ static int vna_send_cmd (int fd, char *msg, int errmask)
 
 	/* Get Proxy status reply */
 	while ((vna_receiveall_full (fd, reply, VNA_STAT_LEN, 1) == -1) &&
-	       (recv_tries < 3))
+	       (recv_tries < 5))
 		recv_tries++;
+	if ((recv_tries == 5) && (errmask > 0))
+		vna_thread_exit ("Connection to proxy host timed out (did not receive status reply).");
 
 	reply[VNA_STAT_LEN] = '\0';
 
@@ -1227,23 +1229,32 @@ static void vna_take_snapshot ()
 /* Calculate the ms to wait for a window to be measured */
 static glong vna_sweep_cal_sleep ()
 {
+	glong delta;
+	
 	if (glob->netwin->swpmode == 1)
-		return (380 * glob->netwin->avg + 700 + 0000);
+		delta = 380 * glob->netwin->avg + 700;
 	else
+	{
 		switch (glob->netwin->avg)
 		{
 			case 1: case 2: case 4: case 8: case 16:
-				return (40000);
+				delta = 40000;
 			case 32: case 64:
-				return (45000);
+				delta = 45000;
 			case 128:
-				return (65000);
+				delta = 65000;
 			case 256:
-				return (75000);
+				delta = 75000;
 			default:
 				/* Should not be reached */
-				return (50000);
+				delta = 50000;
 		}
+
+		/* Prevent numerous timeouts */
+		delta += 2000;
+	}
+
+	return delta;
 }
 
 /* Measure a whole frequency range by dividing it into windows */

@@ -62,7 +62,7 @@ LAST_SIGNAL	gtkspectvis.c	/^	LAST_SIGNAL$/;"	e	file:
 MAXIT	spectral_numeric.c	134;"	d	file:
 MAXIT	spectral_numeric.c	64;"	d	file:
 MIN_DATAPOINTS_VIEW	gtkspectvis.c	16;"	d	file:
-NRANSI	compl_mrqmin.c	209;"	d	file:
+NRANSI	compl_mrqmin.c	211;"	d	file:
 NRANSI	compl_mrqmin.c	40;"	d	file:
 NR_END	compl_mrqmin.c	7;"	d	file:
 NR_END	nrutil.c	307;"	d	file:
@@ -94,7 +94,7 @@ SPECTRAL_LENGTH	spectral.c	27;"	d	file:
 SPECTRAL_NND	spectral.c	23;"	d	file:
 SPECTRAL_S2	spectral.c	25;"	d	file:
 SPECTRAL_WEYL	spectral.c	21;"	d	file:
-SWAP	compl_mrqmin.c	114;"	d	file:
+SWAP	compl_mrqmin.c	115;"	d	file:
 SWAP	compl_mrqmin.c	41;"	d	file:
 SWAP	fourier.c	19;"	d	file:
 SWAP	fourier.c	71;"	d	file:
@@ -227,8 +227,8 @@ free_lvector	nrutil.c	/^void free_lvector(unsigned long *v, long nl, long nh)$/;
 free_lvector	nrutil.c	/^void free_lvector(v,nl,nh)$/;"	f
 free_matrix	nrutil.c	/^void free_matrix(float **m, long nrl, long nrh, long ncl, long nch)$/;"	f
 free_matrix	nrutil.c	/^void free_matrix(m,nrl,nrh,ncl,nch)$/;"	f
-free_memory	calibrate.c	383;"	d	file:
-free_memory	calibrate.c	561;"	d	file:
+free_memory	calibrate.c	394;"	d	file:
+free_memory	calibrate.c	579;"	d	file:
 free_submatrix	nrutil.c	/^void free_submatrix(b,nrl,nrh,ncl,nch)$/;"	f
 free_submatrix	nrutil.c	/^void free_submatrix(double **b, long nrl, long nrh, long ncl, long nch)$/;"	f
 free_vector	nrutil.c	/^void free_vector(float *v, long nl, long nh)$/;"	f
@@ -363,6 +363,7 @@ on_import_resonance_list_activate	callbacks.c	/^void on_import_resonance_list_ac
 on_integrate_spectrum_activate	callbacks.c	/^void on_integrate_spectrum_activate (GtkMenuItem *menuitem, gpointer user_data)$/;"	f
 on_load_spectrum	helpers.c	/^void on_load_spectrum ()$/;"	f
 on_mainwindow_focus_out_event	callbacks.c	/^void on_mainwindow_focus_out_event (GtkWidget *widget, GdkEventFocus *event)$/;"	f
+on_manual_activate	callbacks.c	/^void on_manual_activate (GtkMenuItem *menuitem, gpointer user_data)$/;"	f
 on_maxfrqentry_changed	callbacks.c	/^gboolean on_maxfrqentry_changed (GtkWidget *entry, GdkEventKey *event, gpointer user_data)$/;"	f
 on_measure_distance_activate	callbacks.c	/^void on_measure_distance_activate (GtkMenuItem *menuitem, gpointer user_data)$/;"	f
 on_minfrqentry_changed	callbacks.c	/^gboolean on_minfrqentry_changed (GtkWidget *entry, GdkEventKey *event, gpointer user_data)$/;"	f
@@ -524,6 +525,7 @@ vna_enter	network.c	/^static void vna_enter (int sockfd, char *buf, int len, int
 vna_measurement_finished	network.c	/^static gboolean vna_measurement_finished (gpointer data)$/;"	f	file:
 vna_ms_sleep	network.c	/^static void vna_ms_sleep (glong ms)$/;"	f	file:
 vna_receiveall	network.c	/^static int vna_receiveall (int s, char *buf, int len)$/;"	f	file:
+vna_receiveall_full	network.c	/^static int vna_receiveall_full (int s, char *buf, int len, int failok)$/;"	f	file:
 vna_recv_data	network.c	/^static ComplexDouble *vna_recv_data (int points)$/;"	f	file:
 vna_sec_to_hhmmss	network.c	/^static void vna_sec_to_hhmmss (glong sec, gint *h, gint *m, gint *s)$/;"	f	file:
 vna_send_cmd	network.c	/^static int vna_send_cmd (int fd, char *msg, int errmask)$/;"	f	file:
