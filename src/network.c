@@ -1286,7 +1286,7 @@ static void vna_sweep_frequency_range ()
 				netwin->start/1e9, netwin->stop/1e9, netwin->resol/1e3);
 		fprintf (outfh, "# Stimulus settings  : %s, %dx averaging, %s mode\r\n",
 				netwin->param, netwin->avg,
-				netwin->swpmode == 1 ? "ramp" : "sweep");
+				netwin->swpmode == 1 ? "ramp" : "step");
 		if (netwin->comment)
 			fprintf (outfh, "# Comment            : %s\r\n", netwin->comment);
 		fprintf (outfh, DATAHDR);
@@ -1307,7 +1307,7 @@ static void vna_sweep_frequency_range ()
 				netwin->start/1e9, netwin->stop/1e9, netwin->resol/1e3);
 		gzprintf (gzoutfh, "# Stimulus settings  : %s, %dx averaging, %s mode\r\n",
 				netwin->param, netwin->avg,
-				netwin->swpmode == 1 ? "ramp" : "sweep");
+				netwin->swpmode == 1 ? "ramp" : "step");
 		if (netwin->comment)
 			gzprintf (gzoutfh, "# Comment            : %s\r\n", netwin->comment);
 		gzprintf (gzoutfh, DATAHDR);
