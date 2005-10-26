@@ -32,7 +32,7 @@
 #define VNA_STAT_LEN  24	/* Length of status message */
 #define VNA_RARR_LEN  33	/* Length of rarray 'Bytes read' reply */
 #define VNA_CONN_TOUT  5	/* Timeout (in sec) for connect */
-#define VNA_RECV_TOUT 10	/* Timeout (in sec) for recv */
+#define VNA_RECV_TOUT  3	/* Timeout (in sec) for recv */
 #define VNA_ESUCCESS   0	/* Proxy status: Success */
 #define VNA_ESYNTAXE   1	/* Proxy status: Illegal Syntax command */
 #define VNA_ENOLISTE   2	/* Proxy status: Receive when PC was not a listener */
@@ -798,8 +798,10 @@ static void vna_ms_sleep (glong ms)
 	}
 }
 
-/* Receive len bytes into buf. You have to make sure, that buf can hold len bytes! */
-static int vna_receiveall (int s, char *buf, int len)
+/* Receive from socket s len bytes into buf. 
+ * You have to make sure, that buf can hold len bytes! 
+ * Breaks with timeout error message if failok==0. */
+static int vna_receiveall_full (int s, char *buf, int len, int failok)
 {
 	int total = 0;       /* how many bytes we've received */
 	int bytesleft = len; /* how many we have left to receive */
@@ -835,18 +837,29 @@ static int vna_receiveall (int s, char *buf, int len)
 				vna_thread_exit (NULL);
 			}
 		}
+
 		if (! FD_ISSET (s, &fdset))
 		{
 			/* Timeout */
-			if (glob->netwin->sockfd)
+			if (!failok)
 			{
-				if (glob->netwin->type == 1)
-					vna_send_cmd (glob->netwin->sockfd, 
-						"MTA LISTEN "VNA_GBIP" DATA 'RAMP;CONT;'", 0);
-				vna_send_cmd (glob->netwin->sockfd, "MTA LISTEN "VNA_GBIP" GTL", 0);
+				/* Fail with error message and VNA initialization */
+				if (glob->netwin->sockfd)
+				{
+					if (glob->netwin->type == 1)
+						vna_send_cmd (glob->netwin->sockfd, 
+							"MTA LISTEN "VNA_GBIP" DATA 'RAMP;CONT;'", 0);
+					vna_send_cmd (glob->netwin->sockfd, "MTA LISTEN "VNA_GBIP" GTL", 0);
+				}
+				vna_thread_exit ("Connection to proxy host timed out "
+						"(received only %i of %i expected bytes).", total, len);
 			}
-			vna_thread_exit ("Connection to proxy host timed out "
-					"(received only %i of %i expected bytes).", total, len);
+			else
+			{
+				/* Fail silently */
+				DV(printf ("*** Ignored timeout in vna_receiveall_full().\n");)
+				return -1;
+			}
 		}
 		
 		/* Receive data */
@@ -865,6 +878,12 @@ static int vna_receiveall (int s, char *buf, int len)
 		printf ("received: [data not shown]\n");)
 
 	return n==-1?-1:0; /* return -1 on failure, 0 on success */
+}
+
+/* Convenience wrapper for vna_receiveall_full() _with_ timeout */
+static int vna_receiveall (int s, char *buf, int len)
+{
+	return vna_receiveall_full (s, buf, len, 0);
 }
 
 /* Send a whole buffer to the proxy */
@@ -894,11 +913,15 @@ static int vna_send_cmd (int fd, char *msg, int errmask)
 {
 	char reply[VNA_STAT_LEN+1];
 	int status = -1;
+	int recv_tries = 0;
 	
 	vna_sendall (fd, msg, strlen (msg));
 
 	/* Get Proxy status reply */
-	vna_receiveall (fd, reply, VNA_STAT_LEN);
+	while ((vna_receiveall_full (fd, reply, VNA_STAT_LEN, 1) == -1) &&
+	       (recv_tries < 3))
+		recv_tries++;
+
 	reply[VNA_STAT_LEN] = '\0';
 
 	if ((sscanf (reply, "* PROXYMSG: Status %d", &status) != 1) && (errmask > 0))
@@ -1205,7 +1228,7 @@ static void vna_take_snapshot ()
 static glong vna_sweep_cal_sleep ()
 {
 	if (glob->netwin->swpmode == 1)
-		return (380 * glob->netwin->avg + 700);
+		return (380 * glob->netwin->avg + 700 + 0000);
 	else
 		switch (glob->netwin->avg)
 		{
