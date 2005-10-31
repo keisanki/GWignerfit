@@ -11,6 +11,7 @@
 #include "helpers.h"
 #include "processdata.h"
 #include "spectral.h"
+#include "fcomp.h"
 
 extern GlobalData *glob;
 extern GladeXML *gladexml;
@@ -741,8 +742,9 @@ void uncheck_res_out_of_frq_win (gdouble min, gdouble max)
 }
 
 /* Takes all checkboxes and build up the freeparam array for the mrq
- * algorithm. The memory for the 4*glob->numres+NUM_GLOB_PARAM+1 array 
- * needs to be * allocated before calling what_to_fit (). */
+ * algorithm. The memory for the
+ * 4*glob->numres+NUM_GLOB_PARAM+1+3*glob->fcomp->numfcomp 
+ * array needs to be allocated before calling what_to_fit (). */
 void what_to_fit (gint *ia)
 {
 	GtkTreeModel *model = GTK_TREE_MODEL (glob->store);
@@ -750,7 +752,8 @@ void what_to_fit (gint *ia)
 	gboolean fit;
 	gint i, id;
 
-	for (i=0; i<4*glob->numres+NUM_GLOB_PARAM+1; i++) ia[i] = 0;
+	for (i=0; i<TOTALNUMPARAM+1; i++)
+		ia[i] = 0;
 
 	if (gtk_tree_model_get_iter_first (model, &iter))
 	{
@@ -769,7 +772,7 @@ void what_to_fit (gint *ia)
 		gtk_tree_model_get (model, &iter, FIT_WID_COL, &fit, -1);
 		if (fit) ia[4*id+4] = 1;
 
-		while (gtk_tree_model_iter_next(model, &iter))
+		while (gtk_tree_model_iter_next (model, &iter))
 		{
 			gtk_tree_model_get (model, &iter, ID_COL, &id, -1);
 			id--;
@@ -791,19 +794,25 @@ void what_to_fit (gint *ia)
 	if (gtk_toggle_button_get_active (
 		GTK_TOGGLE_BUTTON (glade_xml_get_widget (
 				gladexml, "phase_check"))
-		)) ia[4*glob->numres+1] = 1;
+		)) ia[4*glob->numres+3*glob->fcomp->numfcomp+1] = 1;
+	
 	if (gtk_toggle_button_get_active (
 		GTK_TOGGLE_BUTTON (glade_xml_get_widget (
 				gladexml, "scale_check"))
-		)) ia[4*glob->numres+2] = glob->IsReflection ? 1 : 0;
+		)) ia[4*glob->numres+3*glob->fcomp->numfcomp+2] = glob->IsReflection ? 1 : 0;
+	
 	if (gtk_toggle_button_get_active (
 		GTK_TOGGLE_BUTTON (glade_xml_get_widget (
 				gladexml, "tau_check"))
-		)) ia[4*glob->numres+3] = glob->IsReflection ? 0 : 1;
-	if (glob->IsReflection) ia[4*glob->numres+3] = 0;
+		)) ia[4*glob->numres+3*glob->fcomp->numfcomp+3] = glob->IsReflection ? 0 : 1;
+
+	//if (glob->IsReflection) ia[4*glob->numres+3*glob->fcomp->numfcomp+3] = 0;
+
+	/* Fit FourierComponents */
+	fcomp_what_to_fit (ia + (4*glob->numres+1));
 
 	ia[0] = 0;
-	for (i = 1; i<4*glob->numres+NUM_GLOB_PARAM+1; i++)
+	for (i = 1; i<TOTALNUMPARAM+1; i++)
 		if (ia[i]) ia[0]++;
 }
 

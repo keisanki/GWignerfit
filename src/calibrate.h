@@ -3,4 +3,6 @@
 
 void cal_open_win ();
 
+ComplexDouble c_div (ComplexDouble a, ComplexDouble b);
+
 #endif

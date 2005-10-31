@@ -28,7 +28,7 @@
 #define FIT_EXIT_EARLYSTOP  4
 #define FIT_EXIT_CONVERGED  5
 
-#define C0 299792458.0
+#define C0 299792458.0		/* Vacuum speed of light */
 
 #define NUM_GLOB_PARAM 3	/* Number of global fit parameters */
 
@@ -39,11 +39,14 @@
 #define GLADEFILE "../gwignerfit.glade"
 #endif
 
+/* This is short for the total number of parameters */
+#define TOTALNUMPARAM	4*glob->numres+NUM_GLOB_PARAM+3*glob->fcomp->numfcomp
+
 typedef struct
 {
-	gdouble re;
-	gdouble im;
-	gdouble abs;
+	gdouble re;		/* Real part */
+	gdouble im;		/* Imaginary part */
+	gdouble abs;		/* Absolute value */
 } ComplexDouble;
 
 typedef struct 
@@ -57,31 +60,38 @@ typedef struct
 
 typedef struct
 {
-	gdouble frq;
-	gdouble width;
-	gdouble amp;
-	gdouble phase;
+	gdouble frq;		/* Resonance frequency (in Hz) */
+	gdouble width;		/* Resonance width (in Hz) */
+	gdouble amp;		/* Resonance amplitude (in Hz) */
+	gdouble phase;		/* Resonance phase (in rad) */
 } Resonance;
 
 typedef struct
 {
-	gdouble min;
-	gdouble max;
-	gdouble phase;
-	gdouble scale;
-	gdouble tau;
+	gdouble amp;		/* Amplitude of fourier factor */
+	gdouble tau;		/* Time value of fourier factor (in sec) */
+	gdouble phi;		/* Additional phase shift (in rad) */
+} FourierComponent;
+
+typedef struct
+{
+	gdouble min;		/* Frequency window minimal frequency (in Hz) */
+	gdouble max;		/* Frequency window maximal frequency (in Hz) */
+	gdouble phase;		/* Global phase (in rad) */
+	gdouble scale;		/* Global scale factor */
+	gdouble tau;		/* Global time delau (in sec) */
 } GlobalParam;
 
 typedef struct
 {
 	/* For the background calculation */
-	GThreadPool *pool;
-	GMutex *theorylock;
-	GMutex *flaglock;
-	GAsyncQueue *aqueue1;
-	GAsyncQueue *aqueue2;
+	GThreadPool *pool;		/* ThreadPool for background calculation */
+	GMutex *theorylock;		/* Lock the theory graph against changes */
+	GMutex *flaglock;		/* Lock glob->flag against changes */
+	GAsyncQueue *aqueue1;		/* Pass messages to the calculation thread */
+	GAsyncQueue *aqueue2;		/* Pass messages to the parent thread */
 	/* For the fitting stuff */
-	GMutex *fitwinlock;
+	GMutex *fitwinlock;		/* Lock the FitWindowParam struct */
 } ThreadStuff;
 
 typedef struct
@@ -167,18 +177,28 @@ typedef struct
 
 typedef struct
 {
-	gdouble min;
-	gdouble max;
-	gint numpoints;
-	gint freeparam;
-	gint iter;
-	gint maxiter;
-	gdouble chi;
+	GladeXML *xmlfcomp;		/* Glade XML structure for fcomp_win */
+	GtkListStore *store;		/* ListStore for fcomp data */
+	GPtrArray *data;		/* Array with additions FourierComponents */
+	gint numfcomp;			/* Number of elements in *fcomp */
+	DataVector *quotient;		/* Quotient fft graph data */
+	DataVector *theo;		/* Theory fft graph data */
+} FourierCompWin;
 
-	gdouble *paramarray;
+typedef struct
+{
+	gdouble min;			/* Start frequency of fit */
+	gdouble max;			/* Stop frequency of fit */
+	gint numpoints;			/* Number of points in frequency window */
+	gint freeparam;			/* Number of free parameters */
+	gint iter;			/* Number of current fit iteration */
+	gint maxiter;			/* Maximal number of iterations */
+	gdouble chi;			/* Last Chi^2 value */
+
+	gdouble *paramarray;		/* Current parameterset as an array */
 	gdouble *stddev;		/* Stddev of parameters after fit */
-	gchar text[30];
-	GladeXML *xmlfit;
+	gchar text[30];			/* Text message for status line */
+	GladeXML *xmlfit;		/* GladeXML struct of progess window */
 	GThread *fit_GThread;		/* the handle of the fitting process */
 } FitWindowParam;
 
@@ -211,6 +231,7 @@ typedef struct
 	SpectralWin *spectral;		/* Structure for the spectral window */
 	NetworkWin *netwin;		/* Structure for the network measurement window */
 	CalWin *calwin;			/* Structure for the calibration dialog window */
+	FourierCompWin *fcomp;		/* Structure for the fourier components window */
 } GlobalData;
 
 #endif

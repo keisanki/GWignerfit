@@ -22,6 +22,7 @@
 #include "network.h"
 #include "preferences.h"
 #include "calibrate.h"
+#include "fcomp.h"
 
 extern GlobalData *glob;
 extern GladeXML *gladexml;
@@ -673,7 +674,7 @@ void on_fit_activate (GtkMenuItem *menuitem, gpointer user_data)
 	gint *ia;
 
 	/* ia will be freed by start_fit() */
-	ia = g_new0 (gint, 4*glob->numres+NUM_GLOB_PARAM+1);
+	ia = g_new0 (gint, TOTALNUMPARAM+1);
 
 	/* A backup can never hurt */
 	create_backup ();
@@ -690,7 +691,7 @@ void on_fit_this_resonance_activate (GtkMenuItem *menuitem, gpointer user_data)
 	gint *ia, i, id, j;
 
 	/* ia will be freed by start_fit() */
-	ia = g_new0 (gint, 4*glob->numres+NUM_GLOB_PARAM+1);
+	ia = g_new0 (gint, TOTALNUMPARAM+1);
 
 	id = get_selected_resonance (FALSE);
 
@@ -708,7 +709,7 @@ void on_fit_this_resonance_activate (GtkMenuItem *menuitem, gpointer user_data)
 				ia[4*i+1] = ia[4*i+2] = ia[4*i+3] = ia[4*i+4] = 0;
 		}
 
-		for (j=1; j<=NUM_GLOB_PARAM; j++)
+		for (j=1; j<=NUM_GLOB_PARAM+3*glob->fcomp->numfcomp; j++)
 			ia[4*glob->numres+j] = 0;
 
 		/* ia[0] will hold the number of free parameters */
@@ -909,7 +910,7 @@ void on_estimate_data_noise_activate (GtkMenuItem *menuitem, gpointer user_data)
 
 	if (glob->stddev)
 	{
-		for (i=1; i<=4*glob->numres+NUM_GLOB_PARAM; i++)
+		for (i=1; i<=TOTALNUMPARAM; i++)
 			printf ("%e\n", glob->stddev[i]);
 	}
 	
@@ -984,6 +985,11 @@ void on_import_measure_activate (GtkMenuItem *menuitem, gpointer user_data)
 void on_calibrate_spectrum_activate (GtkMenuItem *menuitem, gpointer user_data)
 {
 	cal_open_win ();
+}
+
+void on_fourier_components_activate (GtkMenuItem *menuitem, gpointer user_data)
+{
+	fcomp_open_win ();
 }
 
 void on_manual_activate (GtkMenuItem *menuitem, gpointer user_data)

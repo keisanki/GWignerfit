@@ -13,6 +13,7 @@
 #include "visualize.h"
 #include "fourier.h"
 #include "spectral.h"
+#include "fcomp.h"
 
 extern GlobalData *glob;
 extern GladeXML *gladexml;
@@ -84,6 +85,7 @@ void visualize_draw_data ()
 	//gtk_spect_vis_redraw (GTK_SPECTVIS (graph));
 
 	fourier_update_main_graphs ();
+	fcomp_update_graph ();
 }
 
 void visualize_theory_graph ()
@@ -114,6 +116,7 @@ void visualize_theory_graph ()
 	visualize_handle_viewport_changed (GTK_SPECTVIS (graph), "u");
 
 	fourier_update_main_graphs ();
+	fcomp_update_graph ();
 }
 
 void visualize_difference_graph ()
@@ -213,14 +216,15 @@ gint visualize_handle_signal_marked (GtkSpectVis *spectvis, gdouble *xval, gdoub
 					trypoints_high = glob->data->len - respos;
 				
 				tmpdata = new_datavector (trypoints_low + trypoints_high);
-				p = g_new (gdouble, 4*glob->numres+NUM_GLOB_PARAM+1);
-				create_param_array (glob->param, glob->gparam, glob->numres, p);
+				p = g_new (gdouble, TOTALNUMPARAM+1);
+				create_param_array (glob->param, glob->fcomp->data, glob->gparam, 
+						glob->numres, glob->fcomp->numfcomp, p);
 				
 				for (i=respos-trypoints_low; i<respos+trypoints_high; i++)
 				{
 					tmpdata->x[i-respos+trypoints_low] = glob->data->x[i];
 
-					y = ComplexWigner(glob->data->x[i], p, 4*glob->numres+NUM_GLOB_PARAM);
+					y = ComplexWigner(glob->data->x[i], p, TOTALNUMPARAM);
 					tmpdata->y[i-respos+trypoints_low].abs = 
 						glob->data->y[i].abs - y.abs + glob->IsReflection*glob->gparam->scale;
 					tmpdata->y[i-respos+trypoints_low].re  = 
@@ -293,6 +297,7 @@ gint visualize_handle_signal_marked (GtkSpectVis *spectvis, gdouble *xval, gdoub
 
 			uncheck_res_out_of_frq_win (glob->gparam->min, glob->gparam->max);
 			visualize_update_min_max (TRUE);
+			fcomp_update_graph ();
 			statusbar_message ("Frequency range adjusted");
 
 			g_mutex_unlock (glob->threads->flaglock);
@@ -630,15 +635,16 @@ void visualize_background_calc (GtkSpectVisData *data)
 	if (!glob->theory) return;
 
 	theoryY = glob->theory->y;
-	p = g_new (gdouble, 4*glob->numres+NUM_GLOB_PARAM+1);
-	create_param_array (glob->param, glob->gparam, glob->numres, p); 
+	p = g_new (gdouble, TOTALNUMPARAM+1);
+	create_param_array (glob->param, glob->fcomp->data, glob->gparam, 
+			glob->numres, glob->fcomp->numfcomp, p);
 
 	i = data->xmax_arraypos;
 	while (i < glob->theory->len)
 	{
 		if (theoryY[i].abs == -1001)
 		{
-			theoryY[i] = ComplexWigner(glob->data->x[i], p, 4*glob->numres+NUM_GLOB_PARAM);
+			theoryY[i] = ComplexWigner(glob->data->x[i], p, TOTALNUMPARAM);
 			if (glob->viewdifference)
 				visualize_calculate_difference (&theoryY[i], &theoryY[i], i);
 
@@ -661,7 +667,7 @@ void visualize_background_calc (GtkSpectVisData *data)
 	{
 		if (theoryY[i].abs == -1001)
 		{
-			theoryY[i] = ComplexWigner(glob->data->x[i], p, 4*glob->numres+NUM_GLOB_PARAM);
+			theoryY[i] = ComplexWigner(glob->data->x[i], p, TOTALNUMPARAM);
 			if (glob->viewdifference)
 				visualize_calculate_difference (&theoryY[i], &theoryY[i], i);
 
@@ -772,8 +778,9 @@ void visualize_handle_viewport_changed (GtkSpectVis *spectvis, gchar *zoomtype)
 		view = spectvis->view;
 
 		theoryY = glob->theory->y;
-		p = g_new (gdouble, 4*glob->numres+NUM_GLOB_PARAM+1);
-		create_param_array (glob->param, glob->gparam, glob->numres, p); 
+		p = g_new (gdouble, TOTALNUMPARAM+1);
+		create_param_array (glob->param, glob->fcomp->data, glob->gparam, 
+				glob->numres, glob->fcomp->numfcomp, p);
 
 		g_mutex_lock (glob->threads->theorylock);
 
@@ -782,7 +789,7 @@ void visualize_handle_viewport_changed (GtkSpectVis *spectvis, gchar *zoomtype)
 			i--;
 		while ((i <= xmaxa) && (i < glob->data->len) && (theoryY[i].abs < -1000))
 		{
-			theoryY[i] = ComplexWigner (glob->data->x[i], p, 4*glob->numres+NUM_GLOB_PARAM);
+			theoryY[i] = ComplexWigner (glob->data->x[i], p, TOTALNUMPARAM);
 			if (glob->viewdifference)
 				visualize_calculate_difference (&theoryY[i], &theoryY[i], i);
 			flag = TRUE;
@@ -794,7 +801,7 @@ void visualize_handle_viewport_changed (GtkSpectVis *spectvis, gchar *zoomtype)
 			i++;
 		while ((i > xmina) && (i >= 0) && (theoryY[i].abs < -1000))
 		{
-			theoryY[i] = ComplexWigner (glob->data->x[i], p, 4*glob->numres+NUM_GLOB_PARAM);
+			theoryY[i] = ComplexWigner (glob->data->x[i], p, TOTALNUMPARAM);
 			if (glob->viewdifference)
 				visualize_calculate_difference (&theoryY[i], &theoryY[i], i);
 			flag = TRUE;
@@ -857,8 +864,9 @@ void visualize_zoom_to_frequency_range (gdouble min, gdouble max)
 
 	/* Recalculate the theory values where necessary */
 	theoryY = glob->theory->y;
-	p = g_new (gdouble, 4*glob->numres+NUM_GLOB_PARAM+1);
-	create_param_array (glob->param, glob->gparam, glob->numres, p); 
+	p = g_new (gdouble, TOTALNUMPARAM+1);
+	create_param_array (glob->param, glob->fcomp->data, glob->gparam, 
+			glob->numres, glob->fcomp->numfcomp, p);
 
 	g_mutex_lock (glob->threads->theorylock);
 	i = xmina;
@@ -867,7 +875,7 @@ void visualize_zoom_to_frequency_range (gdouble min, gdouble max)
 	{
 		if (theoryY[i].abs == -1001)
 		{
-			theoryY[i] = ComplexWigner(glob->data->x[i], p, 4*glob->numres+NUM_GLOB_PARAM);
+			theoryY[i] = ComplexWigner(glob->data->x[i], p, TOTALNUMPARAM);
 			if (glob->viewdifference)
 				visualize_calculate_difference (&theoryY[i], &theoryY[i], i);
 		}

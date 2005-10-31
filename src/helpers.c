@@ -14,6 +14,7 @@
 #include "processdata.h"
 #include "fourier.h"
 #include "spectral.h"
+#include "fcomp.h"
 
 /* Global variables */
 extern GladeXML *gladexml;
@@ -584,17 +585,21 @@ gint param_compare (gconstpointer a_in, gconstpointer b_in)
 void set_up_undo ()
 {
 	glob->oldparam = (void *) g_malloc (
-			sizeof (gint) +						/* number of resonances */
-			sizeof (double) * (4*glob->numres+NUM_GLOB_PARAM+1)	/* glob->param & glob->gparam */
+			sizeof (gint) +				/* number of resonances */
+			sizeof (gint) +				/* number of FourierComponents */
+			sizeof (double) * (TOTALNUMPARAM+1)	/* glob->param & glob->gparam */
 		);
 
 	if (!glob->oldparam) return;
 
 	/* Copy numres */
-	*((gint *) glob->oldparam) = glob->numres;
+	*((gint *) glob->oldparam + 0) = glob->numres;
+	*((gint *) glob->oldparam + 1) = glob->fcomp->numfcomp;
 
 	/* Copy param & gparam */
-	create_param_array (glob->param, glob->gparam, glob->numres, (double *) (glob->oldparam+sizeof(gint)));
+	create_param_array (glob->param, glob->fcomp->data, glob->gparam, 
+			glob->numres, glob->fcomp->numfcomp,
+			(double *) (glob->oldparam+2*sizeof(gint)));
 
 	gtk_widget_set_sensitive (glade_xml_get_widget (gladexml, "undo_last_fit"), TRUE);
 	gtk_widget_set_sensitive (glade_xml_get_widget (gladexml, "redo_changes"),  FALSE);
@@ -613,8 +618,9 @@ void disable_undo ()
 /* Revert to the old parameter set. */
 void undo_changes (gchar undo_redo)
 {
-	gint numres, i;
+	gint numres, numfcomp, i;
 	Resonance *res;
+	FourierComponent *fcomp;
 	gdouble *param;
 	void *oldparamset;
 
@@ -624,15 +630,18 @@ void undo_changes (gchar undo_redo)
 		return;
 	}
 
+	visualize_stop_background_calc ();
+
 	/* Save the parameterset we want to restore so that the current
 	 * parameters can be stored in glob->oldparam for redo/undo. */
 	oldparamset = glob->oldparam;
 	set_up_undo ();
 	
-	param = (gdouble *)(oldparamset+sizeof(gint));
+	param = (gdouble *)(oldparamset+2*sizeof(gint));
 	
 	/* Restore numres */
-	numres = *((gint *) oldparamset);
+	numres   = *((gint *) oldparamset + 0);
+	numfcomp = *((gint *) oldparamset + 1);
 
 	/* Has the number of resonances changed? */
 	if (numres != glob->numres)
@@ -641,7 +650,7 @@ void undo_changes (gchar undo_redo)
 		clear_resonancelist ();
 		g_ptr_array_foreach (glob->param, (GFunc) g_free, NULL);
 		g_ptr_array_free (glob->param, TRUE);
-		glob->param = g_ptr_array_new();
+		glob->param = g_ptr_array_new ();
 
 		/* and populate it */
 		for (i=0; i<numres; i++)
@@ -655,21 +664,58 @@ void undo_changes (gchar undo_redo)
 
 			add_resonance_to_list (res);
 		}
+
+		glob->numres = numres;
 	}
 	else
 	{
 		/* No, just overwrite the old parameters */
-		create_param_structs (glob->param, glob->gparam, (double *) (oldparamset+sizeof(gint)), numres);
+		create_param_structs (glob->param, NULL, NULL, param, numres, numfcomp);
 		update_resonance_list (glob->param);
 	}
+
+	/* Set global parameters */
+	glob->gparam->phase = param[4*numres+3*numfcomp+1];
+	glob->gparam->scale = param[4*numres+3*numfcomp+2];
+	glob->gparam->tau   = param[4*numres+3*numfcomp+3];
+
+	/* Has the number of FourierComponents changed? */
+	if (numfcomp != glob->fcomp->numfcomp)
+	{
+		/* Yes */
+
+		/* rebuild list */
+		g_ptr_array_foreach (glob->fcomp->data, (GFunc) g_free, NULL);
+		g_ptr_array_free (glob->fcomp->data, TRUE);
+		glob->fcomp->data = g_ptr_array_new ();
+
+		/* and populate it */
+		for (i=0; i<numfcomp; i++)
+		{
+			fcomp = g_new (FourierComponent, 1);
+
+			fcomp->amp = param[4*numres+3*i+1];
+			fcomp->tau = param[4*numres+3*i+2];
+			fcomp->phi = param[4*numres+3*i+3];
+
+			fcomp_add_component (fcomp, 0);
+		}
+		
+		glob->fcomp->numfcomp = numfcomp;
+	}
+	else
+	{
+		/* No */
+		create_param_structs (NULL, glob->fcomp->data, NULL, param, numres, numfcomp);
+	}
+	
 	g_free (oldparamset);
 
 	show_global_parameters (glob->gparam);
 
-	glob->numres = numres;
-
 	visualize_update_res_bar (FALSE);
 	visualize_theory_graph ();
+	fcomp_update_list ();
 	spectral_resonances_changed ();
 
 	/* Invalidate any error estimates. */
@@ -751,7 +797,7 @@ gboolean check_and_take_parameters (gdouble *p)
 	gchar *text;
 	gboolean all_taken = TRUE;
 
-	p_new = g_new (gdouble, 4*glob->numres+NUM_GLOB_PARAM+1);
+	p_new = g_new (gdouble, TOTALNUMPARAM+1);
 
 	for (i=0; i<glob->numres; i++)
 	{
@@ -861,24 +907,26 @@ gboolean check_and_take_parameters (gdouble *p)
 		}
 	} /* end of for loop over resonances */
 
-	for (i=0; i<NUM_GLOB_PARAM; i++)
+	/* Copy all parameters (without error estimates) */
+	for (i=0; i<NUM_GLOB_PARAM+3*glob->fcomp->numfcomp; i++)
 		p_new[4*glob->numres+1+i] = p[4*glob->numres+1+i];
 
 	disable_undo ();
 	set_up_undo ();
 
-	create_param_structs (glob->param, glob->gparam, p_new, glob->numres);
+	create_param_structs (glob->param, glob->fcomp->data, glob->gparam, 
+			p_new, glob->numres, glob->fcomp->numfcomp);
 
 	/* Need to do this before copying the error data */
 	set_unsaved_changes ();
 
 	/* Handle the parameter error data */
 	g_free (glob->stddev);
-	if ((all_taken) && (p[4*glob->numres+NUM_GLOB_PARAM + 1] != -1))
+	if ((all_taken) && (p[TOTALNUMPARAM + 1] != -1))
 	{
-		glob->stddev = g_new (gdouble, 4*glob->numres+NUM_GLOB_PARAM+1);
-		for (i=1; i<=4*glob->numres+NUM_GLOB_PARAM; i++)
-			glob->stddev[i] = p[4*glob->numres+NUM_GLOB_PARAM + i];
+		glob->stddev = g_new (gdouble, TOTALNUMPARAM+1);
+		for (i=1; i<=TOTALNUMPARAM; i++)
+			glob->stddev[i] = p[TOTALNUMPARAM + i];
 	}
 	else
 		glob->stddev = NULL;
@@ -894,6 +942,7 @@ gboolean check_and_take_parameters (gdouble *p)
 
 	update_resonance_list (glob->param);
 	show_global_parameters (glob->gparam);
+	fcomp_update_list ();
 	visualize_theory_graph ();
 
 	return FALSE;
@@ -910,6 +959,7 @@ void on_load_spectrum ()
 	gtk_widget_set_sensitive (glade_xml_get_widget (gladexml, "integrate_spectrum"), TRUE);
 	gtk_widget_set_sensitive (glade_xml_get_widget (gladexml, "fourier_transform"), TRUE);
 	gtk_widget_set_sensitive (glade_xml_get_widget (gladexml, "fourier_transform_window"), TRUE);
+	gtk_widget_set_sensitive (glade_xml_get_widget (gladexml, "fourier_components"), TRUE);
 
 	on_fft_close_activate (NULL, NULL);
 }
@@ -925,6 +975,7 @@ void on_delete_spectrum ()
 	gtk_widget_set_sensitive (glade_xml_get_widget (gladexml, "integrate_spectrum"), FALSE);
 	gtk_widget_set_sensitive (glade_xml_get_widget (gladexml, "fourier_transform"), FALSE);
 	gtk_widget_set_sensitive (glade_xml_get_widget (gladexml, "fourier_transform_window"), FALSE);
+	gtk_widget_set_sensitive (glade_xml_get_widget (gladexml, "fourier_components"), TRUE);
 
 	on_fft_close_activate (NULL, NULL);
 }

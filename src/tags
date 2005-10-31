@@ -3,7 +3,7 @@
 !_TAG_PROGRAM_AUTHOR	Darren Hiebert	/dhiebert@users.sourceforge.net/
 !_TAG_PROGRAM_NAME	Exuberant Ctags	//
 !_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
-!_TAG_PROGRAM_VERSION	5.5.4	//
+!_TAG_PROGRAM_VERSION	5.5	//
 ADD_MARK_DISTANCE	gtkspectvis.c	17;"	d	file:
 AMP_COL	export.c	/^	FRQ_COL, WID_COL, AMP_COL, PHAS_COL,$/;"	e	file:
 AMP_COL	resonancelist.c	/^	FRQ_COL, WID_COL, AMP_COL, PHAS_COL,$/;"	e	file:
@@ -14,7 +14,7 @@ COLOR_POISSON	spectral.c	29;"	d	file:
 COORD_BORDER_DIST	gtkspectvis.c	15;"	d	file:
 Cadd	spectral_numeric.c	/^static fcomplex Cadd(fcomplex a, fcomplex b)$/;"	f	file:
 Cdiv	spectral_numeric.c	/^static fcomplex Cdiv(fcomplex a, fcomplex b)$/;"	f	file:
-CheckAmplitudes	numeric.c	/^void CheckAmplitudes (gdouble p[], gint numres)$/;"	f
+CheckAmplitudes	numeric.c	/^void CheckAmplitudes (gdouble p[], gint numres, gint numfcomp)$/;"	f
 Cmul	spectral_numeric.c	/^static fcomplex Cmul(fcomplex a, fcomplex b)$/;"	f	file:
 Complex	spectral_numeric.c	/^static fcomplex Complex(float re, float im)$/;"	f	file:
 ComplexWigner	numeric.c	/^ComplexDouble ComplexWigner (double x, double a[], int ma) {$/;"	f
@@ -29,6 +29,14 @@ EULER	spectral_numeric.c	133;"	d	file:
 EULER	spectral_numeric.c	63;"	d	file:
 ExportTextviewData	export.c	/^} ExportTextviewData;$/;"	t	file:
 FCOMPLEX	spectral_numeric.c	/^typedef struct FCOMPLEX {float r,i;} fcomplex;$/;"	s	file:
+FCOMP_AMP_COL	fcomp.c	/^	FCOMP_AMP_COL, FCOMP_TAU_COL, FCOMP_PHI_COL,$/;"	e	file:
+FCOMP_FIT_AMP_COL	fcomp.c	/^	FCOMP_FIT_AMP_COL, FCOMP_FIT_TAU_COL, FCOMP_FIT_PHI_COL,$/;"	e	file:
+FCOMP_FIT_PHI_COL	fcomp.c	/^	FCOMP_FIT_AMP_COL, FCOMP_FIT_TAU_COL, FCOMP_FIT_PHI_COL,$/;"	e	file:
+FCOMP_FIT_TAU_COL	fcomp.c	/^	FCOMP_FIT_AMP_COL, FCOMP_FIT_TAU_COL, FCOMP_FIT_PHI_COL,$/;"	e	file:
+FCOMP_ID_COL	fcomp.c	/^	FCOMP_ID_COL = 0,$/;"	e	file:
+FCOMP_N_COLUMNS	fcomp.c	/^	FCOMP_N_COLUMNS$/;"	e	file:
+FCOMP_PHI_COL	fcomp.c	/^	FCOMP_AMP_COL, FCOMP_TAU_COL, FCOMP_PHI_COL,$/;"	e	file:
+FCOMP_TAU_COL	fcomp.c	/^	FCOMP_AMP_COL, FCOMP_TAU_COL, FCOMP_PHI_COL,$/;"	e	file:
 FIT_AMP_COL	export.c	/^	FIT_FRQ_COL, FIT_WID_COL, FIT_AMP_COL, FIT_PHAS_COL,$/;"	e	file:
 FIT_AMP_COL	resonancelist.c	/^	FIT_FRQ_COL, FIT_WID_COL, FIT_AMP_COL, FIT_PHAS_COL,$/;"	e	file:
 FIT_FRQ_COL	export.c	/^	FIT_FRQ_COL, FIT_WID_COL, FIT_AMP_COL, FIT_PHAS_COL,$/;"	e	file:
@@ -71,7 +79,7 @@ N_COLUMNS	export.c	/^	N_COLUMNS$/;"	e	file:
 N_COLUMNS	overlay.c	/^	N_COLUMNS$/;"	e	file:
 N_COLUMNS	resonancelist.c	/^	N_COLUMNS$/;"	e	file:
 NewSpectVis	visualize.c	/^GtkWidget *NewSpectVis (gchar *widget_name, gchar *string1, gchar *string2, gint int1, gint int2)$/;"	f
-NormalisePhase	processdata.c	/^double NormalisePhase(double p)$/;"	f
+NormalisePhase	processdata.c	/^double NormalisePhase (double p)$/;"	f
 ONE	spectral_numeric.c	139;"	d	file:
 ONE	spectral_numeric.c	69;"	d	file:
 OVERLAY_COLOR_B	overlay.c	/^	OVERLAY_COLOR_B,$/;"	e	file:
@@ -156,7 +164,7 @@ convert_matrix	nrutil.c	/^float **convert_matrix(a,nrl,nrh,ncl,nch)$/;"	f
 covsrt	compl_mrqmin.c	/^void covsrt(double **covar, int ma, int ia[], int mfit)$/;"	f
 create_backup	helpers.c	/^void create_backup ()$/;"	f
 create_param_array	numeric.c	/^void create_param_array (GPtrArray *param, GlobalParam *gparam, gint numres, double *p)$/;"	f
-create_param_structs	numeric.c	/^void create_param_structs (GPtrArray *param, GlobalParam *gparam, double *p, gint numres)$/;"	f
+create_param_structs	numeric.c	/^void create_param_structs (GPtrArray *param, GPtrArray *fcomp, GlobalParam *gparam, double *p, gint numres, gint numfcomp)$/;"	f
 cvector	nrutil.c	/^unsigned char *cvector(long nl, long nh)$/;"	f
 cvector	nrutil.c	/^unsigned char *cvector(nl,nh)$/;"	f
 delete_backup	helpers.c	/^void delete_backup ()$/;"	f
@@ -181,6 +189,13 @@ export_text_to_view	export.c	/^static void export_text_to_view (GtkWidget *textv
 export_theory_graph_data	export.c	/^gboolean export_theory_graph_data (char *filename)$/;"	f
 f3tensor	nrutil.c	/^double ***f3tensor(long nrl, long nrh, long ncl, long nch, long ndl, long ndh)$/;"	f
 f3tensor	nrutil.c	/^float ***f3tensor(nrl,nrh,ncl,nch,ndl,ndh)$/;"	f
+fcomp_add_component	fcomp.c	/^void fcomp_add_component (FourierComponent *fcomp, gint id)$/;"	f
+fcomp_cell_edited_callback	fcomp.c	/^static gboolean fcomp_cell_edited_callback (GtkCellRendererText *cell, const gchar *path, gchar *text, gpointer data)$/;"	f	file:
+fcomp_cell_toggle_callback	fcomp.c	/^static void fcomp_cell_toggle_callback (GtkCellRendererToggle *cell, gchar *path, gpointer data)$/;"	f	file:
+fcomp_open_win	fcomp.c	/^void fcomp_open_win ()$/;"	f
+fcomp_update_graph	fcomp.c	/^void fcomp_update_graph ()$/;"	f
+fcomp_update_list	fcomp.c	/^void fcomp_update_list ()$/;"	f
+fcomp_win_close	fcomp.c	/^gboolean fcomp_win_close (GtkWidget *button)$/;"	f
 fcomplex	spectral_numeric.c	/^typedef struct FCOMPLEX {float r,i;} fcomplex;$/;"	t	file:
 file_is_writeable	helpers.c	/^gboolean file_is_writeable (gchar *filename)$/;"	f
 find_isolated_resonances	processdata.c	/^gint find_isolated_resonances (gfloat thresh)$/;"	f
@@ -352,6 +367,7 @@ on_fft_measure_distance_activate	fourier.c	/^void on_fft_measure_distance_activa
 on_find_isolated_resonances_activate	callbacks.c	/^void on_find_isolated_resonances_activate (GtkMenuItem *menuitem, gpointer user_data)$/;"	f
 on_fit_activate	callbacks.c	/^void on_fit_activate (GtkMenuItem *menuitem, gpointer user_data)$/;"	f
 on_fit_this_resonance_activate	callbacks.c	/^void on_fit_this_resonance_activate (GtkMenuItem *menuitem, gpointer user_data)$/;"	f
+on_fourier_components_activate	callbacks.c	/^void on_fourier_components_activate (GtkMenuItem *menuitem, gpointer user_data)$/;"	f
 on_fourier_export_meas_data	fourier.c	/^void on_fourier_export_meas_data (GtkMenuItem *menuitem, gpointer user_data)$/;"	f
 on_fourier_export_ps	fourier.c	/^gboolean on_fourier_export_ps (GtkMenuItem *menuitem, gpointer user_data)$/;"	f
 on_fourier_export_theo_data	fourier.c	/^void on_fourier_export_theo_data (GtkMenuItem *menuitem, gpointer user_data)$/;"	f
@@ -439,8 +455,8 @@ quit_application	callbacks.c	/^gboolean quit_application (GtkWidget *widget, Gdk
 r	spectral_numeric.c	/^typedef struct FCOMPLEX {float r,i;} fcomplex;$/;"	m	struct:FCOMPLEX	file:
 read_datafile	processdata.c	/^gboolean read_datafile (gchar *selected_filename, gboolean called_from_open) $/;"	f
 read_resonancefile	processdata.c	/^gint read_resonancefile (gchar *selected_filename, const gchar *label)$/;"	f
-read_resonancefile_cleanup	processdata.c	605;"	d	file:
-read_resonancefile_cleanup	processdata.c	883;"	d	file:
+read_resonancefile_cleanup	processdata.c	606;"	d	file:
+read_resonancefile_cleanup	processdata.c	905;"	d	file:
 remove_resonance	resonancelist.c	/^void remove_resonance (GtkTreeIter iter)$/;"	f
 remove_selected_resonance	resonancelist.c	/^void remove_selected_resonance ()$/;"	f
 reslist_update_widthunit	resonancelist.c	/^void reslist_update_widthunit ()$/;"	f

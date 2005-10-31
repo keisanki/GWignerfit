@@ -18,6 +18,7 @@
 #include "overlay.h"
 #include "fourier.h"
 #include "spectral.h"
+#include "fcomp.h"
 
 extern GlobalData *glob;
 extern GladeXML *gladexml;
@@ -62,7 +63,7 @@ char IsReflectionSpectrum (DataVector *d)
 	return 1;
 }
 
-double NormalisePhase(double p)
+double NormalisePhase (double p)
 {
 	p = fmod(p, 2*M_PI);
 	if (p > M_PI) p -= 2*M_PI;
@@ -148,7 +149,7 @@ void calculate_global_paramters (DataVector *d, GlobalParam *gparam)
 /* Returns TRUE if the first non-comment, non-empty file contains three doubles */
 gboolean is_datafile (gchar *filename)
 {
-	gchar dataline[100];
+	gchar dataline[200];
 	gdouble a=0, b, c;
 #ifdef NO_ZLIB
 	FILE *datafile;
@@ -174,11 +175,11 @@ gboolean is_datafile (gchar *filename)
 
 #ifdef NO_ZLIB
 	while (!feof (datafile)) {
-		if (!(fgets (dataline, 99, datafile)))
+		if (!(fgets (dataline, 199, datafile)))
 			continue;
 #else
 	while (!gzeof (datafile)) {
-		if (!(gzgets (datafile, dataline, 99)))
+		if (!(gzgets (datafile, dataline, 199)))
 			continue;
 #endif
 
@@ -252,7 +253,7 @@ gboolean make_unique_dataset (DataVector *data)
 
 DataVector *import_datafile (gchar *filename, gboolean interactive)
 {
-	gchar dataline[100], *basename;
+	gchar dataline[200], *basename;
 	DataVector *data, *testvec;
 #ifdef NO_ZLIB
 	FILE *datafile;
@@ -320,11 +321,11 @@ DataVector *import_datafile (gchar *filename, gboolean interactive)
 	numpoints = 0;
 #ifdef NO_ZLIB
 	while (!feof (datafile)) {
-		if (!(fgets (dataline, 99, datafile)))
+		if (!(fgets (dataline, 199, datafile)))
 			continue;
 #else
 	while (!gzeof (datafile)) {
-		if (!(gzgets (datafile, dataline, 99)))
+		if (!(gzgets (datafile, dataline, 199)))
 			continue;
 #endif
 
@@ -401,11 +402,11 @@ DataVector *import_datafile (gchar *filename, gboolean interactive)
 	numpoints = 0;
 #ifdef NO_ZLIB
 	while (!feof (datafile)) {
-		if (!(fgets (dataline, 99, datafile)))
+		if (!(fgets (dataline, 199, datafile)))
 			continue;
 #else
 	while (!gzeof (datafile)) {
-		if (!(gzgets (datafile, dataline, 99)))
+		if (!(gzgets (datafile, dataline, 199)))
 			continue;
 #endif
 
@@ -620,6 +621,7 @@ gint read_resonancefile (gchar *selected_filename, const gchar *label)
 	gdouble tauerr=0.0, scaleerr=0.0, gphaseerr=0.0;
 	gint numres=0, pos=0, flag=0, i, ovrlaynum=0;
 	Resonance *resonance=NULL;
+	FourierComponent *fcomp=NULL;
 	GPtrArray *ovrlays;
 	GArray *stddev;
 
@@ -637,9 +639,14 @@ gint read_resonancefile (gchar *selected_filename, const gchar *label)
 	disable_undo ();
 	clear_resonancelist ();
 
-	//g_ptr_array_foreach (glob->param, (GFunc) g_free, NULL);
+	g_ptr_array_foreach (glob->param, (GFunc) g_free, NULL);
 	g_ptr_array_free (glob->param, TRUE);
-	glob->param = g_ptr_array_new();
+	glob->param = g_ptr_array_new ();
+
+	g_ptr_array_foreach (glob->fcomp->data, (GFunc) g_free, NULL);
+	g_ptr_array_free (glob->fcomp->data, TRUE);
+	glob->fcomp->data = g_ptr_array_new ();
+	glob->fcomp->numfcomp = 0;
 
 	line = g_new0 (gchar, 256);
 	text = g_new0 (gchar, 256);
@@ -779,6 +786,21 @@ gint read_resonancefile (gchar *selected_filename, const gchar *label)
 					  return -1;
 				  }
 				  break;
+				case 4:
+				  if (!strncmp(command, "fcomp", 200)) 
+				  {
+					fcomp = g_new (FourierComponent, 1);
+					fcomp->amp = frq;
+					fcomp->tau = wid / 1e9;
+					fcomp->phi = amp / 180*M_PI;
+					fcomp_add_component (fcomp, 0);
+				  }
+				  else { 
+					  dialog_message("Error: Unrecognized command '%s' in line %i.\n", command, pos);
+					  read_resonancefile_cleanup;
+					  return -1;
+				  }
+				  break;
 				case 5:
 				  if (!strncmp(command, "res", 200)) {
 					resonance = g_new (Resonance, 1);
@@ -889,6 +911,7 @@ gboolean save_file (gchar *filename, gchar *section, gint exists)
 	GSList *overlays, *overlayspos;
 	FILE *datafile;	
 	Resonance *res;
+	FourierComponent *fcomp;
 	gint i;
 
 	newline = g_new0 (gchar, 3);
@@ -1023,14 +1046,28 @@ gboolean save_file (gchar *filename, gchar *section, gint exists)
 	{
 		/* Write the parameters without errors */
 		fprintf (datafile, "phase\t%f%s", NormalisePhase(glob->gparam->phase)/M_PI*180, newline);
-		if ( glob->IsReflection) fprintf (datafile, "scale\t%f%s", glob->gparam->scale  , newline);
-		if (!glob->IsReflection) fprintf (datafile, "tau\t%f%s"  , glob->gparam->tau*1e9, newline);
+		
+		if ( glob->IsReflection) 
+			fprintf (datafile, "scale\t%f%s", glob->gparam->scale  , newline);
+		if (!glob->IsReflection) 
+			fprintf (datafile, "tau\t%f%s"  , glob->gparam->tau*1e9, newline);
+		
 		for (i=0; i<glob->numres; i++)
 		{
-			res = g_ptr_array_index(glob->param, i);
+			res = g_ptr_array_index (glob->param, i);
 			fprintf (datafile, "res\t%11.9f\t%9f\t%11f\t% 11.6f%s",
 					res->frq/1e9, res->width/1e6, res->amp, 
 					NormalisePhase(res->phase)/M_PI*180, newline);
+		}
+		
+		/* Write FourierComponents without error estimates */
+		for (i=0; i<glob->fcomp->numfcomp; i++)
+		{
+			fcomp = g_ptr_array_index (glob->fcomp->data, i);
+			fprintf (datafile, "fcomp\t%11.9f\t% 9.6f\t% 11.6f%s",
+					fcomp->amp, fcomp->tau*1e9, 
+					NormalisePhase(fcomp->phi)/M_PI*180,
+					newline);
 		}
 	}
 	else
@@ -1062,7 +1099,19 @@ gboolean save_file (gchar *filename, gchar *section, gint exists)
 				glob->stddev[4*i+2]/M_PI*180,	/* phaserr */
 				newline);
 		}
+		
+		/* Write FourierComponents without error estimates */
+		for (i=0; i<glob->fcomp->numfcomp; i++)
+		{
+			fcomp = g_ptr_array_index (glob->fcomp->data, i);
+			fprintf (datafile, "fcomp\t%11.9f\t% 9.6f\t% 11.6f%s",
+					fcomp->amp, fcomp->tau*1e9, 
+					NormalisePhase(fcomp->phi)/M_PI*180,
+					newline);
+		}
 	}
+	
+	/* A newline before the next section */
 	fprintf (datafile, "%s", newline);
 
 	if (exists == 2)
@@ -1292,13 +1341,14 @@ gint find_isolated_resonances (gfloat thresh)
 	d = new_datavector (npoints);
 
 	/* Remove already identified resonances from the data */
-	p = g_new (gdouble, 4*glob->numres+NUM_GLOB_PARAM+1);
-	create_param_array (glob->param, glob->gparam, glob->numres, p);
+	p = g_new (gdouble, TOTALNUMPARAM+1);
+	create_param_array (glob->param, glob->fcomp->data, glob->gparam, 
+			glob->numres, glob->fcomp->numfcomp, p);
 	
 	for (i=0; i<npoints; i++)
 	{
 		d->x[i] = glob->data->x[i+offset];
-		y = ComplexWigner(d->x[i], p, 4*glob->numres+NUM_GLOB_PARAM);
+		y = ComplexWigner(d->x[i], p, TOTALNUMPARAM);
 		d->y[i].abs = glob->data->y[i+offset].abs - y.abs + glob->IsReflection;
 		d->y[i].re  = glob->data->y[i+offset].re  - y.re 
 			     + cos(glob->gparam->phase)*glob->gparam->scale*glob->IsReflection;
@@ -1326,7 +1376,7 @@ gint find_isolated_resonances (gfloat thresh)
 		{
 			add_resonance_to_list (resonance);
 
-			p = g_new (gdouble, 4*1+NUM_GLOB_PARAM+1);
+			p = g_new (gdouble, 4*1+NUM_GLOB_PARAM+3*glob->fcomp->numfcomp+1);
 
 			p[1] = resonance->amp;
 			p[2] = resonance->phase;
@@ -1341,7 +1391,7 @@ gint find_isolated_resonances (gfloat thresh)
 			
 			for (i=0; i<npoints; i++)
 			{
-				y = ComplexWigner(d->x[i], p, 4*1+NUM_GLOB_PARAM);
+				y = ComplexWigner(d->x[i], p, 4*1+NUM_GLOB_PARAM+3*glob->fcomp->numfcomp);
 				if ((glob->IsReflection ? d->y[i].abs < thresh : d->y[i].abs > thresh)) 
 					/* Update .abs only outside silenced regions */
 					d->y[i].abs = d->y[i].abs - y.abs + glob->IsReflection*glob->gparam->scale;

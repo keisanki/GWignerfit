@@ -20,17 +20,19 @@ static void fit_cleanup ();
 
 /* Derives the complex fit function */
 void DeriveComplexWigner (double x, double a[], ComplexDouble *yfit, ComplexDouble dyda[], int ma) {
+	ComplexDouble fourierval;
 	double amp, phi, frq, gam, alpha, scale, transphase;
-	double arctan, sq, factor, sinval, cosval;
+	double omega, arctan, sq, factor, sinval, cosval, denom, tmp;
 	int i;
-	
+
+	omega = 2*M_PI*x;
 	alpha = a[ma-2];
 	scale = glob->IsReflection ? a[ma-1] : 1;
-	transphase = glob->IsReflection ? 0.0 : -2*M_PI*a[ma]*x;
+	transphase = glob->IsReflection ? 0.0 : -omega*a[ma];
 	yfit->re = cos(alpha)*scale * glob->IsReflection;
 	yfit->im = sin(alpha)*scale * glob->IsReflection;
 
-	for (i=1; i < ma-NUM_GLOB_PARAM; i+=4)
+	for (i=1; i < ma-NUM_GLOB_PARAM-3*glob->fcomp->numfcomp; i+=4)
 	{
 		amp = a[i];
 		phi = a[i+1];
@@ -71,6 +73,70 @@ void DeriveComplexWigner (double x, double a[], ComplexDouble *yfit, ComplexDoub
 		dyda[i+3].im = -sinval/2;
 	}
 
+	/* Fit additional fourier components */
+	if (glob->fcomp->numfcomp)
+	{
+		fourierval.re  = 1.0;
+		fourierval.im  = 0.0;
+		denom = 1.0;
+		
+		for (; i<ma-NUM_GLOB_PARAM; i+=3)
+		{
+			amp = a[i];
+
+			/* One minus sum of all fourier components */
+			fourierval.re -= amp * cos(-omega*a[i+1] + a[i+2]);
+			fourierval.im -= amp * sin(-omega*a[i+1] + a[i+2]);
+
+			/* One plus sum of all fourier amplitudes */
+			denom += fabs(amp);
+		}
+
+		denom = 1/denom;
+
+		/* Total value of fourier components factor */
+		fourierval.re *= denom;
+		fourierval.im *= denom;
+
+		/* yfit is still the ComplexWigner value _without_ the fourier factor */
+
+		for (i=ma-NUM_GLOB_PARAM-3*glob->fcomp->numfcomp+1; i<ma-NUM_GLOB_PARAM; i+=3)
+		{
+			amp = a[i+0];
+			cosval = cos(-omega*a[i+1] + a[i+2]) * denom;
+			sinval = sin(-omega*a[i+1] + a[i+2]) * denom;
+			
+			/* d / d(fcomp_amp) */
+			dyda[i+0].re = -(cosval+fourierval.re*denom*fabs(amp)/amp);
+			dyda[i+0].im = -(sinval+fourierval.im*denom*fabs(amp)/amp);
+			
+			/* d / d(fcomp_tau) */
+			dyda[i+1].re = -amp*omega*sinval;
+			dyda[i+1].im = +amp*omega*cosval;
+
+			/* d / d(fcomp_phi) */
+			dyda[i+2].re = +amp*sinval;
+			dyda[i+2].im = -amp*cosval;
+
+			/* Multiply resonance factor into it: dyda*yfit */
+			tmp          = dyda[i+0].re*yfit->re - dyda[i+0].im*yfit->im;
+			dyda[i+0].im = dyda[i+0].re*yfit->im + dyda[i+0].im*yfit->re;
+			dyda[i+0].re = tmp;
+
+			tmp          = dyda[i+1].re*yfit->re - dyda[i+1].im*yfit->im;
+			dyda[i+1].im = dyda[i+1].re*yfit->im + dyda[i+1].im*yfit->re;
+			dyda[i+1].re = tmp;
+			
+			tmp          = dyda[i+2].re*yfit->re - dyda[i+2].im*yfit->im;
+			dyda[i+2].im = dyda[i+2].re*yfit->im + dyda[i+2].im*yfit->re;
+			dyda[i+2].re = tmp;
+		}
+
+		tmp      = yfit->re*fourierval.re - yfit->im*fourierval.im;
+		yfit->im = yfit->re*fourierval.im + yfit->im*fourierval.re;
+		yfit->re = tmp;
+	}
+
 	/* d / d(alpha) */
 	dyda[ma-2].re = - yfit->im;
 	dyda[ma-2].im =   yfit->re;
@@ -80,24 +146,31 @@ void DeriveComplexWigner (double x, double a[], ComplexDouble *yfit, ComplexDoub
 	dyda[ma-1].im = yfit->im / scale;
 
 	/* d / d(tau) */
-	dyda[ma  ].re =   yfit->im * 2*M_PI*x;
-	dyda[ma  ].im = - yfit->re * 2*M_PI*x;
+	dyda[ma  ].re =   yfit->im * omega;
+	dyda[ma  ].im = - yfit->re * omega;
+/*
+	printf("frq: %e, fit.re %e, fit.im %e\n", x, yfit->re, yfit->im);
+	for (i=1; i<=ma; i++)
+		printf("%2d, re: %e, im %e\n", i, dyda[i].re, dyda[i].im);
+	printf("\n");
+*/
 }
 
 /* Returns the complex value of the fit function */
 ComplexDouble ComplexWigner (double x, double a[], int ma) {
-	ComplexDouble y;
-	double amp, phi, frq, gam, alpha, scale, transphase;
-	double arctan, sq, factor;
+	ComplexDouble y, fourierval, tmp;
+	double amp, phi, frq, gam, alpha, scale, transphase, tau;
+	double omega, arctan, sq, factor;
 	int i;
 
+	omega = 2*M_PI*x;
 	alpha = a[ma-2];
 	scale = glob->IsReflection ? a[ma-1] : 1;
-	transphase = glob->IsReflection ? 0.0 : -2*M_PI*a[ma]*x;
+	transphase = glob->IsReflection ? 0.0 : -omega*a[ma];
 	y.re = scale * cos(alpha) * glob->IsReflection;
 	y.im = scale * sin(alpha) * glob->IsReflection;
 
-	for (i=1; i < ma-NUM_GLOB_PARAM; i+=4) 
+	for (i=1; i < ma-NUM_GLOB_PARAM-3*glob->fcomp->numfcomp; i+=4) 
 	{
 		amp = a[i];
 		phi = a[i+1];
@@ -112,6 +185,34 @@ ComplexDouble ComplexWigner (double x, double a[], int ma) {
 		y.im -= factor * cos(alpha + phi - arctan + transphase);
 	}
 
+	if (glob->fcomp->numfcomp)
+	{
+		fourierval.re  = 1.0;
+		fourierval.im  = 0.0;
+		factor     = 1.0;
+		
+		for (; i<ma-NUM_GLOB_PARAM; i+=3)
+		{
+			amp = a[i];
+			tau = a[i+1];
+			phi = a[i+2];
+
+			fourierval.re -= amp * cos(-omega*tau + phi);
+			fourierval.im -= amp * sin(-omega*tau + phi);
+
+			factor += fabs(amp);
+		}
+
+		fourierval.re /= factor;
+		fourierval.im /= factor;
+
+		tmp.re = y.re*fourierval.re - y.im*fourierval.im;
+		tmp.im = y.re*fourierval.im + y.im*fourierval.re;
+
+		y.re = tmp.re;
+		y.im = tmp.im;
+	}
+
 	y.abs = sqrt(y.re*y.re + y.im*y.im);
 
 	return y;
@@ -119,7 +220,8 @@ ComplexDouble ComplexWigner (double x, double a[], int ma) {
 
 #if 0
 gdouble cal_stddev (gdouble val)
-{
+{y.re*val.re - y.im*val.im;
+	tmp.im = y.re*val.im + y.im*val.re;
 	gdouble in_db, err_db, val_plus_err, val_minus_err, ret;
 	if (val < 0)
 		val *= -1.0;
@@ -189,19 +291,21 @@ int ApplyMrqmin (
 
 	/* fill the initial parameters */
 	for (i=1; i<=pnum; i++) a[i] = p[i];
-	
+
 	alamda = -1;			/* indicate first run */
 	mrqmin (d,sig,n,a,ia,pnum,covar,alpha,&chisq,fitfunc,&alamda);
 	k = 1;
 	do {
-/*		printf("\n%s %2d %17s %10e %10s %9.2e\n","Iteration #",k,
-			"chi-squared:",chisq,"alamda:",alamda);
+/*
+		printf("\n%s %2d %17s %10e %10s %9.2e\n","Iteration #",k,
+				"chi-squared:",chisq,"alamda:",alamda);
 		for (i=1; i<=pnum; i++) {
 			if ((i-1) % 4 == 0) printf("\n");
 			printf("a[%i] = %.6e\t", i, a[i]);
 		}
 		printf("\n");
-*/		
+*/
+
 		k++;
 		ochisq = chisq;
 		mrqmin (d,sig,n,a,ia,pnum,covar,alpha,&chisq,fitfunc,&alamda);
@@ -271,62 +375,91 @@ int ApplyMrqmin (
 	return ret;
 }
 
-void create_param_array (GPtrArray *param, GlobalParam *gparam, gint numres, double *p)
+void create_param_array (GPtrArray *param, GPtrArray *fcomp, GlobalParam *gparam, gint numres, gint numfcomp, double *p)
 {
 	gint i;
 	Resonance *res;
+	FourierComponent *f;
 
-	for (i=0; i<numres; i++)
-	{
-		res = g_ptr_array_index(param, i);
-		p[4*i+1] = res->amp;
-		p[4*i+2] = res->phase;
-		p[4*i+3] = res->frq;
-		p[4*i+4] = res->width;
-	}
+	if (param)
+		for (i=0; i<numres; i++)
+		{
+			res = g_ptr_array_index (param, i);
+			p[4*i+1] = res->amp;
+			p[4*i+2] = res->phase;
+			p[4*i+3] = res->frq;
+			p[4*i+4] = res->width;
+		}
 
-	p[4*numres+1] = gparam->phase;
-	p[4*numres+2] = gparam->scale;
-	p[4*numres+3] = gparam->tau;
+	if (fcomp)
+		for (i=0; i<numfcomp; i++)
+		{
+			f = g_ptr_array_index (fcomp, i);
+			p[4*numres+3*i+1] = f->amp;
+			p[4*numres+3*i+2] = f->tau;
+			p[4*numres+3*i+3] = f->phi;
+		}
+
+	p[4*numres+3*numfcomp+1] = gparam->phase;
+	p[4*numres+3*numfcomp+2] = gparam->scale;
+	p[4*numres+3*numfcomp+3] = gparam->tau;
 }
 
-void create_param_structs (GPtrArray *param, GlobalParam *gparam, double *p, gint numres)
+void create_param_structs (GPtrArray *param, GPtrArray *fcomp, GlobalParam *gparam, double *p, gint numres, gint numfcomp)
 {
 	gint i;
 	Resonance *res;
+	FourierComponent *f;
 
-	for (i=0; i<numres; i++)
+	if (param)
 	{
-		res = g_ptr_array_index(param, i);
-		res->amp   = p[4*i+1];
-		res->phase = p[4*i+2];
-		res->frq   = p[4*i+3];
-		res->width = p[4*i+4];
+		for (i=0; i<numres; i++)
+		{
+			res = g_ptr_array_index(param, i);
+			res->amp   = p[4*i+1];
+			res->phase = p[4*i+2];
+			res->frq   = p[4*i+3];
+			res->width = p[4*i+4];
+		}
+		if (glob->prefs->sortparam)
+			g_ptr_array_sort (glob->param, param_compare);
 	}
-	if (glob->prefs->sortparam)
-		g_ptr_array_sort (glob->param, param_compare);
 
-	if (gparam != NULL)
+	if (fcomp)
+		for (i=0; i<numfcomp; i++)
+		{
+			f = g_ptr_array_index (fcomp, i);
+			f->amp = p[4*numres+3*i+1];
+			f->tau = p[4*numres+3*i+2];
+			f->phi = p[4*numres+3*i+3];
+		}
+
+	if (gparam)
 	{
-		gparam->phase = p[4*numres+1];
-		gparam->scale = p[4*numres+2];
-		gparam->tau   = p[4*numres+3];
+		gparam->phase = p[4*numres+3*numfcomp+1];
+		gparam->scale = p[4*numres+3*numfcomp+2];
+		gparam->tau   = p[4*numres+3*numfcomp+3];
 	}
 }
 
 /* Reverse the sign of the amplitude and add M_PI to the phase instead if necessary. */
-void CheckAmplitudes (gdouble p[], gint numres)
+void CheckAmplitudes (gdouble p[], gint numres, gint numfcomp)
 {
 	gint i;
 
 	for (i=0; i<numres; i++) 
-	{
 		if (p[4*i+1] < 0)
 		{
 			p[4*i+1] *= -1;
 			p[4*i+2] += M_PI;
 		}
-	}
+
+	for (i=0; i<numfcomp; i++) 
+		if (p[4*numres+3*i+1] < 0)
+		{
+			p[4*numres+3*i+1] *= -1;
+			p[4*numres+3*i+3] += M_PI;
+		}
 }
 
 /* Unset flags and close the fitwindow after a fit */
@@ -358,12 +491,12 @@ gboolean fit_nrerror (gchar error_text[])
 			     "Recover dataset of last iteration?")
 			== GTK_RESPONSE_YES)
 	{
-		CheckAmplitudes (fitwinparam->paramarray, glob->numres);
+		CheckAmplitudes (fitwinparam->paramarray, glob->numres, glob->fcomp->numfcomp);
 
-		param_and_stddev = g_new (gdouble, 2*(4*glob->numres+NUM_GLOB_PARAM+1)-1);
-		for (i=1; i<=4*glob->numres+NUM_GLOB_PARAM; i++)
+		param_and_stddev = g_new (gdouble, 2*(TOTALNUMPARAM+1)-1);
+		for (i=1; i<=TOTALNUMPARAM; i++)
 			param_and_stddev[i] = fitwinparam->paramarray[i];
-		param_and_stddev[1+4*glob->numres+NUM_GLOB_PARAM] = -1; /* no stddev */
+		param_and_stddev[1+TOTALNUMPARAM] = -1; /* no stddev */
 		g_free (fitwinparam->paramarray);
 		fitwinparam->paramarray = NULL;
 
@@ -420,10 +553,11 @@ static gint start_fit (gpointer params)
 		/* Convert the parameter structs into one array (paramarray) */
 		/* Structure of paramarray:
 		 * 0*glob->numres+1 ... 4*glob->numres : resonance parameters
-		 * 4*glob->numres+1 ... 4*glob->numres+NUM_GLOB_PARAM : global parameters
+		 * 4*glob->numres+1 ... TOTALNUMPARAM : global parameters
 		 */
-		fitwinparam->paramarray = g_new (gdouble, 4*glob->numres+NUM_GLOB_PARAM+1);
-		create_param_array (glob->param, glob->gparam, glob->numres, fitwinparam->paramarray);
+		fitwinparam->paramarray = g_new (gdouble, TOTALNUMPARAM+1);
+		create_param_array (glob->param, glob->fcomp->data, glob->gparam, 
+				glob->numres, glob->fcomp->numfcomp, fitwinparam->paramarray);
 
 		data.x = glob->data->x + startpos;
 		data.y = glob->data->y + startpos;
@@ -434,20 +568,20 @@ static gint start_fit (gpointer params)
 			numpoints,		/* number of datapoints */
 			fitwinparam->paramarray,/* parameter array */
 			ia,			/* what parameters are to fit */
-			4*glob->numres+NUM_GLOB_PARAM, 	/* number of parameters */
+			TOTALNUMPARAM, 	/* number of parameters */
 			glob->prefs->iterations,/* number of iterations */
 			&DeriveComplexWigner	/* pointer to fitfunction */
 		);
 
 		if (!(glob->flag & FLAG_FIT_CANCEL))
 		{
-			CheckAmplitudes (fitwinparam->paramarray, glob->numres);
+			CheckAmplitudes (fitwinparam->paramarray, glob->numres, glob->fcomp->numfcomp);
 
-			param_and_stddev = g_new (gdouble, 2*(4*glob->numres+NUM_GLOB_PARAM+1)-1);
-			for (i=1; i<=4*glob->numres+NUM_GLOB_PARAM; i++)
+			param_and_stddev = g_new (gdouble, 2*(TOTALNUMPARAM+1)-1);
+			for (i=1; i<=TOTALNUMPARAM; i++)
 			{
 				param_and_stddev[i] = fitwinparam->paramarray[i];
-				param_and_stddev[i+4*glob->numres+NUM_GLOB_PARAM] = fitwinparam->stddev[i];
+				param_and_stddev[i+TOTALNUMPARAM] = fitwinparam->stddev[i];
 			}
 
 			if (retval == FIT_EXIT_EARLYSTOP)
@@ -455,7 +589,7 @@ static gint start_fit (gpointer params)
 				 * sensible stddev information. Setting the value to -1
 				 * here will make this clear to check_and_take_parameters.
 				 */
-				param_and_stddev[1+4*glob->numres+NUM_GLOB_PARAM] = -1;
+				param_and_stddev[1+TOTALNUMPARAM] = -1;
 			
 			g_timeout_add (1, (GSourceFunc) check_and_take_parameters, param_and_stddev);
 		}
@@ -482,6 +616,13 @@ void fit (gint *ia)
 	if (!glob->data)
 	{
 		dialog_message ("Please import a spectrum first.");
+		return;
+	}
+
+	/* Are there free parameters? */
+	if (!ia[0])
+	{
+		dialog_message ("There are no free parameters defined.");
 		return;
 	}
 
