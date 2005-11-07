@@ -727,7 +727,7 @@ gint read_resonancefile (gchar *selected_filename, const gchar *label)
 			i = sscanf(line, "%250s\t%lf\t%lf\t%lf\t%lf%lf\t%lf\t%lf\t%lf", 
 					command, &frq, &wid, &amp, &phas, &frqerr, &widerr, &amperr, &phaserr);
 			switch (i) {
-				case 1:
+				case 1: /* Overlay */
 				  if (sscanf(line, "%250s\t%250s", command, text) == 2)
 				  {
 					  /* text may not hold the complete filename if it
@@ -752,7 +752,7 @@ gint read_resonancefile (gchar *selected_filename, const gchar *label)
 					  return -1;
 				  }
 				  break;
-				case 2:
+				case 2: /* Global parameter */
 				  if (!strncmp(command, "minfrq", 200)) {glob->gparam->min = frq * 1e9;}
 				  else if (!strncmp(command, "maxfrq", 200)) {glob->gparam->max = frq * 1e9;}
 				  else if (!strncmp(command, "tau", 200)) glob->gparam->tau = frq * 1e-9;
@@ -764,7 +764,7 @@ gint read_resonancefile (gchar *selected_filename, const gchar *label)
 					  return -1;
 				  }
 				  break;
-				case 3:
+				case 3: /* Global parameter with error */
 				  if (!strncmp(command, "tau", 200)) 
 				  {
 					  glob->gparam->tau = frq * 1e-9;
@@ -786,7 +786,7 @@ gint read_resonancefile (gchar *selected_filename, const gchar *label)
 					  return -1;
 				  }
 				  break;
-				case 4:
+				case 4: /* Fourier component */
 				  if (!strncmp(command, "fcomp", 200)) 
 				  {
 					fcomp = g_new (FourierComponent, 1);
@@ -801,7 +801,7 @@ gint read_resonancefile (gchar *selected_filename, const gchar *label)
 					  return -1;
 				  }
 				  break;
-				case 5:
+				case 5: /* Resonance data */
 				  if (!strncmp(command, "res", 200)) {
 					resonance = g_new (Resonance, 1);
 					resonance->frq   = frq * 1e9;
@@ -816,7 +816,7 @@ gint read_resonancefile (gchar *selected_filename, const gchar *label)
 					  return -1;
 				  }
 				  break;
-				case 9:
+				case 9: /* Resonance data with errors */
 				  if (!strncmp(command, "res", 200)) {
 					resonance = g_new (Resonance, 1);
 					resonance->frq   = frq * 1e9;
@@ -841,7 +841,7 @@ gint read_resonancefile (gchar *selected_filename, const gchar *label)
 					  return -1;
 				  }
 				  break;
-				default:
+				default: /* Syntax error */
 				  dialog_message ("Error: Syntax error in line %i\n", pos);
 				  read_resonancefile_cleanup;
 				  return -1;

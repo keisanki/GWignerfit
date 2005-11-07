@@ -3,7 +3,7 @@
   "http://www.oasis-open.org/docbook/xml/4.4/docbookx.dtd" [
 <!--"/usr/share/sgml/docbook/xml-dtd-4.4-1.0-26/docbookx.dtd" [ -->
 	<!ENTITY legal SYSTEM "legal.xml">
-	<!ENTITY appversion "2005-10-14">
+	<!ENTITY appversion "2005-11-04">
 	<!ENTITY manrevision "1.0">
 	<!ENTITY date "August 2005">
 	<!ENTITY app "<application>GWignerFit</application>">
@@ -420,6 +420,14 @@
 				</listitem>
 			</varlistentry>
 			<varlistentry>
+				<term><guimenuitem>Calibrate spectrum...</guimenuitem></term>
+				<listitem>
+					<para>This opens the calibration dialog to calibrate transmission and
+						reflection spectra, see <xref linkend="gwf-calibrate" /> for a
+						detailed explanation of the process of data calibration.</para>
+				</listitem>
+			</varlistentry>
+			<varlistentry>
 				<term><guimenuitem>Preferences...</guimenuitem></term>
 				<listitem>
 					<para>There are some preferences that change the general behaviour of
@@ -437,6 +445,18 @@
 			In detail you can choose one of the following actions:
 		</para>
 		<variablelist>
+			<varlistentry>
+				<term><guimenuitem>Fourier components</guimenuitem></term>
+				<listitem>
+					<para>If you have done transmission measurements in small cavities or
+						using bad cables you may get annoying periodic transmission
+						modulations that cannot be described by the "normal" theory of
+						complex Wignerr functions. Use this dialog to identify those
+						fluctuations in the time domain and to take them into account as
+						additional fourier components. See <xref linkend="gwf-fcomp" /> for
+						more detailed explanations.</para>
+				</listitem>
+			</varlistentry>
 			<varlistentry>
 				<term><guimenuitem>Measure distance</guimenuitem></term>
 				<listitem>
@@ -568,11 +588,20 @@
 		<para>
 			This menu is supposed to give the user some help in his working with
 			&app;, however, right now its functionality is rather limited.
-			Only one menuitem is present at the moment:
+			Only two menuitems are present at the moment:
 		</para>
 		<variablelist>
 			<varlistentry>
-				<term><guimenuitem>About</guimenuitem></term>
+				<term><guimenuitem>User manual...</guimenuitem></term>
+				<listitem>
+					<para>&app; ships with an extensive user manual, that is the one you
+						are reading right now. With this option you will get a hint where
+						to find the HTML version of the documentation on your system.
+					</para>
+				</listitem>
+			</varlistentry>
+			<varlistentry>
+				<term><guimenuitem>About...</guimenuitem></term>
 				<listitem>
 					<para>This item will open the obligatory hall of fame window.</para>
 				</listitem>
@@ -1802,6 +1831,120 @@
 				<keycap>Z</keycap>
 			</keycombo>.
 		</para>
+	</sect2>
+
+	<sect2 id="gwf-fcomp">
+		<title>Handle Periodic Tranmsission Modulations</title>
+		<para>Using the methods described in the last sections a very good
+			agreement between theory and data can normally be achieved. This may,
+			however, not be true if the data has been gotten from small cavities. The
+			absolute transmission will then show the general resonance structure with
+			small periodic modulations (one may call them "ripples"). They correspond
+			to standing wave patterns that are a result of cable lenghts, antennae
+			for coupling and impedanze mismatch beween cavity and coaxial cable.
+			Using bad cables may make things worse, too. Having a look at the time
+			domain would reveal those signal travel times that contribute to those
+			ripples. Those <emphasis>fourier components</emphasis> can then be taken
+			into account as a factor with additional complex exponential functions in
+			the frequency domain.</para>
+
+		<figure id="fcomp-win">
+			<title>Screenshot of what the "Fourier compoments" window could look like
+				in action.</title>
+			<screenshot> 
+				<mediaobject> 
+					<imageobject><imagedata
+							fileref="figures/gwf_fcomp.eps" scale="50" format="EPS"/> 
+					</imageobject>
+					<imageobject><imagedata
+							fileref="figures/gwf_fcomp.png" format="PNG"/> 
+					</imageobject>
+					<textobject> 
+						<phrase>Fourier components window</phrase>
+					</textobject> 
+				</mediaobject> 
+			</screenshot> 
+		</figure>
+
+		<para>In &app; the process of identifying the travel times and adding them
+			to the theory is done in a special window, the <guilabel>Fourier
+			components</guilabel> window. This window can be accessed with
+			<menuchoice>
+				<guimenu>Analyze</guimenu>
+				<guimenuitem>Fourier components</guimenuitem>
+			</menuchoice>. You can see a screenshot in figure <xref
+			linkend="fcomp-win" />. The window is divided into two sections:
+			<guilabel>Timedomain view of spectra quotient</guilabel> and
+			<guilabel>Current fourier components</guilabel>.
+		</para>
+
+		<variablelist>
+			<varlistentry>
+				<term><guilabel>Timedomain view of spectra quotient</guilabel></term>
+				<listitem>
+					<para>This graph will help you to identify the required additional
+						fourier components. The red graph displays the Fourier transform of
+						the quotient between the measured data and the theoretical graph of
+						all fitted Wigner resonances. If this theory is correct the data
+						should be described perfectly and the resulting quotient should be
+						one. The Fourier transform of one is a very high peak at
+						t=0&nbsp;sec. Any periodical deviations should result in a peak at
+						another time value. To suppress the expected peak at zero, &app;
+						does not calculate the Fourier transform of the raw quotient but of
+						<emphasis>one minus</emphasis> the quotient thus removing the
+						expectation value from the data basis. The Fourier transform is
+						only applied to the data between the global minimal and maximal
+						frequency window to allow for a more detailed analysis.
+					</para>
+					<para>The graph in the example screenshot (<xref linkend="fcomp-win" 
+						/>) has at least three outstanding peaks: at 0, 26 and 32&nbsp;sec.
+						The peak at 0&nbsp;sec exists, as the average value has not exactly
+						been a real one, but rather something close to is. Therefore this
+						peak has only been suppressed, not removed. The two other peaks are
+						"real" periodic contributions. To add them to the new theory just
+						click on the graph at the appropriate time value, &app; will then
+						try to come up with reasonable initial parameters for this
+						contribution. Clicking anywhere will always add a new component, as
+						long as the checkbox <guilabel>Add new fourier components by click
+						on graph</guilabel> is activated. Otherwise it will just produce a
+						mark on the graph reading the coordinate values. The Fourier
+						transform of the sum of all Fourier components are displayed as the
+						blue graph.
+					</para>
+				</listitem>
+			</varlistentry>
+			<varlistentry>
+				<term><guilabel>Fourier components</guilabel></term>
+				<listitem>
+					<para>Each Fourier component consists of three parameters: a time
+						value, an amplitude and a phase value. The time gives the position
+						of the contribution in the above graph and can be interpreted as a
+						traval time of a signal between the two network ports. Amplitude
+						and phase value form a complex prefactor to the exponential
+						function and determine the strength of the influence of the
+						component. All those Fourier components build a sum of exponential
+						functions that is normalized in such a way that its absolute value
+						will for all frequencies always be <emphasis>smaller than
+						1</emphasis>. This guarantees a physical interpretation as a
+						damping factor.
+					</para>
+					<para>All parameters have the well known checkboxes behind them. With
+						them you can once again select which parameters are to be included
+						in a fit run. Those parameters are then optimised with the "normal"
+						Wigner resonance parameters during a normal fit run. It is once
+						again advisable to start with fitting the phase parameters alone.
+						If the Fourier components window is closed, all parameters are
+						considered to be <emphasis>fixed</emphasis> thus preventing &app;
+						to change parameters that you cannot see on the screen.
+					</para>
+					<para>
+						All that is left is to explain how to delete a Fourier component if
+						it is no longer needed. This is done by selecting the appropriate
+						row in the listview and pressing the <keycap>Delete</keycap> key.
+					</para>
+				</listitem>
+			</varlistentry>
+		</variablelist>
 	</sect2>
 
 	<sect2 id="gwf-fit-err">
