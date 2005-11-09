@@ -103,7 +103,7 @@
 
 	<itemizedlist> 
 		<listitem> 
-			<para>Versatile methods of data visualisation.</para>
+			<para>Versatile methods of data visualization.</para>
 		</listitem> 
 		<listitem> 
 			<para>Support for transmission and reflection spectra.</para>
@@ -116,7 +116,7 @@
 				comparison.</para>
 		</listitem> 
 		<listitem>
-			<para>Implemented Fast Fourier Transform for visualisation of the
+			<para>Implemented Fast Fourier Transform for visualization of the
 				time domain.</para>
 		</listitem> 
 		<listitem>
@@ -430,7 +430,7 @@
 			<varlistentry>
 				<term><guimenuitem>Preferences...</guimenuitem></term>
 				<listitem>
-					<para>There are some preferences that change the general behaviour of
+					<para>There are some preferences that change the general behavior of
 						&app;. You can change them in the preferences dialog, see 
 						<xref linkend="gwignerfit-custom" />.</para>
 				</listitem>
@@ -451,9 +451,9 @@
 					<para>If you have done transmission measurements in small cavities or
 						using bad cables you may get annoying periodic transmission
 						modulations that cannot be described by the "normal" theory of
-						complex Wignerr functions. Use this dialog to identify those
+						complex Wigner functions. Use this dialog to identify those
 						fluctuations in the time domain and to take them into account as
-						additional fourier components. See <xref linkend="gwf-fcomp" /> for
+						additional Fourier components. See <xref linkend="gwf-fcomp" /> for
 						more detailed explanations.</para>
 				</listitem>
 			</varlistentry>
@@ -569,7 +569,7 @@
 						but calculate the difference between the to datasets first and
 						display the result. The difference is calculated by subtracting the
 						complex values of the theory graph from the complex values of the
-						main dataset. The graph of this difference is purple in colour.
+						main dataset. The graph of this difference is purple in color.
 					</para>
 				</listitem>
 			</varlistentry>
@@ -803,11 +803,11 @@
 						are currently loaded and therefore displayed, too. Whenever you
 						intend to do something with a dataset select it in this list. It is
 						possible to select several datasets at the same time.</para>
-					<para>Each filename has a coloured bar prepended. This bar shows the
-						colour of the dataset in the graph (with a light grey as the
-						default colour). You can do a double click on a row to change this
-						colour. Those graphs that are selected in the list will be drawn in
-						a darker variant of this colour.</para>
+					<para>Each filename has a colored bar prepended. This bar shows the
+						color of the dataset in the graph (with a light gray as the
+						default color). You can do a double click on a row to change this
+						color. Those graphs that are selected in the list will be drawn in
+						a darker variant of this color.</para>
 				</listitem>
 			</varlistentry>
 			<varlistentry>
@@ -858,11 +858,11 @@
 
 		<para>Though this feature calls itself "overlay", those graphs actually
 			appear below all other graphs. The default is that all overlays are
-			displayed in a light grey colour, however, all overlays that are
+			displayed in a light gray color, however, all overlays that are
 			currently selected in the overlay list are shown in a darker shade of
-			grey. This way you can more easily distinguish several overlays if
-			several datasets are overlayed. To change the colour of a graph you can
-			open a colour selection dialog with a double click on filename in the
+			gray. This way you can more easily distinguish several overlays if
+			several datasets are overlayed. To change the color of a graph you can
+			open a color selection dialog with a double click on filename in the
 			list.</para>
 
 		<para>Everything that has been said about overlays in the main graph
@@ -905,11 +905,11 @@
 				<para>Red: The main dataset graph is in red.</para>
 			</listitem>
 			<listitem>
-				<para>Blue: The theory graph is coloured blue.</para>
+				<para>Blue: The theory graph is colored blue.</para>
 			</listitem>
 			<listitem>
-				<para>Grey: Grey is the colour for all overlayed graphs. You can see in
-					the screenshot that there are two grey graphs which translate into
+				<para>Grey: Grey is the color for all overlayed graphs. You can see in
+					the screenshot that there are two gray graphs which translate into
 					two additional overlayed datasets.</para>
 			</listitem>
 			<listitem>
@@ -966,7 +966,7 @@
 							"guide the eye". Once you have zoomed so much into the graph that
 							the distance between two adjacent datapoints is more than 20
 							pixel, &app; marks the positions of the actual datapoints by short
-							vertical lines. If you do not like this behaviour see <xref
+							vertical lines. If you do not like this behavior see <xref
 							linkend="gwignerfit-custom" /> on how to disable those datapoint
 							markers.
 						</para>
@@ -1398,7 +1398,7 @@
 			<para>Behind each global and checkbox parameter you will find a checkbox.
 				This checkbox is very important for the fitting procedure. All
 				parameters whose checkboxes are checked are free parameters to be
-				optimised by the fitting algorithm. Those parameters with an unchecked
+				optimized by the fitting algorithm. Those parameters with an unchecked
 				box are considered static and will not be changed. This way you have
 				got a high degree of control on the fitting process which is very
 				important if you want to get good results. To change the state of a
@@ -1467,12 +1467,12 @@
 				<varlistentry>
 					<term><guimenuitem>Fit this resonance</guimenuitem></term>
 					<listitem>
-						<para>This is some kind of a shortcut if you only want to optimise
+						<para>This is some kind of a shortcut if you only want to optimize
 							the parameters of the currently selected resonance but don't want
 							to uncheck the checkboxes of all other resonance parameters.
 							Choosing this item will start a fitting process that considers
 							only those parameters to be free that are a) of the currently
-							selected resonance and b) whose checkboxs are checked. No global
+							selected resonance and b) whose checkboxes are checked. No global
 							parameters will be changed during the fit.</para>
 					</listitem>
 				</varlistentry>
@@ -1525,7 +1525,7 @@
 			&app; try to find them for you, which is rather inaccurate as &app; is
 			very likely to miss some resonances. The best way is probably to first
 			use the resonance finder and to add the missed resonances by hand
-			afterwards.</para>
+			afterward.</para>
 
 		<para>The automatic resonance finder can be accessed via
 			<menuchoice> 
@@ -1544,7 +1544,7 @@
 			different thresholds.</para>
 
 		<para>Do not wonder too much if the resonance finder aborts with the
-			message "Resonance finder stopped due to abnormal behaviour". This part
+			message "Resonance finder stopped due to abnormal behavior". This part
 			of the code sometimes goes "berserk" and this message means that the
 			finder has been aborted in order to prevent infinite loops. Sorry for the
 			inconvenience.</para>
@@ -1834,22 +1834,22 @@
 	</sect2>
 
 	<sect2 id="gwf-fcomp">
-		<title>Handle Periodic Tranmsission Modulations</title>
+		<title>Handle Periodic Transmission Modulations</title>
 		<para>Using the methods described in the last sections a very good
 			agreement between theory and data can normally be achieved. This may,
-			however, not be true if the data has been gotten from small cavities. The
-			absolute transmission will then show the general resonance structure with
+			however, not be true if the data describes small cavities. The absolute
+			transmission is then likely to show the general resonance structure with
 			small periodic modulations (one may call them "ripples"). They correspond
-			to standing wave patterns that are a result of cable lenghts, antennae
-			for coupling and impedanze mismatch beween cavity and coaxial cable.
-			Using bad cables may make things worse, too. Having a look at the time
-			domain would reveal those signal travel times that contribute to those
-			ripples. Those <emphasis>fourier components</emphasis> can then be taken
-			into account as a factor with additional complex exponential functions in
-			the frequency domain.</para>
+			to standing wave patterns that are a result of the cable lengths, the
+			antennae used for coupling to the cavity and impedance mismatches between
+			cavity and coaxial cable. Using bad cables may make things worse, too.
+			Having a look at the time domain would reveal those signal travel times
+			that contribute to those ripples. Those <emphasis>Fourier
+			components</emphasis> can then be taken into account as a factor with
+			additional complex exponential functions in the frequency domain.</para>
 
 		<figure id="fcomp-win">
-			<title>Screenshot of what the "Fourier compoments" window could look like
+			<title>Screenshot of what the "Fourier components" window could look like
 				in action.</title>
 			<screenshot> 
 				<mediaobject> 
@@ -1872,10 +1872,10 @@
 			<menuchoice>
 				<guimenu>Analyze</guimenu>
 				<guimenuitem>Fourier components</guimenuitem>
-			</menuchoice>. You can see a screenshot in figure <xref
-			linkend="fcomp-win" />. The window is divided into two sections:
-			<guilabel>Timedomain view of spectra quotient</guilabel> and
-			<guilabel>Current fourier components</guilabel>.
+			</menuchoice>. 
+			You can see a screenshot in figure <xref linkend="fcomp-win" />. The
+			window is divided into two parts: <guilabel>Timedomain view of spectra
+			quotient</guilabel> and <guilabel>Current fourier components</guilabel>.
 		</para>
 
 		<variablelist>
@@ -1883,9 +1883,9 @@
 				<term><guilabel>Timedomain view of spectra quotient</guilabel></term>
 				<listitem>
 					<para>This graph will help you to identify the required additional
-						fourier components. The red graph displays the Fourier transform of
+						Fourier components. The red graph displays the Fourier transform of
 						the quotient between the measured data and the theoretical graph of
-						all fitted Wigner resonances. If this theory is correct the data
+						all fitted Wigner resonances. If this theory is correct, the data
 						should be described perfectly and the resulting quotient should be
 						one. The Fourier transform of one is a very high peak at
 						t=0&nbsp;sec. Any periodical deviations should result in a peak at
@@ -1899,7 +1899,7 @@
 					<para>The graph in the example screenshot (<xref linkend="fcomp-win" 
 						/>) has at least three outstanding peaks: at 0, 26 and 32&nbsp;sec.
 						The peak at 0&nbsp;sec exists, as the average value has not exactly
-						been a real one, but rather something close to is. Therefore this
+						been a real one, but rather something close to it. Therefore this
 						peak has only been suppressed, not removed. The two other peaks are
 						"real" periodic contributions. To add them to the new theory just
 						click on the graph at the appropriate time value, &app; will then
@@ -1908,7 +1908,7 @@
 						long as the checkbox <guilabel>Add new fourier components by click
 						on graph</guilabel> is activated. Otherwise it will just produce a
 						mark on the graph reading the coordinate values. The Fourier
-						transform of the sum of all Fourier components are displayed as the
+						transform of the sum of all Fourier components is displayed as the
 						blue graph.
 					</para>
 				</listitem>
@@ -1919,18 +1919,18 @@
 					<para>Each Fourier component consists of three parameters: a time
 						value, an amplitude and a phase value. The time gives the position
 						of the contribution in the above graph and can be interpreted as a
-						traval time of a signal between the two network ports. Amplitude
+						travel time of a signal between the two network ports. Amplitude
 						and phase value form a complex prefactor to the exponential
 						function and determine the strength of the influence of the
 						component. All those Fourier components build a sum of exponential
-						functions that is normalized in such a way that its absolute value
+						functions that are normalized in such a way that its absolute value
 						will for all frequencies always be <emphasis>smaller than
 						1</emphasis>. This guarantees a physical interpretation as a
 						damping factor.
 					</para>
 					<para>All parameters have the well known checkboxes behind them. With
 						them you can once again select which parameters are to be included
-						in a fit run. Those parameters are then optimised with the "normal"
+						in a fit run. Those parameters are then optimized with the "normal"
 						Wigner resonance parameters during a normal fit run. It is once
 						again advisable to start with fitting the phase parameters alone.
 						If the Fourier components window is closed, all parameters are
@@ -1945,6 +1945,17 @@
 				</listitem>
 			</varlistentry>
 		</variablelist>
+
+		<para>Producing satisfying results with those Fourier components is not
+			easy and gets harder the larger the frequency range for the fit gets.
+			Fast oscillations correspond to large signal travel times. This is why
+			you should start with contributions from large times. The bigger your
+			frequency window gets, the more important are effects by long range
+			oscillations, that is short signal times, thus more of them need to be
+			included. As with the rest of this whole fitting business no manual can
+			replace personal experience. Just get down to the work and try it for
+			yourself.
+		</para>
 	</sect2>
 
 	<sect2 id="gwf-fit-err">
@@ -2263,9 +2274,9 @@
 
 		<itemizedlist>
 			<listitem>
-				<para>Colours: The colours of the different datasets are the same: data
-				is in red, theory in blue, overlays in light grey. Currently selected
-				overlays are drawn in a darker grey.</para>
+				<para>Colors: The colors of the different datasets are the same: data
+				is in red, theory in blue, overlays in light gray. Currently selected
+				overlays are drawn in a darker gray.</para>
 			</listitem>
 			<listitem>
 				<para>Navigation: You can zoom and jump through the graph just the way
@@ -2308,12 +2319,12 @@
 				graph and displays the corresponding Weyl coefficients.</para>
 		</listitem>
 		<listitem>
-			<para>Fluctuations: If you substract the Weyl curve from the staircase
+			<para>Fluctuations: If you subtract the Weyl curve from the staircase
 				function you will get a function fluctuating around zero. Missing
 				levels will become visible as jumps in this graph.</para>
 		</listitem>
 		<listitem>
-			<para>NND: This is the nearest neighbour distribution which is a
+			<para>NND: This is the nearest neighbor distribution which is a
 				statistic of the spacings between adjacent resonance frequencies (that
 				have been unfolded to a mean spacing of unity). The spacings are binned
 				and displayed as a histogram. Random matrix theory provides predictions
@@ -2349,7 +2360,7 @@
 		<listitem>
 			<para>Length spectrum: This is the Fourier-transformed spectrum of the
 				eigenvalue density (where the trivial Weyl contribution has already
-				been substracted). Every peak in this spectrum corresponds according to
+				been subtracted). Every peak in this spectrum corresponds according to
 				Gutzwiller's trace formula to a classical periodic orbit. The abscissa
 				gives the length of the orbit in meters.</para>
 		</listitem>
@@ -2439,7 +2450,7 @@
 			overlay them into the graph so that they will provide a means for
 			statistical tests. You can select which predictions are to be included with
 			the checkboxes behind the label <guilabel>Include theory predictions
-			for</guilabel>. The colours of the checkboxes are used in the graph for
+			for</guilabel>. The colors of the checkboxes are used in the graph for
 			the corresponding plot.
 		</para>
 
@@ -2633,7 +2644,7 @@
 			the request into the IEEE 488 protocol and send it to the VNA. The reply
 			from the VNA will be received by the proxy and sent back to &app; over
 			the network. This way the place of data acquisition and data recording do
-			not need be the same and you are free to run &app; whereever access to
+			not need be the same and you are free to run &app; wherever access to
 			the proxy program is possible.</para>
 	</sect2>
 
@@ -2868,7 +2879,7 @@
 			<listitem>
 				<para>If you save a &app; session by appending it to an already present
 					gwf file, &app; will normally show a confirmation dialog. You can
-					disable this behaviour here. This will <emphasis>not</emphasis>
+					disable this behavior here. This will <emphasis>not</emphasis>
 					disable the confirmation dialog when you try to overwrite a section.
 				</para>
 			</listitem>
