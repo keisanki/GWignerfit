@@ -8,6 +8,8 @@
 <![%print;[
 <!ENTITY docbook.dsl PUBLIC "-//Norman Walsh//DOCUMENT DocBook Print Stylesheet//EN" CDATA dsssl>
 ]]>
+<!ENTITY texmath.dsl SYSTEM "TeXMath.dsl">
+<!ENTITY htmlmath.dsl SYSTEM "HTMLMath.dsl">
 ]>
 
 <style-sheet>
@@ -471,6 +473,8 @@
 (element symbol ($charseq$))
 (element emphasis ($italic-seq$))
 
+&texmath.dsl;
+
 </style-specification-body>
 </style-specification>
 
@@ -709,7 +713,7 @@
 
 ;;Enumerate Sections?
 (define %section-autolabel%
- #f)
+ #t)
 
 ;;=========================
 ;;    HTML Attributes
@@ -732,12 +736,12 @@
 ;;Use a CSS stylesheet?
 ;;Which one? Should work on 
 ;;this one soon
-;(define %stylesheet% 
-;        "./gnome.css")
+(define %stylesheet% 
+        "./gwf-style.css")
 
 ;;Use it
-;(define %stylesheet-type% 
-;"text/css")
+(define %stylesheet-type% 
+"text/css")
 
 
 ;;========================
@@ -1028,6 +1032,8 @@
                     (literal "(" (format-number conumber "1") ")")))
           (make element gi: "B"
          (literal "(??)")))))
+
+&htmlmath.dsl;
 
 </style-specification-body>
 </style-specification>
