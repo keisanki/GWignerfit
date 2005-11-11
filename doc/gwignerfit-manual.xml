@@ -7,6 +7,8 @@
 	<!ENTITY manrevision "1.0">
 	<!ENTITY date "August 2005">
 	<!ENTITY app "<application>GWignerFit</application>">
+	<!ENTITY latex "LaTeX">
+	<!ENTITY tex "TeX">
 ]>
 
 <!-- 
@@ -88,6 +90,94 @@
 <!-- Translators may also add here feedback address for translations -->
 	</legalnotice> 
 </articleinfo> 
+
+<!--
+    <para>This is a trivial SGML document that illustrates the use of
+      the <literal>alt</literal> element for math.</para>
+
+    <para>Here is a little bit of inline math:
+      <inlineequation>
+	<alt role="tex">$C = \alpha + \beta Y^{\gamma} + \epsilon$</alt>
+	<graphic align="center" fileref="figures/cfunc.png"/> 
+    </inlineequation>.  It is embedded in the text.
+    </para>
+
+    <para>New paragraph.  Here is a bit of displayed math
+			<inlineequation>
+	<alt role="tex">
+	  \[F_{2,T-k}=\frac{(ESS_r-ESS_u)/2}{ESS_u/(T-k)}\]
+        </alt>
+        <graphic fileref="figures/fstat.png"/> 
+			</inlineequation>
+    Note that for this sort of display you get excessive vertical
+    spacing if you bracket the math with double dollar signs,
+    <literal>$$</literal>.  The spacing is better if you use
+    <literal>\[</literal> and <literal>\]</literal> instead.
+  </para>
+
+  <para>Now here is a slightly more complex piece of displayed math, for
+    which we adjust the spacing using
+    <programlisting>
+      \renewcommand{\arraystretch}{1.3}	
+      \setlength{\arraycolsep}{.05in}</programlisting>
+    within the <literal>alt</literal> element:
+		<inlineequation>
+	<alt role="tex">
+<![CDATA[        
+\renewcommand{\arraystretch}{1.3}
+\setlength{\arraycolsep}{.05in}
+\[
+\left[
+\begin{array}{c}
+\dot{L} \\
+\dot{C}
+\end{array}
+\right]
+= \frac{1}{-\alpha}
+\left[
+\begin{array}{cc}
+af & bfh \\
+1 & b(fh-k)
+\end{array}
+\right]
+\left[
+\begin{array}{c}
+L \\
+C 
+\end{array}
+\right]
+-\frac{1}{\alpha}
+\left[
+\begin{array}{cc}
+afh & 0 \\
+h & \alpha 
+\end{array}
+\right]
+\left[
+\begin{array}{c}
+\dot{m} \\
+r_w
+\end{array}
+\right]
+\]]]>
+      </alt>
+      <graphic fileref="figures/buiter.png"/>	  
+		</inlineequation>
+    </para>
+
+    <para>Finally we try using the formal
+    <literal>&lt;equation&gt;</literal> tag with a title:
+    <inlineequation><title>Test equation</title>
+      <alt role="tex">
+	\[
+          \hat{\beta} = \frac{\sum_{t=1}^n x_t y_t - \bar{y} \sum_{t=1}^n x_t}
+                             {\sum_{t=1}^n x^2_t - \bar{x}\sum_{t=1}^n x_t}
+        \]
+      </alt>
+      <graphic fileref="figures/betahat.png"/> 
+    </inlineequation>
+    </para>
+-->
 
 <!-- ============= Document Body ============================= -->
 <!-- ============= Introduction ============================== -->

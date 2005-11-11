@@ -1,0 +1,10 @@
+<!DOCTYPE equation-set [
+<!ELEMENT equation-set - - (texequation+)>
+<!ATTLIST equation-set
+          latexopt CDATA #IMPLIED
+          density CDATA #IMPLIED
+          usepackage CDATA #IMPLIED>
+<!ELEMENT texequation - - (#PCDATA)>
+<!ATTLIST texequation fileref CDATA #REQUIRED>
+]>
+
