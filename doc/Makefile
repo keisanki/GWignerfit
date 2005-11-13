@@ -1,13 +1,10 @@
 XMLBASE = gwignerfit-manual
 XMLFILE = $(XMLBASE).xml
 CUSTOMDSL = utils/gwf-custom.dsl
+XMLDCL = utils/xml.dcl
 
 STYLESHEET = /usr/share/sgml/docbook/stylesheet/xsl/nwalsh/xhtml/docbook.xsl
-#STYLESHEET = /usr/share/sgml/docbook/xsl-stylesheets/xhtml/docbook.xsl
 #STYLESHEET = /usr/share/sgml/docbook/xsl-stylesheets-1.68.1-1/xhtml/docbook.xsl
-
-#Create html output:
-html: ${XMLBASE}.html
 
 ${XMLBASE}.html: ${XMLFILE}
 	#xsltproc -o $(XMLBASE).html --stringparam html.stylesheet gwf-style.css --stringparam section.autolabel 1 $(STYLESHEET) $(XMLFILE)
@@ -15,10 +12,16 @@ ${XMLBASE}.html: ${XMLFILE}
 	./utils/texmath2png.pl equation-list.sgml
 	rm equation-list.sgml
 
-#Create custom ps:
-custps:
-	-jw -f docbook -b tex -d $(CUSTOMDSL) -V tex.math.in.alt="latex" $(XMLFILE)
+${XMLBASE}.tex: ${XMLFILE}
+	@#-jw -f docbook -b tex -d $(CUSTOMDSL) -V tex.math.in.alt="latex" $(XMLFILE)
+	jade -t tex -d $(CUSTOMDSL) $(XMLDCL) $(XMLFILE)
 	./utils/unescape_math.pl $(XMLBASE).tex
+
+#Create html output:
+html: ${XMLBASE}.html
+
+#Create custom ps:
+ps: ${XMLBASE}.tex
 	-jadetex $(XMLBASE).tex
 	-jadetex $(XMLBASE).tex
 	-jadetex $(XMLBASE).tex
@@ -26,9 +29,7 @@ custps:
 	rm $(XMLBASE).aux $(XMLBASE).dvi $(XMLBASE).log $(XMLBASE).out $(XMLBASE).tex
 
 #Create custom pdf:
-pdf:
-	-jw -f docbook -b tex -d $(CUSTOMDSL) -V tex.math.in.alt="latex" $(XMLFILE)
-	./utils/unescape_math.pl $(XMLBASE).tex
+pdf: ${XMLBASE}.tex
 	perl -p -i -e 's/\.eps/.png/g' $(XMLBASE).tex
 	-pdfjadetex $(XMLBASE).tex
 	-pdfjadetex $(XMLBASE).tex

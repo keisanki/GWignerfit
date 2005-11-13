@@ -226,3 +226,7 @@ P SPAN.guimenu, P SPAN.guimenuitem {
 P SPAN.guibutton, P SPAN.guilabel {
 	font-weight: bold;
 }
+
+P SPAN.italic {
+	font-style: italic;
+}

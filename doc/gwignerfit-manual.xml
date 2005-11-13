@@ -1,9 +1,9 @@
 <?xml version="1.0"?>
-<!DOCTYPE article PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN" 
+<!DOCTYPE article PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
   "http://www.oasis-open.org/docbook/xml/4.4/docbookx.dtd" [
 <!--"/usr/share/sgml/docbook/xml-dtd-4.4-1.0-26/docbookx.dtd" [ -->
 	<!ENTITY legal SYSTEM "legal.xml">
-	<!ENTITY appversion "2005-11-04">
+	<!ENTITY appversion "2005-11-13">
 	<!ENTITY manrevision "1.0">
 	<!ENTITY date "August 2005">
 	<!ENTITY app "<application>GWignerFit</application>">
@@ -11,7 +11,7 @@
 	<!ENTITY tex "TeX">
 ]>
 
-<!-- 
+<!--
       (Do not remove this comment block.)
   Maintained by the GNOME Documentation Project
   http://developer.gnome.org/projects/gdp
@@ -22,39 +22,39 @@
 <!-- ============= Document Header ============================= -->
 <article id="index" lang="en">
 
-<articleinfo> 
-	<title>&app; Manual</title>       
-	
-	<copyright> 
-		<year>2004</year> 
-		<year>2005</year> 
-		<holder>Florian Sch&auml;fer</holder> 
-	</copyright> 
-	<publisher> 
-		<publishername> Technische Universit&auml;t Darmstadt </publishername> 
-	</publisher> 
+<articleinfo>
+	<title>&app; Manual</title>
+
+	<copyright>
+		<year>2004</year>
+		<year>2005</year>
+		<holder>Florian Sch&auml;fer</holder>
+	</copyright>
+	<publisher>
+		<publishername> Technische Universit&auml;t Darmstadt </publishername>
+	</publisher>
 
 	&legal;
 
-	<authorgroup> 
-		<author> 
-			<firstname>Florian</firstname> 
-			<surname>Sch&auml;fer</surname> 
-			<affiliation> 
-				<orgname>Technische Universit&auml;t Darmstadt</orgname> 
-				<address> <email>schaefer@ikp.tu-darmstadt.de</email> </address> 
-			</affiliation> 
-		</author> 
-      
+	<authorgroup>
+		<author>
+			<firstname>Florian</firstname>
+			<surname>Sch&auml;fer</surname>
+			<affiliation>
+				<orgname>Technische Universit&auml;t Darmstadt</orgname>
+				<address> <email>schaefer@ikp.tu-darmstadt.de</email> </address>
+			</affiliation>
+		</author>
+
 <!-- This is appropriate place for other contributors: translators,
      maintainers,  etc. Commented out by default.
-     
+
       <othercredit role="translator">
-		<firstname>Latin</firstname> 
-		<surname>Translator 1</surname> 
-		<affiliation> 
-	  		<orgname>Latin Translation Team</orgname> 
-	  		<address> <email>translator@gnome.org</email> </address> 
+		<firstname>Latin</firstname>
+		<surname>Translator 1</surname>
+		<affiliation>
+				<orgname>Latin Translation Team</orgname>
+				<address> <email>translator@gnome.org</email> </address>
 		</affiliation>
 		<contrib>Latin translation</contrib>
       </othercredit>
@@ -68,121 +68,33 @@
 <!-- than the current revision. -->
 <!--
 	<revhistory>
-		<revision> 
-			<revnumber>GWignerFit Manual V&manrevision;</revnumber> 
-			<date>April 2005</date> 
-			<revdescription> 
+		<revision>
+			<revnumber>GWignerFit Manual V&manrevision;</revnumber>
+			<date>April 2005</date>
+			<revdescription>
 				<para role="author">Florian Sch&auml;fer
 					<email>schaefer@ikp.tu-darmstadt.de</email>
 				</para>
-			</revdescription> 
-		</revision> 
-	</revhistory> 
+			</revdescription>
+		</revision>
+	</revhistory>
 -->
 	<releaseinfo>This manual describes version &appversion; of GWignerFit.
-	</releaseinfo> 
-	<legalnotice> 
-      <title>Feedback</title> 
+	</releaseinfo>
+	<legalnotice>
+      <title>Feedback</title>
       <para>To report a bug or make a suggestion regarding the &app; application or
-	      this manual, please contact the author via electronic mail 
+	      this manual, please contact the author via electronic mail
 	      <email>schaefer@ikp.tu-darmstadt.de</email>.
       </para>
 <!-- Translators may also add here feedback address for translations -->
-	</legalnotice> 
-</articleinfo> 
-
-<!--
-    <para>This is a trivial SGML document that illustrates the use of
-      the <literal>alt</literal> element for math.</para>
-
-    <para>Here is a little bit of inline math:
-      <inlineequation>
-	<alt role="tex">$C = \alpha + \beta Y^{\gamma} + \epsilon$</alt>
-	<graphic align="center" fileref="figures/cfunc.png"/> 
-    </inlineequation>.  It is embedded in the text.
-    </para>
-
-    <para>New paragraph.  Here is a bit of displayed math
-			<inlineequation>
-	<alt role="tex">
-	  \[F_{2,T-k}=\frac{(ESS_r-ESS_u)/2}{ESS_u/(T-k)}\]
-        </alt>
-        <graphic fileref="figures/fstat.png"/> 
-			</inlineequation>
-    Note that for this sort of display you get excessive vertical
-    spacing if you bracket the math with double dollar signs,
-    <literal>$$</literal>.  The spacing is better if you use
-    <literal>\[</literal> and <literal>\]</literal> instead.
-  </para>
-
-  <para>Now here is a slightly more complex piece of displayed math, for
-    which we adjust the spacing using
-    <programlisting>
-      \renewcommand{\arraystretch}{1.3}	
-      \setlength{\arraycolsep}{.05in}</programlisting>
-    within the <literal>alt</literal> element:
-		<inlineequation>
-	<alt role="tex">
-<![CDATA[        
-\renewcommand{\arraystretch}{1.3}
-\setlength{\arraycolsep}{.05in}
-\[
-\left[
-\begin{array}{c}
-\dot{L} \\
-\dot{C}
-\end{array}
-\right]
-= \frac{1}{-\alpha}
-\left[
-\begin{array}{cc}
-af & bfh \\
-1 & b(fh-k)
-\end{array}
-\right]
-\left[
-\begin{array}{c}
-L \\
-C 
-\end{array}
-\right]
--\frac{1}{\alpha}
-\left[
-\begin{array}{cc}
-afh & 0 \\
-h & \alpha 
-\end{array}
-\right]
-\left[
-\begin{array}{c}
-\dot{m} \\
-r_w
-\end{array}
-\right]
-\]]]>
-      </alt>
-      <graphic fileref="figures/buiter.png"/>	  
-		</inlineequation>
-    </para>
-
-    <para>Finally we try using the formal
-    <literal>&lt;equation&gt;</literal> tag with a title:
-    <inlineequation><title>Test equation</title>
-      <alt role="tex">
-	\[
-          \hat{\beta} = \frac{\sum_{t=1}^n x_t y_t - \bar{y} \sum_{t=1}^n x_t}
-                             {\sum_{t=1}^n x^2_t - \bar{x}\sum_{t=1}^n x_t}
-        \]
-      </alt>
-      <graphic fileref="figures/betahat.png"/> 
-    </inlineequation>
-    </para>
--->
+	</legalnotice>
+</articleinfo>
 
 <!-- ============= Document Body ============================= -->
 <!-- ============= Introduction ============================== -->
-<sect1 id="gwignerfit-introduction"> 
-	<title>Introduction</title> 
+<sect1 id="gwignerfit-introduction">
+	<title>Introduction</title>
 	<para>&app; provides an easy to use interface to analyze complex spectra of
 		microwave resonators taken with vectorial network analyzers such as the
 		HP8510C. Its primary aim is to provide a means to fit a theoretical curve
@@ -191,38 +103,38 @@ r_w
 
 	<para>Some of &app;'s features:</para>
 
-	<itemizedlist> 
-		<listitem> 
+	<itemizedlist>
+		<listitem>
 			<para>Versatile methods of data visualization.</para>
-		</listitem> 
-		<listitem> 
+		</listitem>
+		<listitem>
 			<para>Support for transmission and reflection spectra.</para>
-		</listitem> 
-		<listitem> 
+		</listitem>
+		<listitem>
 			<para>"Unlimited" number of resonances for the theory.</para>
-		</listitem> 
-		<listitem> 
+		</listitem>
+		<listitem>
 			<para>Possibility to overlay several spectra for better
 				comparison.</para>
-		</listitem> 
+		</listitem>
 		<listitem>
 			<para>Implemented Fast Fourier Transform for visualization of the
 				time domain.</para>
-		</listitem> 
+		</listitem>
 		<listitem>
 			<para>The most common spectral statistics can be calculated and
 				visualized in real time.</para>
-		</listitem> 
+		</listitem>
 		<listitem>
 			<para>Spectral data can be measured directly through a HP8510 compatible
 				network analyzer.</para>
 		</listitem>
-	</itemizedlist> 
+	</itemizedlist>
 </sect1>
 
 <!-- =========== Getting Started ============================== -->
-<sect1 id="gwignerfit-getting-started"> 
-	<title>Getting Started</title> 
+<sect1 id="gwignerfit-getting-started">
+	<title>Getting Started</title>
 	<para>This section will show you the very first steps with &app;. It will
 		explain how to start the application and give a short overview about how
 		the main window is structured.</para>
@@ -232,43 +144,43 @@ r_w
 	<para>The best way to start <application>&app;</application> is to start it
 		from a command line. To do this open a terminal and type the
 		following command, then press <keycap>Return</keycap>:</para>
-	<para> 
+	<para>
 		<command>
 			gwignerfit
 			<replaceable>datafile1.dat datafile2.dat</replaceable>
 		</command>
-	</para> 
+	</para>
 	<para>where the optional filenames
 		<replaceable>datafileX.dat</replaceable> can be the names of
 		resonance datafiles that you want to use. A description of the required
 		datafile format can be found in <xref linkend="gwf-datafile-format" />.
-	</para> 
+	</para>
 	<para>&app; opens the first datafile as the main dataset. Each further
-		file will be added as an overlayed graph (see <xref linkend="gwf-overlay" /> 
-		for further information on overlays). </para> 
+		file will be added as an overlayed graph (see <xref linkend="gwf-overlay" />
+		for further information on overlays). </para>
 	</sect2>
 
 	<sect2 id="gwignerfit-when-start">
 		<title>When You Start &app;</title>
-    <para>When you start <application>&app;</application>, the window shown in 
+    <para>When you start <application>&app;</application>, the window shown in
 			<xref linkend="mainwindow-start"/> is displayed.</para>
 
-		<figure id="mainwindow-start"> 
-			<title>&app; Start Up Window</title> 
-			<screenshot> 
-				<mediaobject> 
+		<figure id="mainwindow-start">
+			<title>&app; Start Up Window</title>
+			<screenshot>
+				<mediaobject>
 					<imageobject>
 						<imagedata fileref="figures/gwf_start_window.eps" scale="45" format="EPS"/>
 					</imageobject>
 					<imageobject>
-						<imagedata fileref="figures/gwf_start_window.png" format="PNG"/> 
+						<imagedata fileref="figures/gwf_start_window.png" format="PNG"/>
 					</imageobject>
-					<textobject> 
+					<textobject>
 						<phrase>Shows &app; main window. Contains titlebar, menubar,
-							graph view area, parameter area and statusbar. </phrase> 
-					</textobject> 
-				</mediaobject> 
-			</screenshot> 
+							graph view area, parameter area and statusbar. </phrase>
+					</textobject>
+				</mediaobject>
+			</screenshot>
 		</figure>
 
     <para>The &app; main window contains the following elements:</para>
@@ -295,7 +207,7 @@ r_w
 					<para>This is perhaps the most important part of the main window of
 						&app;. If a dataset is loaded it will be displayed here along with
 						the theoretical curve and any overlayed datasets. A detailed
-						description of the graph view area can be found in 
+						description of the graph view area can be found in
 						<xref linkend="gwf-graph-view-area" />.
 					</para>
 				</listitem>
@@ -521,7 +433,7 @@ r_w
 				<term><guimenuitem>Preferences...</guimenuitem></term>
 				<listitem>
 					<para>There are some preferences that change the general behavior of
-						&app;. You can change them in the preferences dialog, see 
+						&app;. You can change them in the preferences dialog, see
 						<xref linkend="gwignerfit-custom" />.</para>
 				</listitem>
 			</varlistentry>
@@ -712,10 +624,10 @@ r_w
 		<title>Import Spectrum Data</title>
 		<para>The starting point for many of your &app; sessions will be to import
 			some spectrum data. You can do this by choosing
-			<menuchoice> 
-	  		<guimenu>File</guimenu> 
-	  		<guimenuitem>Import</guimenuitem> 
-				<guimenuitem>Spectrum data...</guimenuitem> 
+			<menuchoice>
+				<guimenu>File</guimenu>
+				<guimenuitem>Import</guimenuitem>
+				<guimenuitem>Spectrum data...</guimenuitem>
 			</menuchoice>
 			(the shortcut is
 			<keycombo>
@@ -726,7 +638,7 @@ r_w
 			select the name of the file that contains the dataset.</para>
 
 		<para>You can either import the raw spectrum data of the frequency domain
-			or the Fourier transformed data of a time domain spectrum (see 
+			or the Fourier transformed data of a time domain spectrum (see
 			<xref linkend="gwignerfit-fft" />). Both types of spectra must abide by
 			the datafile standard defined in <xref linkend="gwf-datafile-format" />.
 			The preferred extension for datafiles is <filename>.dat</filename>.
@@ -740,7 +652,7 @@ r_w
 			<title>Datafile Format</title>
 			<para>&app; expects all datafiles to follow the following
 				standard:</para>
-			<itemizedlist> 
+			<itemizedlist>
 				<listitem>
 					<para>All lines containing actual data must consist of three floating
 						numbers (for the programmers: long floats, a point as the decimal
@@ -768,21 +680,21 @@ r_w
 				<listitem>
 					<para>The following applies only to time domain data: The first two
 						lines of the datafile <emphasis>must</emphasis> look very much like
-						this: 
+						this:
 						<screen>
 # FFT of 'filename.dat' measured data
 # Source frequency range: 2.000000000 - 8.438000000 GHz
-						</screen>
-						The string <replaceable>filename.dat</replaceable> should hold the
-						filename of the original frequency domain dataset. The values of
-						the second line, <replaceable>2.000000000</replaceable> and
+						</screen></para>
+					<para>The string <replaceable>filename.dat</replaceable> should hold
+						the filename of the original frequency domain dataset. The values
+						of the second line, <replaceable>2.000000000</replaceable> and
 						<replaceable>8.438000000</replaceable> in this example, must be
 						equal to the first and last frequency datapoint of the original
 						datafile.</para>
 					<para>The number of datapoints in the file must be one more than a
 						power of two (like 3, 5, 9, 17, 33) and the time range must be
 						centered around time t=0&nbsp;ns.</para>
-					<para>However, you do not need to worry too much about this datafile 
+					<para>However, you do not need to worry too much about this datafile
 						format. If you use &app;'s export function (see
 						<xref linkend="gwf-fft-file-menu" />) everything will be set up
 						correctly.</para>
@@ -808,17 +720,17 @@ r_w
 			</screen>
 		</sect3>
 	</sect2>
-	
+
 	<sect2 id="gwf-import-reslist">
 		<title>Import a Resonance Frequency List</title>
 		<para>It will eventually happen that you already have a list with
 			resonance frequencies that you would like to use for your further work
 			(i.e. for a spectral analysis, see <xref linkend="gwignerfit-spectral" />).
 			You can import such a list with the function
-			<menuchoice> 
-	  		<guimenu>File</guimenu> 
-	  		<guimenuitem>Import</guimenuitem> 
-				<guimenuitem>Resonance list...</guimenuitem> 
+			<menuchoice>
+				<guimenu>File</guimenu>
+				<guimenuitem>Import</guimenuitem>
+				<guimenuitem>Resonance list...</guimenuitem>
 			</menuchoice>
 			from the menubar of the main window. However, your resonance list file
 			will have to stick to the following rules:
@@ -849,7 +761,7 @@ r_w
 			be imported, too, if there is no main spectrum datafile loaded.
 		</para>
 	</sect2>
-		
+
 	<sect2 id="gwf-overlay">
 		<title>Overlay Data</title>
 		<para>Besides having the main dataset and the theoretical graph you can add
@@ -858,28 +770,28 @@ r_w
 			effectively.</para>
 		<para>For all operations with overlays you will need to open the Overlay
 			Window, you can do this by choosing
-			<menuchoice> 
-	  		<guimenu>Spectrum</guimenu> 
-				<guimenuitem>Overlay spectra...</guimenuitem> 
+			<menuchoice>
+				<guimenu>Spectrum</guimenu>
+				<guimenuitem>Overlay spectra...</guimenuitem>
 			</menuchoice>
 			from the menubar.
 		</para>
 
-		<figure id="overlay-fig"> 
-			<title>The Overlay Window</title> 
-			<screenshot> 
-				<mediaobject> 
+		<figure id="overlay-fig">
+			<title>The Overlay Window</title>
+			<screenshot>
+				<mediaobject>
 					<imageobject><imagedata
-						fileref="figures/gwf_overlay_window.eps" scale="50" format="EPS"/> 
+						fileref="figures/gwf_overlay_window.eps" scale="50" format="EPS"/>
 					</imageobject>
 					<imageobject><imagedata
-						fileref="figures/gwf_overlay_window.png" format="PNG"/> 
+						fileref="figures/gwf_overlay_window.png" format="PNG"/>
 					</imageobject>
-					<textobject> 
+					<textobject>
 						<phrase>Shows the Overlay Window.</phrase>
-					</textobject> 
-				</mediaobject> 
-			</screenshot> 
+					</textobject>
+				</mediaobject>
+			</screenshot>
 		</figure>
 
 		<para>The Overlay Window (as shown in <xref linkend="overlay-fig" />)
@@ -965,22 +877,22 @@ r_w
 		<para>To an unfamiliar user &app;'s graph view area may seem a bit
 			confusing at first glance but once you have learned what the different
 			lines are for, it should be quite easy to understand.</para>
-		
-		<figure id="res-graph-view"> 
-			<title>&app; with several datasets</title> 
-			<screenshot> 
-				<mediaobject> 
+
+		<figure id="res-graph-view">
+			<title>&app; with several datasets</title>
+			<screenshot>
+				<mediaobject>
 					<imageobject><imagedata
-							fileref="figures/gwf_action.eps" scale="45" format="EPS"/> 
+							fileref="figures/gwf_action.eps" scale="45" format="EPS"/>
 					</imageobject>
 					<imageobject><imagedata
-							fileref="figures/gwf_action.png" format="PNG"/> 
+							fileref="figures/gwf_action.png" format="PNG"/>
 					</imageobject>
-					<textobject> 
+					<textobject>
 						<phrase>Shows &app; with several datasets.</phrase>
-					</textobject> 
-				</mediaobject> 
-			</screenshot> 
+					</textobject>
+				</mediaobject>
+			</screenshot>
 		</figure>
 
 		<para>The meaning of the different lines in <xref linkend="res-graph-view" />:
@@ -1075,10 +987,10 @@ r_w
 					<listitem>
 						<para>To adjust the view in such a way that the whole graph inside
 							the current frequency window (determined by the global Min and Max
-							parameters) fits nicely onto the screen use 
-							<menuchoice> 
-								<guimenu>View</guimenu> 
-								<guimenuitem>Zoom selection</guimenuitem> 
+							parameters) fits nicely onto the screen use
+							<menuchoice>
+								<guimenu>View</guimenu>
+								<guimenuitem>Zoom selection</guimenuitem>
 							</menuchoice>
 							or the corresponding keyboard shortcut <keycap>S</keycap>.
 						</para>
@@ -1115,9 +1027,9 @@ r_w
 			a postscript file.</para>
 
 		<para>You can find the different export methods as a submenu of the
-			<menuchoice> 
-	  		<guimenu>File</guimenu> 
-				<guimenuitem>Export</guimenuitem> 
+			<menuchoice>
+				<guimenu>File</guimenu>
+				<guimenuitem>Export</guimenuitem>
 			</menuchoice>
 			menu. The three possible actions are:</para>
 
@@ -1167,21 +1079,21 @@ r_w
 						installed on your system in a location mentioned in your
 						<envar>PATH</envar> environment variable.</para>
 
-					<figure id="export-ps"> 
-						<title>Export graph to postscript window</title> 
-						<screenshot> 
-							<mediaobject> 
+					<figure id="export-ps">
+						<title>Export graph to postscript window</title>
+						<screenshot>
+							<mediaobject>
 								<imageobject><imagedata
-										fileref="figures/gwf_export_ps.eps" scale="50" format="EPS"/> 
+										fileref="figures/gwf_export_ps.eps" scale="50" format="EPS"/>
 								</imageobject>
 								<imageobject><imagedata
-										fileref="figures/gwf_export_ps.png" format="PNG"/> 
+										fileref="figures/gwf_export_ps.png" format="PNG"/>
 								</imageobject>
-								<textobject> 
+								<textobject>
 									<phrase>Shows &app;'s dialog to export a graph as a postscript.</phrase>
-								</textobject> 
-							</mediaobject> 
-						</screenshot> 
+								</textobject>
+							</mediaobject>
+						</screenshot>
 					</figure>
 
 					<para>The "Export graph to postscript" window contains the following
@@ -1232,12 +1144,12 @@ r_w
 							</para>
 						</listitem>
 					</itemizedlist>
-					
+
 				</listitem>
 			</varlistentry>
 		</variablelist>
 	</sect2>
-	
+
 	<sect2 id="gwf-dnd">
 		<title>Drag and drop support</title>
 		<para>&app; supports drag and drop to import datafiles. This functionality
@@ -1307,9 +1219,9 @@ r_w
 	<sect2 id="gwf-save">
 		<title>Save a Session</title>
 		<para>To save a session select
-			<menuchoice> 
-	  		<guimenu>File</guimenu> 
-				<guimenuitem>Save as...</guimenuitem> 
+			<menuchoice>
+				<guimenu>File</guimenu>
+				<guimenuitem>Save as...</guimenuitem>
 			</menuchoice>
 			from the menubar. A dialog will ask you for the label of the section.
 			Enter the name and select <guibutton>OK</guibutton>. You will now see a
@@ -1344,9 +1256,9 @@ r_w
 		</itemizedlist>
 
 	<para>Once you have done the steps above it is sufficient to use
-		<menuchoice> 
-			<guimenu>File</guimenu> 
-			<guimenuitem>Save</guimenuitem> 
+		<menuchoice>
+			<guimenu>File</guimenu>
+			<guimenuitem>Save</guimenuitem>
 		</menuchoice>
 		or
 		<keycombo>
@@ -1360,9 +1272,9 @@ r_w
 	<sect2 id="gwf-load">
 		<title>Load a Session</title>
 		<para>Loading a file is the reversed counterpart to saving it. Choose
-			<menuchoice> 
-	  		<guimenu>File</guimenu> 
-				<guimenuitem>Load...</guimenuitem> 
+			<menuchoice>
+				<guimenu>File</guimenu>
+				<guimenuitem>Load...</guimenuitem>
 			</menuchoice>
 			from the menubar or press
 			<keycombo>
@@ -1398,9 +1310,88 @@ r_w
 <!-- ================ Work on the spectrum ================= -->
 <sect1 id="gwignerfit-work-spectrum">
 	<title>Work on the Spectrum</title>
-	<para>This section will teach you how to add resonances to your theory and
-		how to fit them effectively. However, nothing replaces personal experience.
-		You should just work with &app; to find out what works best for you.</para>
+	<para>This section will introduce the mathematics behind &app;, teach you how
+		to add resonances to your theory and how to fit them effectively. However,
+		nothing replaces personal experience.  You should just work with &app; to
+		find out what works best for you.</para>
+
+	<sect2 id="gwf-theory">
+		<title>A Primer on Theory</title>
+		<para>In order to use &app; effectively you should understand the model on
+			which the theory is based and the meanings of the resulting parameters
+			that need to be fitted. This section will try to explain the basic ideas.
+		</para>
+
+		<para>You can interpret experiments with microwave resonators as scattering
+			experiments: Energy is fed into the resonator through an input channel
+			where it is subject to some complex interaction mechanism and eventually
+			exits through a second antenna, the output channel. The transition
+			amplitude between input channel |<emphasis role="italic">a</emphasis>&rang;
+			and output channel |<emphasis role="italic">b</emphasis>&rang; can be
+			written as
+			<informalequation>
+				<alt role="tex">
+					\[
+						S_{ab} = \delta_{ab} - 2\pi i \sum_\mu 
+						\frac{\langle a|V^\dagger|\mu \rangle \langle \mu|V|b \rangle}
+						     {E - {\mathcal E}^{(\mu)}}\, ,
+					\]
+				</alt>
+				<graphic fileref="figures/eqn_scatter.png" />
+			</informalequation>
+			where the sum is taken over all resonances <emphasis
+			role="italic">&mu;</emphasis> of the system and <emphasis
+			role="italic">V</emphasis> is the interaction which couples the
+			wavefunctions in the scattering channels to the scattering system itself
+			(that is the resonator). The energies of the resonances are denoted by
+			<inlineequation>
+				<alt role="tex">${\mathcal E}$</alt>
+				<graphic fileref="figures/eqn_mathcalE.png" />
+			</inlineequation>.
+		</para>
+
+		<para>Adjusting the above equation to the experimental reality one arrives
+			at a slightly different expression:
+			<equation id="eqn-main">
+				<title>The main equation of &app;</title>
+				<alt role="tex">
+					\[
+						S_{ab}(\nu) = s\,e^{i\,\alpha}\,e^{-2\pi i\,\tau\nu} f(\nu) \left(
+						\delta_{ab} - i \sum_\mu \frac{A_\mu\,e^{i\,\phi_\mu}}{\nu-\nu_\mu -
+						i \frac{\Gamma_\mu}{2}} \right)
+					\]
+				</alt>
+				<graphic fileref="figures/eqn_main.png"/>
+			</equation>
+			Please note <emphasis>the minus sign</emphasis> in front of the
+			i<emphasis role="italic">&Gamma;<subscript>&mu;</subscript></emphasis>/2
+			expression. This should normally be a plus sign. However, it turned out
+			that spectra measured with a HP8510 VNA cannot be described by <xref
+			linkend="eqn-main" /> unless there is a negative sign in front of the
+			width expression. It seems that the VNA uses a different sign convention
+			to express phase differences than the "normal" scattering
+			formalism.</para>
+			
+		<para><xref linkend="eqn-main" /> describes essentially the same thing as
+			the raw scattering formula but adopts the typical parameters of an
+			experiment and allows for unavoidable, additional constributions to the
+			S-parameter. The S-parameter is a function of the stimulus frequency
+			<emphasis role="italic">&nu;</emphasis>. The formula features three
+			global parameters (<emphasis role="italic">s, &alpha;, &tau;</emphasis>),
+			four parameters per resonance <emphasis role="italic">&mu;</emphasis>
+			(<emphasis role="italic">&nu;<subscript>&mu;</subscript>,
+			&Gamma;<subscript>&mu;</subscript>, A<subscript>&mu;</subscript>,
+			&phiv;<subscript>&mu;</subscript></emphasis>) and a further factor
+			<emphasis role="italic">f(&nu;)</emphasis>. The global parameters are
+			described in <xref linkend="gwf-global-param" /> while <xref
+			linkend="gwf-resonance-param" /> deals with the resonance parameters. The
+			factor <emphasis role="italic">f(&nu;)</emphasis> is a complex function
+			of the frequency and takes periodic transmission modulations into
+			account, it is normally equal to unity and its absolute value does not
+			exceed one. A more detailed description of <emphasis role="italic">f(&nu;)
+			</emphasis> is given in <xref linkend="gwf-fcomp" />.
+		</para>
+	</sect2>
 
 	<sect2 id="gwf-res-list">
 		<title>The Resonance list</title>
@@ -1408,44 +1399,46 @@ r_w
 			main application window works. Typically it may look like
 			<xref linkend="res-list-fig" />.</para>
 
-		<figure id="res-list-fig"> 
-			<title>The resonance list and global parameters</title> 
-			<screenshot> 
-				<mediaobject> 
+		<figure id="res-list-fig">
+			<title>The resonance list and global parameters</title>
+			<screenshot>
+				<mediaobject>
 					<imageobject><imagedata
-							fileref="figures/gwf_resonance_list.eps" scale="45" format="EPS"/> 
+							fileref="figures/gwf_resonance_list.eps" scale="45" format="EPS"/>
 					</imageobject>
 					<imageobject><imagedata
-							fileref="figures/gwf_resonance_list.png" format="PNG"/> 
+							fileref="figures/gwf_resonance_list.png" format="PNG"/>
 					</imageobject>
-					<textobject> 
+					<textobject>
 						<phrase>Shows the resonance list part of the main window.</phrase>
-					</textobject> 
-				</mediaobject> 
-			</screenshot> 
+					</textobject>
+				</mediaobject>
+			</screenshot>
 		</figure>
 
 		<sect3 id="gwf-global-param">
 			<title>The Global parameters area</title>
-			<para>The entries of the global parameters area:</para>
+			<para>The entries of the global parameters area are (cf. <xref
+				linkend="eqn-main" />):</para>
 			<itemizedlist>
 				<listitem>
-					<para><guilabel>Phase</guilabel>: The global phase of the spectrum in
-						degree. For transmission data this value is kind of arbitrary since
-						it can be absorbed into the phase values of each resonance.</para>
+					<para><guilabel>Phase</guilabel> <emphasis role="italic">&alpha;</emphasis>:
+						The global phase of the spectrum in degree. For transmission data
+						this value is kind of arbitrary since it can be absorbed into the
+						phase values of each resonance.</para>
 				</listitem>
 				<listitem>
-					<para><guilabel>Scale</guilabel>: The whole theory graph is multiplied
-						by this scaling factor. As you can see, it is inactive for
-						transmissions datasets.</para>
+					<para><guilabel>Scale</guilabel> <emphasis role="italic">s</emphasis>:
+						The whole theory graph is multiplied by this scaling factor. As you
+						can see, it is inactive for transmissions datasets.</para>
 				</listitem>
 				<listitem>
-					<para><guilabel>Tau [ns]</guilabel>: This parameter adds a phase to
-						the theory that increases linear in frequency. It may be
-						interpreted as the time (hence its units in nanoseconds) the signal
-						travels in the connecting cables. As this is a effect in
-						transmission measurements this value is inactive for reflection
-						datasets.</para>
+					<para><guilabel>Tau [ns]</guilabel> <emphasis role="italic">&tau;</emphasis>:
+						This parameter adds a phase to the theory that increases linear in
+						frequency. It may be interpreted as the time (hence its units in
+						nanoseconds) the signal travels in the connecting cables. As this
+						is a effect in transmission measurements this value is inactive for
+						reflection datasets.</para>
 				</listitem>
 				<listitem>
 					<para><guilabel>Min [GHz]</guilabel>: The lower frequency boundary for
@@ -1466,10 +1459,14 @@ r_w
 			<title>The Resonance data area:</title>
 			<para>This part of the main window shows a list of all resonances that
 				the theory takes into account. Each resonance is defined by four
-				parameters: its resonance frequency, the FWHM width, the amplitude and a
-				phase factor. The last column of the list shows the quality value for
-				the resonance obtained by dividing the resonance frequency through its
-				width.</para>
+				parameters: its resonance frequency <emphasis
+				role="italic">A<subscript>&mu;</subscript></emphasis>, the FWHM width
+				<emphasis role="italic">&Gamma;<subscript>&mu;</subscript></emphasis>,
+				the amplitude <emphasis role="italic">A<subscript>&mu;</subscript>
+				</emphasis> and a phase factor <emphasis
+				role="italic">&phiv;</emphasis>. The last column of the list shows the
+				quality value for the resonance obtained by dividing the resonance
+				frequency through its width.</para>
 
 			<para>You can click on one of the parameter column headers to sort the
 				list by the entries of this column.</para>
@@ -1516,22 +1513,22 @@ r_w
 			<para>If you click with the right mouse button somewhere on the resonance
 				list area a popup menu (<xref linkend="res-list-popup" />) will appear
 				allowing further manipulation of the resonance list.</para>
-			
-			<figure id="res-list-popup"> 
-				<title>The Resonance list popup menu</title> 
-				<screenshot> 
-					<mediaobject> 
+
+			<figure id="res-list-popup">
+				<title>The Resonance list popup menu</title>
+				<screenshot>
+					<mediaobject>
 						<imageobject><imagedata
-								fileref="figures/gwf_popup.eps" scale="50" format="EPS"/> 
+								fileref="figures/gwf_popup.eps" scale="50" format="EPS"/>
 						</imageobject>
 						<imageobject><imagedata
-								fileref="figures/gwf_popup.png" format="PNG"/> 
+								fileref="figures/gwf_popup.png" format="PNG"/>
 						</imageobject>
-						<textobject> 
+						<textobject>
 							<phrase>Shows the resonance list popup menu.</phrase>
-						</textobject> 
-					</mediaobject> 
-				</screenshot> 
+						</textobject>
+					</mediaobject>
+				</screenshot>
 			</figure>
 
 			<para>The popup menu allows you to perform the following
@@ -1587,9 +1584,9 @@ r_w
 					<term><guimenuitem>Add resonance by click</guimenuitem></term>
 					<listitem>
 						<para>This is the same as selecting
-							<menuchoice> 
-								<guimenu>Spectrum</guimenu> 
-								<guimenuitem>Add resonance by click</guimenuitem> 
+							<menuchoice>
+								<guimenu>Spectrum</guimenu>
+								<guimenuitem>Add resonance by click</guimenuitem>
 							</menuchoice>.
 						</para>
 					</listitem>
@@ -1618,9 +1615,9 @@ r_w
 			afterward.</para>
 
 		<para>The automatic resonance finder can be accessed via
-			<menuchoice> 
-				<guimenu>Spectrum</guimenu> 
-				<guimenuitem>Find isolated resonances</guimenuitem> 
+			<menuchoice>
+				<guimenu>Spectrum</guimenu>
+				<guimenuitem>Find isolated resonances</guimenuitem>
 			</menuchoice>
 			or by its shortcut
 			<keycombo>
@@ -1641,15 +1638,15 @@ r_w
 
 		<para>You can now add the resonances still missing by hand. To add a new
 			resonance at a certain frequency choose
-			<menuchoice> 
-				<guimenu>Spectrum</guimenu> 
-				<guimenuitem>Add resonance by click</guimenuitem> 
+			<menuchoice>
+				<guimenu>Spectrum</guimenu>
+				<guimenuitem>Add resonance by click</guimenuitem>
 			</menuchoice>
 			or by its shortcut
 			<keycombo>
 				<keycap>Ctrl</keycap>
 				<keycap>A</keycap>
-			</keycombo> 
+			</keycombo>
 			(which you should really consider to remember, as you will need this
 			function quite often). Then click on the graph at the frequency where a
 			new resonance should be added. &app; will now try to find some reasonable
@@ -1696,13 +1693,13 @@ r_w
 					and get a feeling of how things work.</para>
 			</listitem>
 		</itemizedlist>
-			
+
 		<para>OK, now it's time to rock! Let's fit!</para>
 
 		<para>To start the fitting procedure choose
-			<menuchoice> 
-				<guimenu>Spectrum</guimenu> 
-				<guimenuitem>Fit spectrum</guimenuitem> 
+			<menuchoice>
+				<guimenu>Spectrum</guimenu>
+				<guimenuitem>Fit spectrum</guimenuitem>
 			</menuchoice>
 			or type the shortcut
 			<keycombo>
@@ -1716,22 +1713,22 @@ r_w
 		<para>During the fit you will see a status window (like the one shown in
 			<xref linkend="fit-win" />) which gives some information about the
 			current state of the fit.</para>
-		
-		<figure id="fit-win"> 
-			<title>The fit information window</title> 
-			<screenshot> 
-				<mediaobject> 
+
+		<figure id="fit-win">
+			<title>The fit information window</title>
+			<screenshot>
+				<mediaobject>
 					<imageobject><imagedata
-							fileref="figures/gwf_fit.eps" scale="50" format="EPS"/> 
+							fileref="figures/gwf_fit.eps" scale="50" format="EPS"/>
 					</imageobject>
 					<imageobject><imagedata
-							fileref="figures/gwf_fit.png" format="PNG"/> 
+							fileref="figures/gwf_fit.png" format="PNG"/>
 					</imageobject>
-					<textobject> 
+					<textobject>
 						<phrase>Shows the information window which appears during a fit.</phrase>
-					</textobject> 
-				</mediaobject> 
-			</screenshot> 
+					</textobject>
+				</mediaobject>
+			</screenshot>
 		</figure>
 
 		<para>The content of the fit information window:</para>
@@ -1839,24 +1836,24 @@ r_w
 			sensible range you will be asked about what should be done by a
 			dialog.</para>
 
-		<figure id="check-res-win"> 
-			<title>Inspect resonance parameter dialog</title> 
-			<screenshot> 
-				<mediaobject> 
+		<figure id="check-res-win">
+			<title>Inspect resonance parameter dialog</title>
+			<screenshot>
+				<mediaobject>
 					<imageobject><imagedata
-							fileref="figures/gwf_check_res.eps" scale="50" format="EPS"/> 
+							fileref="figures/gwf_check_res.eps" scale="50" format="EPS"/>
 					</imageobject>
 					<imageobject><imagedata
-							fileref="figures/gwf_check_res.png" format="PNG"/> 
+							fileref="figures/gwf_check_res.png" format="PNG"/>
 					</imageobject>
-					<textobject> 
+					<textobject>
 						<phrase>Shows the dialog that asks the user to check the parameters of a resonance.</phrase>
-					</textobject> 
-				</mediaobject> 
-			</screenshot> 
+					</textobject>
+				</mediaobject>
+			</screenshot>
 		</figure>
 
-		<para>The content of the inspect resonance window (see 
+		<para>The content of the inspect resonance window (see
 			<xref linkend="check-res-win" />):</para>
 
 		<variablelist>
@@ -1911,9 +1908,9 @@ r_w
 		<para>If you are, after the whole fit procedure is finished, not satisfied
 			with the result of your fit you can still revert to the parameter set you
 			had before the fit via
-			<menuchoice> 
-				<guimenu>Spectrum</guimenu> 
-				<guimenuitem>Undo last fit</guimenuitem> 
+			<menuchoice>
+				<guimenu>Spectrum</guimenu>
+				<guimenuitem>Undo last fit</guimenuitem>
 			</menuchoice>
 			or by typing the corresponding shortcut
 			<keycombo>
@@ -1936,24 +1933,45 @@ r_w
 			Having a look at the time domain would reveal those signal travel times
 			that contribute to those ripples. Those <emphasis>Fourier
 			components</emphasis> can then be taken into account as a factor with
-			additional complex exponential functions in the frequency domain.</para>
+			additional complex exponential functions in the frequency domain. This is
+			the factor <emphasis role="italic">f(&nu;)</emphasis> in <xref
+			linkend="eqn-main" />. It can be written as in <xref linkend="eqn-fcomp"
+			/>.
+			
+			<equation id="eqn-fcomp">
+				<title>The equation for general Fourier components</title>
+				<alt role="tex">
+					\[
+						f(\nu) = \frac{1 - \sum_\xi B_\xi e^{-2\pi i\,\tau_\xi\nu + 
+						               \beta_\xi i}} {1 + \sum_\xi B_\xi}\, .
+					\]
+				</alt>
+				<graphic fileref="figures/eqn_fcomp.png" />
+			</equation>
+			
+			As you can see, <emphasis role="italic">f(&nu;)</emphasis> is just a
+			Fourier series expansion that should be suitable for a general
+			description of periodic fluctuations. The only constraint is given by the
+			denominator which guarantees 
+			|<emphasis role="italic">f(&nu;)</emphasis>|&le;1.
+		</para>
 
 		<figure id="fcomp-win">
 			<title>Screenshot of what the "Fourier components" window could look like
 				in action.</title>
-			<screenshot> 
-				<mediaobject> 
+			<screenshot>
+				<mediaobject>
 					<imageobject><imagedata
-							fileref="figures/gwf_fcomp.eps" scale="50" format="EPS"/> 
+							fileref="figures/gwf_fcomp.eps" scale="50" format="EPS"/>
 					</imageobject>
 					<imageobject><imagedata
-							fileref="figures/gwf_fcomp.png" format="PNG"/> 
+							fileref="figures/gwf_fcomp.png" format="PNG"/>
 					</imageobject>
-					<textobject> 
+					<textobject>
 						<phrase>Fourier components window</phrase>
-					</textobject> 
-				</mediaobject> 
-			</screenshot> 
+					</textobject>
+				</mediaobject>
+			</screenshot>
 		</figure>
 
 		<para>In &app; the process of identifying the travel times and adding them
@@ -1962,7 +1980,7 @@ r_w
 			<menuchoice>
 				<guimenu>Analyze</guimenu>
 				<guimenuitem>Fourier components</guimenuitem>
-			</menuchoice>. 
+			</menuchoice>.
 			You can see a screenshot in figure <xref linkend="fcomp-win" />. The
 			window is divided into two parts: <guilabel>Timedomain view of spectra
 			quotient</guilabel> and <guilabel>Current fourier components</guilabel>.
@@ -1986,7 +2004,7 @@ r_w
 						only applied to the data between the global minimal and maximal
 						frequency window to allow for a more detailed analysis.
 					</para>
-					<para>The graph in the example screenshot (<xref linkend="fcomp-win" 
+					<para>The graph in the example screenshot (<xref linkend="fcomp-win"
 						/>) has at least three outstanding peaks: at 0, 26 and 32&nbsp;sec.
 						The peak at 0&nbsp;sec exists, as the average value has not exactly
 						been a real one, but rather something close to it. Therefore this
@@ -2006,26 +2024,27 @@ r_w
 			<varlistentry>
 				<term><guilabel>Fourier components</guilabel></term>
 				<listitem>
-					<para>Each Fourier component consists of three parameters: a time
-						value, an amplitude and a phase value. The time gives the position
-						of the contribution in the above graph and can be interpreted as a
-						travel time of a signal between the two network ports. Amplitude
-						and phase value form a complex prefactor to the exponential
-						function and determine the strength of the influence of the
-						component. All those Fourier components build a sum of exponential
-						functions that are normalized in such a way that its absolute value
-						will for all frequencies always be <emphasis>smaller than
-						1</emphasis>. This guarantees a physical interpretation as a
-						damping factor.
+					<para>Each Fourier component consists of three parameters (see <xref
+						linkend="eqn-fcomp" />): a time value, an amplitude and a phase
+						value. The time gives the position of the contribution in the above
+						graph and can be interpreted as a travel time of a signal between
+						the two network ports. Amplitude and phase value form a complex
+						prefactor to the exponential function and determine the strength of
+						the influence of the component. All those Fourier components build
+						a sum of exponential functions that are normalized in such a way
+						that its absolute value will for all frequencies always be
+						<emphasis>smaller than 1</emphasis>. This guarantees a physical
+						interpretation as a damping factor.
 					</para>
 					<para>All parameters have the well known checkboxes behind them. With
 						them you can once again select which parameters are to be included
-						in a fit run. Those parameters are then optimized with the "normal"
-						Wigner resonance parameters during a normal fit run. It is once
-						again advisable to start with fitting the phase parameters alone.
-						If the Fourier components window is closed, all parameters are
-						considered to be <emphasis>fixed</emphasis> thus preventing &app;
-						to change parameters that you cannot see on the screen.
+						in a fit run (click the column header to change all checkboxes of
+						the column at once). Those parameters are then optimized with the
+						"normal" Wigner resonance parameters during a standard fit run. It
+						is once again advisable to start with fitting the phase parameters
+						alone. If the Fourier components window is closed, all parameters
+						are considered to be <emphasis>fixed</emphasis> thus preventing
+						&app; to change parameters that you cannot see on the screen.
 					</para>
 					<para>
 						All that is left is to explain how to delete a Fourier component if
@@ -2081,7 +2100,7 @@ r_w
 			by <ulink url="http://archiv.ub.uni-marburg.de/diss/z2002/0043/">
 			<citetitle>Michael Barth (Marburg, 2001)</citetitle></ulink>, appendix
 			A.2.</para>
-			
+
 		<para>For the calibration &app; needs additional data which is obtained
 			by measurements of certain standards. This data has to be available for
 			each datapoint of your uncalibrated raw data. For reflection spectra you
@@ -2094,27 +2113,27 @@ r_w
 			measurement which means that both ports have to be isolated to determine
 			the crosstalk.</para>
 
-		<figure id="check-cal-win"> 
-			<title>Calibration dialog</title> 
-			<screenshot> 
-				<mediaobject> 
+		<figure id="check-cal-win">
+			<title>Calibration dialog</title>
+			<screenshot>
+				<mediaobject>
 					<imageobject><imagedata
-							fileref="figures/gwf_calib.eps" scale="50" format="EPS"/> 
+							fileref="figures/gwf_calib.eps" scale="50" format="EPS"/>
 					</imageobject>
 					<imageobject><imagedata
-							fileref="figures/gwf_calib.png" format="PNG"/> 
+							fileref="figures/gwf_calib.png" format="PNG"/>
 					</imageobject>
-					<textobject> 
+					<textobject>
 						<phrase>Shows the calibration dialog.</phrase>
-					</textobject> 
-				</mediaobject> 
-			</screenshot> 
+					</textobject>
+				</mediaobject>
+			</screenshot>
 		</figure>
 
 		<para>To perform the calibration open the calibration window via
-			<menuchoice> 
-				<guimenu>Spectrum</guimenu> 
-				<guimenuitem>Calibrate spectrum...</guimenuitem> 
+			<menuchoice>
+				<guimenu>Spectrum</guimenu>
+				<guimenuitem>Calibrate spectrum...</guimenuitem>
 			</menuchoice>.
 			This dialog is shown in <xref linkend="check-cal-win" />.
 			In this window all the required datafiles must be specified, only the
@@ -2160,9 +2179,9 @@ r_w
 		&app;.</para>
 
 	<para>To open the FFT window choose
-		<menuchoice> 
-			<guimenu>Analyze</guimenu> 
-			<guimenuitem>Fourier transform all</guimenuitem> 
+		<menuchoice>
+			<guimenu>Analyze</guimenu>
+			<guimenuitem>Fourier transform all</guimenuitem>
 		</menuchoice>
 		from the menubar of the main window or type
 		<keycombo>
@@ -2174,9 +2193,9 @@ r_w
 		datasets &ndash; of the overlays as well. You can see an example of this in
 		<xref linkend="fft-win" />.
 		If you choose
-		<menuchoice> 
-			<guimenu>Analyze</guimenu> 
-			<guimenuitem>Fourier transform frqwin</guimenuitem> 
+		<menuchoice>
+			<guimenu>Analyze</guimenu>
+			<guimenuitem>Fourier transform frqwin</guimenuitem>
 		</menuchoice>
 		(<keycombo>
 			<keycap>Ctrl</keycap>
@@ -2188,21 +2207,21 @@ r_w
 		Min- and Max-frequency values.
 	</para>
 
-	<figure id="fft-win"> 
-		<title>The FFT Window</title> 
-		<screenshot> 
-			<mediaobject> 
+	<figure id="fft-win">
+		<title>The FFT Window</title>
+		<screenshot>
+			<mediaobject>
 				<imageobject><imagedata
-						fileref="figures/gwf_fft.eps" scale="50" format="EPS"/> 
+						fileref="figures/gwf_fft.eps" scale="50" format="EPS"/>
 				</imageobject>
 				<imageobject><imagedata
-						fileref="figures/gwf_fft.png" format="PNG"/> 
+						fileref="figures/gwf_fft.png" format="PNG"/>
 				</imageobject>
-				<textobject> 
+				<textobject>
 					<phrase>Shows the FFT window with the Fourier transformed graph.</phrase>
-				</textobject> 
-			</mediaobject> 
-		</screenshot> 
+				</textobject>
+			</mediaobject>
+		</screenshot>
 	</figure>
 
 	<sect2 id="gwf-fft-menubar">
@@ -2229,8 +2248,8 @@ r_w
 
 						<para>This menu has the following submenus:</para>
 
-						<itemizedlist> 
-							<listitem> 
+						<itemizedlist>
+							<listitem>
 								<para><guimenuitem>Measurement data...</guimenuitem>:
 									Exports the complex data of the Fourier transformed main
 									dataset into a file. You can import the exported data through
@@ -2239,21 +2258,21 @@ r_w
 									give you the possibility to convert it back into the
 									frequency domain.
 								</para>
-							</listitem> 
-							<listitem> 
+							</listitem>
+							<listitem>
 								<para><guimenuitem>Theory data...</guimenuitem>:
 									Exports the complex data of the Fourier transformed
 									theoretical curve into a file. This file can then be
 									re-imported, too.
 								</para>
-							</listitem> 
-							<listitem> 
+							</listitem>
+							<listitem>
 								<para><guimenuitem>Graph as postscript...</guimenuitem>:
 									Saves the current view of the time domain graph as a
 									postscript file. For a description of the export dialog see
 									<xref linkend="gwf-export-ps" />.
 								</para>
-							</listitem> 
+							</listitem>
 						</itemizedlist>
 
 					</listitem>
@@ -2279,7 +2298,7 @@ r_w
 					<listitem>
 						<para>You can measure the time or length distance (depending on
 							your current abscissa scaling) between two points of the FFT
-							graph. The usage is the same as for the main graph (see 
+							graph. The usage is the same as for the main graph (see
 							<xref linkend="gwf-analyze-menu" />).
 						</para>
 					</listitem>
@@ -2295,9 +2314,9 @@ r_w
 
 			<variablelist>
 				<varlistentry>
-					<term><guimenuitem>Absolute value</guimenuitem>, 
-					      <guimenuitem>Real part</guimenuitem>, 
-								<guimenuitem>Imaginary part</guimenuitem>, 
+					<term><guimenuitem>Absolute value</guimenuitem>,
+					      <guimenuitem>Real part</guimenuitem>,
+								<guimenuitem>Imaginary part</guimenuitem>,
 								<guimenuitem>Phase</guimenuitem> and
 								<guimenuitem>Log power in dB</guimenuitem>
 					</term>
@@ -2353,13 +2372,13 @@ r_w
 
 	<sect2 id="gwf-fft-graph">
 		<title>The Graph of the FFT Window</title>
-		
+
 		<para>By and large the graph of the FFT window looks and behaves the same
 			way as the main graph. Of course, you do not see the original data but
 			the result of its Fourier transformation but that is about all the
 			changes there are.</para>
 
-		<para>In particular the following features are similar (see 
+		<para>In particular the following features are similar (see
 			<xref linkend="gwf-graph-view-area" />, too):</para>
 
 		<itemizedlist>
@@ -2378,11 +2397,11 @@ r_w
 					graph with the left mouse button.</para>
 			</listitem>
 		</itemizedlist>
-		
+
 		<para>You can keep the FFT window open while working in your main window.
 			All changes will be applied to the Fourier transformed graphs at once so
 			that the display of the FFT window is always up to date.</para>
-		
+
 	</sect2>
 </sect1>
 
@@ -2395,12 +2414,12 @@ r_w
 		the spectrum of the Laplace operator that describes the electrical field
 		inside the cavity.</para>
 
-	<para>&app; can evaluate the following statistical measures (refer to 
+	<para>&app; can evaluate the following statistical measures (refer to
 		<xref linkend="gwf-spectral-view-menu" /> to learn how to choose the
 		statistic to be shown):</para>
 
-	<itemizedlist> 
-		<listitem> 
+	<itemizedlist>
+		<listitem>
 			<para>Staircase: This is the most fundamental level statistic. The number
 				of levels up to a certain frequency is given as a function of this
 				frequency. The Weyl formula says that the level density for a two
@@ -2462,31 +2481,31 @@ r_w
 			(see <xref linkend="gwf-find-res" />) before you can use the spectral
 			statistics module. To activate this function and to open the spectral
 			statistics window choose
-			<menuchoice> 
-				<guimenu>Analyze</guimenu> 
-				<guimenuitem>Spectral statistics</guimenuitem> 
+			<menuchoice>
+				<guimenu>Analyze</guimenu>
+				<guimenuitem>Spectral statistics</guimenuitem>
 			</menuchoice>
 			from the menubar of the main window or type
 			<keycombo>
 				<keycap>Ctrl</keycap>
 				<keycap>C</keycap>
 			</keycombo>.
-			<figure id="spectral-win"> 
-				<title>The spectral statistics window</title> 
-				<screenshot> 
-					<mediaobject> 
+			<figure id="spectral-win">
+				<title>The spectral statistics window</title>
+				<screenshot>
+					<mediaobject>
 						<imageobject><imagedata
-								fileref="figures/gwf_spectral.eps" scale="50" format="EPS"/> 
+								fileref="figures/gwf_spectral.eps" scale="50" format="EPS"/>
 						</imageobject>
 						<imageobject><imagedata
-								fileref="figures/gwf_spectral.png" format="PNG"/> 
+								fileref="figures/gwf_spectral.png" format="PNG"/>
 						</imageobject>
-						<textobject> 
+						<textobject>
 							<phrase>Shows the spectral statistics window with the default view,
 								the staircase function.</phrase>
-						</textobject> 
-					</mediaobject> 
-				</screenshot> 
+						</textobject>
+					</mediaobject>
+				</screenshot>
 			</figure>
 			Up comes a new window which should look similar to <xref
 			linkend="spectral-win" />. The red graph is the staircase function of your
@@ -2503,25 +2522,25 @@ r_w
 			the spinbutton. To get back to a best-fit Weyl function press the
 			<guibutton>Fit Weyl</guibutton> button.
 		</para>
-		
-		<figure id="spectral-bottom"> 
-			<title>The alternate bottom of the spectral statistics window</title> 
-			<screenshot> 
-				<mediaobject> 
+
+		<figure id="spectral-bottom">
+			<title>The alternate bottom of the spectral statistics window</title>
+			<screenshot>
+				<mediaobject>
 					<imageobject><imagedata
-							fileref="figures/gwf_bottom.eps" scale="50" format="EPS"/> 
+							fileref="figures/gwf_bottom.eps" scale="50" format="EPS"/>
 					</imageobject>
 					<imageobject><imagedata
-							fileref="figures/gwf_bottom.png" format="PNG"/> 
+							fileref="figures/gwf_bottom.png" format="PNG"/>
 					</imageobject>
-					<textobject> 
+					<textobject>
 						<phrase>If the statistics type is not set to "Staircase" or
 							"Fluctuations" the bottom of the spectral statistics window will
 							look like this.
 						</phrase>
-					</textobject> 
-				</mediaobject> 
-			</screenshot> 
+					</textobject>
+				</mediaobject>
+			</screenshot>
 		</figure>
 
 		<para>The entries described in the last paragraph are only available, if the
@@ -2576,8 +2595,8 @@ r_w
 
 						<para>This menu has the following submenus:</para>
 
-						<itemizedlist> 
-							<listitem> 
+						<itemizedlist>
+							<listitem>
 								<para><guimenuitem>Statistical data...</guimenuitem>:
 									This exports the datapoints (that is the red curve in the
 									graph view) of the currently displayed statistic into a file.
@@ -2586,8 +2605,8 @@ r_w
 									parameters such as Weyl coefficients, number of resonances
 									and frequency range.
 								</para>
-							</listitem> 
-							<listitem> 
+							</listitem>
+							<listitem>
 								<para><guimenuitem>Graph as postscript...</guimenuitem>:
 									Saves the current view of the statistics graph as a
 									postscript file. For a description of the export dialog see
@@ -2595,7 +2614,7 @@ r_w
 									you cannot include overlays here, as the statistics module
 									does not know such a thing).
 								</para>
-							</listitem> 
+							</listitem>
 						</itemizedlist>
 					</listitem>
 				</varlistentry>
@@ -2609,14 +2628,14 @@ r_w
 				</varlistentry>
 			</variablelist>
 		</sect3>
-		
+
 		<sect3 id="gwf-spectral-selection-menu">
 			<title>The spectral statistics <guimenu>Selection</guimenu> menu</title>
 
 			<para>The <guimenu>Selection</guimenu> menu allows you to specify what
 				resonances are to be taken into account for the statistical analysis.
 				It contains the following entries:</para>
-			
+
 			<variablelist>
 				<varlistentry>
 					<term><guimenuitem>All resonances</guimenuitem></term>
@@ -2645,7 +2664,7 @@ r_w
 				</varlistentry>
 			</variablelist>
 		</sect3>
-		
+
 		<sect3 id="gwf-spectral-view-menu">
 			<title>The spectral statistics <guimenu>View</guimenu> menu</title>
 
@@ -2742,9 +2761,9 @@ r_w
 		<title>The process of measuring</title>
 		<para>The first step to make a measurement is to open the "Measure data
 			from VNA" dialog. This can be done by choosing
-			<menuchoice> 
-				<guimenu>File</guimenu> 
-				<guimenuitem>Import</guimenuitem> 
+			<menuchoice>
+				<guimenu>File</guimenu>
+				<guimenuitem>Import</guimenuitem>
 				<guimenuitem>Measure data...</guimenuitem>
 			</menuchoice>
 			from the menubar of the main window or by typing the shortcut
@@ -2756,22 +2775,22 @@ r_w
 			It is divided into four logical groups that will be explained now.
 		</para>
 
-		<figure id="vna-win"> 
-			<title>The "Measure data from VNA" dialog</title> 
-			<screenshot> 
-				<mediaobject> 
+		<figure id="vna-win">
+			<title>The "Measure data from VNA" dialog</title>
+			<screenshot>
+				<mediaobject>
 					<imageobject><imagedata
-							fileref="figures/gwf_vna_window.eps" scale="50" format="EPS"/> 
+							fileref="figures/gwf_vna_window.eps" scale="50" format="EPS"/>
 					</imageobject>
 					<imageobject><imagedata
-							fileref="figures/gwf_vna_window.png" format="PNG"/> 
+							fileref="figures/gwf_vna_window.png" format="PNG"/>
 					</imageobject>
-					<textobject> 
+					<textobject>
 						<phrase>Shows the dialog to measure data through the network
 							analyzer.</phrase>
-					</textobject> 
-				</mediaobject> 
-			</screenshot> 
+					</textobject>
+				</mediaobject>
+			</screenshot>
 		</figure>
 
 		<variablelist>
@@ -2907,30 +2926,30 @@ r_w
 	<title>Customize &app;</title>
 	<para>You can change some aspects of &app; through the preferences dialog
 		that can be accessed via
-		<menuchoice> 
-			<guimenu>Spectrum</guimenu> 
-			<guimenuitem>Preferences...</guimenuitem> 
+		<menuchoice>
+			<guimenu>Spectrum</guimenu>
+			<guimenuitem>Preferences...</guimenuitem>
 		</menuchoice>
 		and which looks like <xref linkend="check-pref-win" />. All preferences are
 		persistent (they are saved in the file <filename>.gwignerfitrc</filename>
 		in your home directory) and will be restored the next time you run &app;.
 	</para>
 
-	<figure id="check-pref-win"> 
-		<title>Preferences dialog</title> 
-		<screenshot> 
-			<mediaobject> 
+	<figure id="check-pref-win">
+		<title>Preferences dialog</title>
+		<screenshot>
+			<mediaobject>
 				<imageobject><imagedata
-						fileref="figures/gwf_prefs.eps" scale="50" format="EPS"/> 
+						fileref="figures/gwf_prefs.eps" scale="50" format="EPS"/>
 				</imageobject>
 				<imageobject><imagedata
-						fileref="figures/gwf_prefs.png" format="PNG"/> 
+						fileref="figures/gwf_prefs.png" format="PNG"/>
 				</imageobject>
-				<textobject> 
+				<textobject>
 					<phrase>Shows the preferences dialog.</phrase>
-				</textobject> 
-			</mediaobject> 
-		</screenshot> 
+				</textobject>
+			</mediaobject>
+		</screenshot>
 	</figure>
 
 	<para>The currently available preferences are:</para>
@@ -3034,14 +3053,14 @@ r_w
 
 	<para>&app; will crash occasionally. According to Murphy's Law, it is very
 		likely that this will happen at the worst possible moment.</para>
-	
+
 <!--
 	<para>&app; will crash from time to time especially while being in the
 		process of fitting your theory. If you export your &app; window through a
 		network to another computer the probability of a crash seems to
 		increase.</para>
 	-->
-	
+
 	<para>Please make sure to save your work really often and learn how to use
 		the backup function described in <xref linkend="gwf-backup" />.</para>
 
@@ -3055,8 +3074,8 @@ r_w
 	primary place for this info is "About.." box of the program. However, if you
 	do wish to include this info in the manual, this is the place to put it.
 	Alternatively, you can put this information in the title page.-->
-<sect1 id="gwignerfit-about"> 
-	<title>About &app;</title> 
+<sect1 id="gwignerfit-about">
+	<title>About &app;</title>
 	<para> &app; was written by Florian Sch&auml;fer.
 		<!--(<email>schaefer@ikp.tu-darmstadt.de</email>)-->
 	</para>
@@ -3064,16 +3083,16 @@ r_w
 		or this manual, please contact the author via electronic mail
 		<email>schaefer@ikp.tu-darmstadt.de</email>.
 	</para>
-	
+
 	<para> This program is distributed under the terms of the GNU General
 		Public license as published by the Free Software Foundation; either
 		version 2 of the License, or (at your option)
 		any later version. A copy of this license can be found at this
-		<ulink url="http://www.gnu.org/licenses/gpl.txt" type="help">link</ulink>, 
+		<ulink url="http://www.gnu.org/licenses/gpl.txt" type="help">link</ulink>,
 		or in the file COPYING included with the source code of this
 		program.</para>
 
-</sect1> 
+</sect1>
 </article>
 
 <!--
