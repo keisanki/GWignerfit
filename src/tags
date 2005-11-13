@@ -29,14 +29,14 @@ EULER	spectral_numeric.c	133;"	d	file:
 EULER	spectral_numeric.c	63;"	d	file:
 ExportTextviewData	export.c	/^} ExportTextviewData;$/;"	t	file:
 FCOMPLEX	spectral_numeric.c	/^typedef struct FCOMPLEX {float r,i;} fcomplex;$/;"	s	file:
-FCOMP_AMP_COL	fcomp.c	/^	FCOMP_AMP_COL, FCOMP_TAU_COL, FCOMP_PHI_COL,$/;"	e	file:
-FCOMP_FIT_AMP_COL	fcomp.c	/^	FCOMP_FIT_AMP_COL, FCOMP_FIT_TAU_COL, FCOMP_FIT_PHI_COL,$/;"	e	file:
-FCOMP_FIT_PHI_COL	fcomp.c	/^	FCOMP_FIT_AMP_COL, FCOMP_FIT_TAU_COL, FCOMP_FIT_PHI_COL,$/;"	e	file:
-FCOMP_FIT_TAU_COL	fcomp.c	/^	FCOMP_FIT_AMP_COL, FCOMP_FIT_TAU_COL, FCOMP_FIT_PHI_COL,$/;"	e	file:
+FCOMP_AMP_COL	fcomp.c	/^	FCOMP_TAU_COL, FCOMP_AMP_COL, FCOMP_PHI_COL,$/;"	e	file:
+FCOMP_FIT_AMP_COL	fcomp.c	/^	FCOMP_FIT_TAU_COL, FCOMP_FIT_AMP_COL, FCOMP_FIT_PHI_COL,$/;"	e	file:
+FCOMP_FIT_PHI_COL	fcomp.c	/^	FCOMP_FIT_TAU_COL, FCOMP_FIT_AMP_COL, FCOMP_FIT_PHI_COL,$/;"	e	file:
+FCOMP_FIT_TAU_COL	fcomp.c	/^	FCOMP_FIT_TAU_COL, FCOMP_FIT_AMP_COL, FCOMP_FIT_PHI_COL,$/;"	e	file:
 FCOMP_ID_COL	fcomp.c	/^	FCOMP_ID_COL = 0,$/;"	e	file:
 FCOMP_N_COLUMNS	fcomp.c	/^	FCOMP_N_COLUMNS$/;"	e	file:
-FCOMP_PHI_COL	fcomp.c	/^	FCOMP_AMP_COL, FCOMP_TAU_COL, FCOMP_PHI_COL,$/;"	e	file:
-FCOMP_TAU_COL	fcomp.c	/^	FCOMP_AMP_COL, FCOMP_TAU_COL, FCOMP_PHI_COL,$/;"	e	file:
+FCOMP_PHI_COL	fcomp.c	/^	FCOMP_TAU_COL, FCOMP_AMP_COL, FCOMP_PHI_COL,$/;"	e	file:
+FCOMP_TAU_COL	fcomp.c	/^	FCOMP_TAU_COL, FCOMP_AMP_COL, FCOMP_PHI_COL,$/;"	e	file:
 FIT_AMP_COL	export.c	/^	FIT_FRQ_COL, FIT_WID_COL, FIT_AMP_COL, FIT_PHAS_COL,$/;"	e	file:
 FIT_AMP_COL	resonancelist.c	/^	FIT_FRQ_COL, FIT_WID_COL, FIT_AMP_COL, FIT_PHAS_COL,$/;"	e	file:
 FIT_FRQ_COL	export.c	/^	FIT_FRQ_COL, FIT_WID_COL, FIT_AMP_COL, FIT_PHAS_COL,$/;"	e	file:
@@ -157,13 +157,13 @@ cisi	spectral_numeric.c	/^void cisi(float x, float *ci, float *si)$/;"	f
 clear_resonancelist	resonancelist.c	/^void clear_resonancelist ()$/;"	f
 cmulti_re	compl_mrqmin.c	/^inline double cmulti_re(ComplexDouble a, ComplexDouble b) {$/;"	f
 column_clicked_callback	resonancelist.c	/^static void column_clicked_callback (GtkTreeViewColumn *column, gpointer user_data)$/;"	f	file:
-column_separator	resonancelist.c	235;"	d	file:
-column_separator	resonancelist.c	394;"	d	file:
+column_separator	resonancelist.c	236;"	d	file:
+column_separator	resonancelist.c	395;"	d	file:
 convert_matrix	nrutil.c	/^double **convert_matrix(double *a, long nrl, long nrh, long ncl, long nch)$/;"	f
 convert_matrix	nrutil.c	/^float **convert_matrix(a,nrl,nrh,ncl,nch)$/;"	f
 covsrt	compl_mrqmin.c	/^void covsrt(double **covar, int ma, int ia[], int mfit)$/;"	f
 create_backup	helpers.c	/^void create_backup ()$/;"	f
-create_param_array	numeric.c	/^void create_param_array (GPtrArray *param, GlobalParam *gparam, gint numres, double *p)$/;"	f
+create_param_array	numeric.c	/^void create_param_array (GPtrArray *param, GPtrArray *fcomp, GlobalParam *gparam, gint numres, gint numfcomp, double *p)$/;"	f
 create_param_structs	numeric.c	/^void create_param_structs (GPtrArray *param, GPtrArray *fcomp, GlobalParam *gparam, double *p, gint numres, gint numfcomp)$/;"	f
 cvector	nrutil.c	/^unsigned char *cvector(long nl, long nh)$/;"	f
 cvector	nrutil.c	/^unsigned char *cvector(nl,nh)$/;"	f
@@ -192,9 +192,16 @@ f3tensor	nrutil.c	/^float ***f3tensor(nrl,nrh,ncl,nch,ndl,ndh)$/;"	f
 fcomp_add_component	fcomp.c	/^void fcomp_add_component (FourierComponent *fcomp, gint id)$/;"	f
 fcomp_cell_edited_callback	fcomp.c	/^static gboolean fcomp_cell_edited_callback (GtkCellRendererText *cell, const gchar *path, gchar *text, gpointer data)$/;"	f	file:
 fcomp_cell_toggle_callback	fcomp.c	/^static void fcomp_cell_toggle_callback (GtkCellRendererToggle *cell, gchar *path, gpointer data)$/;"	f	file:
+fcomp_column_clicked_callback	fcomp.c	/^static void fcomp_column_clicked_callback (GtkTreeViewColumn *column, gpointer user_data)$/;"	f	file:
+fcomp_handle_signal_marked	fcomp.c	/^gint fcomp_handle_signal_marked (GtkSpectVis *spectvis, gdouble *xval, gdouble *yval)$/;"	f
+fcomp_handle_viewport_changed	fcomp.c	/^void fcomp_handle_viewport_changed (GtkSpectVis *spectvis, gchar *zoomtype)$/;"	f
+fcomp_key_press_event	fcomp.c	/^gboolean fcomp_key_press_event (GtkWidget *widget, GdkEventKey *event, gpointer user_data)$/;"	f
 fcomp_open_win	fcomp.c	/^void fcomp_open_win ()$/;"	f
+fcomp_purge	fcomp.c	/^void fcomp_purge ()$/;"	f
+fcomp_remove_selected	fcomp.c	/^void fcomp_remove_selected ()$/;"	f
 fcomp_update_graph	fcomp.c	/^void fcomp_update_graph ()$/;"	f
 fcomp_update_list	fcomp.c	/^void fcomp_update_list ()$/;"	f
+fcomp_what_to_fit	fcomp.c	/^void fcomp_what_to_fit (gint *ia)$/;"	f
 fcomp_win_close	fcomp.c	/^gboolean fcomp_win_close (GtkWidget *button)$/;"	f
 fcomplex	spectral_numeric.c	/^typedef struct FCOMPLEX {float r,i;} fcomplex;$/;"	t	file:
 file_is_writeable	helpers.c	/^gboolean file_is_writeable (gchar *filename)$/;"	f
@@ -456,7 +463,7 @@ r	spectral_numeric.c	/^typedef struct FCOMPLEX {float r,i;} fcomplex;$/;"	m	stru
 read_datafile	processdata.c	/^gboolean read_datafile (gchar *selected_filename, gboolean called_from_open) $/;"	f
 read_resonancefile	processdata.c	/^gint read_resonancefile (gchar *selected_filename, const gchar *label)$/;"	f
 read_resonancefile_cleanup	processdata.c	606;"	d	file:
-read_resonancefile_cleanup	processdata.c	905;"	d	file:
+read_resonancefile_cleanup	processdata.c	921;"	d	file:
 remove_resonance	resonancelist.c	/^void remove_resonance (GtkTreeIter iter)$/;"	f
 remove_selected_resonance	resonancelist.c	/^void remove_selected_resonance ()$/;"	f
 reslist_update_widthunit	resonancelist.c	/^void reslist_update_widthunit ()$/;"	f

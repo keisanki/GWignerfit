@@ -45,8 +45,8 @@ static gboolean fcomp_cell_edited_callback (GtkCellRendererText *cell, const gch
 
 	gtk_tree_model_get (GTK_TREE_MODEL (glob->fcomp->store), &iter, FCOMP_ID_COL, &id, -1);
 	fcomp = g_ptr_array_index (glob->fcomp->data, id-1);
-	
-	switch (column) 
+
+	switch (column)
 	{
 		case FCOMP_AMP_COL:
 			fcomp->amp = value;
@@ -58,7 +58,7 @@ static gboolean fcomp_cell_edited_callback (GtkCellRendererText *cell, const gch
 			fcomp->phi = value / 180*M_PI;
 			break;
 	}
-	
+
 	visualize_theory_graph ();
 	fcomp_update_graph ();
 	set_unsaved_changes ();
@@ -79,11 +79,48 @@ static void fcomp_cell_toggle_callback (GtkCellRendererToggle *cell, gchar *path
 	gtk_list_store_set (glob->fcomp->store, &iter, column, !curstate, -1);
 }
 
+/* Check or uncheck the boxes if a column header has been clicked */
+static void fcomp_column_clicked_callback (GtkTreeViewColumn *column, gpointer user_data)
+{
+	GtkTreeModel *model;
+	gboolean col = GPOINTER_TO_UINT(user_data);
+	GtkTreeIter iter;
+	gint active = 0, inactive = 0;
+	gboolean fit;
+
+	g_return_if_fail (GTK_IS_TREE_MODEL (glob->fcomp->store));
+	model = GTK_TREE_MODEL (glob->fcomp->store);
+
+	if (gtk_tree_model_get_iter_first (model, &iter))
+	{
+		do {
+			gtk_tree_model_get (model, &iter, col, &fit, -1);
+			if (fit)
+				active++;
+			else
+				inactive++;
+		} while (gtk_tree_model_iter_next (model, &iter));
+	}
+	else
+		return;
+
+	if (inactive > active)
+		fit = TRUE;
+	else
+		fit = FALSE;
+
+	gtk_tree_model_get_iter_first (model, &iter);
+
+	do
+		gtk_list_store_set (glob->fcomp->store, &iter, col, fit, -1);
+	while (gtk_tree_model_iter_next (model, &iter));
+}
+
 /* Add a FourierComponent to the PtrArray (if id>0) and the ListStore */
 void fcomp_add_component (FourierComponent *fcomp, gint id)
 {
 	GtkTreeIter iter;
-	
+
 	g_return_if_fail (fcomp);
 	g_return_if_fail (glob->fcomp->data);
 
@@ -205,7 +242,7 @@ void fcomp_open_win ()
 	/* FIT_TAU_COL */
 	togglerenderer = gtk_cell_renderer_toggle_new ();
 	g_object_set (togglerenderer, "xalign", 0.0, NULL);
-	g_signal_connect (togglerenderer, "toggled", G_CALLBACK (fcomp_cell_toggle_callback), 
+	g_signal_connect (togglerenderer, "toggled", G_CALLBACK (fcomp_cell_toggle_callback),
 	                  GUINT_TO_POINTER(FCOMP_FIT_TAU_COL));
 	column = gtk_tree_view_column_new_with_attributes (
 			"", togglerenderer,
@@ -213,12 +250,14 @@ void fcomp_open_win ()
 			NULL);
 	gtk_tree_view_append_column (GTK_TREE_VIEW (treeview), column);
 	gtk_tree_view_column_set_clickable (column, TRUE);
+	g_signal_connect (column, "clicked", G_CALLBACK (fcomp_column_clicked_callback),
+			GUINT_TO_POINTER(FCOMP_FIT_TAU_COL));
 	//column_separator;
 
 	/* AMP_COL */
 	renderer = gtk_cell_renderer_text_new ();
 	g_object_set (renderer, "editable", TRUE, NULL);
-	g_signal_connect (renderer, "edited", (GCallback) fcomp_cell_edited_callback, 
+	g_signal_connect (renderer, "edited", (GCallback) fcomp_cell_edited_callback,
 	                  GUINT_TO_POINTER(FCOMP_AMP_COL));
 
 	column = gtk_tree_view_column_new_with_attributes (
@@ -232,7 +271,7 @@ void fcomp_open_win ()
 	/* FIT_AMP_COL */
 	togglerenderer = gtk_cell_renderer_toggle_new ();
 	g_object_set (togglerenderer, "xalign", 0.0, NULL);
-	g_signal_connect (togglerenderer, "toggled", G_CALLBACK (fcomp_cell_toggle_callback), 
+	g_signal_connect (togglerenderer, "toggled", G_CALLBACK (fcomp_cell_toggle_callback),
 	                  GUINT_TO_POINTER(FCOMP_FIT_AMP_COL));
 	column = gtk_tree_view_column_new_with_attributes (
 			"", togglerenderer,
@@ -240,6 +279,8 @@ void fcomp_open_win ()
 			NULL);
 	gtk_tree_view_append_column (GTK_TREE_VIEW (treeview), column);
 	gtk_tree_view_column_set_clickable (column, TRUE);
+	g_signal_connect (column, "clicked", G_CALLBACK (fcomp_column_clicked_callback),
+			GUINT_TO_POINTER(FCOMP_FIT_AMP_COL));
 	//column_separator;
 
 	/* PHI_COL */
@@ -267,6 +308,8 @@ void fcomp_open_win ()
 			NULL);
 	gtk_tree_view_append_column (GTK_TREE_VIEW (treeview), column);
 	gtk_tree_view_column_set_clickable (column, TRUE);
+	g_signal_connect (column, "clicked", G_CALLBACK (fcomp_column_clicked_callback),
+			GUINT_TO_POINTER(FCOMP_FIT_PHI_COL));
 
 	/* A dummy column */
 	column = gtk_tree_view_column_new ();
@@ -276,7 +319,7 @@ void fcomp_open_win ()
 	gtk_list_store_clear (glob->fcomp->store);
 	for (i=0; i<glob->fcomp->numfcomp; i++)
 		fcomp_add_component (
-			(FourierComponent *) g_ptr_array_index (glob->fcomp->data, i), 
+			(FourierComponent *) g_ptr_array_index (glob->fcomp->data, i),
 			i+1);
 
 	/* Prepare the graph */
@@ -285,6 +328,7 @@ void fcomp_open_win ()
 	fcomp_update_graph ();
 }
 
+/* Delete a Fourier component from the ListStore and from the array */
 void fcomp_remove_selected ()
 {
 	GtkTreeIter iter;
@@ -301,7 +345,7 @@ void fcomp_remove_selected ()
 		dialog_message ("No row selected.");
 		return;
 	}
-	
+
 	/* Get path of selected row */
 	model     = GTK_TREE_MODEL (glob->fcomp->store);
 	pathlist  = gtk_tree_selection_get_selected_rows (selection, &model);
@@ -337,7 +381,7 @@ void fcomp_remove_selected ()
 	/* Tidy up */
 	g_list_foreach (pathlist, (GFunc) gtk_tree_path_free, NULL);
 	g_list_free (pathlist);
-	
+
 	/* Redraw */
 	visualize_theory_graph ();
 	fcomp_update_graph ();
@@ -350,16 +394,44 @@ gboolean fcomp_key_press_event (GtkWidget *widget, GdkEventKey *event, gpointer 
 
 	if (event->keyval == GDK_Delete)
 		fcomp_remove_selected ();
-	
+
 	return FALSE;
+}
+
+/* Close the fcomp window, and delete all Fourier components */
+void fcomp_purge ()
+{
+	if (glob->fcomp->xmlfcomp)
+	{
+		gtk_widget_destroy (glade_xml_get_widget (glob->fcomp->xmlfcomp, "fcomp_spectvis"));
+		gtk_widget_destroy (glade_xml_get_widget (glob->fcomp->xmlfcomp, "fcomp_win"));
+	}
+
+	if (glob->fcomp->store)
+	{
+		gtk_list_store_clear (glob->fcomp->store);
+		glob->fcomp->store = NULL;
+	}
+
+	free_datavector (glob->fcomp->quotient);
+	free_datavector (glob->fcomp->theo);
+
+	glob->fcomp->xmlfcomp = NULL;
+	glob->fcomp->quotient = NULL;
+	glob->fcomp->theo = NULL;
+
+	g_ptr_array_foreach (glob->fcomp->data, (GFunc) g_free, NULL);
+	g_ptr_array_free (glob->fcomp->data, TRUE);
+	glob->fcomp->data = g_ptr_array_new ();
+	glob->fcomp->numfcomp = 0;
 }
 
 /* Close the fcomp_win and tidy up. */
 gboolean fcomp_win_close (GtkWidget *button)
 {
 	if (!glob->fcomp->xmlfcomp)
-		return TRUE;;
-	
+		return TRUE;
+
 	gtk_widget_destroy (glade_xml_get_widget (glob->fcomp->xmlfcomp, "fcomp_spectvis"));
 	gtk_widget_destroy (glade_xml_get_widget (glob->fcomp->xmlfcomp, "fcomp_win"));
 
@@ -388,7 +460,7 @@ gint fcomp_handle_signal_marked (GtkSpectVis *spectvis, gdouble *xval, gdouble *
 	GtkSpectVisData *data;
 	gdouble norm;
 	gint pos;
-	
+
 	if (gtk_toggle_button_get_active (
 			GTK_TOGGLE_BUTTON (glade_xml_get_widget (
 				glob->fcomp->xmlfcomp, "fcomp_addcheck"))))
@@ -397,7 +469,7 @@ gint fcomp_handle_signal_marked (GtkSpectVis *spectvis, gdouble *xval, gdouble *
 		newcomp = g_new (FourierComponent, 1);
 		data = gtk_spect_vis_get_data_by_uid (spectvis, 1);
 		g_return_val_if_fail (data, 0);
-		
+
 		pos = 0;
 		while ((pos < data->len-1) && (data->X[pos] < *xval))
 			pos++;
@@ -427,7 +499,7 @@ gint fcomp_handle_signal_marked (GtkSpectVis *spectvis, gdouble *xval, gdouble *
 		/* Mark position */
 		gtk_spect_vis_mark_point (spectvis, *xval, *yval);
 	}
-			
+
 	return 0;
 }
 
@@ -467,12 +539,12 @@ void fcomp_update_graph ()
 	/* quotient will be the graph of one minus the quotient without the fourier component */
 	quotient = new_datavector (stop-start+1);
 	pquot = g_new (double, TOTALNUMPARAM+1);
-	create_param_array (glob->param, glob->fcomp->data, glob->gparam, 
+	create_param_array (glob->param, glob->fcomp->data, glob->gparam,
 			glob->numres, glob->fcomp->numfcomp, pquot);
 	/* set all fourier amplitudes to zero */
 	for (i=0; i<glob->fcomp->numfcomp; i++)
 		pquot[4*glob->numres+3*i+1] = 0.0;
-	
+
 	for (i=start; i<=stop; i++)
 	{
 		quotient->x[i-start] = glob->data->x[i];
@@ -495,7 +567,7 @@ void fcomp_update_graph ()
 		ftheo->y[i].im = 0.0;
 		factor = 1.0;
 		omega  = 2*M_PI*ftheo->x[i];
-		
+
 		for (j=0; j<glob->fcomp->numfcomp; j++)
 		{
 			set = (FourierComponent *) g_ptr_array_index (glob->fcomp->data, j);

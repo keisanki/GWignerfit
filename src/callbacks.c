@@ -95,6 +95,7 @@ void on_new_activate (GtkMenuItem *menuitem, gpointer user_data)
 	on_spectral_close_activate (NULL, NULL);
 	clear_resonancelist ();
 	overlay_remove_all ();
+	fcomp_purge ();
 	on_delete_spectrum ();
 	visualize_newgraph ();
 	unset_unsaved_changes ();
@@ -611,7 +612,11 @@ void on_save_as_activate (GtkMenuItem *menuitem, gpointer user_data)
 
 		filew = gtk_file_selection_new ("Select filename");
 
-		filename = get_defaultname (".gwf");
+		if (glob->resonancefile)
+			filename = g_strdup (glob->resonancefile);
+		else
+			filename = get_defaultname (".gwf");
+
 		if (filename)
 		{
 			gtk_file_selection_set_filename (GTK_FILE_SELECTION (filew), filename);
@@ -625,7 +630,7 @@ void on_save_as_activate (GtkMenuItem *menuitem, gpointer user_data)
 			filename = g_strdup (gtk_file_selection_get_filename (GTK_FILE_SELECTION (filew)));
 		}
 		while ((result == GTK_RESPONSE_OK) && !(save_file_prepare (filename)));
-		/* save_file_prepare updated glob->üath */
+		/* save_file_prepare updated glob->path */
 		
 		gtk_widget_destroy (filew);
 	}

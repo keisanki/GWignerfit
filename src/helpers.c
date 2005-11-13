@@ -975,7 +975,7 @@ void on_delete_spectrum ()
 	gtk_widget_set_sensitive (glade_xml_get_widget (gladexml, "integrate_spectrum"), FALSE);
 	gtk_widget_set_sensitive (glade_xml_get_widget (gladexml, "fourier_transform"), FALSE);
 	gtk_widget_set_sensitive (glade_xml_get_widget (gladexml, "fourier_transform_window"), FALSE);
-	gtk_widget_set_sensitive (glade_xml_get_widget (gladexml, "fourier_components"), TRUE);
+	gtk_widget_set_sensitive (glade_xml_get_widget (gladexml, "fourier_components"), FALSE);
 
 	on_fft_close_activate (NULL, NULL);
 }

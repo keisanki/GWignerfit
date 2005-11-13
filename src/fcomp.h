@@ -13,5 +13,7 @@ void fcomp_update_graph ();
 
 void fcomp_what_to_fit (gint *ia);
 
+void fcomp_purge ();
+
 #endif
 

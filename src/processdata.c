@@ -638,6 +638,7 @@ gint read_resonancefile (gchar *selected_filename, const gchar *label)
 
 	disable_undo ();
 	clear_resonancelist ();
+	fcomp_purge ();
 
 	g_ptr_array_foreach (glob->param, (GFunc) g_free, NULL);
 	g_ptr_array_free (glob->param, TRUE);
@@ -868,6 +869,21 @@ gint read_resonancefile (gchar *selected_filename, const gchar *label)
 		read_datafile (datafilename, TRUE);
 		g_free (datafilename);
 	}
+
+	/* Uncheck all checkboxes */
+	uncheck_res_out_of_frq_win (-2, -1);
+	gtk_toggle_button_set_active (
+		GTK_TOGGLE_BUTTON (glade_xml_get_widget (gladexml, "phase_check")), 
+		FALSE
+	);
+	gtk_toggle_button_set_active (
+		GTK_TOGGLE_BUTTON (glade_xml_get_widget (gladexml, "scale_check")), 
+		FALSE
+	);
+	gtk_toggle_button_set_active (
+		GTK_TOGGLE_BUTTON (glade_xml_get_widget (gladexml, "tau_check")), 
+		FALSE
+	);
 
 	/* Add overlays */
 	if (ovrlaynum && glob->data)

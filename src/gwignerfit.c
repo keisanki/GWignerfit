@@ -159,24 +159,7 @@ gint main (gint argc, char *argv[])
 	glob->fcomp->data = g_ptr_array_new ();
 	glob->fcomp->quotient = NULL;
 	glob->fcomp->theo = NULL;
-/*
-	fcomp = g_new (FourierComponent, 1);
-	fcomp->amp = 0.1;
-	fcomp->tau = 32e-9;
-	fcomp->phi = 0;
-	g_ptr_array_add (glob->gparam->fcomp, fcomp);
-	fcomp = g_new (FourierComponent, 1);
-	fcomp->amp = 0.1;
-	fcomp->tau = 26e-9;
-	fcomp->phi = 0;
-	g_ptr_array_add (glob->gparam->fcomp, fcomp);
-	fcomp = g_new (FourierComponent, 1);
-	fcomp->amp = 0.1;
-	fcomp->tau = 3e-9;
-	fcomp->phi = 0;
-	g_ptr_array_add (glob->gparam->fcomp, fcomp);
-	glob->gparam->numfcomp = 3;
-*/
+
 	/* Set the preferences to the default values */
 	glob->prefs = NULL;
 	prefs_set_default ();
