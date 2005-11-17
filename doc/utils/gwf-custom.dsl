@@ -536,7 +536,7 @@
       3
       (if (string=? (gi nd) (normalize "appendix"))
         0
-        1)))
+        2)))
 
 ;;What elements should have an LOT?
 (define ($generate-book-lot-list$)

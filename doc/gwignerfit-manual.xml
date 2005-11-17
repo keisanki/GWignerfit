@@ -1326,9 +1326,9 @@
 			experiments: Energy is fed into the resonator through an input channel
 			where it is subject to some complex interaction mechanism and eventually
 			exits through a second antenna, the output channel. The transition
-			amplitude between input channel |<emphasis role="italic">a</emphasis>&rang;
-			and output channel |<emphasis role="italic">b</emphasis>&rang; can be
-			written as
+			amplitude between input channel <emphasis role="italic">b</emphasis> and
+			output channel <emphasis role="italic">a</emphasis> can be written as
+		</para>
 			<informalequation>
 				<alt role="tex">
 					\[
@@ -1339,6 +1339,7 @@
 				</alt>
 				<graphic fileref="figures/eqn_scatter.png" />
 			</informalequation>
+		<para>
 			where the sum is taken over all resonances <emphasis
 			role="italic">&mu;</emphasis> of the system and <emphasis
 			role="italic">V</emphasis> is the interaction which couples the
@@ -1352,6 +1353,7 @@
 
 		<para>Adjusting the above equation to the experimental reality one arrives
 			at a slightly different expression:
+		</para>
 			<equation id="eqn-main">
 				<title>The main equation of &app;</title>
 				<alt role="tex">
@@ -1363,6 +1365,7 @@
 				</alt>
 				<graphic fileref="figures/eqn_main.png"/>
 			</equation>
+		<para>
 			Please note <emphasis>the minus sign</emphasis> in front of the
 			i<emphasis role="italic">&Gamma;<subscript>&mu;</subscript></emphasis>/2
 			expression. This should normally be a plus sign. However, it turned out
@@ -1370,11 +1373,12 @@
 			linkend="eqn-main" /> unless there is a negative sign in front of the
 			width expression. It seems that the VNA uses a different sign convention
 			to express phase differences than the "normal" scattering
-			formalism.</para>
+			formalism.
+		</para>
 			
 		<para><xref linkend="eqn-main" /> describes essentially the same thing as
 			the raw scattering formula but adopts the typical parameters of an
-			experiment and allows for unavoidable, additional constributions to the
+			experiment and allows for unavoidable, additional contributions to the
 			S-parameter. The S-parameter is a function of the stimulus frequency
 			<emphasis role="italic">&nu;</emphasis>. The formula features three
 			global parameters (<emphasis role="italic">s, &alpha;, &tau;</emphasis>),
@@ -1937,18 +1941,18 @@
 			the factor <emphasis role="italic">f(&nu;)</emphasis> in <xref
 			linkend="eqn-main" />. It can be written as in <xref linkend="eqn-fcomp"
 			/>.
-			
-			<equation id="eqn-fcomp">
-				<title>The equation for general Fourier components</title>
-				<alt role="tex">
-					\[
-						f(\nu) = \frac{1 - \sum_\xi B_\xi e^{-2\pi i\,\tau_\xi\nu + 
-						               \beta_\xi i}} {1 + \sum_\xi B_\xi}\, .
-					\]
-				</alt>
-				<graphic fileref="figures/eqn_fcomp.png" />
-			</equation>
-			
+		</para>
+		<equation id="eqn-fcomp">
+			<title>The equation for general Fourier components</title>
+			<alt role="tex">
+				\[
+					f(\nu) = \frac{1 - \sum_\lambda B_\lambda e^{i(-2\pi
+					\tau_\lambda\nu + \beta_\lambda)}} {1 + \sum_\lambda B_\lambda}
+				\]
+			</alt>
+			<graphic fileref="figures/eqn_fcomp.png" />
+		</equation>
+		<para>
 			As you can see, <emphasis role="italic">f(&nu;)</emphasis> is just a
 			Fourier series expansion that should be suitable for a general
 			description of periodic fluctuations. The only constraint is given by the
