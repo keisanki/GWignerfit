@@ -363,7 +363,7 @@ gboolean overlay_file (gchar *filename)
 	g_return_val_if_fail (glob->data, FALSE);
 	g_return_val_if_fail (filename, FALSE);
 
-	overlaydata = import_datafile (filename, TRUE);
+	overlaydata = import_datafile (filename, FALSE);
 
 	if (!overlaydata)
 		return FALSE;
