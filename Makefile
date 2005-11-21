@@ -18,12 +18,12 @@ SPEEDOPTIMIZE = "-march=pentium4"
 
 all:
 	@ for i in $(SUBDIRS); do\
-		$(MAKE) GLADEFILE=$(GLADEFILE) ICONPATH=$(ICONPATH) EXTRACFLAGS="-fomit-frame-pointer $(SPEEDOPTIMIZE)" -C $$i $@;\
+		$(MAKE) GLADEFILE=$(GLADEFILE) ICONPATH=$(ICONPATH) EXTRACFLAGS="-O3 -fomit-frame-pointer $(SPEEDOPTIMIZE)" -C $$i $@;\
 	done
 
 386:
 	@ for i in $(SUBDIRS); do\
-		$(MAKE) GLADEFILE=$(GLADEFILE) ICONPATH=$(ICONPATH) EXTRACFLAGS="-fomit-frame-pointer" -C $$i;\
+		$(MAKE) GLADEFILE=$(GLADEFILE) ICONPATH=$(ICONPATH) EXTRACFLAGS="-O3 -fomit-frame-pointer" -C $$i;\
 	done
 
 clean:

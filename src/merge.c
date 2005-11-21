@@ -248,7 +248,6 @@ static void merge_add_reslist (GPtrArray *reslist, gchar *datafilename, gchar *n
 		y[i].re = merge->nodelist->len - 0.25;
 		y[i].im = merge->nodelist->len + 0.25;
 	}
-	bubbleSort (x, reslist->len);
 	
 	color.red   = 0;
 	color.green = 0;
@@ -271,7 +270,7 @@ static void merge_add_reslist (GPtrArray *reslist, gchar *datafilename, gchar *n
 /* Ask for a resonance list and add it */
 gboolean on_merge_add_list_activate (GtkWidget *button)
 {
-	gchar *filename, *section, *path = NULL;
+	gchar *filename, *section = NULL, *path = NULL;
 	gchar *name, *datafilename = NULL;
 	GPtrArray *reslist = NULL;
 
@@ -289,7 +288,7 @@ gboolean on_merge_add_list_activate (GtkWidget *button)
 		return FALSE;
 	}
 
-	if (merge_read_resonances (filename, section, &reslist, &datafilename) < 0)
+	if ((section) && (merge_read_resonances (filename, section, &reslist, &datafilename) < 0))
 	{
 		g_free (filename);
 		g_free (section);
@@ -297,6 +296,9 @@ gboolean on_merge_add_list_activate (GtkWidget *button)
 		g_free (datafilename);
 		return FALSE;
 	}
+
+	/* sort reslist */
+	g_ptr_array_sort (reslist, param_compare);
 
 	name = g_strdup_printf ("%s:%s", filename, section);
 	merge_add_reslist (reslist, datafilename, name);
@@ -316,9 +318,11 @@ gboolean on_merge_remove_list_activate (GtkWidget *button)
 	GtkTreeModel *model;
 	GList *pathlist;
 	GPtrArray *curnodelist;
-	gint id = -1, curid, uid, i, j;
+	gint id = -1, curid, uid, i, j, reduce;
 	GtkSpectVis *graph;
 	GtkSpectVisData *data;
+	GList *linkiter, *linkitertmp, *newlisthead;
+	MergeNode *linknode;
 
 	selection = gtk_tree_view_get_selection ( GTK_TREE_VIEW (
 			glade_xml_get_widget (merge->xmlmerge, "merge_treeview")));
@@ -333,7 +337,7 @@ gboolean on_merge_remove_list_activate (GtkWidget *button)
 	model     = GTK_TREE_MODEL (merge->store);
 	pathlist  = gtk_tree_selection_get_selected_rows (selection, &model);
 
-	/* Remove it */
+	/* Remove the row */
 	gtk_tree_model_get_iter (model, &iter, (GtkTreePath *) pathlist->data);
 	gtk_tree_model_get (model, &iter, MERGE_ID_COL, &id, -1);
 	if (id < 1)
@@ -362,6 +366,51 @@ gboolean on_merge_remove_list_activate (GtkWidget *button)
 	/* Tidy up */
 	g_list_foreach (pathlist, (GFunc) gtk_tree_path_free, NULL);
 	g_list_free (pathlist);
+
+	/* Update the links */
+	reduce = 0;
+	for (i=0; i<merge->links->len-reduce; i++)
+	{
+		linkiter = (GList *) g_ptr_array_index (merge->links, i);
+		do {
+			linknode = (MergeNode *) linkiter->data;
+			linkitertmp = NULL;
+
+			if (linknode->id > id)
+			{
+				/* Adjust id numbers of the other nodes */
+				linknode->id--;
+			}
+			else if (linknode->id == id)
+			{
+				/* Remove nodes of deleted list */
+				linkitertmp = linkiter;
+				linkiter    = g_list_next (linkiter);
+				newlisthead = g_list_delete_link ((GList *) g_ptr_array_index (merge->links, i), linkitertmp);
+
+				g_ptr_array_remove_index (merge->links, i);
+				i--;
+				if (g_list_length (newlisthead) > 1)
+				{
+					g_ptr_array_add (merge->links, newlisthead);
+					reduce++;
+				}
+				else
+				{
+					/* No elements or only one element are left in the link list */
+					g_list_free (newlisthead);
+					break;
+				}
+
+				if (!linkiter)
+				{
+					break;
+				}
+			}
+		}
+		/* We're already at the next linkiter if linkitertmp is != NULL */
+		while ((linkitertmp) || (linkiter = g_list_next (linkiter)));
+	}
 
 	/* id will now be the "real" position in the pointer arrays */
 	id--;
@@ -405,8 +454,8 @@ gboolean on_merge_remove_list_activate (GtkWidget *button)
 	{
 		merge_zoom_x_all ();
 		gtk_spect_vis_zoom_y_all (graph);
-		gtk_spect_vis_redraw (graph);
 	}
+	gtk_spect_vis_redraw (graph);
 
 	return TRUE;
 }
@@ -621,8 +670,24 @@ static void merge_automatic_merge ()
 			if (!candidates)
 				continue;
 
+			/* Preprend current node to list */
+			candidates = g_list_insert (candidates, g_ptr_array_index (curnodelist, j), 0);
+			
+/*
+printf ("new link candidate: ");
+		canditer = candidates;
+		do {
+printf("%d, %d, %e\t", 
+			((MergeNode *) canditer->data)->id,
+			((MergeNode *) canditer->data)->num,
+			((MergeNode *) canditer->data)->res->frq);
+		} while ((canditer = g_list_next (canditer)));
+printf ("\n");
+*/
+
 			minwidth = merge_get_minwidth (candidates) * 0.5;
 			avgfrq   = merge_get_avgfrq   (candidates);
+//printf("minwidth %e, avgfrq %e\n", minwidth, avgfrq);
 
 			/* Get close lying, unlinked resonances from the candidates */
 			canditer = candidates;
@@ -657,11 +722,21 @@ static void merge_automatic_merge ()
 			if ((candidates) && (g_list_length (candidates) > 1))
 			{
 				/* Mark candidates as linked */
+//printf ("new link: ");
 				canditer = candidates;
 				((MergeNode *) canditer->data)->link = candidates;
 				do 
+				{
 					((MergeNode *) canditer->data)->link = candidates;
+/*
+printf("%d, %d\t", 
+		((MergeNode *) canditer->data)->id,
+		((MergeNode *) canditer->data)->num);
+*/
+				}
 				while ((canditer = g_list_next (canditer)));
+//printf ("\n");
+
 				
 				/* Add candidates to links list */
 				g_ptr_array_add (merge->links, candidates);
@@ -693,7 +768,7 @@ static GList* merge_get_closest (gdouble frq, gint depth)
 		while ((i < curnodelist->len) &&
 		       (((MergeNode *) g_ptr_array_index (curnodelist, i))->res->frq < frq))
 			i++;
-		/* i now points to the resonance with a bigger 
+		/* "i" now points to the resonance with a bigger 
 		 * frequency or to the end of the list */
 
 		if (((MergeNode *) g_ptr_array_index (curnodelist, i))->res->frq >= frq)
@@ -703,12 +778,13 @@ static GList* merge_get_closest (gdouble frq, gint depth)
 			if (i > 0)
 			{
 				/* Might the frequency before this one be closer? */
-				diff = frq - ((MergeNode *) g_ptr_array_index (curnodelist, i))->res->frq;
+				diff = ((MergeNode *) g_ptr_array_index (curnodelist, i))->res->frq - frq;
 
-				if (diff > ((MergeNode *) g_ptr_array_index (curnodelist, i-1))->res->frq - frq)
+				if (diff > frq - ((MergeNode *) g_ptr_array_index (curnodelist, i-1))->res->frq)
 					i--;	/* Yep */
 			}
 			
+			/* Add node only if it isn't already linked */
 			if (!( ((MergeNode *) g_ptr_array_index (curnodelist, i))->link ))
 				cand = g_list_append (cand, g_ptr_array_index (curnodelist, i));
 		}
@@ -738,14 +814,17 @@ static gdouble merge_get_minwidth (GList *cand)
 static gdouble merge_get_avgfrq (GList *cand)
 {
 	gdouble frq = 0;
+	gint len;
 	
 	if (!cand)
 		return -1.0;
+
+	len = g_list_length (cand);
 
 	do {
 		frq += ((MergeNode *) cand->data)->res->frq;
 	} 
 	while ((cand = g_list_next (cand)));
 
-	return frq/(gdouble) g_list_length (cand);
+	return frq/(gdouble) len;
 }

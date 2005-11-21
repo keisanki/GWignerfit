@@ -314,7 +314,10 @@ void on_open1_activate (GtkMenuItem *menuitem, gpointer user_data)
 	g_free (path);
 
 	if (filename)
-		select_section_dialog (filename, NULL, NULL);
+	{
+		if (select_section_dialog (filename, NULL, NULL))
+			g_free (filename);
+	}
 
 	/* Do not free filename, as glob->resonancefile now points to it. */
 }

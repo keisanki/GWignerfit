@@ -461,14 +461,12 @@ gboolean select_section_dialog (gchar *selected_filename, gchar *default_section
 	if (g_file_test (selected_filename, G_FILE_TEST_IS_DIR))
 	{
 		dialog_message ("Cannot read file, this is a directory.");
-		g_free (selected_filename);
 		return TRUE;
 	}
 	
 	datafile = fopen(selected_filename, "r");
 	if (datafile == NULL) {
 		dialog_message ("Error: Could not open file %s.", selected_filename);
-		g_free (selected_filename);
 		return TRUE;
 	}
 
@@ -488,7 +486,6 @@ gboolean select_section_dialog (gchar *selected_filename, gchar *default_section
 			fprintf(stderr, "Error: Line %i in '%s' too long!\n", pos, selected_filename);
 			g_list_foreach (sections, (GFunc) g_free, NULL);
 			g_list_free (sections);
-			g_free (selected_filename);
 			return TRUE;
 		}
 
@@ -508,7 +505,6 @@ gboolean select_section_dialog (gchar *selected_filename, gchar *default_section
 		filename = g_path_get_basename (selected_filename);
 		dialog_message ("Error: Found no sections in '%s'", filename);
 		g_free (filename);
-		g_free (selected_filename);
 		return TRUE;
 	}
 
@@ -550,6 +546,7 @@ gboolean select_section_dialog (gchar *selected_filename, gchar *default_section
 	else
 	{
 		gtk_widget_destroy (glade_xml_get_widget (xml, "section_dialog"));
+		return TRUE;
 	}
 
 	return FALSE;
