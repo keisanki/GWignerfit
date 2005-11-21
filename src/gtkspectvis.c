@@ -95,6 +95,14 @@ gboolean	gtk_spect_vis_export_ps		(GtkSpectVis *spectvis,
 void		gtk_spect_vis_mark_point	(GtkSpectVis *spectvis,
 						 gdouble xval,
 						 gdouble yval);
+gint		gtk_spect_vis_polygon_add	(GtkSpectVis *spectvis,
+						 gdouble *X,
+						 gdouble *Y,
+						 guint len,
+						 GdkColor color,
+						 gchar pos);
+gboolean	gtk_spect_vis_polygon_remove	(GtkSpectVis *spectvis,
+						 guint uid);
 
 /* Handling the GtkWidget */
 static void	gtk_spect_vis_class_init	(GtkSpectVisClass *class);
@@ -147,6 +155,11 @@ static void	gtk_spect_vis_draw_impulses	(GtkSpectVis *spectvis,
 						 GtkSpectVisData *data,
 						 guint start,
 						 guint stop,
+						 gdouble xscale,
+						 gdouble yscale);
+
+static void	gtk_spect_vis_draw_polygons	(GtkSpectVis *spectvis,
+						 GdkGC *gc,
 						 gdouble xscale,
 						 gdouble yscale);
 
@@ -274,6 +287,7 @@ gtk_spect_vis_init (GtkSpectVis *spectvis)
 	spectvis->data = NULL;
 	spectvis->view = NULL;
 	spectvis->bars = NULL;
+	spectvis->poly = NULL;
 	spectvis->displaytype = 'a';
 	spectvis->xAxisScale = 1.0;
 	spectvis->yAxisScale = 1.0;
@@ -1420,7 +1434,10 @@ gtk_spect_vis_draw_graphs (GtkWidget *widget)
 		g_free (polygon);
 
 		datalist = g_list_next (datalist);
-	} 
+	}
+	
+	/* Include any polygons */
+	gtk_spect_vis_draw_polygons (spectvis, gc, xscale, yscale);
 
 	g_object_unref (gc);
 	g_free (rect);
@@ -1629,6 +1646,49 @@ gtk_spect_vis_draw_impulses (GtkSpectVis *spectvis, GdkGC *gc, GtkSpectVisData *
 		gdk_draw_line (spectvis->pixmap, gc,
 				x, ymin,
 				x, ymax);
+	}
+}
+
+static void
+gtk_spect_vis_draw_polygons (GtkSpectVis *spectvis, GdkGC *gc, gdouble xscale, gdouble yscale)
+{
+	GtkSpectVisViewport *view;
+	GtkSpectVisPolygon *data;
+	GList *polylist;
+	GdkPoint *polygon;
+	guint i;
+
+	if (!spectvis->poly)
+		return;
+
+	g_return_if_fail (GTK_IS_SPECTVIS (spectvis));
+
+	view     = spectvis->view;
+	polylist = spectvis->poly;
+
+	while (polylist)
+	{
+		data = (GtkSpectVisPolygon *) (polylist->data);
+
+		polygon = g_new (GdkPoint, data->len);
+		
+		for (i=0; i<data->len; i++)
+		{
+			polygon[i].x = view->graphboxxoff + (data->X[i] - view->xmin) * xscale;
+			polygon[i].y = view->graphboxyoff - (data->Y[i] - view->ymin) * yscale;
+
+			if (polygon[i].x >  10000) polygon[i].x =  10000;
+			if (polygon[i].x < -10000) polygon[i].x = -10000;
+			if (polygon[i].y >  10000) polygon[i].y =  10000;
+			if (polygon[i].y < -10000) polygon[i].y = -10000;
+		}
+
+		gdk_gc_set_rgb_fg_color (gc, &(data->color));
+		gdk_draw_lines (spectvis->pixmap, gc, polygon, data->len);
+
+		g_free (polygon);
+
+		polylist = g_list_next (polylist);
 	}
 }
 
@@ -2286,6 +2346,73 @@ gtk_spect_vis_mark_point (GtkSpectVis *spectvis, gdouble xval, gdouble yval)
 	gdk_draw_layout (spectvis->pixmap, gc,
 			xpos + xplus, ypos + yplus,
 			layout);
+}
+
+gint
+gtk_spect_vis_polygon_add (GtkSpectVis *spectvis, gdouble *X, gdouble *Y, guint len, GdkColor color, gchar pos)
+{
+	GtkSpectVisPolygon *poly;
+	GList *polylist;
+	
+	g_return_val_if_fail (GTK_IS_SPECTVIS (spectvis), -1);
+	g_return_val_if_fail (X, -1);
+	g_return_val_if_fail (Y, -1);
+	g_return_val_if_fail (len, -1);
+	g_return_val_if_fail ((pos == 'l') || (pos == 'f'), -1);
+
+	poly = g_new (GtkSpectVisPolygon, 1);
+	poly->X = X;
+	poly->Y = Y;
+	poly->len = len;
+	poly->color = color;
+	poly->uid = gtk_spect_vis_data_gen_uid (spectvis->poly);
+
+	if (spectvis->poly == NULL)
+	{
+		spectvis->view = g_new0 (GtkSpectVisViewport, 1);
+		spectvis->view->xmin = 0;
+		spectvis->view->xmax = 0;
+	}
+
+	if (pos == 'l')
+		/* append as last element */
+		polylist = g_list_append (spectvis->poly, poly);
+	else
+		/* prepend as first element */
+		polylist = g_list_prepend (spectvis->poly, poly);
+
+	g_return_val_if_fail (polylist, -1);
+	spectvis->poly = polylist;
+
+	return poly->uid;
+}
+
+gboolean
+gtk_spect_vis_polygon_remove (GtkSpectVis *spectvis, guint uid)
+{
+	GList *polylist = spectvis->poly;
+
+	g_return_val_if_fail (GTK_IS_SPECTVIS (spectvis), FALSE);
+	g_return_val_if_fail (uid != 0, FALSE);
+
+	while ((polylist != NULL) && (((GtkSpectVisPolygon *) (polylist->data))->uid != uid))
+		polylist = g_list_next (polylist);
+
+	if (polylist != NULL)
+	{
+		g_free (polylist->data);
+		spectvis->data = g_list_delete_link (spectvis->poly, polylist);
+	}
+	else
+		return FALSE;
+
+	if (g_list_length (spectvis->poly) == 0)
+	{
+		g_list_free (spectvis->poly);
+		spectvis->poly = NULL;
+	}
+
+	return TRUE;
 }
 
 /********************* The marshal stuff ************************/

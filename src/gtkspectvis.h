@@ -22,6 +22,7 @@ typedef struct _GtkSpectVisData     GtkSpectVisData;
 typedef struct _GtkSpectVisClass    GtkSpectVisClass;
 typedef struct _GtkSpectVisViewport GtkSpectVisViewport;
 typedef struct _GtkSpectVisBar      GtkSpectVisBar;
+typedef struct _GtkSpectVisPolygon  GtkSpectVisPolygon;
 
 struct _GtkSpectVis
 {
@@ -55,6 +56,9 @@ struct _GtkSpectVis
 
 	/* A list of vertical bars to be drawn */
 	GList *bars;
+
+	/* A list of polygons to be drawn */
+	GList *poly;
 };
 
 struct _GtkSpectVisData {
@@ -112,6 +116,22 @@ struct _GtkSpectVisBar
 
 	/* The color of the bar */
 	GdkColor col;
+};
+
+struct _GtkSpectVisPolygon
+{
+	/* A UID for this dataset */
+	guint uid;
+
+	/* The datapoints for this polygon */
+	gdouble *X;
+	gdouble *Y;
+
+	/* The number of elements in *points */
+	guint len;
+
+	/* The color of the polygon */
+	GdkColor color;
 };
 
 struct _GtkSpectVisClass
@@ -195,6 +215,14 @@ gboolean	gtk_spect_vis_export_ps		(GtkSpectVis *spectvis,
 void		gtk_spect_vis_mark_point	(GtkSpectVis *spectvis,
 						 gdouble xval,
 						 gdouble yval);
+gint		gtk_spect_vis_polygon_add	(GtkSpectVis *spectvis,
+						 gdouble *X,
+						 gdouble *Y,
+						 guint len,
+						 GdkColor color,
+						 gchar pos);
+gboolean	gtk_spect_vis_polygon_remove	(GtkSpectVis *spectvis,
+						 guint uid);
 
 #ifdef __cplusplus
 }
