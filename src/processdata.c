@@ -694,7 +694,7 @@ gint read_resonancefile (gchar *selected_filename, const gchar *label)
 
 		/* Begin "Stefan Bittner" style */
 		if (flag == 2) {
-			/* The "header" */
+			/* Information about each resonance */
 			if (sscanf(line, "%lf\t%lf\t%lf\t%lf", &amp, &phas, &wid, &frq) != 4) {
 				dialog_message ("Error: Expected AMP PHAS WID FRQ at line %i.\n", pos);
 				read_resonancefile_cleanup;
@@ -709,7 +709,7 @@ gint read_resonancefile (gchar *selected_filename, const gchar *label)
 			numres++;
 		}
 		if (flag == 1) {
-			/* Information about each resonance */
+			/* The "header" */
 			if (sscanf(line, "%lf\t%lf\t%lf", &min, &max, &tau) != 3) {
 				dialog_message ("Error: Expected MIN MAX TAU at line %i.\n", pos);
 				read_resonancefile_cleanup;

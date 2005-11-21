@@ -20,7 +20,7 @@ gboolean file_is_writeable (gchar *filename);
 
 gchar *get_filename (const gchar *title, const gchar *defaultname, gchar check);
 
-gboolean select_section_dialog (gchar *filename, gchar *default_section);
+gboolean select_section_dialog (gchar *filename, gchar *default_section, gchar **secname);
 
 gboolean update_fit_window (FitWindowParam *fitwinparam);
 
@@ -51,5 +51,7 @@ gint param_compare (gconstpointer a_in, gconstpointer b_in);
 gchar *get_defaultname (gchar *suffix);
 
 void set_busy_cursor (gboolean busy);
+
+void bubbleSort (gdouble *array, int length);
 
 #endif

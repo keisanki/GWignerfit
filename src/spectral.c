@@ -84,22 +84,6 @@ void on_spectral_close_activate (GtkMenuItem *menuitem, gpointer user_data)
 	glob->spectral->xmlspect = NULL;
 }
 
-/* BubbleSort, taken from http://wikisource.org/wiki/Bubble_sort#C */
-static void bubbleSort (gdouble *array, int length)
-{
-	gint i, j;
-	gdouble temp;
-	
-	for (i = length - 1; i > 0; i--)
-		for (j = 0; j < i; j++)
-			if (array[j] > array[j+1])
-			{
-				temp = array[j];
-				array[j] = array[j+1];
-				array[j+1] = temp;
-			}
-}
-
 /* Evaluate weyl function at position x */
 static gdouble spectral_weyl_val (gdouble x)
 {

@@ -187,6 +187,16 @@ typedef struct
 
 typedef struct
 {
+	GladeXML *xmlmerge;		/* Glade XML struct for merge_win */
+	GtkListStore *store;		/* ListStore for merge data files */
+	GPtrArray *nodelist;		/* Array with GPtrArrays of *MergeNodes */
+	GPtrArray *datafilename;	/* Array with associated datafilenames */
+	GPtrArray *graphuid;		/* Array with graph uids */
+	GPtrArray *links;		/* Links between the "same" resonances */
+} MergeWin;
+
+typedef struct
+{
 	gdouble min;			/* Start frequency of fit */
 	gdouble max;			/* Stop frequency of fit */
 	gint numpoints;			/* Number of points in frequency window */
@@ -232,6 +242,7 @@ typedef struct
 	NetworkWin *netwin;		/* Structure for the network measurement window */
 	CalWin *calwin;			/* Structure for the calibration dialog window */
 	FourierCompWin *fcomp;		/* Structure for the fourier components window */
+	MergeWin *merge;		/* Structure for the merge resonance lists window */
 } GlobalData;
 
 #endif

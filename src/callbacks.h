@@ -9,6 +9,8 @@ void destroy (GtkWidget	*widget, gpointer data);
 
 gboolean on_close_dialog (GtkWidget *button);
 
+void on_new_activate (GtkMenuItem *menuitem, gpointer user_data);
+
 void import_data (GtkMenuItem *menuitem, gpointer user_data);
 
 void on_open1_activate (GtkMenuItem *menuitem, gpointer user_data);

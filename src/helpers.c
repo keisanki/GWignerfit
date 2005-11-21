@@ -8,6 +8,7 @@
 #include <math.h>
 
 #include "structs.h"
+#include "callbacks.h"
 #include "numeric.h"
 #include "resonancelist.h"
 #include "visualize.h"
@@ -22,6 +23,7 @@ extern GlobalData *glob;
 
 /* Forward declarations */
 void delete_backup ();
+void unset_unsaved_changes ();
 
 /* Remove the latest message from the statusbar. */
 static gint statusbar_message_remove (gpointer data)
@@ -401,17 +403,58 @@ gchar *get_filename (const gchar *title, const gchar *defaultname, gchar check)
 	return filename;
 }
 
+/* Called by select_section_dialog() */
+gboolean select_section_ok (gchar *section)
+{
+	gchar *title, *basename;
+
+	g_return_val_if_fail (section, FALSE);
+
+	glob->section = section;
+	
+	if (read_resonancefile (glob->resonancefile, glob->section) >= 0)
+	{
+		visualize_update_res_bar (0);
+		show_global_parameters (glob->gparam);
+
+		basename = g_path_get_basename (glob->resonancefile);
+		title = g_strdup_printf ("%s:%s - GWignerFit", basename, glob->section);
+		gtk_window_set_title (GTK_WINDOW (glade_xml_get_widget(gladexml, "mainwindow")), title);
+		g_free (basename);
+		g_free (title);
+
+		visualize_update_min_max (0);
+		visualize_theory_graph ();
+		spectral_resonances_changed ();
+		unset_unsaved_changes ();
+	}
+	else
+	{
+		/* No resonances were read but the old parameters have been
+		 * deleted by read_resonancefile, get us safely out of here.
+		 */
+		unset_unsaved_changes ();
+		on_new_activate (NULL, NULL);
+	}
+
+	return TRUE;
+}
+
 /* Takes a full filename and tries to find the sections contained in the
  * selected file. On success a window with the section_dialog is displayed.
+ * If secname == NULL, read the section, otherwise just set secname to the name
+ * of the section.
+ * Returns FALSE on success.
  */
-gboolean select_section_dialog (gchar *selected_filename, gchar *default_section) 
+gboolean select_section_dialog (gchar *selected_filename, gchar *default_section, gchar **secname) 
 {
 	GtkWidget *combo;
 	GladeXML *xml;
-	gchar line[256], *filename;
+	gchar line[256], *filename, *section;
 	FILE *datafile;
 	GList *sections = NULL;
 	gint pos = 0, found_a_section = 0, def_pos = -1;
+	gint result;
 
 	/* Has the user selected a directory?
 	 * He should not have done this. */
@@ -429,9 +472,11 @@ gboolean select_section_dialog (gchar *selected_filename, gchar *default_section
 		return TRUE;
 	}
 
-	delete_backup ();
-
-	glob->resonancefile = selected_filename;
+	if (!secname)
+	{
+		delete_backup ();
+		glob->resonancefile = selected_filename;
+	}
 
 	while (!feof(datafile)) {
 		fgets(line, 255, datafile);
@@ -464,24 +509,48 @@ gboolean select_section_dialog (gchar *selected_filename, gchar *default_section
 		dialog_message ("Error: Found no sections in '%s'", filename);
 		g_free (filename);
 		g_free (selected_filename);
-		return FALSE;
+		return TRUE;
 	}
 
 	xml = glade_xml_new (GLADEFILE, "section_dialog", NULL);
-	glade_xml_signal_autoconnect (xml);
-	/* Clicking OK in this dialog will call select_section_ok() */
 	
-	while (gtk_events_pending ()) gtk_main_iteration ();
+	/* Add sections to combo box */
 	combo = glade_xml_get_widget (xml, "sections_combo");
-
 	gtk_combo_set_popdown_strings (GTK_COMBO (combo), sections);
 	g_list_foreach (sections, (GFunc) g_free, NULL);
 	g_list_free (sections);
 
+	/* Select current section if found */
 	if (def_pos > 0)
 		gtk_entry_set_text (
 			GTK_ENTRY (glade_xml_get_widget(xml, "section_combo_entry")), 
 			default_section);
+
+	result = gtk_dialog_run (GTK_DIALOG (glade_xml_get_widget (xml, "section_dialog")));
+
+	if (result == GTK_RESPONSE_OK)
+	{
+		section = g_strdup (gtk_entry_get_text (
+					GTK_ENTRY (glade_xml_get_widget (
+							xml, "section_combo_entry"))));
+		
+		gtk_widget_destroy (glade_xml_get_widget (xml, "section_dialog"));
+
+		if (!secname)
+		{
+			select_section_ok (section);
+			/* Do _not_ free section as it is now in glob->section */
+		}
+		else
+		{
+			*secname = section;
+			/* Do _not_ free section as it is a "return value" */
+		}
+	}
+	else
+	{
+		gtk_widget_destroy (glade_xml_get_widget (xml, "section_dialog"));
+	}
 
 	return FALSE;
 }
@@ -1081,4 +1150,20 @@ void set_busy_cursor (gboolean busy)
 	gdk_window_set_cursor (widget->window, cursor);
 	
 	while (gtk_events_pending ()) gtk_main_iteration ();
+}
+
+/* BubbleSort, taken from http://wikisource.org/wiki/Bubble_sort#C */
+void bubbleSort (gdouble *array, int length)
+{
+	gint i, j;
+	gdouble temp;
+	
+	for (i = length - 1; i > 0; i--)
+		for (j = 0; j < i; j++)
+			if (array[j] > array[j+1])
+			{
+				temp = array[j];
+				array[j] = array[j+1];
+				array[j+1] = temp;
+			}
 }

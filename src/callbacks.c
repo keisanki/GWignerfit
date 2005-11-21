@@ -23,6 +23,7 @@
 #include "preferences.h"
 #include "calibrate.h"
 #include "fcomp.h"
+#include "merge.h"
 
 extern GlobalData *glob;
 extern GladeXML *gladexml;
@@ -96,6 +97,7 @@ void on_new_activate (GtkMenuItem *menuitem, gpointer user_data)
 	clear_resonancelist ();
 	overlay_remove_all ();
 	fcomp_purge ();
+	merge_purge ();
 	on_delete_spectrum ();
 	visualize_newgraph ();
 	unset_unsaved_changes ();
@@ -312,7 +314,7 @@ void on_open1_activate (GtkMenuItem *menuitem, gpointer user_data)
 	g_free (path);
 
 	if (filename)
-		select_section_dialog (filename, NULL);
+		select_section_dialog (filename, NULL, NULL);
 
 	/* Do not free filename, as glob->resonancefile now points to it. */
 }
@@ -332,45 +334,7 @@ void on_open_section_activate (GtkMenuItem *menuitem, gpointer user_data)
 		return;
 	}
 
-	select_section_dialog (glob->resonancefile, glob->section);
-}
-
-/* Called by select_section_dialog() */
-gboolean select_section_ok (GtkWidget *button)
-{
-	GladeXML *xml = glade_get_widget_tree (button);
-	GtkEntry *entry = GTK_ENTRY (glade_xml_get_widget (xml, "section_combo_entry"));
-	gchar *title, *basename;
-
-	glob->section = g_strdup_printf ("%s", gtk_entry_get_text (entry));
-	gtk_widget_destroy (gtk_widget_get_toplevel (button));
-	
-	if (read_resonancefile (glob->resonancefile, glob->section) >= 0)
-	{
-		visualize_update_res_bar (0);
-		show_global_parameters (glob->gparam);
-
-		basename = g_path_get_basename (glob->resonancefile);
-		title = g_strdup_printf ("%s:%s - GWignerFit", basename, glob->section);
-		gtk_window_set_title (GTK_WINDOW (glade_xml_get_widget(gladexml, "mainwindow")), title);
-		g_free (basename);
-		g_free (title);
-
-		visualize_update_min_max (0);
-		visualize_theory_graph ();
-		spectral_resonances_changed ();
-		unset_unsaved_changes ();
-	}
-	else
-	{
-		/* No resonances were read but the old parameters have been
-		 * deleted by read_resonancefile, get us safely out of here.
-		 */
-		unset_unsaved_changes ();
-		on_new_activate (NULL, NULL);
-	}
-
-	return TRUE;
+	select_section_dialog (glob->resonancefile, glob->section, NULL);
 }
 
 gboolean on_phaseentry_changed (GtkWidget *entry, GdkEventKey *event, gpointer user_data)
@@ -1001,4 +965,9 @@ void on_manual_activate (GtkMenuItem *menuitem, gpointer user_data)
 {
 	dialog_message ("Please refer to the provided user manual, which can be found at\n"
 			"/usr/local/share/doc/gwignerfit/gwignerfit-manual.html");
+}
+
+void on_merge_resonancelists_activate (GtkMenuItem *menuitem, gpointer user_data)
+{
+	merge_open_win ();
 }

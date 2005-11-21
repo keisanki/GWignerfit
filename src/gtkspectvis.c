@@ -13,7 +13,8 @@
 /* Definitions */
 
 #define COORD_BORDER_DIST	5
-#define MIN_DATAPOINTS_VIEW	4
+#define MIN_DATAPOINTS_VIEW	4	/* actually it is one more */
+#define MIN_IMPULSES_VIEW	1	/* actually it is one more */
 #define ADD_MARK_DISTANCE	20
 
 #define g_marshal_value_peek_pointer(v)		g_value_get_pointer (v)
@@ -134,6 +135,14 @@ static void	gtk_spect_vis_units_to_pixel	(GtkSpectVis *spectvis,
 						 gint *ypix);
 
 static void	gtk_spect_vis_draw_graphs_fast	(GtkSpectVis *spectvis,
+						 GdkGC *gc,
+						 GtkSpectVisData *data,
+						 guint start,
+						 guint stop,
+						 gdouble xscale,
+						 gdouble yscale);
+
+static void	gtk_spect_vis_draw_impulses	(GtkSpectVis *spectvis,
 						 GdkGC *gc,
 						 GtkSpectVisData *data,
 						 guint start,
@@ -627,7 +636,7 @@ gtk_spect_vis_zoom_x_to (GtkSpectVis *spectvis, gdouble min, gdouble max)
 	GList *datalist, *searchlist;
 	GtkSpectVisData *data;
 	gboolean rangetest;
-	guint i, pos, searchi, *newbounds;
+	guint i, pos, searchi, limit, *newbounds;
 	
 	g_return_val_if_fail (GTK_IS_SPECTVIS (spectvis), FALSE);
 	g_return_val_if_fail (spectvis->data, FALSE);
@@ -674,8 +683,13 @@ gtk_spect_vis_zoom_x_to (GtkSpectVis *spectvis, gdouble min, gdouble max)
 				pos--;
 			newbounds[i+1] = pos;
 
+			if (data->type != 'i')
+				limit = MIN_DATAPOINTS_VIEW;
+			else
+				limit = MIN_IMPULSES_VIEW;
+
 			if ((newbounds[i+1]+1 != newbounds[i]) &&
-			    (newbounds[i+1] - newbounds[i] > MIN_DATAPOINTS_VIEW))
+			    (newbounds[i+1] - newbounds[i] >= limit))
 				/* The first condition is FALSE if the graph has _no_ datapoint
 				 * inside the new view and is needed as the newbounds is uint. */
 				rangetest = TRUE;
@@ -687,7 +701,7 @@ gtk_spect_vis_zoom_x_to (GtkSpectVis *spectvis, gdouble min, gdouble max)
 
 	if (!rangetest) 
 	{
-		/* No graph has more than MIN_DATAPOINTS_VIEW in the new viewport */
+		/* No graph has more than the required number of points in the new viewport */
 		g_free (newbounds);
 		return FALSE;
 	}
@@ -753,8 +767,8 @@ gboolean
 gtk_spect_vis_zoom_y_all (GtkSpectVis *spectvis)
 {
 	int i;
-	gdouble tmpval;
-	ComplexDouble *ydata;
+	gdouble tmpval, tmp1, tmp2;
+	ComplexDouble *ydata, val;
 	GtkSpectVisViewport *view = spectvis->view;
 	GtkSpectVisData *data;
 	GList *datalist;
@@ -775,6 +789,37 @@ gtk_spect_vis_zoom_y_all (GtkSpectVis *spectvis)
 		if ((data->X[data->xmax_arraypos] < view->xmin) ||
 		    (data->X[data->xmin_arraypos] > view->xmax))
 			continue;
+
+		/* Special calculation for impulse display */
+		if (data->type == 'i')
+		{
+			if (spectvis->displaytype == 'l')
+			{
+				for (i=data->xmin_arraypos; i<=data->xmax_arraypos; i++)
+				{
+					val.abs = ydata[i].re;
+					tmp1 = gtk_spect_vis_cal_db (val);
+					val.abs = ydata[i].im;
+					tmp2 = gtk_spect_vis_cal_db (val);
+
+					if (tmp1 < view->ymin) view->ymin = tmp1;
+					if (tmp1 > view->ymax) view->ymax = tmp1;
+					if (tmp2 < view->ymin) view->ymin = tmp2;
+					if (tmp2 > view->ymax) view->ymax = tmp2;
+				}
+			}
+			else
+			{
+				for (i=data->xmin_arraypos; i<=data->xmax_arraypos; i++)
+				{
+					if (ydata[i].re < view->ymin)
+						view->ymin = ydata[i].re;
+					if (ydata[i].im > view->ymax)
+						view->ymax = ydata[i].im;
+				}
+			}
+			continue;
+		}
 
 		switch (spectvis->displaytype)
 		{
@@ -1110,7 +1155,15 @@ gtk_spect_vis_set_graphtype (GtkSpectVis *spectvis, guint uid, gchar type)
 	
 	g_return_val_if_fail (GTK_IS_SPECTVIS (spectvis), FALSE);
 	g_return_val_if_fail (uid, FALSE);
-	g_return_val_if_fail ((type == 'l') || (type == 'm') || (type == 'h'), FALSE);
+	g_return_val_if_fail ( (type == 'l') || (type == 'm') 
+			    || (type == 'h') || (type == 'i'), FALSE);
+
+	/* Possible types:
+	 * l: lines
+	 * m: lines with datapoint markers
+	 * h: histogram
+	 * i: impulses (from Y.re till Y.im)
+	 */
 
 	datalist = spectvis->data;
 
@@ -1268,6 +1321,13 @@ gtk_spect_vis_draw_graphs (GtkWidget *widget)
 		if (stop - start > 2 * view->graphboxwidth)
 		{
 			gtk_spect_vis_draw_graphs_fast (spectvis, gc, data, start, stop, xscale, yscale);
+			datalist = g_list_next (datalist);
+			continue;
+		}
+
+		if (data->type == 'i')
+		{
+			gtk_spect_vis_draw_impulses (spectvis, gc, data, start, stop, xscale, yscale);
 			datalist = g_list_next (datalist);
 			continue;
 		}
@@ -1519,6 +1579,57 @@ gtk_spect_vis_draw_graphs_fast (GtkSpectVis *spectvis, GdkGC *gc, GtkSpectVisDat
 	g_free (x);
 	g_free (min);
 	g_free (max);
+}
+
+static void
+gtk_spect_vis_draw_impulses (GtkSpectVis *spectvis, GdkGC *gc, GtkSpectVisData *data, 
+                             guint start, guint stop, gdouble xscale, gdouble yscale)
+{
+	ComplexDouble *ydata, val;
+	GtkSpectVisViewport *view;
+	guint i, x;
+	gint ymin, ymax, tmp;
+
+	g_return_if_fail (GTK_IS_SPECTVIS (spectvis));
+	view = spectvis->view;
+
+	ydata = data->Y;
+	g_return_if_fail (ydata);
+
+	gdk_gc_set_rgb_fg_color (gc, &(data->color));
+
+	for (i=start; i<=stop; i++)
+	{
+		x = (data->X[i] - view->xmin) * xscale + view->graphboxxoff;
+		if (spectvis->displaytype == 'l')
+		{
+			val.abs = ydata[i].re;
+			ymin = view->graphboxyoff - (gtk_spect_vis_cal_db(val) - view->ymin) * yscale;
+			val.abs = ydata[i].im;
+			ymax = view->graphboxyoff - (gtk_spect_vis_cal_db(val) - view->ymin) * yscale;
+		}
+		else
+		{
+			ymin = view->graphboxyoff - (ydata[i].re - view->ymin) * yscale;
+			ymax = view->graphboxyoff - (ydata[i].im - view->ymin) * yscale;
+		}
+
+		if (ymin > ymax)
+		{
+			tmp  = ymin;
+			ymin = ymax;
+			ymax = tmp;
+		}
+
+		if (ymin > 10000) ymin = 10000;
+		if (ymin <     0) ymin =     0;
+		if (ymax > 10000) ymax = 10000;
+		if (ymax <     0) ymax =     0;
+		
+		gdk_draw_line (spectvis->pixmap, gc,
+				x, ymin,
+				x, ymax);
+	}
 }
 
 static gdouble

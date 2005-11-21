@@ -64,7 +64,7 @@ void parse_commandline (gint argc, char *argv[])
 		else if (g_str_has_suffix (filename, ".gwf"))
 		{
 			/* might be a GWignerFit resonance file */
-			select_section_dialog (g_strdup (filename), NULL);
+			select_section_dialog (g_strdup (filename), NULL, NULL);
 		}
 		g_free (filename);
 
@@ -108,7 +108,6 @@ void set_icons ()
 gint main (gint argc, char *argv[]) 
 {
 	gint i;
-//	FourierComponent *fcomp;
 	
 	/* Prepare Glib thread support and Gtk */
 	g_thread_init (NULL);
@@ -159,6 +158,7 @@ gint main (gint argc, char *argv[])
 	glob->fcomp->data = g_ptr_array_new ();
 	glob->fcomp->quotient = NULL;
 	glob->fcomp->theo = NULL;
+	glob->merge = NULL;
 
 	/* Set the preferences to the default values */
 	glob->prefs = NULL;
