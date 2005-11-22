@@ -102,7 +102,8 @@ gint		gtk_spect_vis_polygon_add	(GtkSpectVis *spectvis,
 						 GdkColor color,
 						 gchar pos);
 gboolean	gtk_spect_vis_polygon_remove	(GtkSpectVis *spectvis,
-						 guint uid);
+						 guint uid,
+						 gboolean free_data);
 
 /* Handling the GtkWidget */
 static void	gtk_spect_vis_class_init	(GtkSpectVisClass *class);
@@ -327,6 +328,13 @@ gtk_spect_vis_destroy (GtkObject *object)
 		g_list_foreach (spectvis->bars, (GFunc) g_free, NULL);
 		g_list_free (spectvis->bars);
 		spectvis->bars = NULL;
+	}
+	
+	if (spectvis->poly)
+	{
+		g_list_foreach (spectvis->poly, (GFunc) g_free, NULL);
+		g_list_free (spectvis->poly);
+		spectvis->poly = NULL;
 	}
 	
 	g_free (spectvis->view);
@@ -2367,7 +2375,7 @@ gtk_spect_vis_polygon_add (GtkSpectVis *spectvis, gdouble *X, gdouble *Y, guint 
 	poly->color = color;
 	poly->uid = gtk_spect_vis_data_gen_uid (spectvis->poly);
 
-	if (spectvis->poly == NULL)
+	if (spectvis->view == NULL)
 	{
 		spectvis->view = g_new0 (GtkSpectVisViewport, 1);
 		spectvis->view->xmin = 0;
@@ -2388,7 +2396,7 @@ gtk_spect_vis_polygon_add (GtkSpectVis *spectvis, gdouble *X, gdouble *Y, guint 
 }
 
 gboolean
-gtk_spect_vis_polygon_remove (GtkSpectVis *spectvis, guint uid)
+gtk_spect_vis_polygon_remove (GtkSpectVis *spectvis, guint uid, gboolean free_data)
 {
 	GList *polylist = spectvis->poly;
 
@@ -2400,8 +2408,13 @@ gtk_spect_vis_polygon_remove (GtkSpectVis *spectvis, guint uid)
 
 	if (polylist != NULL)
 	{
+		if (free_data)
+		{
+			g_free (((GtkSpectVisPolygon*) polylist->data)->X);
+			g_free (((GtkSpectVisPolygon*) polylist->data)->Y);
+		}
 		g_free (polylist->data);
-		spectvis->data = g_list_delete_link (spectvis->poly, polylist);
+		spectvis->poly = g_list_delete_link (spectvis->poly, polylist);
 	}
 	else
 		return FALSE;

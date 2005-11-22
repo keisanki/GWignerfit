@@ -222,7 +222,8 @@ gint		gtk_spect_vis_polygon_add	(GtkSpectVis *spectvis,
 						 GdkColor color,
 						 gchar pos);
 gboolean	gtk_spect_vis_polygon_remove	(GtkSpectVis *spectvis,
-						 guint uid);
+						 guint uid,
+						 gboolean free_data);
 
 #ifdef __cplusplus
 }

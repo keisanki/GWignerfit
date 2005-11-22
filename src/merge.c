@@ -13,6 +13,9 @@
 #include "processdata.h"
 #include "gtkspectvis.h"
 
+#define MERGE_FLAG_ADD (1 << 0)
+#define MERGE_FLAG_DEL (1 << 1)
+
 extern GlobalData *glob;
 extern GladeXML *gladexml;
 
@@ -29,6 +32,8 @@ typedef struct
 {
 	guint id;	/* The id of the resonance list set */
 	guint num;	/* The number of the resonance in the list */
+	guint guid1;	/* The uid of the first GtkSpectVis graph link */
+	guint guid2;	/* The uid of the second GtkSpectVis graph link */
 	GList *link;	/* The links group this node belongs to or NULL */
 	Resonance *res;	/* The properties of the resonance */
 } MergeNode;
@@ -37,10 +42,18 @@ typedef struct
 static gint merge_read_resonances (gchar *selected_filename, const gchar *label, GPtrArray **reslist, gchar **datafilename);
 static void merge_zoom_x_all ();
 static void merge_automatic_merge ();
+static void merge_draw_remove_node (MergeNode *node);
+static GList* merge_delete_link_node (MergeNode *node);
+static gint merge_link_compare (gconstpointer a_in, gconstpointer b_in);
+static GList* merge_get_closest (gdouble frq, gint depth);
+static gdouble merge_get_minwidth (GList *cand);
+static gdouble merge_get_avgfrq (GList *cand);
+static void merge_draw_remove_all ();
+static gboolean merge_draw_link (GList *link);
 
 /* Display number of resonances in list on treeview */
 void merge_show_numres (GtkTreeViewColumn *col, GtkCellRenderer *renderer, 
-		       GtkTreeModel *model, GtkTreeIter *iter, gpointer user_data)
+		        GtkTreeModel *model, GtkTreeIter *iter, gpointer user_data)
 {
 	gint id;
 	gchar *buf;
@@ -147,6 +160,10 @@ void merge_purge ()
 	merge = glob->merge;
 
 	graph = GTK_SPECTVIS (glade_xml_get_widget (merge->xmlmerge, "merge_spectvis"));
+
+	/* Free polygon data by removing it */
+	merge_draw_remove_all ();
+	
 	for (i=0; i<merge->nodelist->len; i++)
 	{
 		/* Free Resonance nodes */
@@ -190,13 +207,6 @@ void merge_purge ()
 	glob->merge = NULL;
 }
 
-/* Close the merge_win */
-gboolean on_merge_close_activate (GtkWidget *button)
-{
-	merge_purge ();
-	return TRUE;
-}
-
 /* Add a *reslist and a *datafilename to the graph, treeview and struct */
 static void merge_add_reslist (GPtrArray *reslist, gchar *datafilename, gchar *name)
 {
@@ -220,10 +230,12 @@ static void merge_add_reslist (GPtrArray *reslist, gchar *datafilename, gchar *n
 	for (i=0; i<reslist->len; i++)
 	{
 		node = g_new (MergeNode, 1);
-		node->id   = merge->nodelist->len + 1;
-		node->num  = i;
-		node->link = NULL;
-		node->res  = (Resonance *) g_ptr_array_index (reslist, i);
+		node->id    = merge->nodelist->len + 1;
+		node->num   = i;
+		node->link  = NULL;
+		node->guid1 = 0;
+		node->guid2 = 0;
+		node->res   = (Resonance *) g_ptr_array_index (reslist, i);
 		g_ptr_array_add (curnodelist, node);
 	}
 	g_ptr_array_add (merge->nodelist, curnodelist);
@@ -265,232 +277,6 @@ static void merge_add_reslist (GPtrArray *reslist, gchar *datafilename, gchar *n
 	gtk_spect_vis_zoom_y_all (graph);
 	merge_zoom_x_all ();
 	gtk_spect_vis_redraw (graph);
-}
-
-/* Ask for a resonance list and add it */
-gboolean on_merge_add_list_activate (GtkWidget *button)
-{
-	gchar *filename, *section = NULL, *path = NULL;
-	gchar *name, *datafilename = NULL;
-	GPtrArray *reslist = NULL;
-
-	path = get_defaultname (NULL);
-	filename = get_filename ("Select file with resonance list", path, 1);
-	g_free (path);
-
-	if (!filename)
-		return FALSE;
-
-	if (select_section_dialog (filename, NULL, &section))
-	{
-		/* select_section_dialog returned TRUE -> something went wrong */
-		g_free (filename);
-		return FALSE;
-	}
-
-	if ((section) && (merge_read_resonances (filename, section, &reslist, &datafilename) < 0))
-	{
-		g_free (filename);
-		g_free (section);
-		g_ptr_array_free (reslist, TRUE);
-		g_free (datafilename);
-		return FALSE;
-	}
-
-	/* sort reslist */
-	g_ptr_array_sort (reslist, param_compare);
-
-	name = g_strdup_printf ("%s:%s", filename, section);
-	merge_add_reslist (reslist, datafilename, name);
-	/* reslist must not be freed here */
-	
-	g_free (section);
-	g_free (filename);
-	return TRUE;
-}
-
-/* Remove the selected resonance list */
-gboolean on_merge_remove_list_activate (GtkWidget *button)
-{
-	MergeWin *merge = glob->merge;
-	GtkTreeIter iter;
-	GtkTreeSelection *selection;
-	GtkTreeModel *model;
-	GList *pathlist;
-	GPtrArray *curnodelist;
-	gint id = -1, curid, uid, i, j, reduce;
-	GtkSpectVis *graph;
-	GtkSpectVisData *data;
-	GList *linkiter, *linkitertmp, *newlisthead;
-	MergeNode *linknode;
-
-	selection = gtk_tree_view_get_selection ( GTK_TREE_VIEW (
-			glade_xml_get_widget (merge->xmlmerge, "merge_treeview")));
-
-	if (gtk_tree_selection_count_selected_rows (selection) == 0)
-	{
-		dialog_message ("No row selected.");
-		return FALSE;
-	}
-
-	/* Get path of selected row */
-	model     = GTK_TREE_MODEL (merge->store);
-	pathlist  = gtk_tree_selection_get_selected_rows (selection, &model);
-
-	/* Remove the row */
-	gtk_tree_model_get_iter (model, &iter, (GtkTreePath *) pathlist->data);
-	gtk_tree_model_get (model, &iter, MERGE_ID_COL, &id, -1);
-	if (id < 1)
-	{
-		dialog_message ("Error: Could not determine resonance ID.");
-		return FALSE;
-	}
-	gtk_list_store_remove (merge->store, &iter);
-
-	/* Change ID's of other rows */
-	if (gtk_tree_model_get_iter_first (model, &iter))
-		do
-		{
-			gtk_tree_model_get (model, &iter, MERGE_ID_COL, &curid, -1);
-			if (curid > id)
-			{
-				curid--;
-				gtk_list_store_set (merge->store, &iter, MERGE_ID_COL, curid, -1);
-			}
-		}
-		while (gtk_tree_model_iter_next(model, &iter));
-
-	/* Select the old path -> the next resonance in the list */
-	gtk_tree_selection_select_path (selection, (GtkTreePath *) pathlist->data);
-
-	/* Tidy up */
-	g_list_foreach (pathlist, (GFunc) gtk_tree_path_free, NULL);
-	g_list_free (pathlist);
-
-	/* Update the links */
-	reduce = 0;
-	for (i=0; i<merge->links->len-reduce; i++)
-	{
-		linkiter = (GList *) g_ptr_array_index (merge->links, i);
-		do {
-			linknode = (MergeNode *) linkiter->data;
-			linkitertmp = NULL;
-
-			if (linknode->id > id)
-			{
-				/* Adjust id numbers of the other nodes */
-				linknode->id--;
-			}
-			else if (linknode->id == id)
-			{
-				/* Remove nodes of deleted list */
-				linkitertmp = linkiter;
-				linkiter    = g_list_next (linkiter);
-				newlisthead = g_list_delete_link ((GList *) g_ptr_array_index (merge->links, i), linkitertmp);
-
-				g_ptr_array_remove_index (merge->links, i);
-				i--;
-				if (g_list_length (newlisthead) > 1)
-				{
-					g_ptr_array_add (merge->links, newlisthead);
-					reduce++;
-				}
-				else
-				{
-					/* No elements or only one element are left in the link list */
-					g_list_free (newlisthead);
-					break;
-				}
-
-				if (!linkiter)
-				{
-					break;
-				}
-			}
-		}
-		/* We're already at the next linkiter if linkitertmp is != NULL */
-		while ((linkitertmp) || (linkiter = g_list_next (linkiter)));
-	}
-
-	/* id will now be the "real" position in the pointer arrays */
-	id--;
-
-	graph = GTK_SPECTVIS (glade_xml_get_widget (merge->xmlmerge, "merge_spectvis"));
-
-	/* Remove graph and free data */
-	uid = GPOINTER_TO_INT (g_ptr_array_index (merge->graphuid, id));
-	data = gtk_spect_vis_get_data_by_uid (graph, uid);
-	g_free (data->X);
-	g_free (data->Y);
-	gtk_spect_vis_data_remove (graph, uid);
-
-	for (i=id+1; i<merge->graphuid->len; i++)
-	{
-		/* Update position of graphs with bigger id */
-		uid = GPOINTER_TO_INT (g_ptr_array_index (merge->graphuid, i));
-		data = gtk_spect_vis_get_data_by_uid (graph, uid);
-
-		for (j=0; j<data->len; j++)
-		{
-			data->Y[j].re -= 1.0;
-			data->Y[j].im -= 1.0;
-		}
-	}
-	
-	/* free data */
-	curnodelist = g_ptr_array_index (merge->nodelist, id);
-	for (i=0; i<curnodelist->len; i++) 
-		g_free (((MergeNode *) g_ptr_array_index (curnodelist, i))->res);
-	g_ptr_array_free (curnodelist, TRUE);
-
-	g_free (g_ptr_array_index (merge->datafilename, id));
-	
-	g_ptr_array_remove_index (merge->nodelist, id);
-	g_ptr_array_remove_index (merge->datafilename, id);
-	g_ptr_array_remove_index (merge->graphuid, id);
-
-	/* Update graph */
-	if (merge->graphuid->len)
-	{
-		merge_zoom_x_all ();
-		gtk_spect_vis_zoom_y_all (graph);
-	}
-	gtk_spect_vis_redraw (graph);
-
-	return TRUE;
-}
-
-/* Remove the selected resonance list */
-gboolean on_merge_find_links_activate (GtkWidget *button)
-{
-	if (glob->merge->nodelist->len < 2)
-	{
-		dialog_message ("Please add at least two resonance lists.");
-		return FALSE;
-	}
-	
-	merge_automatic_merge ();
-
-	return TRUE;
-}
-
-/* Zooming, etc. */
-void merge_handle_viewport_changed (GtkSpectVis *spectvis, gchar *zoomtype)
-{
-	if (zoomtype == "a")
-		merge_zoom_x_all ();
-	
-	gtk_spect_vis_redraw (spectvis);
-}
-
-/* Handle click on graph */
-gint merge_handle_value_selected (GtkSpectVis *spectvis, gdouble *xval, gdouble *yval)
-{
-	g_return_val_if_fail (glob->merge, 0);
-
-	gtk_spect_vis_mark_point (spectvis, *xval, *yval);
-
-	return 0;
 }
 
 /* Reads *label in *selected_filename and adds all resonances to **reslist and
@@ -634,12 +420,478 @@ static void merge_zoom_x_all ()
 	gtk_spect_vis_zoom_x_to (graph, min - (max-min)*0.02, max + (max-min)*0.02);
 }
 
-/********** Automatic merger *************************************************/
+/********** Callbacks from the merge window **********************************/
 
-/* Forward declarations */
-static GList* merge_get_closest (gdouble frq, gint depth);
-static gdouble merge_get_minwidth (GList *cand);
-static gdouble merge_get_avgfrq (GList *cand);
+/* Close the merge_win */
+gboolean on_merge_close_activate (GtkWidget *button)
+{
+	merge_purge ();
+	return TRUE;
+}
+
+/* Ask for a resonance list and add it */
+gboolean on_merge_add_list_activate (GtkWidget *button)
+{
+	gchar *filename, *section = NULL, *path = NULL;
+	gchar *name, *datafilename = NULL;
+	GPtrArray *reslist = NULL;
+
+	path = get_defaultname (NULL);
+	filename = get_filename ("Select file with resonance list", path, 1);
+	g_free (path);
+
+	if (!filename)
+		return FALSE;
+
+	if (select_section_dialog (filename, NULL, &section))
+	{
+		/* select_section_dialog returned TRUE -> something went wrong */
+		g_free (filename);
+		return FALSE;
+	}
+
+	if ((section) && (merge_read_resonances (filename, section, &reslist, &datafilename) < 0))
+	{
+		g_free (filename);
+		g_free (section);
+		g_ptr_array_free (reslist, TRUE);
+		g_free (datafilename);
+		return FALSE;
+	}
+
+	/* sort reslist */
+	g_ptr_array_sort (reslist, param_compare);
+
+	name = g_strdup_printf ("%s:%s", filename, section);
+	merge_add_reslist (reslist, datafilename, name);
+	/* reslist must not be freed here */
+	
+	g_free (section);
+	g_free (filename);
+	return TRUE;
+}
+
+/* Remove the selected resonance list */
+gboolean on_merge_remove_list_activate (GtkWidget *button)
+{
+	MergeWin *merge = glob->merge;
+	GtkTreeIter iter;
+	GtkTreeSelection *selection;
+	GtkTreeModel *model;
+	GList *pathlist;
+	GPtrArray *curnodelist;
+	gint id = -1, curid, uid, i, j, reduce;
+	GtkSpectVis *graph;
+	GtkSpectVisData *data;
+	GList *linkiter;
+	MergeNode *linknode;
+
+	selection = gtk_tree_view_get_selection ( GTK_TREE_VIEW (
+			glade_xml_get_widget (merge->xmlmerge, "merge_treeview")));
+
+	if (gtk_tree_selection_count_selected_rows (selection) == 0)
+	{
+		dialog_message ("No row selected.");
+		return FALSE;
+	}
+
+	/* Get path of selected row */
+	model     = GTK_TREE_MODEL (merge->store);
+	pathlist  = gtk_tree_selection_get_selected_rows (selection, &model);
+
+	/* Remove the row */
+	gtk_tree_model_get_iter (model, &iter, (GtkTreePath *) pathlist->data);
+	gtk_tree_model_get (model, &iter, MERGE_ID_COL, &id, -1);
+	if (id < 1)
+	{
+		dialog_message ("Error: Could not determine resonance ID.");
+		return FALSE;
+	}
+	gtk_list_store_remove (merge->store, &iter);
+
+	/* Change ID's of other rows */
+	if (gtk_tree_model_get_iter_first (model, &iter))
+		do
+		{
+			gtk_tree_model_get (model, &iter, MERGE_ID_COL, &curid, -1);
+			if (curid > id)
+			{
+				curid--;
+				gtk_list_store_set (merge->store, &iter, MERGE_ID_COL, curid, -1);
+			}
+		}
+		while (gtk_tree_model_iter_next(model, &iter));
+
+	/* Select the old path -> the next resonance in the list */
+	gtk_tree_selection_select_path (selection, (GtkTreePath *) pathlist->data);
+
+	/* Tidy up */
+	g_list_foreach (pathlist, (GFunc) gtk_tree_path_free, NULL);
+	g_list_free (pathlist);
+	
+	/* Remove all links from the graph */
+	merge_draw_remove_all ();
+
+	/* Update the iIDs of each link node */
+	for (i=0; i<merge->links->len; i++)
+	{
+		linkiter = (GList *) g_ptr_array_index (merge->links, i);
+		while (linkiter)
+		{
+			linknode = (MergeNode *) linkiter->data;
+
+			if (linknode->id == id) linknode->id = 0;
+			if (linknode->id >  id) linknode->id--;
+
+			linkiter = g_list_next (linkiter);
+		}
+	}
+
+	/* Remove stale links */
+	reduce = 0;
+	for (i=0; i<merge->links->len; i++)
+	{
+		linkiter = (GList *) g_ptr_array_index (merge->links, i);
+		while (linkiter)
+		{
+			linknode = (MergeNode *) linkiter->data;
+
+			if (linknode->id == 0)
+			{
+				i--;
+				if ((linkiter = merge_delete_link_node (linknode)))
+					reduce++;
+			}
+			else 
+				linkiter = g_list_next (linkiter);
+		}
+	}
+
+	/* Add links to graph */
+	for (i=0; i<merge->links->len; i++)
+	{
+		linkiter = (GList *) g_ptr_array_index (merge->links, i);
+		merge_draw_link (linkiter);
+	}
+
+	/* id will now be the "real" position in the pointer arrays */
+	id--;
+
+	graph = GTK_SPECTVIS (glade_xml_get_widget (merge->xmlmerge, "merge_spectvis"));
+
+	/* Remove graph and free data */
+	uid = GPOINTER_TO_INT (g_ptr_array_index (merge->graphuid, id));
+	data = gtk_spect_vis_get_data_by_uid (graph, uid);
+	g_free (data->X);
+	g_free (data->Y);
+	gtk_spect_vis_data_remove (graph, uid);
+
+	for (i=id+1; i<merge->graphuid->len; i++)
+	{
+		/* Update position of graphs with bigger id */
+		uid = GPOINTER_TO_INT (g_ptr_array_index (merge->graphuid, i));
+		data = gtk_spect_vis_get_data_by_uid (graph, uid);
+
+		for (j=0; j<data->len; j++)
+		{
+			data->Y[j].re -= 1.0;
+			data->Y[j].im -= 1.0;
+		}
+	}
+	
+	/* free data */
+	curnodelist = g_ptr_array_index (merge->nodelist, id);
+	for (i=0; i<curnodelist->len; i++) 
+		g_free (((MergeNode *) g_ptr_array_index (curnodelist, i))->res);
+	g_ptr_array_free (curnodelist, TRUE);
+
+	g_free (g_ptr_array_index (merge->datafilename, id));
+	
+	g_ptr_array_remove_index (merge->nodelist, id);
+	g_ptr_array_remove_index (merge->datafilename, id);
+	g_ptr_array_remove_index (merge->graphuid, id);
+
+	/* Update graph */
+	if (merge->graphuid->len)
+	{
+		merge_zoom_x_all ();
+		gtk_spect_vis_zoom_y_all (graph);
+	}
+	gtk_spect_vis_redraw (graph);
+
+	return TRUE;
+}
+
+/* Add a single link via user input */
+gboolean on_merge_add_link_activate (GtkWidget *button)
+{
+	glob->merge->flag |= MERGE_FLAG_ADD;
+	glob->merge->flag &= ~MERGE_FLAG_DEL;
+	
+	return TRUE;
+}
+
+/* Delete a single link via user input */
+gboolean on_merge_delete_link_activate (GtkWidget *button)
+{
+	glob->merge->flag |= MERGE_FLAG_DEL;
+	glob->merge->flag &= ~MERGE_FLAG_DEL;
+	
+	return TRUE;
+}
+
+/* Remove the selected resonance list */
+gboolean on_merge_find_links_activate (GtkWidget *button)
+{
+	if (glob->merge->nodelist->len < 2)
+	{
+		dialog_message ("Please add at least two resonance lists.");
+		return FALSE;
+	}
+	
+	merge_automatic_merge ();
+
+	return TRUE;
+}
+
+/* Zooming, etc. */
+void merge_handle_viewport_changed (GtkSpectVis *spectvis, gchar *zoomtype)
+{
+	if (zoomtype == "a")
+		merge_zoom_x_all ();
+	
+	gtk_spect_vis_redraw (spectvis);
+}
+
+/* Handle click on graph */
+gint merge_handle_value_selected (GtkSpectVis *spectvis, gdouble *xval, gdouble *yval)
+{
+	g_return_val_if_fail (glob->merge, 0);
+	
+	if (glob->merge->flag & MERGE_FLAG_ADD)
+	{
+		printf ("add\n");
+
+		glob->merge->flag &= ~MERGE_FLAG_ADD;
+		return 0;
+	}
+
+	if (glob->merge->flag & MERGE_FLAG_DEL)
+	{
+		printf ("delete\n");
+
+		glob->merge->flag &= ~MERGE_FLAG_DEL;
+		return 0;
+	}
+	
+	gtk_spect_vis_mark_point (spectvis, *xval, *yval);
+
+	return 0;
+}
+
+/********** Basic link and node handling *************************************/
+
+/* Takes a node and removes all links associated with it.
+ * Returns the next GList element of NULL if the list has been deleted. */
+static GList* merge_delete_link_node (MergeNode *node)
+{
+	GList *linkiter, *newlisthead, *nextiter;
+	
+	g_return_val_if_fail (node, FALSE);
+
+	if (node->link)
+	{
+		/* Remove node link from graph */
+		merge_draw_remove_node (node);
+
+		/* Remove link from glob->merge->links as the start may change */
+		g_ptr_array_remove (glob->merge->links, node->link);
+		
+		/* Find position of node in list (node->link is the head) */
+		linkiter = g_list_find (node->link, node);
+		nextiter = g_list_next (linkiter);
+		
+		/* Remove node from list */
+		newlisthead = g_list_delete_link (node->link, linkiter);
+		g_return_val_if_fail (g_list_length (newlisthead), FALSE);
+
+		/* Has the list become too short? */
+		if (g_list_length (newlisthead) == 1)
+		{
+			/* Yes, only one node left -> delete it*/
+			g_list_free (newlisthead);
+
+			return NULL;
+		}
+		else
+		{
+			/* Add new list to merge->links */
+			g_ptr_array_add (glob->merge->links, newlisthead);
+
+			/* Update link information of each node */
+			linkiter = newlisthead;
+			while (linkiter)
+			{
+				((MergeNode *) linkiter->data)->link = newlisthead;
+
+				linkiter = g_list_next (linkiter);
+			}
+		}
+
+	}
+	else
+		return NULL;
+
+	return nextiter;
+}
+
+/* Removes graphical links associated with a given node and reconnects
+ * neighbouring nodes instead */
+static void merge_draw_remove_node (MergeNode *node)
+{
+	GList *curiter, *previter, *nextiter;
+	GtkSpectVis *graph;
+	GdkColor color;
+	gdouble *X, *Y;
+
+	graph = GTK_SPECTVIS (glade_xml_get_widget (glob->merge->xmlmerge, "merge_spectvis"));
+
+	curiter  = g_list_find (node->link, node);
+	previter = g_list_previous (curiter);
+	nextiter = g_list_next (curiter);
+
+	if (node->guid1)
+	{
+		gtk_spect_vis_polygon_remove (graph, node->guid1, TRUE);
+		((MergeNode *) nextiter->data)->guid2 = 0;
+	}
+	if (node->guid2)
+	{
+		gtk_spect_vis_polygon_remove (graph, node->guid2, TRUE);
+		((MergeNode *) previter->data)->guid1 = 0;
+	}
+
+	node->guid1 = node->guid2 = 0;
+
+	if (previter && nextiter)
+	{
+		/* Node is in the middle of a link -> reconnect */
+		color.red   = 65535/255*228;
+		color.green = 65535/255*22;
+		color.blue  = 65535/255*172;
+		
+		X = g_new (gdouble, 2);
+		Y = g_new (gdouble, 2);
+
+		X[0] = ((MergeNode *) previter->data)->res->frq;
+		X[1] = ((MergeNode *) nextiter->data)->res->frq;
+		Y[0] = ((MergeNode *) previter->data)->id + 0.25;
+		Y[1] = ((MergeNode *) nextiter->data)->id - 0.25;
+
+		((MergeNode *) curiter->data )->guid1 = gtk_spect_vis_polygon_add (graph, X, Y, 2, color, 'l');
+		((MergeNode *) nextiter->data)->guid2 = ((MergeNode *) curiter->data)->guid1;
+	}
+}
+
+/* Remove all links from the graph */
+static void merge_draw_remove_all ()
+{
+	GtkSpectVis *graph;
+	GList *curiter, *previter, *nextiter;
+	MergeNode *node;
+	gint i;
+
+	graph = GTK_SPECTVIS (glade_xml_get_widget (glob->merge->xmlmerge, "merge_spectvis"));
+	
+	for (i=0; i<glob->merge->links->len; i++)
+	{
+		curiter = (GList *) g_ptr_array_index (glob->merge->links, i);
+		while (curiter)
+		{
+			node = (MergeNode *) curiter->data;
+
+			curiter  = g_list_find (node->link, node);
+			previter = g_list_previous (curiter);
+			nextiter = g_list_next (curiter);
+
+			if (node->guid1)
+			{
+				gtk_spect_vis_polygon_remove (graph, node->guid1, TRUE);
+				((MergeNode *) nextiter->data)->guid2 = 0;
+			}
+			if (node->guid2)
+			{
+				gtk_spect_vis_polygon_remove (graph, node->guid2, TRUE);
+				((MergeNode *) previter->data)->guid1 = 0;
+			}
+
+			node->guid1 = node->guid2 = 0;
+			
+			curiter = g_list_next (curiter);
+		}
+	}
+}
+
+/* Takes a GList with node link information and adds it to the graph */
+static gboolean merge_draw_link (GList *link)
+{
+	MergeNode *curnode, *nextnode;
+	GtkSpectVis *graph;
+	GList *nextlink;
+	GdkColor color;
+	gdouble *X, *Y;
+
+	if (!link)
+		return FALSE;
+
+	graph = GTK_SPECTVIS (glade_xml_get_widget (glob->merge->xmlmerge, "merge_spectvis"));
+
+	color.red   = 65535/255*228;
+	color.green = 65535/255*22;
+	color.blue  = 65535/255*172;
+	
+	while ((link) && (nextlink = g_list_next (link)))
+	{
+		curnode  = (MergeNode *) link->data;
+		nextnode = (MergeNode *) nextlink->data;
+
+		if (curnode->guid1)
+			gtk_spect_vis_polygon_remove (graph, curnode->guid1, TRUE);
+		if (nextnode->guid2)
+			gtk_spect_vis_polygon_remove (graph, nextnode->guid2, TRUE);
+		
+		X = g_new (gdouble, 2);
+		Y = g_new (gdouble, 2);
+
+		X[0] = curnode ->res->frq;
+		X[1] = nextnode->res->frq;
+		Y[0] = curnode ->id + 0.25;
+		Y[1] = nextnode->id - 0.25;
+
+		curnode ->guid1 = gtk_spect_vis_polygon_add (graph, X, Y, 2, color, 'l');
+		nextnode->guid2 = curnode->guid1;
+
+		link = g_list_next (link);
+	}
+
+	return TRUE;
+}
+
+/* Compare two MergeNode structs by their id */
+static gint merge_link_compare (gconstpointer a_in, gconstpointer b_in)
+{
+	const MergeNode *a = (MergeNode *) a_in;
+	const MergeNode *b = (MergeNode *) b_in;
+	
+	if (a->id < b->id)
+		return -1;
+	else if (a->id > b->id)
+		return +1;
+	else
+		return 0;
+}
+
+/********** Automatic merger *************************************************/
 
 /* Does the main automatic merge voodoo */
 static void merge_automatic_merge ()
@@ -673,21 +925,21 @@ static void merge_automatic_merge ()
 			/* Preprend current node to list */
 			candidates = g_list_insert (candidates, g_ptr_array_index (curnodelist, j), 0);
 			
-/*
-printf ("new link candidate: ");
-		canditer = candidates;
-		do {
-printf("%d, %d, %e\t", 
-			((MergeNode *) canditer->data)->id,
-			((MergeNode *) canditer->data)->num,
-			((MergeNode *) canditer->data)->res->frq);
-		} while ((canditer = g_list_next (canditer)));
-printf ("\n");
-*/
+	/*
+	printf ("new link candidate: ");
+			canditer = candidates;
+			do {
+	printf("%d, %d, %e\t", 
+				((MergeNode *) canditer->data)->id,
+				((MergeNode *) canditer->data)->num,
+				((MergeNode *) canditer->data)->res->frq);
+			} while ((canditer = g_list_next (canditer)));
+	printf ("\n");
+	*/
 
 			minwidth = merge_get_minwidth (candidates) * 0.5;
 			avgfrq   = merge_get_avgfrq   (candidates);
-//printf("minwidth %e, avgfrq %e\n", minwidth, avgfrq);
+	//printf("minwidth %e, avgfrq %e\n", minwidth, avgfrq);
 
 			/* Get close lying, unlinked resonances from the candidates */
 			canditer = candidates;
@@ -722,24 +974,27 @@ printf ("\n");
 			if ((candidates) && (g_list_length (candidates) > 1))
 			{
 				/* Mark candidates as linked */
-//printf ("new link: ");
+	//printf ("new link: ");
 				canditer = candidates;
 				((MergeNode *) canditer->data)->link = candidates;
 				do 
 				{
 					((MergeNode *) canditer->data)->link = candidates;
-/*
-printf("%d, %d\t", 
-		((MergeNode *) canditer->data)->id,
-		((MergeNode *) canditer->data)->num);
-*/
+	/*
+	printf("%d, %d\t", 
+			((MergeNode *) canditer->data)->id,
+			((MergeNode *) canditer->data)->num);
+	*/
 				}
 				while ((canditer = g_list_next (canditer)));
-//printf ("\n");
+	//printf ("\n");
 
+				/* Sort the list */
+				g_list_sort (candidates, merge_link_compare);
 				
 				/* Add candidates to links list */
 				g_ptr_array_add (merge->links, candidates);
+				merge_draw_link (candidates);
 			}
 			else if (candidates)
 			{
@@ -748,6 +1003,9 @@ printf("%d, %d\t",
 			}
 		}
 	}
+
+	gtk_spect_vis_redraw (
+		GTK_SPECTVIS (glade_xml_get_widget (glob->merge->xmlmerge, "merge_spectvis")));
 }
 
 /* Searches for resonances closest to *res in datasets below depth and stores
@@ -771,7 +1029,7 @@ static GList* merge_get_closest (gdouble frq, gint depth)
 		/* "i" now points to the resonance with a bigger 
 		 * frequency or to the end of the list */
 
-		if (((MergeNode *) g_ptr_array_index (curnodelist, i))->res->frq >= frq)
+		if (i < curnodelist->len) //((MergeNode *) g_ptr_array_index (curnodelist, i))->res->frq >= frq)
 		{
 			/* OK, we're really at a larger (or equal) frequency. */
 
