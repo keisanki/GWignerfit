@@ -16,6 +16,14 @@
 #define MERGE_FLAG_ADD (1 << 0)
 #define MERGE_FLAG_DEL (1 << 1)
 
+#define MERGE_NODE_R 0
+#define MERGE_NODE_G 0
+#define MERGE_NODE_B 65535
+
+#define MERGE_LINK_R 65535/255*228
+#define MERGE_LINK_G 65535/255*22
+#define MERGE_LINK_B 65535/255*172
+
 extern GlobalData *glob;
 extern GladeXML *gladexml;
 
@@ -34,7 +42,7 @@ typedef struct
 	guint num;	/* The number of the resonance in the list */
 	guint guid1;	/* The uid of the first GtkSpectVis graph link */
 	guint guid2;	/* The uid of the second GtkSpectVis graph link */
-	GList *link;	/* The links group this node belongs to or NULL */
+	GList *link;	/* The position in the links group this node belongs to or NULL */
 	Resonance *res;	/* The properties of the resonance */
 } MergeNode;
 
@@ -42,14 +50,17 @@ typedef struct
 static gint merge_read_resonances (gchar *selected_filename, const gchar *label, GPtrArray **reslist, gchar **datafilename);
 static void merge_zoom_x_all ();
 static void merge_automatic_merge ();
-static void merge_draw_remove_node (MergeNode *node);
-static GList* merge_delete_link_node (MergeNode *node);
+static void merge_draw_remove_node (MergeNode *node, gint type);
+static GList* merge_delete_link_node (MergeNode *node, gint type);
 static gint merge_link_compare (gconstpointer a_in, gconstpointer b_in);
 static GList* merge_get_closest (gdouble frq, gint depth);
 static gdouble merge_get_minwidth (GList *cand);
 static gdouble merge_get_avgfrq (GList *cand);
 static void merge_draw_remove_all ();
 static gboolean merge_draw_link (GList *link);
+static void merge_undisplay_node_selection ();
+static gboolean merge_is_id_in_list (guint id, GList *list);
+static void merge_draw_remove (GList *link);
 
 /* Display number of resonances in list on treeview */
 void merge_show_numres (GtkTreeViewColumn *col, GtkCellRenderer *renderer, 
@@ -90,6 +101,7 @@ void merge_open_win ()
 	glob->merge->datafilename = g_ptr_array_new ();
 	glob->merge->graphuid     = g_ptr_array_new ();
 	glob->merge->links        = g_ptr_array_new ();
+	glob->merge->selx         = -1;
 
 	xmlmerge = glade_xml_new (GLADEFILE, "merge_win", NULL);
 	glade_xml_signal_autoconnect (xmlmerge);
@@ -261,9 +273,9 @@ static void merge_add_reslist (GPtrArray *reslist, gchar *datafilename, gchar *n
 		y[i].im = merge->nodelist->len + 0.25;
 	}
 	
-	color.red   = 0;
-	color.green = 0;
-	color.blue  = 65535;
+	color.red   = MERGE_NODE_R;
+	color.green = MERGE_NODE_G;
+	color.blue  = MERGE_NODE_B;
 	uid = gtk_spect_vis_data_add (
 			graph,
 			x,
@@ -532,46 +544,29 @@ gboolean on_merge_remove_list_activate (GtkWidget *button)
 	/* Remove all links from the graph */
 	merge_draw_remove_all ();
 
-	/* Update the iIDs of each link node */
-	for (i=0; i<merge->links->len; i++)
-	{
-		linkiter = (GList *) g_ptr_array_index (merge->links, i);
-		while (linkiter)
-		{
-			linknode = (MergeNode *) linkiter->data;
-
-			if (linknode->id == id) linknode->id = 0;
-			if (linknode->id >  id) linknode->id--;
-
-			linkiter = g_list_next (linkiter);
-		}
-	}
-
-	/* Remove stale links */
+	/* Update the IDs of each link node and remove stale links*/
 	reduce = 0;
-	for (i=0; i<merge->links->len; i++)
+	for (i=0; i < merge->links->len - reduce; i++)
 	{
 		linkiter = (GList *) g_ptr_array_index (merge->links, i);
 		while (linkiter)
 		{
 			linknode = (MergeNode *) linkiter->data;
 
-			if (linknode->id == 0)
+			if (linknode->id == id)
 			{
 				i--;
-				if ((linkiter = merge_delete_link_node (linknode)))
+				if ((linkiter = merge_delete_link_node (linknode, 0)))
 					reduce++;
 			}
 			else 
-				linkiter = g_list_next (linkiter);
-		}
-	}
+			{
+				if (linknode->id > id) 
+					linknode->id--;
 
-	/* Add links to graph */
-	for (i=0; i<merge->links->len; i++)
-	{
-		linkiter = (GList *) g_ptr_array_index (merge->links, i);
-		merge_draw_link (linkiter);
+				linkiter = g_list_next (linkiter);
+			}
+		}
 	}
 
 	/* id will now be the "real" position in the pointer arrays */
@@ -586,9 +581,9 @@ gboolean on_merge_remove_list_activate (GtkWidget *button)
 	g_free (data->Y);
 	gtk_spect_vis_data_remove (graph, uid);
 
+	/* Update position of impulse graphs with bigger IDs */
 	for (i=id+1; i<merge->graphuid->len; i++)
 	{
-		/* Update position of graphs with bigger id */
 		uid = GPOINTER_TO_INT (g_ptr_array_index (merge->graphuid, i));
 		data = gtk_spect_vis_get_data_by_uid (graph, uid);
 
@@ -610,6 +605,13 @@ gboolean on_merge_remove_list_activate (GtkWidget *button)
 	g_ptr_array_remove_index (merge->nodelist, id);
 	g_ptr_array_remove_index (merge->datafilename, id);
 	g_ptr_array_remove_index (merge->graphuid, id);
+
+	/* Add links to graph */
+	for (i=0; i<merge->links->len; i++)
+	{
+		linkiter = (GList *) g_ptr_array_index (merge->links, i);
+		merge_draw_link (linkiter);
+	}
 
 	/* Update graph */
 	if (merge->graphuid->len)
@@ -635,7 +637,7 @@ gboolean on_merge_add_link_activate (GtkWidget *button)
 gboolean on_merge_delete_link_activate (GtkWidget *button)
 {
 	glob->merge->flag |= MERGE_FLAG_DEL;
-	glob->merge->flag &= ~MERGE_FLAG_DEL;
+	glob->merge->flag &= ~MERGE_FLAG_ADD;
 	
 	return TRUE;
 }
@@ -666,21 +668,147 @@ void merge_handle_viewport_changed (GtkSpectVis *spectvis, gchar *zoomtype)
 /* Handle click on graph */
 gint merge_handle_value_selected (GtkSpectVis *spectvis, gdouble *xval, gdouble *yval)
 {
-	g_return_val_if_fail (glob->merge, 0);
+	static MergeNode *node1 = NULL;
+	GList *newlist = NULL;
+	MergeNode *node;
+	MergeWin *merge;
 	
-	if (glob->merge->flag & MERGE_FLAG_ADD)
+	g_return_val_if_fail (glob->merge, 0);
+	merge = glob->merge;
+	
+	if (merge->flag & MERGE_FLAG_ADD)
 	{
-		printf ("add\n");
+		node = (MergeNode *) merge->nearnode;
+		if (!node)
+		{
+			merge->flag &= ~MERGE_FLAG_ADD;
+			dialog_message ("You are not close enough to a resonance node point.");
+			node1 = NULL;
+			return 0;
+		}
 
-		glob->merge->flag &= ~MERGE_FLAG_ADD;
+		if (!node1)
+		{
+			if ((node->link) && (node->link->prev) && (node->link->next))
+			{
+				merge->flag &= ~MERGE_FLAG_ADD;
+				dialog_message ("No free links on this node left.");
+			}
+			else
+				node1 = node;
+			return 0;
+		}
+		else
+		{
+			merge->flag &= ~MERGE_FLAG_ADD;
+			if ((node->link) && (node->link->prev) && (node->link->next))
+				dialog_message ("No free links on this node left.");
+			else
+			{
+				/* Add link node1 -> node */
+				if (((node ->link) && (merge_is_id_in_list (node1->id, node ->link))) ||
+				    ((node1->link) && (merge_is_id_in_list (node ->id, node1->link))) ||
+				    (node1->id == node->id))
+				{
+					dialog_message ("Forbidden, two resonances from the "
+							"same list would be in the same link group.");
+					node1 = NULL;
+					return 0;
+				}
+
+				if (node->link && node1->link)
+				{
+					/* Connect two link lists */
+					merge_draw_remove (node ->link);
+					merge_draw_remove (node1->link);
+					g_ptr_array_remove (merge->links, g_list_first (node ->link));
+					g_ptr_array_remove (merge->links, g_list_first (node1->link));
+					newlist = g_list_first (node->link);
+					newlist = g_list_concat (newlist, g_list_first (node1->link));
+				}
+				else if (node->link)
+				{
+					/* Second node already has a list */
+					merge_draw_remove (node->link);
+					g_ptr_array_remove (merge->links, g_list_first (node->link));
+					newlist = g_list_first (node->link);
+					newlist = g_list_append (newlist, node1);
+					node1->link = g_list_last (newlist);
+				}
+				else if (node1->link)
+				{
+					/* First node already has a list */
+					merge_draw_remove (node1->link);
+					g_ptr_array_remove (merge->links, g_list_first (node1->link));
+					newlist = g_list_first (node1->link);
+					newlist = g_list_append (newlist, node);
+					node->link = g_list_last (newlist);
+				}
+				else
+				{
+					/* New list out of node and node1 */
+					newlist = g_list_append (NULL, node);
+					node->link = g_list_last (newlist);
+					newlist = g_list_append (newlist, node1);
+					node1->link = g_list_last (newlist);
+				}
+
+				newlist = g_list_sort (newlist, merge_link_compare);
+				g_ptr_array_add (merge->links, newlist);
+				merge_draw_link (newlist);
+				gtk_spect_vis_redraw (spectvis);
+
+				/* Update link information of each node */
+				while (newlist)
+				{
+					((MergeNode *) newlist->data)->link = newlist;
+					newlist = g_list_next (newlist);
+				}
+			}
+			node1 = NULL;
+		}
+
 		return 0;
 	}
+	else
+		if (node1)
+			node1 = NULL;
 
-	if (glob->merge->flag & MERGE_FLAG_DEL)
+	if (merge->flag & MERGE_FLAG_DEL)
 	{
-		printf ("delete\n");
+		merge->flag &= ~MERGE_FLAG_DEL;
+		node = (MergeNode *) merge->nearnode;
+		if (!node)
+		{
+			dialog_message ("You are not close enough to a resonance node point.");
+			return 0;
+		}
 
-		glob->merge->flag &= ~MERGE_FLAG_DEL;
+		/* Identify link to delete */
+		if (*yval - (gdouble) node->id > 0.0)
+		{
+			/* Link to a node with a bigger id */
+			if (!(MergeNode *) g_list_next (node->link))
+			{
+				dialog_message ("There is no link here that can be deleted.");
+				return 0;
+			}
+			merge_delete_link_node (node, 1);
+		}
+		else
+		{
+			/* Link to a node with a smaller id */
+			if (!(MergeNode *) g_list_previous (node->link))
+			{
+				dialog_message ("There is no link here that can be deleted.");
+				return 0;
+			}
+			merge_delete_link_node (node, 2);
+		}
+		
+		gtk_spect_vis_redraw (spectvis);
+		merge->nearnode = NULL;
+
 		return 0;
 	}
 	
@@ -689,51 +817,207 @@ gint merge_handle_value_selected (GtkSpectVis *spectvis, gdouble *xval, gdouble 
 	return 0;
 }
 
+/* Keep track of the cursor to find interesting points */
+gboolean merge_motion_notify (GtkWidget *widget, GdkEventMotion *event)
+{
+	MergeWin *merge = glob->merge;
+	GPtrArray *nodes;
+	GtkSpectVis *graph;
+	GtkSpectVisViewport *view;
+	gint xpix, ypix, i, diff, lastdiff, id = -1;
+	gdouble pos;
+
+	if (!((merge->flag & MERGE_FLAG_ADD) || (merge->flag & MERGE_FLAG_DEL)))
+		return FALSE;
+	
+	g_return_val_if_fail (GTK_IS_SPECTVIS (widget), FALSE);
+	graph = GTK_SPECTVIS (widget);
+	view = graph->view;
+
+	if ((!view) || (!merge->nodelist->len))
+	{
+		merge_undisplay_node_selection ();
+		merge->nearnode = NULL;
+		return FALSE;
+	}
+
+	/* Get a nodelist id */
+	for (pos=0.75; pos < (gdouble)merge->nodelist->len + 0.6; pos+=0.5)
+	{
+		ypix = view->graphboxyoff - (gdouble) view->graphboxheight / (view->ymax - view->ymin) * (pos - view->ymin);
+		if (abs (ypix - (gint) event->y) < 4)
+		{
+			id = (gint) floor (pos+0.5) - 1;
+			break;
+		}
+	}
+
+	if (id == -1)
+	{
+		merge_undisplay_node_selection ();
+		merge->nearnode = NULL;
+		return FALSE;
+	}
+
+	/* Get the number of the node in the list */
+	nodes = g_ptr_array_index (merge->nodelist, id);
+	i = 0;
+	diff = 65000;
+	lastdiff = 65001;
+	while ((lastdiff >= diff) && (i < nodes->len))
+	{
+		lastdiff = diff;
+		xpix = view->graphboxxoff + (gdouble) view->graphboxwidth / (view->xmax - view->xmin) 
+			* (((MergeNode *) g_ptr_array_index (nodes, i))->res->frq - view->xmin);
+		diff = abs (xpix - (gint) event->x);
+
+		if (diff < 4)
+			break;
+
+		i++;
+	}
+
+	if (diff >= 4)
+	{
+		merge_undisplay_node_selection ();
+		merge->nearnode = NULL;
+		return FALSE;
+	}
+
+	if ((!merge->nearnode) || (merge->nearnode != (void *) g_ptr_array_index (nodes, i)))
+	{
+		merge_undisplay_node_selection ();
+		gdk_draw_rectangle (widget->window, graph->cursorgc, FALSE, xpix-3, ypix-3, 6, 6);
+		merge->selx = xpix;
+		merge->sely = ypix;
+	}
+
+	/* remember closest node */
+	merge->nearnode = (void *) g_ptr_array_index (nodes, i);
+
+	return FALSE;
+}
+
+/* Undisplay the selection box when leaving the area */
+gboolean merge_leave_notify (GtkWidget *widget, GdkEventMotion *event)
+{
+	merge_undisplay_node_selection ();
+	return FALSE;
+}
+
+/* Undisplay the selection box */
+static void merge_undisplay_node_selection ()
+{
+	MergeWin *merge;
+	GtkSpectVis *graph;
+
+	if (!glob->merge)
+		return;
+	merge = glob->merge;
+
+	if (merge->selx < 0)
+		return;
+	
+	graph = GTK_SPECTVIS (glade_xml_get_widget (merge->xmlmerge, "merge_spectvis"));
+
+	gdk_draw_rectangle (GTK_WIDGET (graph)->window, graph->cursorgc, FALSE, 
+			merge->selx-3, merge->sely-3, 6, 6);
+
+	merge->selx = -1;
+}
+
 /********** Basic link and node handling *************************************/
 
-/* Takes a node and removes all links associated with it.
- * Returns the next GList element of NULL if the list has been deleted. */
-static GList* merge_delete_link_node (MergeNode *node)
+/* Takes a node and removes links associated with it, determined by type.
+ * type == 0: remove both links and reconnect other nodes
+ * type == 1: remove link to next node, do not reconnect
+ * type == 2: remove link to previous node, no not reconnect
+ * Returns the next GList element or NULL if this is not possible. */
+static GList* merge_delete_link_node (MergeNode *node, gint type)
 {
-	GList *linkiter, *newlisthead, *nextiter;
+	GList *linkiter, *newlist1, *nextiter, *previter, *newlist2 = NULL;
 	
 	g_return_val_if_fail (node, FALSE);
 
 	if (node->link)
 	{
 		/* Remove node link from graph */
-		merge_draw_remove_node (node);
+		merge_draw_remove_node (node, type);
 
 		/* Remove link from glob->merge->links as the start may change */
-		g_ptr_array_remove (glob->merge->links, node->link);
+		newlist1 = g_list_first (node->link);
+		g_ptr_array_remove (glob->merge->links, newlist1);
 		
 		/* Find position of node in list (node->link is the head) */
-		linkiter = g_list_find (node->link, node);
+		linkiter = node->link;
 		nextiter = g_list_next (linkiter);
-		
-		/* Remove node from list */
-		newlisthead = g_list_delete_link (node->link, linkiter);
-		g_return_val_if_fail (g_list_length (newlisthead), FALSE);
+		previter = g_list_previous (linkiter);
 
-		/* Has the list become too short? */
-		if (g_list_length (newlisthead) == 1)
+		if (type == 0)
+		{
+			/* Remove node from list */
+			newlist1 = g_list_delete_link (g_list_first (node->link), linkiter);
+			node->link = NULL;
+		}
+		if ((type == 1) && nextiter)
+		{
+			/* Cut link to next node */
+			linkiter->next = NULL;
+			nextiter->prev = NULL;
+			newlist2 = nextiter;
+		}
+		if ((type == 2) && previter)
+		{
+			/* Cut link to previous node */
+			previter->next = NULL;
+			linkiter->prev = NULL;
+			newlist2 = linkiter;
+		}
+		
+		if (newlist2)
+		{
+			/* Handle second part of the list */
+			if (g_list_length (newlist2) < 2)
+			{
+				/* The second half of the old list is now too short */
+				((MergeNode *) newlist2->data)->link = NULL;
+				g_list_free (newlist2);
+				nextiter = NULL;
+			}
+			else
+			{
+				/* Add new list to merge->links */
+				g_ptr_array_add (glob->merge->links, newlist2);
+
+				/* Update link information of each node */
+				linkiter = newlist2;
+				while (linkiter)
+				{
+					((MergeNode *) linkiter->data)->link = linkiter;
+					linkiter = g_list_next (linkiter);
+				}
+			}
+		}
+
+		/* Has the first list become too short? */
+		if (g_list_length (newlist1) < 2)
 		{
 			/* Yes, only one node left -> delete it*/
-			g_list_free (newlisthead);
-
-			return NULL;
+			((MergeNode *) newlist1->data)->link = NULL;
+			g_list_free (newlist1);
+			if (type == 0)
+				nextiter = NULL;
 		}
 		else
 		{
 			/* Add new list to merge->links */
-			g_ptr_array_add (glob->merge->links, newlisthead);
+			g_ptr_array_add (glob->merge->links, newlist1);
 
 			/* Update link information of each node */
-			linkiter = newlisthead;
+			linkiter = newlist1;
 			while (linkiter)
 			{
-				((MergeNode *) linkiter->data)->link = newlisthead;
-
+				((MergeNode *) linkiter->data)->link = linkiter;
 				linkiter = g_list_next (linkiter);
 			}
 		}
@@ -746,50 +1030,55 @@ static GList* merge_delete_link_node (MergeNode *node)
 }
 
 /* Removes graphical links associated with a given node and reconnects
- * neighbouring nodes instead */
-static void merge_draw_remove_node (MergeNode *node)
+ * neighbouring nodes instead if type == 0. */
+static void merge_draw_remove_node (MergeNode *node, gint type)
 {
 	GList *curiter, *previter, *nextiter;
+	MergeNode *prevnode = NULL, *nextnode = NULL;
 	GtkSpectVis *graph;
 	GdkColor color;
 	gdouble *X, *Y;
 
 	graph = GTK_SPECTVIS (glade_xml_get_widget (glob->merge->xmlmerge, "merge_spectvis"));
 
-	curiter  = g_list_find (node->link, node);
+	curiter  = node->link;
 	previter = g_list_previous (curiter);
 	nextiter = g_list_next (curiter);
 
-	if (node->guid1)
+	if (node->guid1 && (type != 2))
 	{
+		/* Remove graph to next node */
 		gtk_spect_vis_polygon_remove (graph, node->guid1, TRUE);
-		((MergeNode *) nextiter->data)->guid2 = 0;
+		nextnode = (MergeNode *) nextiter->data;
+		nextnode->guid2 = 0;
+		node->guid1 = 0;
 	}
-	if (node->guid2)
+	if (node->guid2 && (type != 1))
 	{
+		/* Remove graph to previous node */
 		gtk_spect_vis_polygon_remove (graph, node->guid2, TRUE);
-		((MergeNode *) previter->data)->guid1 = 0;
+		prevnode = (MergeNode *) previter->data;
+		prevnode->guid1 = 0;
+		node->guid2 = 0;
 	}
 
-	node->guid1 = node->guid2 = 0;
-
-	if (previter && nextiter)
+	if (prevnode && nextnode && (type == 0))
 	{
 		/* Node is in the middle of a link -> reconnect */
-		color.red   = 65535/255*228;
-		color.green = 65535/255*22;
-		color.blue  = 65535/255*172;
+		color.red   = MERGE_LINK_R;
+		color.green = MERGE_LINK_G;
+		color.blue  = MERGE_LINK_B;
 		
 		X = g_new (gdouble, 2);
 		Y = g_new (gdouble, 2);
 
-		X[0] = ((MergeNode *) previter->data)->res->frq;
-		X[1] = ((MergeNode *) nextiter->data)->res->frq;
-		Y[0] = ((MergeNode *) previter->data)->id + 0.25;
-		Y[1] = ((MergeNode *) nextiter->data)->id - 0.25;
+		X[0] = prevnode->res->frq;
+		X[1] = nextnode->res->frq;
+		Y[0] = prevnode->id + 0.25;
+		Y[1] = nextnode->id - 0.25;
 
-		((MergeNode *) curiter->data )->guid1 = gtk_spect_vis_polygon_add (graph, X, Y, 2, color, 'l');
-		((MergeNode *) nextiter->data)->guid2 = ((MergeNode *) curiter->data)->guid1;
+		prevnode->guid1 = gtk_spect_vis_polygon_add (graph, X, Y, 2, color, 'l');
+		nextnode->guid2 = ((MergeNode *) curiter->data)->guid1;
 	}
 }
 
@@ -797,38 +1086,50 @@ static void merge_draw_remove_node (MergeNode *node)
 static void merge_draw_remove_all ()
 {
 	GtkSpectVis *graph;
-	GList *curiter, *previter, *nextiter;
-	MergeNode *node;
 	gint i;
 
 	graph = GTK_SPECTVIS (glade_xml_get_widget (glob->merge->xmlmerge, "merge_spectvis"));
 	
 	for (i=0; i<glob->merge->links->len; i++)
+		merge_draw_remove ((GList *) g_ptr_array_index (glob->merge->links, i));
+}
+
+/* Remove one link from the graph */
+static void merge_draw_remove (GList *link)
+{
+	GtkSpectVis *graph;
+	MergeNode *node;
+	GList *curiter, *previter, *nextiter;
+	
+	if (!link)
+		return;
+
+	graph = GTK_SPECTVIS (glade_xml_get_widget (glob->merge->xmlmerge, "merge_spectvis"));
+	
+	curiter = g_list_first (link);
+	while (curiter)
 	{
-		curiter = (GList *) g_ptr_array_index (glob->merge->links, i);
-		while (curiter)
+		node = (MergeNode *) curiter->data;
+
+		curiter  = node->link;
+		previter = g_list_previous (curiter);
+		nextiter = g_list_next (curiter);
+
+		if (node->guid1)
 		{
-			node = (MergeNode *) curiter->data;
-
-			curiter  = g_list_find (node->link, node);
-			previter = g_list_previous (curiter);
-			nextiter = g_list_next (curiter);
-
-			if (node->guid1)
-			{
-				gtk_spect_vis_polygon_remove (graph, node->guid1, TRUE);
-				((MergeNode *) nextiter->data)->guid2 = 0;
-			}
-			if (node->guid2)
-			{
-				gtk_spect_vis_polygon_remove (graph, node->guid2, TRUE);
-				((MergeNode *) previter->data)->guid1 = 0;
-			}
-
-			node->guid1 = node->guid2 = 0;
-			
-			curiter = g_list_next (curiter);
+			gtk_spect_vis_polygon_remove (graph, node->guid1, TRUE);
+			((MergeNode *) nextiter->data)->guid2 = 0;
 		}
+
+		if (node->guid2)
+		{
+			gtk_spect_vis_polygon_remove (graph, node->guid2, TRUE);
+			((MergeNode *) previter->data)->guid1 = 0;
+		}
+
+		node->guid1 = node->guid2 = 0;
+
+		curiter = g_list_next (curiter);
 	}
 }
 
@@ -846,9 +1147,9 @@ static gboolean merge_draw_link (GList *link)
 
 	graph = GTK_SPECTVIS (glade_xml_get_widget (glob->merge->xmlmerge, "merge_spectvis"));
 
-	color.red   = 65535/255*228;
-	color.green = 65535/255*22;
-	color.blue  = 65535/255*172;
+	color.red   = MERGE_LINK_R;
+	color.green = MERGE_LINK_G;
+	color.blue  = MERGE_LINK_B;
 	
 	while ((link) && (nextlink = g_list_next (link)))
 	{
@@ -891,18 +1192,38 @@ static gint merge_link_compare (gconstpointer a_in, gconstpointer b_in)
 		return 0;
 }
 
+/* Return TRUE if a node with id is found in list */
+static gboolean merge_is_id_in_list (guint id, GList *list)
+{
+	GList *iter;
+
+	if ((!list) || (id == 0))
+		return FALSE;
+
+	iter = g_list_first (list);
+	while (iter)
+	{
+		if (id == ((MergeNode *) iter->data)->id)
+			return TRUE;
+		iter = g_list_next (iter);
+	}
+
+	return FALSE;
+}
+
 /********** Automatic merger *************************************************/
 
 /* Does the main automatic merge voodoo */
 static void merge_automatic_merge ()
 {
 	MergeWin *merge;
-	GPtrArray *curnodelist;
+	GPtrArray *curnodelist, *trynodelist;
 	GList *candidates, *canditer, *itertmp;
 	Resonance *res;
-	gint i, j;
-	gdouble minwidth, avgfrq;
+	gint i, j, k, l;
+	gdouble minwidth, avgfrq, deltafrq, diff;
 	gboolean flag = FALSE;
+	MergeNode *node;
 
 	g_return_if_fail (glob->merge);
 	merge = glob->merge;
@@ -925,72 +1246,101 @@ static void merge_automatic_merge ()
 			/* Preprend current node to list */
 			candidates = g_list_insert (candidates, g_ptr_array_index (curnodelist, j), 0);
 			
-	/*
-	printf ("new link candidate: ");
+			/* Remove resonances that have another nearer neighbour in the other datasets */
 			canditer = candidates;
-			do {
-	printf("%d, %d, %e\t", 
-				((MergeNode *) canditer->data)->id,
-				((MergeNode *) canditer->data)->num,
-				((MergeNode *) canditer->data)->res->frq);
-			} while ((canditer = g_list_next (canditer)));
-	printf ("\n");
-	*/
+			while (canditer)
+			{
+				node = (MergeNode *) canditer->data;
 
-			minwidth = merge_get_minwidth (candidates) * 0.5;
-			avgfrq   = merge_get_avgfrq   (candidates);
-	//printf("minwidth %e, avgfrq %e\n", minwidth, avgfrq);
+				/* Get closest frq difference in candidates list */
+				deltafrq = 1e50;
+				itertmp = candidates;
+				do {
+					if (itertmp == canditer)
+						continue;
+					
+					diff = fabs (node->res->frq - 
+							((MergeNode *) itertmp->data)->res->frq);
+					
+					if (diff < deltafrq)
+						deltafrq = diff;
+				} while ((itertmp = g_list_next (itertmp)));
+				deltafrq -= 1e-10; /* prevent rounding errors */
 
-			/* Get close lying, unlinked resonances from the candidates */
-			canditer = candidates;
-			do {
-				res  = ((MergeNode *) canditer->data)->res;
-				flag = FALSE;
-
-				if ((fabs (res->frq - avgfrq) > minwidth) ||
-				    (((MergeNode *) canditer->data)->link))
+				/* Is there another closer neighbour? */
+				for (k=0; k<merge->nodelist->len; k++)
 				{
-					/* Too far away or already linked */
-					itertmp    = canditer;
-					canditer   = g_list_next (canditer);
-					candidates = g_list_delete_link (candidates, itertmp);
-
-					if ((!canditer) || (!candidates))
-						break;
-
-					flag = TRUE; /* We are already at the next link */
-
-					if (res->width == minwidth)
+					if (k+1 == node->id)
+						continue;
+					
+					trynodelist = (GPtrArray *) g_ptr_array_index (merge->nodelist, k);
+					for (l=0; l<trynodelist->len; l++)
 					{
-						/* Need to recalculate minwidth */
-						minwidth = merge_get_minwidth (candidates) * 0.5;
+						if (fabs (node->res->frq - ((MergeNode *) g_ptr_array_index (trynodelist, l))->res->frq) < deltafrq)
+						{
+							deltafrq = -1.0;
+							l = trynodelist->len;
+							k = merge->nodelist->len;
+						}
 					}
-
-					avgfrq = merge_get_avgfrq (candidates);
 				}
+
+				if (deltafrq < -0.5)
+				{
+					/* Found another resonance which lies closer */
+					itertmp = canditer;
+					canditer = g_list_next (canditer);
+					candidates = g_list_delete_link (candidates, itertmp);
+				}
+				else
+					canditer = g_list_next (canditer);
+				
 			}
-			while ((flag) || (canditer = g_list_next (canditer)));
+
+			if ((candidates) && (g_list_length (candidates) > 1))
+			{
+				minwidth = merge_get_minwidth (candidates) * 0.5;
+				avgfrq   = merge_get_avgfrq   (candidates);
+
+				/* Get close lying, unlinked resonances from the candidates */
+				canditer = candidates;
+				do {
+					res  = ((MergeNode *) canditer->data)->res;
+					flag = FALSE;
+
+					if ((fabs (res->frq - avgfrq) > minwidth) ||
+							(((MergeNode *) canditer->data)->link))
+					{
+						/* Too far away or already linked */
+						itertmp    = canditer;
+						canditer   = g_list_next (canditer);
+						candidates = g_list_delete_link (candidates, itertmp);
+
+						if ((!canditer) || (!candidates))
+							break;
+
+						flag = TRUE; /* We are already at the next link */
+
+						if (res->width == minwidth)
+							/* Need to recalculate minwidth */
+							minwidth = merge_get_minwidth (candidates) * 0.5;
+
+						avgfrq = merge_get_avgfrq (candidates);
+					}
+				}
+				while ((flag) || (canditer = g_list_next (canditer)));
+			}
 
 			if ((candidates) && (g_list_length (candidates) > 1))
 			{
 				/* Mark candidates as linked */
-	//printf ("new link: ");
 				canditer = candidates;
-				((MergeNode *) canditer->data)->link = candidates;
 				do 
-				{
-					((MergeNode *) canditer->data)->link = candidates;
-	/*
-	printf("%d, %d\t", 
-			((MergeNode *) canditer->data)->id,
-			((MergeNode *) canditer->data)->num);
-	*/
-				}
+					((MergeNode *) canditer->data)->link = canditer;
 				while ((canditer = g_list_next (canditer)));
-	//printf ("\n");
 
 				/* Sort the list */
-				g_list_sort (candidates, merge_link_compare);
+				candidates = g_list_sort (candidates, merge_link_compare);
 				
 				/* Add candidates to links list */
 				g_ptr_array_add (merge->links, candidates);
@@ -1026,10 +1376,9 @@ static GList* merge_get_closest (gdouble frq, gint depth)
 		while ((i < curnodelist->len) &&
 		       (((MergeNode *) g_ptr_array_index (curnodelist, i))->res->frq < frq))
 			i++;
-		/* "i" now points to the resonance with a bigger 
-		 * frequency or to the end of the list */
+		/* "i" now points to the resonance with a bigger * frequency or to the end of the list */
 
-		if (i < curnodelist->len) //((MergeNode *) g_ptr_array_index (curnodelist, i))->res->frq >= frq)
+		if (i < curnodelist->len)
 		{
 			/* OK, we're really at a larger (or equal) frequency. */
 

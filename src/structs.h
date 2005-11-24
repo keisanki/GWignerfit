@@ -193,7 +193,9 @@ typedef struct
 	GPtrArray *datafilename;	/* Array with associated datafilenames */
 	GPtrArray *graphuid;		/* Array with graph uids */
 	GPtrArray *links;		/* Links between the "same" resonances */
+	void *nearnode;			/* The nearest MergeNode the cursor points to */
 	guint flag;			/* A flag to identify click events */
+	gint selx, sely;		/* Coordinates of selection marker */
 } MergeWin;
 
 typedef struct
