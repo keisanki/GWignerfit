@@ -476,10 +476,13 @@ gboolean select_section_dialog (gchar *selected_filename, gchar *default_section
 		glob->resonancefile = selected_filename;
 	}
 
+	line[255] = '\0';
 	while (!feof(datafile)) {
 		fgets(line, 255, datafile);
-		if (line[strlen(line)-1] == '\n') line[strlen(line)-1] = '\0'; /* strip final \n */
-		if (line[strlen(line)-1] == '\r') line[strlen(line)-1] = '\0'; /* strip final \r */
+		if ((strlen(line)) && (line[strlen(line)-1] == '\n'))
+			line[strlen(line)-1] = '\0'; /* strip final \n */
+		if ((strlen(line)) && (line[strlen(line)-1] == '\r'))
+			line[strlen(line)-1] = '\0'; /* strip final \r */
 		pos++;
 
 		if (strlen(line) > 254) {

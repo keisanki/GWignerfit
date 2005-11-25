@@ -13,8 +13,9 @@
 #include "processdata.h"
 #include "gtkspectvis.h"
 
-#define MERGE_FLAG_ADD (1 << 0)
-#define MERGE_FLAG_DEL (1 << 1)
+#define MERGE_FLAG_ADD  (1 << 0)
+#define MERGE_FLAG_DEL  (1 << 1)
+#define MERGE_FLAG_MARK (1 << 2)
 
 #define MERGE_NODE_R 0
 #define MERGE_NODE_G 0
@@ -61,6 +62,8 @@ static gboolean merge_draw_link (GList *link);
 static void merge_undisplay_node_selection ();
 static gboolean merge_is_id_in_list (guint id, GList *list);
 static void merge_draw_remove (GList *link);
+static GArray* merge_gather_reslist ();
+static void merge_highlight_width (MergeNode *node);
 
 /* Display number of resonances in list on treeview */
 void merge_show_numres (GtkTreeViewColumn *col, GtkCellRenderer *renderer, 
@@ -136,6 +139,7 @@ void merge_open_win ()
 			NULL);
 	gtk_tree_view_column_set_resizable (column, TRUE);
 	gtk_tree_view_column_set_sort_column_id (column, -1);
+	gtk_tree_view_column_set_expand (column, TRUE);
 	gtk_tree_view_append_column (GTK_TREE_VIEW (treeview), column);
 
 	/* NUMRES_COL */
@@ -157,8 +161,9 @@ void merge_open_win ()
 	gtk_spect_vis_set_axisscale (graph, 1e9, 1);
 }
 
-/* Close the merge window, and free all allocated memory components */
-void merge_purge ()
+/* Close the merge window (if free_only == FALSE), 
+ * and free all allocated memory components */
+void merge_purge (gboolean free_only)
 {
 	MergeWin *merge;
 	GPtrArray *curnodelist;
@@ -175,6 +180,8 @@ void merge_purge ()
 
 	/* Free polygon data by removing it */
 	merge_draw_remove_all ();
+
+	merge_highlight_width (NULL);
 	
 	for (i=0; i<merge->nodelist->len; i++)
 	{
@@ -182,13 +189,17 @@ void merge_purge ()
 		curnodelist = g_ptr_array_index (merge->nodelist, i);
 		for (j=0; j<curnodelist->len; j++) 
 			g_free (((MergeNode *) g_ptr_array_index (curnodelist, j))->res);
+		g_ptr_array_foreach (curnodelist, (GFunc) g_free, NULL);
 		g_ptr_array_free (curnodelist, TRUE);
 
 		/* Free graph data */
 		uid = GPOINTER_TO_INT (g_ptr_array_index (merge->graphuid, i));
 		data = gtk_spect_vis_get_data_by_uid (graph, uid);
-		g_free (data->X);
-		g_free (data->Y);
+		if (data)
+		{
+			g_free (data->X);
+			g_free (data->Y);
+		}
 	}
 	g_ptr_array_free (merge->nodelist, TRUE);
 
@@ -202,7 +213,7 @@ void merge_purge ()
 	g_ptr_array_free (merge->links, TRUE);
 	
 	/* Destroy widgets */
-	if (merge->xmlmerge)
+	if ((merge->xmlmerge) && (!free_only))
 	{
 		gtk_widget_destroy (glade_xml_get_widget (merge->xmlmerge, "merge_spectvis"));
 		gtk_widget_destroy (glade_xml_get_widget (merge->xmlmerge, "merge_win"));
@@ -212,11 +223,15 @@ void merge_purge ()
 	if (merge->store)
 	{
 		gtk_list_store_clear (merge->store);
-		merge->store = NULL;
+		if (!free_only)
+			merge->store = NULL;
 	}
 
-	g_free (merge);
-	glob->merge = NULL;
+	if (!free_only)
+	{
+		g_free (merge);
+		glob->merge = NULL;
+	}
 }
 
 /* Add a *reslist and a *datafilename to the graph, treeview and struct */
@@ -437,7 +452,35 @@ static void merge_zoom_x_all ()
 /* Close the merge_win */
 gboolean on_merge_close_activate (GtkWidget *button)
 {
-	merge_purge ();
+	merge_purge (FALSE);
+	return TRUE;
+}
+
+/* Clear everything so that the user gets its new start. */
+gboolean on_merge_new_activate (GtkWidget *button)
+{
+	MergeWin *merge = glob->merge;
+	GtkSpectVis *graph;
+	gint i;
+
+	graph = GTK_SPECTVIS (glade_xml_get_widget (merge->xmlmerge, "merge_spectvis"));
+
+	for (i=0; i<merge->graphuid->len; i++)
+		gtk_spect_vis_data_remove (graph, 
+				GPOINTER_TO_INT (g_ptr_array_index (merge->graphuid, i)));
+
+	merge_draw_remove_all ();
+	
+	merge_purge (TRUE);
+	merge_undisplay_node_selection ();
+
+	glob->merge->nodelist     = g_ptr_array_new ();
+	glob->merge->datafilename = g_ptr_array_new ();
+	glob->merge->graphuid     = g_ptr_array_new ();
+	glob->merge->links        = g_ptr_array_new ();
+
+	gtk_spect_vis_redraw (graph);
+
 	return TRUE;
 }
 
@@ -476,11 +519,71 @@ gboolean on_merge_add_list_activate (GtkWidget *button)
 
 	name = g_strdup_printf ("%s:%s", filename, section);
 	merge_add_reslist (reslist, datafilename, name);
+	g_free (name);
 	/* reslist must not be freed here */
 	
 	g_free (section);
 	g_free (filename);
 	return TRUE;
+}
+
+/* Save merged resonance list */
+gboolean on_merge_save_activate (GtkWidget *button)
+{
+	gchar *filename, *datafile, *path = NULL;
+	GtkTreeModel *model = GTK_TREE_MODEL (glob->merge->store);
+	GtkTreeIter iter;
+	GArray *reslist;
+	FILE *outfile;
+	guint i;
+
+	path = get_defaultname (NULL);
+	filename = get_filename ("Select file for new resonance list", path, 2);
+	g_free (path);
+
+	if (!filename)
+		return FALSE;
+
+	/* Compile the merged resonance list */
+	reslist = merge_gather_reslist ();
+
+	if (!reslist->len)
+	{
+		g_free (filename);
+		dialog_message ("No resonances to export?!?");
+		return FALSE;
+	}
+
+	outfile = fopen (filename, "w");
+	g_free (filename);
+
+	if (!outfile)
+	{
+		dialog_message ("Could not open output file for writing.");
+		g_array_free (reslist, TRUE);
+		return FALSE;
+	}
+
+	fprintf (outfile, "# Merged resonance list created with GWignerFit\r\n");
+	fprintf (outfile, "#\r\n# Source datasets:\r\n");
+
+	gtk_tree_model_get_iter_first (model, &iter);
+	do
+	{
+		gtk_tree_model_get (model, &iter, MERGE_LIST_COL, &datafile, -1);
+		fprintf (outfile, "# %s\r\n", datafile);
+	}
+	while (gtk_tree_model_iter_next (model, &iter));
+	
+	fprintf (outfile, "#\r\n# ID\t   f [Hz]\r\n");
+
+	for (i=0; i<reslist->len; i++)
+		fprintf (outfile, "%4d\t%13.1f\r\n", i+1, g_array_index (reslist, gdouble, i));
+
+	fclose (outfile);
+	g_array_free (reslist, TRUE);
+	
+	return FALSE;
 }
 
 /* Remove the selected resonance list */
@@ -598,6 +701,7 @@ gboolean on_merge_remove_list_activate (GtkWidget *button)
 	curnodelist = g_ptr_array_index (merge->nodelist, id);
 	for (i=0; i<curnodelist->len; i++) 
 		g_free (((MergeNode *) g_ptr_array_index (curnodelist, i))->res);
+	g_ptr_array_foreach (curnodelist, (GFunc) g_free, NULL);
 	g_ptr_array_free (curnodelist, TRUE);
 
 	g_free (g_ptr_array_index (merge->datafilename, id));
@@ -629,6 +733,7 @@ gboolean on_merge_add_link_activate (GtkWidget *button)
 {
 	glob->merge->flag |= MERGE_FLAG_ADD;
 	glob->merge->flag &= ~MERGE_FLAG_DEL;
+	glob->merge->flag &= ~MERGE_FLAG_MARK;
 	
 	return TRUE;
 }
@@ -638,6 +743,7 @@ gboolean on_merge_delete_link_activate (GtkWidget *button)
 {
 	glob->merge->flag |= MERGE_FLAG_DEL;
 	glob->merge->flag &= ~MERGE_FLAG_ADD;
+	glob->merge->flag &= ~MERGE_FLAG_MARK;
 	
 	return TRUE;
 }
@@ -653,6 +759,16 @@ gboolean on_merge_find_links_activate (GtkWidget *button)
 	
 	merge_automatic_merge ();
 
+	return TRUE;
+}
+
+/* Mark the next selected resonance width by a bar */
+gboolean on_merge_highlight_activate (GtkWidget *button)
+{
+	glob->merge->flag |= MERGE_FLAG_MARK;
+	glob->merge->flag &= ~MERGE_FLAG_ADD;
+	glob->merge->flag &= ~MERGE_FLAG_DEL;
+	
 	return TRUE;
 }
 
@@ -811,6 +927,16 @@ gint merge_handle_value_selected (GtkSpectVis *spectvis, gdouble *xval, gdouble 
 
 		return 0;
 	}
+
+	if (merge->flag & MERGE_FLAG_MARK)
+	{
+		merge->flag &= ~MERGE_FLAG_MARK;
+		node = (MergeNode *) merge->nearnode;
+
+		merge_highlight_width (node);
+
+		return 0;
+	}
 	
 	gtk_spect_vis_mark_point (spectvis, *xval, *yval);
 
@@ -827,7 +953,8 @@ gboolean merge_motion_notify (GtkWidget *widget, GdkEventMotion *event)
 	gint xpix, ypix, i, diff, lastdiff, id = -1;
 	gdouble pos;
 
-	if (!((merge->flag & MERGE_FLAG_ADD) || (merge->flag & MERGE_FLAG_DEL)))
+	if (!((merge->flag & MERGE_FLAG_ADD) || (merge->flag & MERGE_FLAG_DEL) ||
+	      (merge->flag & MERGE_FLAG_MARK)))
 		return FALSE;
 	
 	g_return_val_if_fail (GTK_IS_SPECTVIS (widget), FALSE);
@@ -1192,6 +1319,20 @@ static gint merge_link_compare (gconstpointer a_in, gconstpointer b_in)
 		return 0;
 }
 
+/* Compare two gdouble values */
+static gint merge_reslist_compare (gconstpointer a_in, gconstpointer b_in)
+{
+	const gdouble a = *(gdouble *) a_in;
+	const gdouble b = *(gdouble *) b_in;
+	
+	if (a < b)
+		return -1;
+	else if (a > b)
+		return +1;
+	else
+		return 0;
+}
+
 /* Return TRUE if a node with id is found in list */
 static gboolean merge_is_id_in_list (guint id, GList *list)
 {
@@ -1209,6 +1350,100 @@ static gboolean merge_is_id_in_list (guint id, GList *list)
 	}
 
 	return FALSE;
+}
+
+/* Calculates the average resonance frequency from a link list */
+static gdouble merge_avg_frq_from_link (GList *list)
+{
+	gdouble frq = 0.0, len;
+	
+	g_return_val_if_fail (list, -1);
+	
+	list = g_list_first (list);
+	len = (gdouble) g_list_length (list);
+	while (list)
+	{
+		frq += ((MergeNode *) list->data)->res->frq;
+		list = g_list_next (list);
+	}
+	frq /= len;
+
+	return frq;
+}
+
+/* Compile the merges resonance list and return it as a GArray */
+static GArray* merge_gather_reslist ()
+{
+	MergeWin *merge = glob->merge;
+	MergeNode *node;
+	GPtrArray *list;
+	GArray *reslist;
+	gdouble frq;
+	guint i, j;
+
+	reslist = g_array_new (FALSE, FALSE, sizeof (gdouble));
+
+	for (i=0; i<merge->nodelist->len; i++)
+	{
+		list = g_ptr_array_index (merge->nodelist, i);
+		for (j=0; j<list->len; j++)
+		{
+			node = (MergeNode *) g_ptr_array_index (list, j);
+			if ((node->link) && (node->link->prev))
+				/* Node in the middle of a link -> ignore */
+				continue;
+			
+			if (node->link)
+				/* Node at the start of a link -> average */
+				frq = merge_avg_frq_from_link (node->link);
+			else
+				/* Single node -> take it */
+				frq = node->res->frq;
+
+			g_array_append_val (reslist, frq);
+		}
+	}
+
+	g_array_sort (reslist, merge_reslist_compare);
+
+	return reslist;
+}
+
+/* Mark the width of the resonance at node or disable mark if node == NULL */
+static void merge_highlight_width (MergeNode *node)
+{
+	static guint baruid = 0;
+	GtkSpectVis *graph;
+	GdkColor color;
+	gdouble width;
+	
+	graph = GTK_SPECTVIS (glade_xml_get_widget (glob->merge->xmlmerge, "merge_spectvis"));
+	g_return_if_fail (graph);
+
+	if (baruid)
+	{
+		gtk_spect_vis_remove_bar (graph, baruid);
+		baruid = 0;
+	}
+
+	if (node)
+	{
+		color.green = 62000;
+		color.blue  = color.red = 20000;
+
+		width = node->res->width / 1.5;
+		if (width > 1e9)
+		{
+			width = 1e9;
+			color.red   = 52000;
+			color.green = 10000;
+			color.blue  = 40000;
+		}
+
+		baruid = gtk_spect_vis_add_bar (graph, node->res->frq, width, color);
+	}
+
+	gtk_spect_vis_redraw (GTK_SPECTVIS (graph));
 }
 
 /********** Automatic merger *************************************************/

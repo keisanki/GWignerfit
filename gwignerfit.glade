@@ -643,6 +643,7 @@
 		      <property name="label" translatable="yes">Merge resonance lists</property>
 		      <property name="use_underline">True</property>
 		      <signal name="activate" handler="on_merge_resonancelists_activate" last_modification_time="Fri, 18 Nov 2005 08:48:55 GMT"/>
+		      <accelerator key="J" modifiers="GDK_CONTROL_MASK" signal="activate"/>
 		    </widget>
 		  </child>
 		</widget>
@@ -8438,7 +8439,7 @@ Please check and decide what to do.</property>
 
 <widget class="GtkWindow" id="merge_win">
   <property name="visible">True</property>
-  <property name="title" translatable="yes">Merge Resonances</property>
+  <property name="title" translatable="yes">Merge resonance lists</property>
   <property name="type">GTK_WINDOW_TOPLEVEL</property>
   <property name="window_position">GTK_WIN_POS_NONE</property>
   <property name="modal">False</property>
@@ -8492,7 +8493,7 @@ Please check and decide what to do.</property>
 		      <accelerator key="I" modifiers="GDK_CONTROL_MASK" signal="activate"/>
 
 		      <child internal-child="image">
-			<widget class="GtkImage" id="image1007">
+			<widget class="GtkImage" id="image1035">
 			  <property name="visible">True</property>
 			  <property name="stock">gtk-open</property>
 			  <property name="icon_size">1</property>
@@ -8514,7 +8515,7 @@ Please check and decide what to do.</property>
 		      <accelerator key="Delete" modifiers="0" signal="activate"/>
 
 		      <child internal-child="image">
-			<widget class="GtkImage" id="image1008">
+			<widget class="GtkImage" id="image1036">
 			  <property name="visible">True</property>
 			  <property name="stock">gtk-delete</property>
 			  <property name="icon_size">1</property>
@@ -8536,7 +8537,7 @@ Please check and decide what to do.</property>
 		      <accelerator key="S" modifiers="GDK_CONTROL_MASK" signal="activate"/>
 
 		      <child internal-child="image">
-			<widget class="GtkImage" id="image1009">
+			<widget class="GtkImage" id="image1037">
 			  <property name="visible">True</property>
 			  <property name="stock">gtk-save</property>
 			  <property name="icon_size">1</property>
@@ -8564,7 +8565,7 @@ Please check and decide what to do.</property>
 		      <accelerator key="W" modifiers="GDK_CONTROL_MASK" signal="activate"/>
 
 		      <child internal-child="image">
-			<widget class="GtkImage" id="image1010">
+			<widget class="GtkImage" id="image1038">
 			  <property name="visible">True</property>
 			  <property name="stock">gtk-close</property>
 			  <property name="icon_size">1</property>
@@ -8599,7 +8600,7 @@ Please check and decide what to do.</property>
 		      <accelerator key="A" modifiers="GDK_CONTROL_MASK" signal="activate"/>
 
 		      <child internal-child="image">
-			<widget class="GtkImage" id="image1011">
+			<widget class="GtkImage" id="image1039">
 			  <property name="visible">True</property>
 			  <property name="stock">gtk-add</property>
 			  <property name="icon_size">1</property>
@@ -8621,7 +8622,7 @@ Please check and decide what to do.</property>
 		      <accelerator key="D" modifiers="GDK_CONTROL_MASK" signal="activate"/>
 
 		      <child internal-child="image">
-			<widget class="GtkImage" id="image1012">
+			<widget class="GtkImage" id="image1040">
 			  <property name="visible">True</property>
 			  <property name="stock">gtk-remove</property>
 			  <property name="icon_size">1</property>
@@ -8640,11 +8641,47 @@ Please check and decide what to do.</property>
 		      <property name="label" translatable="yes">Automatic _merge</property>
 		      <property name="use_underline">True</property>
 		      <signal name="activate" handler="on_merge_find_links_activate" last_modification_time="Fri, 18 Nov 2005 08:36:54 GMT"/>
+		      <accelerator key="J" modifiers="GDK_CONTROL_MASK" signal="activate"/>
 
 		      <child internal-child="image">
-			<widget class="GtkImage" id="image1013">
+			<widget class="GtkImage" id="image1041">
 			  <property name="visible">True</property>
 			  <property name="stock">gtk-execute</property>
+			  <property name="icon_size">1</property>
+			  <property name="xalign">0.5</property>
+			  <property name="yalign">0.5</property>
+			  <property name="xpad">0</property>
+			  <property name="ypad">0</property>
+			</widget>
+		      </child>
+		    </widget>
+		  </child>
+		</widget>
+	      </child>
+	    </widget>
+	  </child>
+
+	  <child>
+	    <widget class="GtkMenuItem" id="merge_resonance">
+	      <property name="visible">True</property>
+	      <property name="label" translatable="yes">_Resonance</property>
+	      <property name="use_underline">True</property>
+
+	      <child>
+		<widget class="GtkMenu" id="merge_resonance_menu">
+
+		  <child>
+		    <widget class="GtkImageMenuItem" id="merge_highlight">
+		      <property name="visible">True</property>
+		      <property name="label" translatable="yes">_Highlight width</property>
+		      <property name="use_underline">True</property>
+		      <signal name="activate" handler="on_merge_highlight_activate" last_modification_time="Fri, 25 Nov 2005 08:19:13 GMT"/>
+		      <accelerator key="H" modifiers="GDK_CONTROL_MASK" signal="activate"/>
+
+		      <child internal-child="image">
+			<widget class="GtkImage" id="image1042">
+			  <property name="visible">True</property>
+			  <property name="stock">gtk-find</property>
 			  <property name="icon_size">1</property>
 			  <property name="xalign">0.5</property>
 			  <property name="yalign">0.5</property>
@@ -8686,6 +8723,8 @@ Please check and decide what to do.</property>
 		  <property name="last_modification_time">Fri, 18 Nov 2005 08:26:40 GMT</property>
 		  <signal name="viewport_changed" handler="merge_handle_viewport_changed" last_modification_time="Fri, 19 Nov 2004 09:45:04 GMT"/>
 		  <signal name="value_selected" handler="merge_handle_value_selected" last_modification_time="Mon, 21 Mar 2005 09:18:35 GMT"/>
+		  <signal name="motion_notify_event" handler="merge_motion_notify" last_modification_time="Mon, 21 Mar 2005 09:18:35 GMT"/>
+		  <signal name="leave_notify_event" handler="merge_leave_notify" last_modification_time="Mon, 21 Mar 2005 09:18:35 GMT"/>
 		</widget>
 	      </child>
 	    </widget>
