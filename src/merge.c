@@ -13,17 +13,18 @@
 #include "processdata.h"
 #include "gtkspectvis.h"
 
-#define MERGE_FLAG_ADD  (1 << 0)
-#define MERGE_FLAG_DEL  (1 << 1)
-#define MERGE_FLAG_MARK (1 << 2)
+#define MERGE_FLAG_ADD    (1 << 0)
+#define MERGE_FLAG_DEL    (1 << 1)
+#define MERGE_FLAG_MARK   (1 << 2)
+#define MERGE_FLAG_DELRES (1 << 3)
 
 #define MERGE_NODE_R 0
 #define MERGE_NODE_G 0
 #define MERGE_NODE_B 65535
 
-#define MERGE_LINK_R 65535/255*228
-#define MERGE_LINK_G 65535/255*22
-#define MERGE_LINK_B 65535/255*172
+#define MERGE_LINK_R 65535/255*200
+#define MERGE_LINK_G 65535/255*100
+#define MERGE_LINK_B 65535/255*0
 
 extern GlobalData *glob;
 extern GladeXML *gladexml;
@@ -64,6 +65,8 @@ static gboolean merge_is_id_in_list (guint id, GList *list);
 static void merge_draw_remove (GList *link);
 static GArray* merge_gather_reslist ();
 static void merge_highlight_width (MergeNode *node);
+static MergeNode* merge_get_nearnode (gint xpos, gint ypos, gint *xpix, gint *ypix);
+void merge_statusbar_message (gchar *format, ...);
 
 /* Display number of resonances in list on treeview */
 void merge_show_numres (GtkTreeViewColumn *col, GtkCellRenderer *renderer, 
@@ -535,6 +538,7 @@ gboolean on_merge_save_activate (GtkWidget *button)
 	GtkTreeIter iter;
 	GArray *reslist;
 	FILE *outfile;
+	gchar *date;
 	guint i;
 
 	path = get_defaultname (NULL);
@@ -564,8 +568,11 @@ gboolean on_merge_save_activate (GtkWidget *button)
 		return FALSE;
 	}
 
+	date = get_timestamp ();
 	fprintf (outfile, "# Merged resonance list created with GWignerFit\r\n");
+	fprintf (outfile, "# Date: %s\r\n", date);
 	fprintf (outfile, "#\r\n# Source datasets:\r\n");
+	g_free (date);
 
 	gtk_tree_model_get_iter_first (model, &iter);
 	do
@@ -581,8 +588,10 @@ gboolean on_merge_save_activate (GtkWidget *button)
 		fprintf (outfile, "%4d\t%13.1f\r\n", i+1, g_array_index (reslist, gdouble, i));
 
 	fclose (outfile);
-	g_array_free (reslist, TRUE);
+
+	merge_statusbar_message ("Exported %d resonance frequencies.", reslist->len);
 	
+	g_array_free (reslist, TRUE);
 	return FALSE;
 }
 
@@ -731,9 +740,17 @@ gboolean on_merge_remove_list_activate (GtkWidget *button)
 /* Add a single link via user input */
 gboolean on_merge_add_link_activate (GtkWidget *button)
 {
+	//GtkWidget *win;
+	//gint x, y, xpix, ypix;
+	
 	glob->merge->flag |= MERGE_FLAG_ADD;
 	glob->merge->flag &= ~MERGE_FLAG_DEL;
 	glob->merge->flag &= ~MERGE_FLAG_MARK;
+	glob->merge->flag &= ~MERGE_FLAG_DELRES;
+
+	//win = glade_xml_get_widget (glob->merge->xmlmerge, "merge_spectvis");
+	//g_return_val_if_fail (gdk_window_get_pointer (win->window, &x, &y, NULL), FALSE);
+	//glob->merge->nearnode = merge_get_nearnode (x, y, &xpix, &ypix);
 	
 	return TRUE;
 }
@@ -744,6 +761,48 @@ gboolean on_merge_delete_link_activate (GtkWidget *button)
 	glob->merge->flag |= MERGE_FLAG_DEL;
 	glob->merge->flag &= ~MERGE_FLAG_ADD;
 	glob->merge->flag &= ~MERGE_FLAG_MARK;
+	glob->merge->flag &= ~MERGE_FLAG_DELRES;
+	
+	return TRUE;
+}
+
+/* Delete all available links */
+gboolean on_merge_delete_all_links_activate (GtkWidget *button)
+{
+	MergeWin *merge = glob->merge;
+	GtkSpectVis *graph;
+	GPtrArray *nodelist;
+	gint i, j;
+
+	if (!merge->nodelist->len)
+	{
+		dialog_message ("There are no links to be deleted.");
+		return FALSE;
+	}
+
+	if (dialog_question ("Do you really want to delete all links?") != GTK_RESPONSE_YES)
+		return FALSE;
+
+	/* Remove links from graph */
+	merge_draw_remove_all ();
+
+	/* Free links between nodes */
+	g_ptr_array_foreach (merge->links, (GFunc) g_list_free, NULL);
+	g_ptr_array_free (merge->links, TRUE);
+	merge->links = g_ptr_array_new ();
+
+	/* Update the IDs of each link node and remove stale links*/
+	for (i=0; i<merge->nodelist->len; i++)
+	{
+		nodelist = g_ptr_array_index (merge->nodelist, i);
+		for (j=0; j<nodelist->len; j++)
+			((MergeNode *) g_ptr_array_index (nodelist, j))->link = NULL;
+	}
+
+	graph = GTK_SPECTVIS (glade_xml_get_widget (merge->xmlmerge, "merge_spectvis"));
+	gtk_spect_vis_redraw (graph);
+
+	merge_statusbar_message ("Deleted all links.");
 	
 	return TRUE;
 }
@@ -758,6 +817,7 @@ gboolean on_merge_find_links_activate (GtkWidget *button)
 	}
 	
 	merge_automatic_merge ();
+	merge_statusbar_message ("Automatic merge completed.");
 
 	return TRUE;
 }
@@ -767,6 +827,18 @@ gboolean on_merge_highlight_activate (GtkWidget *button)
 {
 	glob->merge->flag |= MERGE_FLAG_MARK;
 	glob->merge->flag &= ~MERGE_FLAG_ADD;
+	glob->merge->flag &= ~MERGE_FLAG_DEL;
+	glob->merge->flag &= ~MERGE_FLAG_DELRES;
+	
+	return TRUE;
+}
+
+/* Remove the next selected resonance from nodelist */
+gboolean on_merge_remove_resonance_activate (GtkWidget *button)
+{
+	glob->merge->flag |= MERGE_FLAG_DELRES;
+	glob->merge->flag &= ~MERGE_FLAG_ADD;
+	glob->merge->flag &= ~MERGE_FLAG_MARK;
 	glob->merge->flag &= ~MERGE_FLAG_DEL;
 	
 	return TRUE;
@@ -785,9 +857,13 @@ void merge_handle_viewport_changed (GtkSpectVis *spectvis, gchar *zoomtype)
 gint merge_handle_value_selected (GtkSpectVis *spectvis, gdouble *xval, gdouble *yval)
 {
 	static MergeNode *node1 = NULL;
+	GtkSpectVisData *data;
 	GList *newlist = NULL;
 	MergeNode *node;
 	MergeWin *merge;
+	gdouble *X;
+	ComplexDouble *Y;
+	gint i, uid;
 	
 	g_return_val_if_fail (glob->merge, 0);
 	merge = glob->merge;
@@ -798,7 +874,7 @@ gint merge_handle_value_selected (GtkSpectVis *spectvis, gdouble *xval, gdouble 
 		if (!node)
 		{
 			merge->flag &= ~MERGE_FLAG_ADD;
-			dialog_message ("You are not close enough to a resonance node point.");
+			merge_statusbar_message ("You are not close enough to a resonance node point.");
 			node1 = NULL;
 			return 0;
 		}
@@ -808,7 +884,7 @@ gint merge_handle_value_selected (GtkSpectVis *spectvis, gdouble *xval, gdouble 
 			if ((node->link) && (node->link->prev) && (node->link->next))
 			{
 				merge->flag &= ~MERGE_FLAG_ADD;
-				dialog_message ("No free links on this node left.");
+				merge_statusbar_message ("No free links on this node left.");
 			}
 			else
 				node1 = node;
@@ -818,7 +894,7 @@ gint merge_handle_value_selected (GtkSpectVis *spectvis, gdouble *xval, gdouble 
 		{
 			merge->flag &= ~MERGE_FLAG_ADD;
 			if ((node->link) && (node->link->prev) && (node->link->next))
-				dialog_message ("No free links on this node left.");
+				merge_statusbar_message ("No free links on this node left.");
 			else
 			{
 				/* Add link node1 -> node */
@@ -826,7 +902,7 @@ gint merge_handle_value_selected (GtkSpectVis *spectvis, gdouble *xval, gdouble 
 				    ((node1->link) && (merge_is_id_in_list (node ->id, node1->link))) ||
 				    (node1->id == node->id))
 				{
-					dialog_message ("Forbidden, two resonances from the "
+					merge_statusbar_message ("Forbidden, two resonances from the "
 							"same list would be in the same link group.");
 					node1 = NULL;
 					return 0;
@@ -896,7 +972,7 @@ gint merge_handle_value_selected (GtkSpectVis *spectvis, gdouble *xval, gdouble 
 		node = (MergeNode *) merge->nearnode;
 		if (!node)
 		{
-			dialog_message ("You are not close enough to a resonance node point.");
+			merge_statusbar_message ("You are not close enough to a resonance node point.");
 			return 0;
 		}
 
@@ -906,7 +982,7 @@ gint merge_handle_value_selected (GtkSpectVis *spectvis, gdouble *xval, gdouble 
 			/* Link to a node with a bigger id */
 			if (!(MergeNode *) g_list_next (node->link))
 			{
-				dialog_message ("There is no link here that can be deleted.");
+				merge_statusbar_message ("There is no link here that can be deleted.");
 				return 0;
 			}
 			merge_delete_link_node (node, 1);
@@ -916,7 +992,7 @@ gint merge_handle_value_selected (GtkSpectVis *spectvis, gdouble *xval, gdouble 
 			/* Link to a node with a smaller id */
 			if (!(MergeNode *) g_list_previous (node->link))
 			{
-				dialog_message ("There is no link here that can be deleted.");
+				merge_statusbar_message ("There is no link here that can be deleted.");
 				return 0;
 			}
 			merge_delete_link_node (node, 2);
@@ -937,6 +1013,54 @@ gint merge_handle_value_selected (GtkSpectVis *spectvis, gdouble *xval, gdouble 
 
 		return 0;
 	}
+
+	if (merge->flag & MERGE_FLAG_DELRES)
+	{
+		merge->flag &= ~MERGE_FLAG_DELRES;
+		node = (MergeNode *) merge->nearnode;
+		if (!node)
+		{
+			merge_statusbar_message ("You are not close enough to a resonance node point.");
+			return 0;
+		}
+
+		/* Update a possible link */
+		if (node->link)
+			merge_delete_link_node (node, 0);
+
+		/* Get graph data */
+		uid = GPOINTER_TO_INT (g_ptr_array_index (merge->graphuid, node->id-1));
+		data = gtk_spect_vis_get_data_by_uid (spectvis, uid);
+
+		/* Remove datapoint from graph data */
+		X = g_new (gdouble, data->len - 1);
+		Y = g_new (ComplexDouble, data->len - 1);
+		for (i=0; i<data->len - 1; i++)
+		{
+			if (fabs (data->X[i] - node->res->frq) < 1e-10)
+			{
+				data->X[i] = -1;
+				i--;
+				continue;
+			}
+			
+			X[i] = data->X[i];
+			Y[i] = data->Y[i];
+		}
+		g_free (data->X);
+		g_free (data->Y);
+		gtk_spect_vis_data_update (spectvis, uid, X, Y, data->len - 1);
+
+		gtk_spect_vis_redraw (spectvis);
+
+		/* Remove node from nodelist */
+		g_free (node->res);
+		g_ptr_array_remove (
+			g_ptr_array_index (merge->nodelist, node->id-1),
+			node);
+
+		return 0;
+	}
 	
 	gtk_spect_vis_mark_point (spectvis, *xval, *yval);
 
@@ -946,72 +1070,28 @@ gint merge_handle_value_selected (GtkSpectVis *spectvis, gdouble *xval, gdouble 
 /* Keep track of the cursor to find interesting points */
 gboolean merge_motion_notify (GtkWidget *widget, GdkEventMotion *event)
 {
-	MergeWin *merge = glob->merge;
-	GPtrArray *nodes;
 	GtkSpectVis *graph;
-	GtkSpectVisViewport *view;
-	gint xpix, ypix, i, diff, lastdiff, id = -1;
-	gdouble pos;
+	MergeWin *merge = glob->merge;
+	MergeNode *nearnode;
+	gint xpix, ypix;
 
-	if (!((merge->flag & MERGE_FLAG_ADD) || (merge->flag & MERGE_FLAG_DEL) ||
-	      (merge->flag & MERGE_FLAG_MARK)))
+	if (!merge->flag)
 		return FALSE;
-	
-	g_return_val_if_fail (GTK_IS_SPECTVIS (widget), FALSE);
-	graph = GTK_SPECTVIS (widget);
-	view = graph->view;
 
-	if ((!view) || (!merge->nodelist->len))
+	graph = GTK_SPECTVIS (glade_xml_get_widget (merge->xmlmerge, "merge_spectvis"));
+	g_return_val_if_fail (graph, FALSE);
+
+	/* Get a node nearby */
+	nearnode = merge_get_nearnode (event->x, event->y, &xpix, &ypix);
+
+	if (!nearnode)
 	{
 		merge_undisplay_node_selection ();
 		merge->nearnode = NULL;
 		return FALSE;
 	}
 
-	/* Get a nodelist id */
-	for (pos=0.75; pos < (gdouble)merge->nodelist->len + 0.6; pos+=0.5)
-	{
-		ypix = view->graphboxyoff - (gdouble) view->graphboxheight / (view->ymax - view->ymin) * (pos - view->ymin);
-		if (abs (ypix - (gint) event->y) < 4)
-		{
-			id = (gint) floor (pos+0.5) - 1;
-			break;
-		}
-	}
-
-	if (id == -1)
-	{
-		merge_undisplay_node_selection ();
-		merge->nearnode = NULL;
-		return FALSE;
-	}
-
-	/* Get the number of the node in the list */
-	nodes = g_ptr_array_index (merge->nodelist, id);
-	i = 0;
-	diff = 65000;
-	lastdiff = 65001;
-	while ((lastdiff >= diff) && (i < nodes->len))
-	{
-		lastdiff = diff;
-		xpix = view->graphboxxoff + (gdouble) view->graphboxwidth / (view->xmax - view->xmin) 
-			* (((MergeNode *) g_ptr_array_index (nodes, i))->res->frq - view->xmin);
-		diff = abs (xpix - (gint) event->x);
-
-		if (diff < 4)
-			break;
-
-		i++;
-	}
-
-	if (diff >= 4)
-	{
-		merge_undisplay_node_selection ();
-		merge->nearnode = NULL;
-		return FALSE;
-	}
-
-	if ((!merge->nearnode) || (merge->nearnode != (void *) g_ptr_array_index (nodes, i)))
+	if ((!merge->nearnode) || (merge->nearnode != nearnode))
 	{
 		merge_undisplay_node_selection ();
 		gdk_draw_rectangle (widget->window, graph->cursorgc, FALSE, xpix-3, ypix-3, 6, 6);
@@ -1020,7 +1100,7 @@ gboolean merge_motion_notify (GtkWidget *widget, GdkEventMotion *event)
 	}
 
 	/* remember closest node */
-	merge->nearnode = (void *) g_ptr_array_index (nodes, i);
+	merge->nearnode = nearnode;
 
 	return FALSE;
 }
@@ -1029,6 +1109,24 @@ gboolean merge_motion_notify (GtkWidget *widget, GdkEventMotion *event)
 gboolean merge_leave_notify (GtkWidget *widget, GdkEventMotion *event)
 {
 	merge_undisplay_node_selection ();
+	return FALSE;
+}
+
+gboolean merge_handle_button_press (GtkWidget *widget, GdkEventButton *event)
+{
+	MergeNode *nearnode;
+	gint xpix, ypix;
+
+	g_return_val_if_fail (GTK_IS_SPECTVIS (widget), FALSE);
+	g_return_val_if_fail (event != NULL, FALSE);
+
+	if ((event->button == 1) && (event->state & GDK_CONTROL_MASK))
+	{
+		nearnode = merge_get_nearnode (event->x, event->y, &xpix, &ypix);
+		merge_highlight_width (nearnode);
+		return TRUE;
+	}
+
 	return FALSE;
 }
 
@@ -1051,6 +1149,61 @@ static void merge_undisplay_node_selection ()
 			merge->selx-3, merge->sely-3, 6, 6);
 
 	merge->selx = -1;
+}
+/* Returns the node close to the cursor or NULL */
+static MergeNode* merge_get_nearnode (gint xpos, gint ypos, gint *xpix, gint *ypix)
+{
+	MergeWin *merge = glob->merge;
+	GPtrArray *nodes;
+	GtkSpectVis *graph;
+	GtkSpectVisViewport *view;
+	gint i, diff, lastdiff, id = -1;
+	gdouble pos;
+
+	graph = GTK_SPECTVIS (glade_xml_get_widget (merge->xmlmerge, "merge_spectvis"));
+	g_return_val_if_fail (graph, NULL);
+	view = graph->view;
+
+	if ((!view) || (!merge->nodelist->len))
+		return NULL;
+
+	/* Get a nodelist id */
+	for (pos=0.75; pos < (gdouble)merge->nodelist->len + 0.6; pos+=0.5)
+	{
+		*ypix = view->graphboxyoff - (gdouble) view->graphboxheight / (view->ymax - view->ymin) * (pos - view->ymin);
+		if (abs (*ypix - ypos) < 4)
+		{
+			id = (gint) floor (pos+0.5) - 1;
+			break;
+		}
+	}
+
+	if (id == -1)
+		return NULL;
+
+	/* Get the number of the node in the list */
+	nodes = g_ptr_array_index (merge->nodelist, id);
+	i = 0;
+	diff = 65000;
+	lastdiff = 65001;
+	while ((lastdiff >= diff) && (i < nodes->len))
+	{
+		lastdiff = diff;
+		*xpix = view->graphboxxoff + (gdouble) view->graphboxwidth / (view->xmax - view->xmin) 
+			* (((MergeNode *) g_ptr_array_index (nodes, i))->res->frq - view->xmin);
+		diff = abs (*xpix - xpos);
+
+		if (diff < 4)
+			break;
+
+		i++;
+	}
+	
+	if (diff >= 4)
+		return NULL;
+
+	/* return closest node */
+	return (MergeNode *) g_ptr_array_index (nodes, i);
 }
 
 /********** Basic link and node handling *************************************/
@@ -1669,4 +1822,35 @@ static gdouble merge_get_avgfrq (GList *cand)
 	while ((cand = g_list_next (cand)));
 
 	return frq/(gdouble) len;
+}
+
+/********** Automatic merger *************************************************/
+
+/* Remove the latest message from the statusbar. */
+static gint merge_statusbar_message_remove (gpointer data)
+{
+	GtkWidget *statusbar = glade_xml_get_widget (glob->merge->xmlmerge, "merge_statusbar");
+	gtk_statusbar_pop (GTK_STATUSBAR (statusbar), GPOINTER_TO_INT (data));
+
+	return FALSE;
+}
+
+/* Add a new message to the statusbar which will be removed after 5 sec. */
+void merge_statusbar_message (gchar *format, ...)
+{
+	va_list ap;
+	gchar *message;
+	gint context_id;
+	GtkWidget *statusbar = glade_xml_get_widget (glob->merge->xmlmerge, "merge_statusbar");
+
+	va_start(ap, format);
+	message = g_strdup_vprintf (format, ap);
+	va_end(ap);
+
+	context_id = gtk_statusbar_get_context_id (GTK_STATUSBAR (statusbar), message);
+	gtk_statusbar_push (GTK_STATUSBAR (statusbar), context_id, message);
+
+	g_free (message);
+
+	g_timeout_add (5*1000, merge_statusbar_message_remove, GINT_TO_POINTER (context_id));
 }

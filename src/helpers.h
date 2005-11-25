@@ -54,4 +54,6 @@ void set_busy_cursor (gboolean busy);
 
 void bubbleSort (gdouble *array, int length);
 
+gchar* get_timestamp ();
+
 #endif

@@ -381,6 +381,8 @@ merge_gather_reslist	merge.c	/^static GArray* merge_gather_reslist ()$/;"	f	file
 merge_get_avgfrq	merge.c	/^static gdouble merge_get_avgfrq (GList *cand)$/;"	f	file:
 merge_get_closest	merge.c	/^static GList* merge_get_closest (gdouble frq, gint depth)$/;"	f	file:
 merge_get_minwidth	merge.c	/^static gdouble merge_get_minwidth (GList *cand)$/;"	f	file:
+merge_get_nearnode	merge.c	/^static MergeNode* merge_get_nearnode (gint xpos, gint ypos, gint *xpix, gint *ypix)$/;"	f	file:
+merge_handle_button_press	merge.c	/^gboolean merge_handle_button_press (GtkWidget *widget, GdkEventButton *event)$/;"	f
 merge_handle_value_selected	merge.c	/^gint merge_handle_value_selected (GtkSpectVis *spectvis, gdouble *xval, gdouble *yval)$/;"	f
 merge_handle_viewport_changed	merge.c	/^void merge_handle_viewport_changed (GtkSpectVis *spectvis, gchar *zoomtype)$/;"	f
 merge_highlight_width	merge.c	/^static void merge_highlight_width (MergeNode *node)$/;"	f	file:
@@ -392,8 +394,8 @@ merge_open_win	merge.c	/^void merge_open_win ()$/;"	f
 merge_purge	merge.c	/^void merge_purge (gboolean free_only)$/;"	f
 merge_read_resonances	merge.c	/^static gint merge_read_resonances (gchar *selected_filename, const gchar *label, GPtrArray **reslist, gchar **datafilename)$/;"	f	file:
 merge_reslist_compare	merge.c	/^static gint merge_reslist_compare (gconstpointer a_in, gconstpointer b_in)$/;"	f	file:
-merge_resonancefile_cleanup	merge.c	313;"	d	file:
-merge_resonancefile_cleanup	merge.c	434;"	d	file:
+merge_resonancefile_cleanup	merge.c	314;"	d	file:
+merge_resonancefile_cleanup	merge.c	435;"	d	file:
 merge_show_numres	merge.c	/^void merge_show_numres (GtkTreeViewColumn *col, GtkCellRenderer *renderer, $/;"	f
 merge_undisplay_node_selection	merge.c	/^static void merge_undisplay_node_selection ()$/;"	f	file:
 merge_zoom_x_all	merge.c	/^static void merge_zoom_x_all ()$/;"	f	file:

@@ -6,6 +6,8 @@
 #include <unistd.h>
 #include <stdlib.h>
 #include <math.h>
+#include <sys/time.h>
+#include <time.h>
 
 #include "structs.h"
 #include "callbacks.h"
@@ -1166,4 +1168,20 @@ void bubbleSort (gdouble *array, int length)
 				array[j] = array[j+1];
 				array[j+1] = temp;
 			}
+}
+
+/* Return a string with the current date and time */
+gchar* get_timestamp ()
+{
+	struct timeval tv;
+	struct tm* ptm;
+	gchar *time_string;
+
+	time_string = g_new0 (gchar, 23);
+	
+	gettimeofday (&tv, NULL);
+	ptm = localtime (&tv.tv_sec);
+	strftime (time_string, sizeof (time_string), "%Y-%m-%d %H:%M:%S", ptm);
+
+	return time_string;
 }
