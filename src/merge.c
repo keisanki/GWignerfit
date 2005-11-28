@@ -1759,7 +1759,7 @@ static void merge_draw_remove_node (MergeNode *node, gint type)
 		Y[1] = nextnode->id - 0.25;
 
 		prevnode->guid1 = gtk_spect_vis_polygon_add (graph, X, Y, 2, color, 'l');
-		nextnode->guid2 = ((MergeNode *) curiter->data)->guid1;
+		nextnode->guid2 = prevnode->guid1;
 	}
 }
 
