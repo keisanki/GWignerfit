@@ -64,7 +64,7 @@ void parse_commandline (gint argc, char *argv[])
 		else if (g_str_has_suffix (filename, ".gwf"))
 		{
 			/* might be a GWignerFit resonance file */
-			select_section_dialog (g_strdup (filename), NULL, NULL);
+			load_gwf_resonance_file (filename);
 		}
 		g_free (filename);
 

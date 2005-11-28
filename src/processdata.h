@@ -19,9 +19,9 @@ void set_new_main_data (DataVector *data, gboolean called_from_open);
 
 void read_datafile (gchar *selected_filename, gint called_from_open);
 
-gboolean save_file (gchar *filename, gchar *section, gint exists);
+gboolean load_gwf_resonance_file (gchar *filename);
 
-gboolean save_file_prepare (gchar *selected_filename);
+void save_write_section (FILE *datafile, gchar *section, gchar *newline);
 
 gboolean is_datafile (gchar *filename);
 

@@ -21,4 +21,6 @@ void sigchld_handler (int num);
 
 void ok_dialog (GtkWidget *entry, gpointer dialog);
 
+void on_save_as_activate (GtkMenuItem *menuitem, gpointer write_callback);
+
 #endif

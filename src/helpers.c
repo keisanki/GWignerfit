@@ -18,6 +18,7 @@
 #include "fourier.h"
 #include "spectral.h"
 #include "fcomp.h"
+#include "loadsave.h"
 
 /* Global variables */
 extern GladeXML *gladexml;
@@ -403,158 +404,6 @@ gchar *get_filename (const gchar *title, const gchar *defaultname, gchar check)
 
 	gtk_widget_destroy (filew);
 	return filename;
-}
-
-/* Called by select_section_dialog() */
-gboolean select_section_ok (gchar *section)
-{
-	gchar *title, *basename;
-
-	g_return_val_if_fail (section, FALSE);
-
-	glob->section = section;
-	
-	if (read_resonancefile (glob->resonancefile, glob->section) >= 0)
-	{
-		visualize_update_res_bar (0);
-		show_global_parameters (glob->gparam);
-
-		basename = g_path_get_basename (glob->resonancefile);
-		title = g_strdup_printf ("%s:%s - GWignerFit", basename, glob->section);
-		gtk_window_set_title (GTK_WINDOW (glade_xml_get_widget(gladexml, "mainwindow")), title);
-		g_free (basename);
-		g_free (title);
-
-		visualize_update_min_max (0);
-		visualize_theory_graph ();
-		spectral_resonances_changed ();
-		unset_unsaved_changes ();
-	}
-	else
-	{
-		/* No resonances were read but the old parameters have been
-		 * deleted by read_resonancefile, get us safely out of here.
-		 */
-		unset_unsaved_changes ();
-		on_new_activate (NULL, NULL);
-	}
-
-	return TRUE;
-}
-
-/* Takes a full filename and tries to find the sections contained in the
- * selected file. On success a window with the section_dialog is displayed.
- * If secname == NULL, read the section, otherwise just set secname to the name
- * of the section.
- * Returns FALSE on success.
- */
-gboolean select_section_dialog (gchar *selected_filename, gchar *default_section, gchar **secname) 
-{
-	GtkWidget *combo;
-	GladeXML *xml;
-	gchar line[256], *filename, *section;
-	FILE *datafile;
-	GList *sections = NULL;
-	gint pos = 0, found_a_section = 0, def_pos = -1;
-	gint result;
-
-	/* Has the user selected a directory?
-	 * He should not have done this. */
-	if (g_file_test (selected_filename, G_FILE_TEST_IS_DIR))
-	{
-		dialog_message ("Cannot read file, this is a directory.");
-		return TRUE;
-	}
-	
-	datafile = fopen(selected_filename, "r");
-	if (datafile == NULL) {
-		dialog_message ("Error: Could not open file %s.", selected_filename);
-		return TRUE;
-	}
-
-	if (!secname)
-	{
-		delete_backup ();
-		glob->resonancefile = selected_filename;
-	}
-
-	line[255] = '\0';
-	while (!feof(datafile)) {
-		fgets(line, 255, datafile);
-		if ((strlen(line)) && (line[strlen(line)-1] == '\n'))
-			line[strlen(line)-1] = '\0'; /* strip final \n */
-		if ((strlen(line)) && (line[strlen(line)-1] == '\r'))
-			line[strlen(line)-1] = '\0'; /* strip final \r */
-		pos++;
-
-		if (strlen(line) > 254) {
-			fprintf(stderr, "Error: Line %i in '%s' too long!\n", pos, selected_filename);
-			g_list_foreach (sections, (GFunc) g_free, NULL);
-			g_list_free (sections);
-			return TRUE;
-		}
-
-		if ((*line == '$') || (*line == '=')) {
-			/* Found a new section */
-			sections = g_list_append (sections, g_strdup (line+1));
-			found_a_section = 1;
-
-			if ((default_section) &&
-			    (!strncmp(line+1, default_section, 100)))
-				def_pos = g_list_length (sections);
-		}
-	}
-
-	if (!found_a_section)
-	{
-		filename = g_path_get_basename (selected_filename);
-		dialog_message ("Error: Found no sections in '%s'", filename);
-		g_free (filename);
-		return TRUE;
-	}
-
-	xml = glade_xml_new (GLADEFILE, "section_dialog", NULL);
-	
-	/* Add sections to combo box */
-	combo = glade_xml_get_widget (xml, "sections_combo");
-	gtk_combo_set_popdown_strings (GTK_COMBO (combo), sections);
-	g_list_foreach (sections, (GFunc) g_free, NULL);
-	g_list_free (sections);
-
-	/* Select current section if found */
-	if (def_pos > 0)
-		gtk_entry_set_text (
-			GTK_ENTRY (glade_xml_get_widget(xml, "section_combo_entry")), 
-			default_section);
-
-	result = gtk_dialog_run (GTK_DIALOG (glade_xml_get_widget (xml, "section_dialog")));
-
-	if (result == GTK_RESPONSE_OK)
-	{
-		section = g_strdup (gtk_entry_get_text (
-					GTK_ENTRY (glade_xml_get_widget (
-							xml, "section_combo_entry"))));
-		
-		gtk_widget_destroy (glade_xml_get_widget (xml, "section_dialog"));
-
-		if (!secname)
-		{
-			select_section_ok (section);
-			/* Do _not_ free section as it is now in glob->section */
-		}
-		else
-		{
-			*secname = section;
-			/* Do _not_ free section as it is a "return value" */
-		}
-	}
-	else
-	{
-		gtk_widget_destroy (glade_xml_get_widget (xml, "section_dialog"));
-		return TRUE;
-	}
-
-	return FALSE;
 }
 
 /* Update the FitWindow with the given fitwinparam information. */
@@ -1062,7 +911,7 @@ void create_backup ()
 
 	bakname = g_strdup_printf ("%s~", glob->resonancefile);
 
-	save_file (bakname, glob->section, 0);
+	ls_save_file_exec (bakname, glob->section, '=', 0, save_write_section);
 
 	g_free (bakname);
 }
@@ -1181,7 +1030,7 @@ gchar* get_timestamp ()
 	
 	gettimeofday (&tv, NULL);
 	ptm = localtime (&tv.tv_sec);
-	strftime (time_string, sizeof (time_string), "%Y-%m-%d %H:%M:%S", ptm);
+	strftime (time_string, 23, "%Y-%m-%d %H:%M:%S", ptm);
 
 	return time_string;
 }

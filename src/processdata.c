@@ -19,6 +19,8 @@
 #include "fourier.h"
 #include "spectral.h"
 #include "fcomp.h"
+#include "loadsave.h"
+#include "callbacks.h"
 
 extern GlobalData *glob;
 extern GladeXML *gladexml;
@@ -603,8 +605,8 @@ gboolean read_datafile (gchar *selected_filename, gboolean called_from_open)
 	return TRUE;
 }
 
-#define read_resonancefile_cleanup fclose (datafile); \
-				  g_free (line); \
+#define read_resonancefile_cleanup g_ptr_array_foreach (lines, (GFunc) g_free, NULL); \
+				  g_ptr_array_free (lines, TRUE); \
 				  g_free (text); \
 				  g_free (datafilename); \
 				  g_free (command); \
@@ -615,20 +617,27 @@ gboolean read_datafile (gchar *selected_filename, gboolean called_from_open)
 gint read_resonancefile (gchar *selected_filename, const gchar *label)
 {
 	gchar *line, *command, *text, *datafilename = NULL;
-	FILE *datafile;
-	gdouble min, max, frq, wid, amp, phas, tau;
+	gdouble frq, wid, amp, phas;
+#if 0
+	gdouble tau, min, max;
+#endif
 	gdouble frqerr, widerr, amperr, phaserr;
 	gdouble tauerr=0.0, scaleerr=0.0, gphaseerr=0.0;
-	gint numres=0, pos=0, flag=0, i, ovrlaynum=0;
+	gint numres=0, pos=0, i, ovrlaynum=0;
 	Resonance *resonance=NULL;
 	FourierComponent *fcomp=NULL;
-	GPtrArray *ovrlays;
+	GPtrArray *ovrlays, *lines;
 	GArray *stddev;
 
-	datafile = fopen (selected_filename, "r");
+	/* Get section */
+	lines = ls_read_section (selected_filename, (gchar *) label, '=');
 
-	if (datafile == NULL) {
-		dialog_message("Error: Could not open file %s.", selected_filename);
+	if (!lines)
+		return -1;
+
+	if (lines->len == 0)
+	{
+		g_ptr_array_free (lines, TRUE);
 		return -1;
 	}
 
@@ -649,7 +658,6 @@ gint read_resonancefile (gchar *selected_filename, const gchar *label)
 	glob->fcomp->data = g_ptr_array_new ();
 	glob->fcomp->numfcomp = 0;
 
-	line = g_new0 (gchar, 256);
 	text = g_new0 (gchar, 256);
 	command = g_new0 (gchar, 256);
 	ovrlays = g_ptr_array_new ();
@@ -659,39 +667,15 @@ gint read_resonancefile (gchar *selected_filename, const gchar *label)
 	glob->gparam->tau = 0;
 	glob->gparam->scale = 1;
 
-	while (!feof(datafile)) {
-		fgets(line, 255, datafile);
-		if ((strlen(line)>0) && (line[strlen(line)-1] == '\n')) 
-			line[strlen(line)-1] = '\0'; /* strip final \n */
-		if ((strlen(line)>0) && (line[strlen(line)-1] == '\r')) 
-			line[strlen(line)-1] = '\0'; /* strip final \r */
-		pos++;
-
-		if (strlen(line) > 254) {
-			dialog_message ("Error: Line %i in '%s' too long!\n", pos, selected_filename);
-			read_resonancefile_cleanup;
-			return -1;
-		}
-
-		/* Stop parsing after the current section */
-		if ((flag) && ((*line == '$') || (*line == '='))) break;
-
-		if ((*line == '$') && (strncmp(line+1, label, 254) == 0)) {
-			/* Found a matching "Stefan Bittner" style section */
-			flag = 1;
-			continue;
-		}
-		if ((*line == '=') && (strncmp(line+1, label, 254) == 0)) {
-			/* Found a matching "Florian Schaefer" style section */
-			flag = 10;
-			continue;
-		}
+	for (pos=0; pos<lines->len; pos++)
+	{
+		line = (gchar *) g_ptr_array_index (lines, pos);
 
 		/* Comment lines start with either '%' or '#' */
-		if ((*line == '%') || (*line == '#') || (strlen(line) == 0)) continue;
+		if ((*line == '%') || (*line == '#') || (strlen (line) == 0)) continue;
 
 		/* Actually parse the section */
-
+#if 0
 		/* Begin "Stefan Bittner" style */
 		if (flag == 2) {
 			/* Information about each resonance */
@@ -722,143 +706,144 @@ gint read_resonancefile (gchar *selected_filename, const gchar *label)
 			flag = 2;
 		}
 		/* End "Stefan Bittner" style */
-
+#endif
 		/* Begin "Florian Schaefer" style */
-		if (flag == 10) {
-			i = sscanf(line, "%250s\t%lf\t%lf\t%lf\t%lf%lf\t%lf\t%lf\t%lf", 
-					command, &frq, &wid, &amp, &phas, &frqerr, &widerr, &amperr, &phaserr);
-			switch (i) {
-				case 1: /* Overlay */
-				  if (sscanf(line, "%250s\t%250s", command, text) == 2)
-				  {
-					  /* text may not hold the complete filename if it
-					   * contained spaces. */
-					  if (!strncmp(command, "file", 200)) 
-						  datafilename = g_strdup (line+5);
+		i = sscanf (line, "%250s\t%lf\t%lf\t%lf\t%lf%lf\t%lf\t%lf\t%lf", 
+				command, &frq, &wid, &amp, &phas, &frqerr, &widerr, &amperr, &phaserr);
+		switch (i) {
+			case 1: /* Overlay */
+			  if (sscanf(line, "%250s\t%250s", command, text) == 2)
+			  {
+				  /* text may not hold the complete filename if it
+				   * contained spaces. */
+				  if (!strncmp(command, "file", 200)) 
+					  datafilename = g_strdup (line+5);
 
-					  /* Remember overlays for later addition */
-					  if ((!strncmp(command, "ovrlay", 200)) && datafilename)
-					  {
-						g_ptr_array_add (
-							ovrlays,
-							(gpointer) g_strdup (line+7)
-						);
-						ovrlaynum++;
-					  }
-				  }
-				  else
+				  /* Remember overlays for later addition */
+				  if ((!strncmp(command, "ovrlay", 200)) && datafilename)
 				  {
-					  dialog_message ("Error: Unrecognized command '%s' in line %i.\n", command, pos);
-					  read_resonancefile_cleanup;
-					  return -1;
+					g_ptr_array_add (
+						ovrlays,
+						(gpointer) g_strdup (line+7)
+					);
+					ovrlaynum++;
 				  }
-				  break;
-				case 2: /* Global parameter */
-				  if (!strncmp(command, "minfrq", 200)) {glob->gparam->min = frq * 1e9;}
-				  else if (!strncmp(command, "maxfrq", 200)) {glob->gparam->max = frq * 1e9;}
-				  else if (!strncmp(command, "tau", 200)) glob->gparam->tau = frq * 1e-9;
-				  else if (!strncmp(command, "scale", 200)) glob->gparam->scale = frq;
-				  else if (!strncmp(command, "phase", 200)) glob->gparam->phase = frq / 180*M_PI;
-				  else { 
-					  dialog_message("Error: Unrecognized command '%s' in line %i.\n", command, pos);
-					  read_resonancefile_cleanup;
-					  return -1;
-				  }
-				  break;
-				case 3: /* Global parameter with error */
-				  if (!strncmp(command, "tau", 200)) 
-				  {
-					  glob->gparam->tau = frq * 1e-9;
-					  tauerr = wid * 1e-9;
-				  }
-				  else if (!strncmp(command, "scale", 200)) 
-				  {
-					  glob->gparam->scale = frq;
-					  scaleerr = wid;
-				  }
-				  else if (!strncmp(command, "phase", 200)) 
-				  {
-					  glob->gparam->phase = frq / 180*M_PI;
-					  gphaseerr = wid / 180*M_PI;
-				  }
-				  else { 
-					  dialog_message("Error: Unrecognized command '%s' in line %i.\n", command, pos);
-					  read_resonancefile_cleanup;
-					  return -1;
-				  }
-				  break;
-				case 4: /* Fourier component */
-				  if (!strncmp(command, "fcomp", 200)) 
-				  {
-					fcomp = g_new (FourierComponent, 1);
-					fcomp->amp = frq;
-					fcomp->tau = wid / 1e9;
-					fcomp->phi = amp / 180*M_PI;
-					fcomp_add_component (fcomp, 0);
-				  }
-				  else { 
-					  dialog_message("Error: Unrecognized command '%s' in line %i.\n", command, pos);
-					  read_resonancefile_cleanup;
-					  return -1;
-				  }
-				  break;
-				case 5: /* Resonance data */
-				  if (!strncmp(command, "res", 200)) {
-					resonance = g_new (Resonance, 1);
-					resonance->frq   = frq * 1e9;
-					resonance->width = wid * 1e6;
-					resonance->amp   = amp;
-					resonance->phase = phas / 180*M_PI;
-					add_resonance_to_list (resonance);
-					numres++;
-				  } else {
-					  dialog_message ("Error: Unrecognized command '%s' in line %i.\n", command, pos);
-					  read_resonancefile_cleanup;
-					  return -1;
-				  }
-				  break;
-				case 9: /* Resonance data with errors */
-				  if (!strncmp(command, "res", 200)) {
-					resonance = g_new (Resonance, 1);
-					resonance->frq   = frq * 1e9;
-					resonance->width = wid * 1e6;
-					resonance->amp   = amp;
-					resonance->phase = phas / 180*M_PI;
-					add_resonance_to_list (resonance);
-
-					phaserr *= 1.0/180*M_PI;
-					frqerr  *= 1e9;
-					widerr  *= 1e6;
-
-					g_array_append_val (stddev, amperr);
-					g_array_append_val (stddev, phaserr);
-					g_array_append_val (stddev, frqerr);
-					g_array_append_val (stddev, widerr);
-					
-					numres++;
-				  } else {
-					  dialog_message ("Error: Unrecognized command '%s' in line %i.\n", command, pos);
-					  read_resonancefile_cleanup;
-					  return -1;
-				  }
-				  break;
-				default: /* Syntax error */
-				  dialog_message ("Error: Syntax error in line %i\n", pos);
+			  }
+			  else
+			  {
+				  dialog_message ("Error: Unrecognized command '%s' in line %i of section.\n", command, pos);
 				  read_resonancefile_cleanup;
 				  return -1;
-			}
+			  }
+			  break;
+			case 2: /* Global parameter */
+			  if (!strncmp(command, "minfrq", 200)) {glob->gparam->min = frq * 1e9;}
+			  else if (!strncmp(command, "maxfrq", 200)) {glob->gparam->max = frq * 1e9;}
+			  else if (!strncmp(command, "tau", 200)) glob->gparam->tau = frq * 1e-9;
+			  else if (!strncmp(command, "scale", 200)) glob->gparam->scale = frq;
+			  else if (!strncmp(command, "phase", 200)) glob->gparam->phase = frq / 180*M_PI;
+			  else { 
+				  dialog_message("Error: Unrecognized command '%s' in line %i of section.\n", command, pos);
+				  read_resonancefile_cleanup;
+				  return -1;
+			  }
+			  break;
+			case 3: /* Global parameter with error */
+			  if (!strncmp(command, "tau", 200)) 
+			  {
+				  glob->gparam->tau = frq * 1e-9;
+				  tauerr = wid * 1e-9;
+			  }
+			  else if (!strncmp(command, "scale", 200)) 
+			  {
+				  glob->gparam->scale = frq;
+				  scaleerr = wid;
+			  }
+			  else if (!strncmp(command, "phase", 200)) 
+			  {
+				  glob->gparam->phase = frq / 180*M_PI;
+				  gphaseerr = wid / 180*M_PI;
+			  }
+			  else { 
+				  dialog_message("Error: Unrecognized command '%s' in line %i of section.\n", command, pos);
+				  read_resonancefile_cleanup;
+				  return -1;
+			  }
+			  break;
+			case 4: /* Fourier component */
+			  if (!strncmp(command, "fcomp", 200)) 
+			  {
+				fcomp = g_new (FourierComponent, 1);
+				fcomp->amp = frq;
+				fcomp->tau = wid / 1e9;
+				fcomp->phi = amp / 180*M_PI;
+				fcomp_add_component (fcomp, 0);
+			  }
+			  else { 
+				  dialog_message("Error: Unrecognized command '%s' in line %i of section.\n", command, pos);
+				  read_resonancefile_cleanup;
+				  return -1;
+			  }
+			  break;
+			case 5: /* Resonance data */
+
+			  /* line with a timestamp? */
+			  if (!strncmp(command, "date", 200)) 
+			  {
+				  /* nothing to be done yet */
+				  break;
+			  }
+			  
+			  if (!strncmp(command, "res", 200)) {
+				resonance = g_new (Resonance, 1);
+				resonance->frq   = frq * 1e9;
+				resonance->width = wid * 1e6;
+				resonance->amp   = amp;
+				resonance->phase = phas / 180*M_PI;
+				add_resonance_to_list (resonance);
+				numres++;
+			  } else {
+				  dialog_message ("Error: Unrecognized command '%s' in line %i of section.\n", command, pos);
+				  read_resonancefile_cleanup;
+				  return -1;
+			  }
+			  break;
+			case 9: /* Resonance data with errors */
+			  if (!strncmp(command, "res", 200)) {
+				resonance = g_new (Resonance, 1);
+				resonance->frq   = frq * 1e9;
+				resonance->width = wid * 1e6;
+				resonance->amp   = amp;
+				resonance->phase = phas / 180*M_PI;
+				add_resonance_to_list (resonance);
+
+				phaserr *= 1.0/180*M_PI;
+				frqerr  *= 1e9;
+				widerr  *= 1e6;
+
+				g_array_append_val (stddev, amperr);
+				g_array_append_val (stddev, phaserr);
+				g_array_append_val (stddev, frqerr);
+				g_array_append_val (stddev, widerr);
+				
+				numres++;
+			  } else {
+				  dialog_message ("Error: Unrecognized command '%s' in line %i of section.\n", command, pos);
+				  read_resonancefile_cleanup;
+				  return -1;
+			  }
+			  break;
+			default: /* Syntax error */
+			  dialog_message ("Error: Syntax error in line %i of section.\n", pos);
+			  read_resonancefile_cleanup;
+			  return -1;
 		}
 		/* End "Florian Schaefer" style */
 	}
 
-	if ((feof(datafile)) && (flag == 0)) {
-		dialog_message ("Error: No section '%s' found in '%s'.\n", label, selected_filename);
-		read_resonancefile_cleanup;
-		return -1;
-	}
+	g_ptr_array_foreach (lines, (GFunc) g_free, NULL);
+	g_ptr_array_free (lines, TRUE);
 
-	fclose (datafile);
-	g_free (line);
 	g_free (command);
 	g_free (text);
 
@@ -920,125 +905,77 @@ gint read_resonancefile (gchar *selected_filename, const gchar *label)
 
 #undef read_resonancefile_cleanup
 
-gboolean save_file (gchar *filename, gchar *section, gint exists)
+/* Takes a filename, asks for the section and load the gwf resonance file.
+ * Returns TRUE on success. */
+gboolean load_gwf_resonance_file (gchar *filename)
 {
-	GString *old_file_before, *old_file_after = NULL;
-	gchar line[256], *newline;
+	gchar *title, *basename;
+	gchar *section = NULL;
+	GList *sections = NULL;
+
+	sections = ls_get_sections (filename, "=$");
+
+	if (!sections)
+	{
+		dialog_message ("No appropriate sections found in this file.");
+		return FALSE;
+	}
+	
+	section = ls_select_section (sections, glob->section);
+	g_list_foreach (sections, (GFunc) g_free, NULL);
+	g_list_free (sections);
+
+	if (!section)
+		return FALSE;
+
+	if (read_resonancefile (filename, section) >= 0)
+	{
+		glob->section = section;
+		glob->resonancefile = g_strdup (filename);
+		visualize_update_res_bar (0);
+		show_global_parameters (glob->gparam);
+
+		basename = g_path_get_basename (glob->resonancefile);
+		title = g_strdup_printf ("%s:%s - GWignerFit", basename, glob->section);
+		gtk_window_set_title (GTK_WINDOW (glade_xml_get_widget(gladexml, "mainwindow")), title);
+		g_free (basename);
+		g_free (title);
+
+		visualize_update_min_max (0);
+		visualize_theory_graph ();
+		spectral_resonances_changed ();
+		unset_unsaved_changes ();
+	}
+	else
+	{
+		/* No resonances were read but the old parameters have been
+		 * deleted by read_resonancefile, get us safely out of here.
+		 */
+		g_free (section);
+		unset_unsaved_changes ();
+		on_new_activate (NULL, NULL);
+	}
+
+	return TRUE;
+}
+
+/* Function to write all resonance information into datafile */
+void save_write_section (FILE *datafile, gchar *section, gchar *newline)
+{
 	GSList *overlays, *overlayspos;
-	FILE *datafile;	
+	gchar *text;
 	Resonance *res;
 	FourierComponent *fcomp;
 	gint i;
 
-	newline = g_new0 (gchar, 3);
-
-	if (exists == 2)
-	{
-		/* File and section already exist */
-		datafile = fopen (filename, "r");
-		if (!datafile) return FALSE;
-
-		old_file_before = g_string_new ("");
-		old_file_after = g_string_new ("");
-
-		/* Copy everything before the relevant section into old_file_before */
-		while (!feof (datafile))
-		{
-			fgets (line, 255, datafile);
-
-			if (strlen(line) > 254)
-			{
-				dialog_message ("Error: Line is too long!\n");
-				fclose (datafile);
-				return FALSE;
-			}
-
-			if ((line[strlen(line)-2] == '\r') && (*newline == 0)) newline = "\r\n\0";
-			else newline = "\n\0\0";
-
-			if (line[strlen(line)-1] == '\n') line[strlen(line)-1] = '\0'; /* strip final \n */
-			if (line[strlen(line)-1] == '\r') line[strlen(line)-1] = '\0'; /* strip final \r */
-
-			if ((*line == '=') && (strncmp(line+1, section, 254) == 0))
-			{
-				/* Found the selected section (Florian style) */
-				break;
-			}
-
-			g_string_append (old_file_before, line);
-			g_string_append (old_file_before, newline);
-		}
-		if (feof (datafile))
-		{
-			fclose (datafile);
-			return FALSE;
-		}
-		
-		/* Skip the section to be saved */
-		while (!feof (datafile))
-		{
-			fgets (line, 255, datafile);
-
-			if (strlen(line) > 254)
-			{
-				dialog_message ("Error: Line is too long!\n");
-				fclose (datafile);
-				return FALSE;
-			}
-
-			if ((line[strlen(line)-2] == '\r') && (*newline == 0)) newline = "\r\n\0";
-			else newline = "\n\0\0";
-
-			if (line[strlen(line)-1] == '\n') line[strlen(line)-1] = '\0'; /* strip final \n */
-			if (line[strlen(line)-1] == '\r') line[strlen(line)-1] = '\0'; /* strip final \r */
-
-			if (*line == '=')
-			{
-				/* Found the next section (Florian style) */
-				g_string_append (old_file_after, line);
-				g_string_append (old_file_after, newline);
-				break;
-			}
-		}
-
-		/* Copy everything after the relevant section into old_file_after */
-		while (!feof (datafile))
-		{
-			fgets (line, 255, datafile);
-
-			if (strlen(line) > 254)
-			{
-				dialog_message ("Error: Line is too long!\n");
-				fclose (datafile);
-				return FALSE;
-			}
-
-			g_string_append (old_file_after, line);
-		}
-
-		fclose (datafile);
-		datafile = fopen (filename, "w");
-
-		fprintf (datafile, "%s", old_file_before->str);
-	}
-	else if (exists == 1)
-	{
-		/* The file exists, but the section does not */
-		datafile = fopen (filename, "a");
-		if (!datafile) return FALSE;
-		newline = "\n\0\0";
-	}
-	else
-	{
-		/* Nothing exists */
-		datafile = fopen (filename, "w");
-		if (!datafile) return FALSE;
-		newline = "\n\0\0";
-	}
-
 	/* print the section into the datafile */
 	fprintf (datafile, "=%s%s", section, newline);
-	if (glob->data->file) 
+
+	text = get_timestamp ();
+	fprintf (datafile, "date\t%s%s", text, newline);
+	g_free (text);
+	
+	if ((glob->data) && (glob->data->file))
 		fprintf (datafile, "file\t%s%s", glob->data->file, newline);
 
 	/* print the overlayed datafiles */
@@ -1126,99 +1063,6 @@ gboolean save_file (gchar *filename, gchar *section, gint exists)
 					newline);
 		}
 	}
-	
-	/* A newline before the next section */
-	fprintf (datafile, "%s", newline);
-
-	if (exists == 2)
-	{
-		/* Write the rest of the old file */
-		fprintf (datafile, "%s", old_file_after->str);
-	}
-
-	fclose (datafile);
-
-	return TRUE;
-}
-
-gboolean save_file_prepare (gchar *selected_filename) 
-{
-	gchar *title;
-	gchar line[256];
-	FILE *datafile;
-	gint pos = 0, exists = 0;
-
-	/* This is needed as filename is not aquired through get_filename() */
-	g_free (glob->path);
-	glob->path = g_path_get_dirname (selected_filename);
-
-	datafile = fopen (selected_filename, "r");
-	if (datafile) 
-	{
-		while (!feof (datafile))
-		{
-			fgets (line, 255, datafile);
-			if (line[strlen(line)-1] == '\n') line[strlen(line)-1] = '\0'; /* strip final \n */
-			if (line[strlen(line)-1] == '\r') line[strlen(line)-1] = '\0'; /* strip final \r */
-			pos++;
-
-			if (strlen(line) > 254)
-			{
-				fprintf(stderr, "Error: Line %i in '%s' too long!\n", pos, selected_filename);
-				return FALSE;
-			}
-
-			if ((*line == '=') && (strncmp(line+1, glob->section, 254) == 0))
-			{
-				/* Found the selected section (Florian style) */
-				exists = 2;
-				break;
-			}
-
-			if ((*line == '$') || (*line == '=')) 
-			{
-				/* Found a new section */
-				pos++;
-			}
-		}
-
-		fclose (datafile);
-		if (!exists) exists = 1;
-	}
-
-	if (exists == 2)
-	{
-		if (dialog_question ("Section '%s' already exists in '%s', overwrite?", 
-				glob->section, g_path_get_basename (selected_filename)) 
-				!= GTK_RESPONSE_YES)
-			return FALSE;
-	}
-	else if ((exists == 1) && (glob->prefs->confirm_append))
-	{
-		if (dialog_question ("File '%s' exists, append section '%s'?", 
-				g_path_get_basename (selected_filename), glob->section)
-				!= GTK_RESPONSE_YES)
-			return FALSE;
-	}
-
-	if (save_file (selected_filename, glob->section, exists))
-	{
-		/* Delete a backup file if one's there. */
-		delete_backup ();
-		
-		g_free (glob->resonancefile);
-
-		glob->resonancefile = g_strdup (selected_filename);
-		
-		title = g_strdup_printf ("%s:%s - GWignerFit", g_path_get_basename (glob->resonancefile), glob->section);
-		gtk_window_set_title (GTK_WINDOW (glade_xml_get_widget(gladexml, "mainwindow")), title);
-		g_free (title);
-
-		statusbar_message ("Save operation successful");
-		unset_unsaved_changes ();
-	}
-
-	return TRUE;
 }
 
 static double FindFWHM (DataVector *d, int center, double offset) {

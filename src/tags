@@ -3,7 +3,7 @@
 !_TAG_PROGRAM_AUTHOR	Darren Hiebert	/dhiebert@users.sourceforge.net/
 !_TAG_PROGRAM_NAME	Exuberant Ctags	//
 !_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
-!_TAG_PROGRAM_VERSION	5.5.4	//
+!_TAG_PROGRAM_VERSION	5.5	//
 ADD_MARK_DISTANCE	gtkspectvis.c	18;"	d	file:
 AMP_COL	export.c	/^	FRQ_COL, WID_COL, AMP_COL, PHAS_COL,$/;"	e	file:
 AMP_COL	resonancelist.c	/^	FRQ_COL, WID_COL, AMP_COL, PHAS_COL,$/;"	e	file:
@@ -70,17 +70,18 @@ LAST_SIGNAL	gtkspectvis.c	/^	LAST_SIGNAL$/;"	e	file:
 MAXIT	spectral_numeric.c	134;"	d	file:
 MAXIT	spectral_numeric.c	64;"	d	file:
 MERGE_DATAFILE_COL	merge.c	/^	MERGE_DATAFILE_COL,$/;"	e	file:
-MERGE_FLAG_ADD	merge.c	16;"	d	file:
-MERGE_FLAG_DEL	merge.c	17;"	d	file:
-MERGE_FLAG_MARK	merge.c	18;"	d	file:
+MERGE_FLAG_ADD	merge.c	18;"	d	file:
+MERGE_FLAG_DEL	merge.c	19;"	d	file:
+MERGE_FLAG_DELRES	merge.c	21;"	d	file:
+MERGE_FLAG_MARK	merge.c	20;"	d	file:
 MERGE_ID_COL	merge.c	/^	MERGE_ID_COL = 0,$/;"	e	file:
-MERGE_LINK_B	merge.c	26;"	d	file:
-MERGE_LINK_G	merge.c	25;"	d	file:
-MERGE_LINK_R	merge.c	24;"	d	file:
+MERGE_LINK_B	merge.c	29;"	d	file:
+MERGE_LINK_G	merge.c	28;"	d	file:
+MERGE_LINK_R	merge.c	27;"	d	file:
 MERGE_LIST_COL	merge.c	/^	MERGE_LIST_COL,$/;"	e	file:
-MERGE_NODE_B	merge.c	22;"	d	file:
-MERGE_NODE_G	merge.c	21;"	d	file:
-MERGE_NODE_R	merge.c	20;"	d	file:
+MERGE_NODE_B	merge.c	25;"	d	file:
+MERGE_NODE_G	merge.c	24;"	d	file:
+MERGE_NODE_R	merge.c	23;"	d	file:
 MERGE_N_COLUMNS	merge.c	/^	MERGE_N_COLUMNS$/;"	e	file:
 MIN_DATAPOINTS_VIEW	gtkspectvis.c	16;"	d	file:
 MIN_IMPULSES_VIEW	gtkspectvis.c	17;"	d	file:
@@ -279,6 +280,7 @@ get_filename_helper	helpers.c	/^static gboolean get_filename_helper (char *filen
 get_res_iter_by_id	resonancelist.c	/^GtkTreeIter *get_res_iter_by_id (gint wanted_id)$/;"	f
 get_selected_resonance	resonancelist.c	/^gint get_selected_resonance (gboolean failok)$/;"	f
 get_selected_resonance_iter	resonancelist.c	/^gint get_selected_resonance_iter (GtkTreeIter *iter)$/;"	f
+get_timestamp	helpers.c	/^gchar* get_timestamp ()$/;"	f
 get_unique_frqs	helpers.c	/^GPtrArray *get_unique_frqs ()$/;"	f
 gladexml	gwignerfit.c	/^GladeXML *gladexml;$/;"	v
 gladexml	preferences.c	/^GladeXML *gladexml;$/;"	v
@@ -363,6 +365,14 @@ is_datafile	processdata.c	/^gboolean is_datafile (gchar *filename)$/;"	f
 ivector	nrutil.c	/^int *ivector(long nl, long nh)$/;"	f
 ivector	nrutil.c	/^int *ivector(nl,nh)$/;"	f
 link	merge.c	/^	GList *link;	\/* The position in the links group this node belongs to or NULL *\/$/;"	m	file:
+load_gwf_resonance_file	processdata.c	/^gboolean load_gwf_resonance_file (gchar *filename)$/;"	f
+ls_get_sections	loadsave.c	/^GList* ls_get_sections (gchar *filename, gchar *marker)$/;"	f
+ls_input_section	loadsave.c	/^gchar* ls_input_section (gchar *defsec)$/;"	f
+ls_read_section	loadsave.c	/^GPtrArray* ls_read_section (gchar *filename, gchar *section, gchar marker)$/;"	f
+ls_save_file	loadsave.c	/^gboolean ls_save_file (gchar *selected_filename, gchar *section, gchar marker,$/;"	f
+ls_save_file_exec	loadsave.c	/^gboolean ls_save_file_exec (gchar *filename, gchar *section, gchar marker, gint exists,$/;"	f
+ls_select_section	loadsave.c	/^gchar* ls_select_section (GList *sections, gchar *default_section)$/;"	f
+ls_strip_newline	loadsave.c	/^static void ls_strip_newline (gchar *line)$/;"	f	file:
 lvector	nrutil.c	/^unsigned long *lvector(long nl, long nh)$/;"	f
 lvector	nrutil.c	/^unsigned long *lvector(nl,nh)$/;"	f
 main	gwignerfit.c	/^gint main (gint argc, char *argv[]) $/;"	f
@@ -373,6 +383,7 @@ merge_add_reslist	merge.c	/^static void merge_add_reslist (GPtrArray *reslist, g
 merge_automatic_merge	merge.c	/^static void merge_automatic_merge ()$/;"	f	file:
 merge_avg_frq_from_link	merge.c	/^static gdouble merge_avg_frq_from_link (GList *list)$/;"	f	file:
 merge_delete_link_node	merge.c	/^static GList* merge_delete_link_node (MergeNode *node, gint type)$/;"	f	file:
+merge_delres	merge.c	/^static gboolean merge_delres (MergeNode *node)$/;"	f	file:
 merge_draw_link	merge.c	/^static gboolean merge_draw_link (GList *link)$/;"	f	file:
 merge_draw_remove	merge.c	/^static void merge_draw_remove (GList *link)$/;"	f	file:
 merge_draw_remove_all	merge.c	/^static void merge_draw_remove_all ()$/;"	f	file:
@@ -389,14 +400,24 @@ merge_highlight_width	merge.c	/^static void merge_highlight_width (MergeNode *no
 merge_is_id_in_list	merge.c	/^static gboolean merge_is_id_in_list (guint id, GList *list)$/;"	f	file:
 merge_leave_notify	merge.c	/^gboolean merge_leave_notify (GtkWidget *widget, GdkEventMotion *event)$/;"	f
 merge_link_compare	merge.c	/^static gint merge_link_compare (gconstpointer a_in, gconstpointer b_in)$/;"	f	file:
+merge_link_two_nodes	merge.c	/^static void merge_link_two_nodes (MergeNode *node1, MergeNode *node2)$/;"	f	file:
+merge_load_del_helper	merge.c	/^static gboolean merge_load_del_helper (gchar *text)$/;"	f	file:
+merge_load_file_helper	merge.c	/^static gboolean merge_load_file_helper (gchar *text)$/;"	f	file:
+merge_load_link_helper	merge.c	/^static gboolean merge_load_link_helper (gchar **tokens)$/;"	f	file:
+merge_load_links	merge.c	/^static gboolean merge_load_links (gchar *selected_filename, const gchar *label)$/;"	f	file:
+merge_load_links_cleanup	merge.c	526;"	d	file:
+merge_load_links_cleanup	merge.c	616;"	d	file:
 merge_motion_notify	merge.c	/^gboolean merge_motion_notify (GtkWidget *widget, GdkEventMotion *event)$/;"	f
 merge_open_win	merge.c	/^void merge_open_win ()$/;"	f
 merge_purge	merge.c	/^void merge_purge (gboolean free_only)$/;"	f
 merge_read_resonances	merge.c	/^static gint merge_read_resonances (gchar *selected_filename, const gchar *label, GPtrArray **reslist, gchar **datafilename)$/;"	f	file:
 merge_reslist_compare	merge.c	/^static gint merge_reslist_compare (gconstpointer a_in, gconstpointer b_in)$/;"	f	file:
-merge_resonancefile_cleanup	merge.c	314;"	d	file:
-merge_resonancefile_cleanup	merge.c	435;"	d	file:
+merge_resonancefile_cleanup	merge.c	349;"	d	file:
+merge_resonancefile_cleanup	merge.c	447;"	d	file:
+merge_save_links	merge.c	/^void merge_save_links (FILE *datafile, gchar *section, gchar *newline)$/;"	f
 merge_show_numres	merge.c	/^void merge_show_numres (GtkTreeViewColumn *col, GtkCellRenderer *renderer, $/;"	f
+merge_statusbar_message	merge.c	/^void merge_statusbar_message (gchar *format, ...)$/;"	f
+merge_statusbar_message_remove	merge.c	/^static gint merge_statusbar_message_remove (gpointer data)$/;"	f	file:
 merge_undisplay_node_selection	merge.c	/^static void merge_undisplay_node_selection ()$/;"	f	file:
 merge_zoom_x_all	merge.c	/^static void merge_zoom_x_all ()$/;"	f	file:
 mrqcof	compl_mrqmin.c	/^void mrqcof(DataVector *d, double sig[], int ndata, double a[], int ia[],$/;"	f
@@ -446,13 +467,18 @@ on_measure_distance_activate	callbacks.c	/^void on_measure_distance_activate (Gt
 on_merge_add_link_activate	merge.c	/^gboolean on_merge_add_link_activate (GtkWidget *button)$/;"	f
 on_merge_add_list_activate	merge.c	/^gboolean on_merge_add_list_activate (GtkWidget *button)$/;"	f
 on_merge_close_activate	merge.c	/^gboolean on_merge_close_activate (GtkWidget *button)$/;"	f
+on_merge_delete_all_links_activate	merge.c	/^gboolean on_merge_delete_all_links_activate (GtkWidget *button)$/;"	f
 on_merge_delete_link_activate	merge.c	/^gboolean on_merge_delete_link_activate (GtkWidget *button)$/;"	f
+on_merge_export_activate	merge.c	/^gboolean on_merge_export_activate (GtkWidget *button)$/;"	f
 on_merge_find_links_activate	merge.c	/^gboolean on_merge_find_links_activate (GtkWidget *button)$/;"	f
 on_merge_highlight_activate	merge.c	/^gboolean on_merge_highlight_activate (GtkWidget *button)$/;"	f
 on_merge_new_activate	merge.c	/^gboolean on_merge_new_activate (GtkWidget *button)$/;"	f
+on_merge_open_activate	merge.c	/^gboolean on_merge_open_activate (GtkWidget *button)$/;"	f
 on_merge_remove_list_activate	merge.c	/^gboolean on_merge_remove_list_activate (GtkWidget *button)$/;"	f
+on_merge_remove_resonance_activate	merge.c	/^gboolean on_merge_remove_resonance_activate (GtkWidget *button)$/;"	f
 on_merge_resonancelists_activate	callbacks.c	/^void on_merge_resonancelists_activate (GtkMenuItem *menuitem, gpointer user_data)$/;"	f
 on_merge_save_activate	merge.c	/^gboolean on_merge_save_activate (GtkWidget *button)$/;"	f
+on_merge_save_as_activate	merge.c	/^gboolean on_merge_save_as_activate (GtkWidget *button)$/;"	f
 on_minfrqentry_changed	callbacks.c	/^gboolean on_minfrqentry_changed (GtkWidget *entry, GdkEventKey *event, gpointer user_data)$/;"	f
 on_new_activate	callbacks.c	/^void on_new_activate (GtkMenuItem *menuitem, gpointer user_data)$/;"	f
 on_open1_activate	callbacks.c	/^void on_open1_activate (GtkMenuItem *menuitem, gpointer user_data)$/;"	f
@@ -526,19 +552,16 @@ quit_application	callbacks.c	/^gboolean quit_application (GtkWidget *widget, Gdk
 r	spectral_numeric.c	/^typedef struct FCOMPLEX {float r,i;} fcomplex;$/;"	m	struct:FCOMPLEX	file:
 read_datafile	processdata.c	/^gboolean read_datafile (gchar *selected_filename, gboolean called_from_open) $/;"	f
 read_resonancefile	processdata.c	/^gint read_resonancefile (gchar *selected_filename, const gchar *label)$/;"	f
-read_resonancefile_cleanup	processdata.c	606;"	d	file:
-read_resonancefile_cleanup	processdata.c	921;"	d	file:
+read_resonancefile_cleanup	processdata.c	608;"	d	file:
+read_resonancefile_cleanup	processdata.c	906;"	d	file:
 remove_resonance	resonancelist.c	/^void remove_resonance (GtkTreeIter iter)$/;"	f
 remove_selected_resonance	resonancelist.c	/^void remove_selected_resonance ()$/;"	f
 res	merge.c	/^	Resonance *res;	\/* The properties of the resonance *\/$/;"	m	file:
 reslist_update_widthunit	resonancelist.c	/^void reslist_update_widthunit ()$/;"	f
 resonance_check_all	resonancelist.c	/^void resonance_check_all (gboolean type)$/;"	f
 resonance_toggle_row	resonancelist.c	/^void resonance_toggle_row ()$/;"	f
-save_file	processdata.c	/^gboolean save_file (gchar *filename, gchar *section, gint exists)$/;"	f
-save_file_prepare	processdata.c	/^gboolean save_file_prepare (gchar *selected_filename) $/;"	f
+save_write_section	processdata.c	/^void save_write_section (FILE *datafile, gchar *section, gchar *newline)$/;"	f
 select_res_by_id	resonancelist.c	/^gboolean select_res_by_id (gint id)$/;"	f
-select_section_dialog	helpers.c	/^gboolean select_section_dialog (gchar *selected_filename, gchar *default_section, gchar **secname) $/;"	f
-select_section_ok	helpers.c	/^gboolean select_section_ok (gchar *section)$/;"	f
 set_busy_cursor	helpers.c	/^void set_busy_cursor (gboolean busy)$/;"	f
 set_icons	gwignerfit.c	/^void set_icons ()$/;"	f
 set_new_main_data	processdata.c	/^void set_new_main_data (DataVector *newdata, gboolean called_from_open)$/;"	f

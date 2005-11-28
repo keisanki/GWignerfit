@@ -20,8 +20,6 @@ gboolean file_is_writeable (gchar *filename);
 
 gchar *get_filename (const gchar *title, const gchar *defaultname, gchar check);
 
-gboolean select_section_dialog (gchar *filename, gchar *default_section, gchar **secname);
-
 gboolean update_fit_window (FitWindowParam *fitwinparam);
 
 void detach_and_free_shm (int shmid);

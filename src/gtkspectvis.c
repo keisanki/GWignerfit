@@ -14,7 +14,7 @@
 
 #define COORD_BORDER_DIST	5
 #define MIN_DATAPOINTS_VIEW	4	/* actually it is one more */
-#define MIN_IMPULSES_VIEW	1	/* actually it is one more */
+#define MIN_IMPULSES_VIEW	2	/* actually it is one more */
 #define ADD_MARK_DISTANCE	20
 
 #define g_marshal_value_peek_pointer(v)		g_value_get_pointer (v)

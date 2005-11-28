@@ -24,6 +24,7 @@
 #include "calibrate.h"
 #include "fcomp.h"
 #include "merge.h"
+#include "loadsave.h"
 
 extern GlobalData *glob;
 extern GladeXML *gladexml;
@@ -313,13 +314,11 @@ void on_open1_activate (GtkMenuItem *menuitem, gpointer user_data)
 	filename = get_filename ("Select resonancefile", path, 1);
 	g_free (path);
 
-	if (filename)
-	{
-		if (select_section_dialog (filename, NULL, NULL))
-			g_free (filename);
-	}
+	if (!filename)
+		return;
 
-	/* Do not free filename, as glob->resonancefile now points to it. */
+	load_gwf_resonance_file (filename);
+	g_free (filename);
 }
 
 void on_open_section_activate (GtkMenuItem *menuitem, gpointer user_data)
@@ -337,7 +336,7 @@ void on_open_section_activate (GtkMenuItem *menuitem, gpointer user_data)
 		return;
 	}
 
-	select_section_dialog (glob->resonancefile, glob->section, NULL);
+	//select_section_dialog (glob->resonancefile, glob->section, NULL);
 }
 
 gboolean on_phaseentry_changed (GtkWidget *entry, GdkEventKey *event, gpointer user_data)
@@ -543,66 +542,43 @@ void on_remove_resonance_activate (GtkMenuItem *menuitem, gpointer user_data)
 
 void on_save_as_activate (GtkMenuItem *menuitem, gpointer user_data)
 {
-	GladeXML *xmldialog;
-	GtkWidget *filew;
-	gchar *filename;
-	gint result;
+	gchar *defaultname, *filename, *newsection, *title;
 
-	xmldialog = glade_xml_new (GLADEFILE, "save_section_dialog", NULL);
-	g_signal_connect (
-		G_OBJECT (glade_xml_get_widget (xmldialog, "save_section_entry")), 
-		"activate", 
-		G_CALLBACK (ok_dialog), 
-		glade_xml_get_widget (xmldialog, "save_section_dialog"));
+	newsection = ls_input_section (glob->section);
+	if (!newsection)
+		return;
 
-	if (glob->section)
+	g_free (glob->section);
+	glob->section = newsection;
+
+	if (glob->resonancefile)
+		defaultname = g_strdup (glob->resonancefile);
+	else
+		defaultname = get_defaultname (".gwf");
+
+	filename = get_filename ("Select session file", defaultname, 0);
+	g_free (defaultname);
+
+	if (!filename)
+		return;
+
+	if (ls_save_file (filename, newsection, '=', save_write_section))
 	{
-		gtk_entry_set_text (GTK_ENTRY (glade_xml_get_widget (xmldialog, "save_section_entry")),
-				glob->section);
-	}
+		/* Delete a backup file if one's there. */
+		delete_backup ();
 
-	result = gtk_dialog_run (GTK_DIALOG (glade_xml_get_widget (xmldialog, "save_section_dialog")));
+		g_free (glob->resonancefile);
+		glob->resonancefile = g_strdup (filename);
 
-	if (result == GTK_RESPONSE_OK)
-	{
-		g_free (glob->section);
-		glob->section = g_strdup_printf ("%s", gtk_entry_get_text (
-					GTK_ENTRY (glade_xml_get_widget (xmldialog, "save_section_entry"))
-					));
-		gtk_widget_destroy (glade_xml_get_widget(xmldialog, "save_section_dialog"));
+		title = g_strdup_printf ("%s:%s - GWignerFit", g_path_get_basename (glob->resonancefile), glob->section);
+		gtk_window_set_title (GTK_WINDOW (glade_xml_get_widget (gladexml, "mainwindow")), title);
+		g_free (title);
 
-		if (*glob->section == 0)
-		{
-			dialog_message ("You need to enter a non empty section name.");
-			return;
-		}
-
-		filew = gtk_file_selection_new ("Select filename");
-
-		if (glob->resonancefile)
-			filename = g_strdup (glob->resonancefile);
-		else
-			filename = get_defaultname (".gwf");
-
-		if (filename)
-		{
-			gtk_file_selection_set_filename (GTK_FILE_SELECTION (filew), filename);
-			g_free (filename);
-		}
-
-		do {
-			/* Keep the dialog running until the file is either
-			 * saved or the user gave up. */
-			result = gtk_dialog_run (GTK_DIALOG (filew));
-			filename = g_strdup (gtk_file_selection_get_filename (GTK_FILE_SELECTION (filew)));
-		}
-		while ((result == GTK_RESPONSE_OK) && !(save_file_prepare (filename)));
-		/* save_file_prepare updated glob->path */
-		
-		gtk_widget_destroy (filew);
+		statusbar_message ("Save operation successful");
+		unset_unsaved_changes ();
 	}
 	else
-		gtk_widget_destroy (glade_xml_get_widget (xmldialog, "save_section_dialog"));
+		statusbar_message ("Something went wrong during the save operation");
 }
 
 void on_save_activate (GtkMenuItem *menuitem, gpointer user_data)
@@ -610,7 +586,7 @@ void on_save_activate (GtkMenuItem *menuitem, gpointer user_data)
 	if ((!glob->section) || (!glob->resonancefile)) 
 		on_save_as_activate (NULL, NULL);
 	else 
-		if (save_file (glob->resonancefile, glob->section, 2))
+		if (ls_save_file_exec (glob->resonancefile, glob->section, '=', 2, save_write_section))
 		{
 			statusbar_message ("Save operation successful");
 			unset_unsaved_changes ();
