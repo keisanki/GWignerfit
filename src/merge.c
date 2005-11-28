@@ -655,7 +655,7 @@ static gboolean merge_load_del_helper (gchar *text)
 {
 	gint id, num, i;
 	GPtrArray *nodes;
-	MergeNode *node;
+	MergeNode *node = NULL;
 	
 	g_return_val_if_fail (text, FALSE);
 	g_return_val_if_fail (glob->merge->nodelist, FALSE);
@@ -675,7 +675,7 @@ static gboolean merge_load_del_helper (gchar *text)
 			break;
 	}
 
-	if (node->num != num)
+	if ((!node) || (node->num != num))
 		return FALSE;
 
 	merge_delres (node);
@@ -688,7 +688,7 @@ static gboolean merge_load_link_helper (gchar **tokens)
 {
 	gint id, num, i, j;
 	GPtrArray *nodes;
-	MergeNode *node;
+	MergeNode *node = NULL;
 	GList *link = NULL;
 
 	g_return_val_if_fail (tokens, FALSE);
@@ -715,7 +715,7 @@ static gboolean merge_load_link_helper (gchar **tokens)
 				break;
 		}
 
-		if ((node->num != num) || (node->link))
+		if ((!node) || (node->num != num) || (node->link))
 			return FALSE;
 
 		link = g_list_append (link, node);
