@@ -3,8 +3,6 @@
 
 #include "structs.h"
 
-#define MERGE_CATCH_RANGE 5
-
 /* Columns in merge_treeview */
 enum {
 	MERGE_ID_COL = 0,

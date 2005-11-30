@@ -1033,17 +1033,16 @@ gboolean on_merge_remove_list_activate (GtkWidget *button)
 /* Add a single link via user input */
 gboolean on_merge_add_link_activate (GtkWidget *button)
 {
-	//GtkWidget *win;
-	//gint x, y, xpix, ypix;
+	gint xpix, ypix;
 	
 	glob->merge->flag |= MERGE_FLAG_ADD;
 	glob->merge->flag &= ~MERGE_FLAG_DEL;
 	glob->merge->flag &= ~MERGE_FLAG_MARK;
 	glob->merge->flag &= ~MERGE_FLAG_DELRES;
 
-	//win = glade_xml_get_widget (glob->merge->xmlmerge, "merge_spectvis");
-	//g_return_val_if_fail (gdk_window_get_pointer (win->window, &x, &y, NULL), FALSE);
-	//glob->merge->nearnode = merge_get_nearnode (x, y, &xpix, &ypix);
+	glob->merge->nearnode = merge_get_nearnode (-1, -1, &xpix, &ypix);
+	if (glob->merge->nearnode)
+		merge_display_node_selection (xpix, ypix);
 	
 	return TRUE;
 }
@@ -1051,10 +1050,16 @@ gboolean on_merge_add_link_activate (GtkWidget *button)
 /* Delete a single link via user input */
 gboolean on_merge_delete_link_activate (GtkWidget *button)
 {
+	gint xpix, ypix;
+	
 	glob->merge->flag |= MERGE_FLAG_DEL;
 	glob->merge->flag &= ~MERGE_FLAG_ADD;
 	glob->merge->flag &= ~MERGE_FLAG_MARK;
 	glob->merge->flag &= ~MERGE_FLAG_DELRES;
+
+	glob->merge->nearnode = merge_get_nearnode (-1, -1, &xpix, &ypix);
+	if (glob->merge->nearnode)
+		merge_display_node_selection (xpix, ypix);
 	
 	return TRUE;
 }
@@ -1129,10 +1134,16 @@ gboolean on_merge_highlight_activate (GtkWidget *button)
 /* Remove the next selected resonance from nodelist */
 gboolean on_merge_remove_resonance_activate (GtkWidget *button)
 {
+	gint xpix, ypix;
+
 	glob->merge->flag |= MERGE_FLAG_DELRES;
 	glob->merge->flag &= ~MERGE_FLAG_ADD;
 	glob->merge->flag &= ~MERGE_FLAG_MARK;
 	glob->merge->flag &= ~MERGE_FLAG_DEL;
+
+	glob->merge->nearnode = merge_get_nearnode (-1, -1, &xpix, &ypix);
+	if (glob->merge->nearnode)
+		merge_display_node_selection (xpix, ypix);
 	
 	return TRUE;
 }
@@ -1277,16 +1288,12 @@ gint merge_handle_value_selected (GtkSpectVis *spectvis, gdouble *xval, gdouble 
 /* Keep track of the cursor to find interesting points */
 gboolean merge_motion_notify (GtkWidget *widget, GdkEventMotion *event)
 {
-	GtkSpectVis *graph;
 	MergeWin *merge = glob->merge;
 	MergeNode *nearnode;
 	gint xpix, ypix;
 
 	if (!merge->flag)
 		return FALSE;
-
-	graph = GTK_SPECTVIS (glade_xml_get_widget (merge->xmlmerge, "merge_spectvis"));
-	g_return_val_if_fail (graph, FALSE);
 
 	/* Get a node nearby */
 	nearnode = merge_get_nearnode (event->x, event->y, &xpix, &ypix);
@@ -1299,14 +1306,7 @@ gboolean merge_motion_notify (GtkWidget *widget, GdkEventMotion *event)
 	}
 
 	if ((!merge->nearnode) || (merge->nearnode != nearnode))
-	{
-		merge_undisplay_node_selection ();
-		gdk_draw_rectangle (widget->window, graph->cursorgc, FALSE, 
-				xpix-MERGE_CATCH_RANGE+1, ypix-MERGE_CATCH_RANGE+1, 
-				2*MERGE_CATCH_RANGE-2, 2*MERGE_CATCH_RANGE-2);
-		merge->selx = xpix;
-		merge->sely = ypix;
-	}
+		merge_display_node_selection (xpix, ypix);
 
 	/* remember closest node */
 	merge->nearnode = nearnode;

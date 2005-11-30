@@ -20,6 +20,8 @@
 #define MERGE_LINK_G 65535/255*100
 #define MERGE_LINK_B 65535/255*0
 
+#define MERGE_CATCH_RANGE 5
+
 extern GlobalData *glob;
 
 /********** Basic handling of the node graph *********************************/
@@ -59,7 +61,30 @@ void merge_undisplay_node_selection ()
 
 	merge->selx = -1;
 }
-/* Returns the node close to the cursor or NULL */
+
+/* Display the selection box */
+void merge_display_node_selection (gint xpix, gint ypix)
+{
+	MergeWin *merge;
+	GtkWidget *widget;
+
+	if (!glob->merge)
+		return;
+	merge = glob->merge;
+
+	if (merge->selx > 0)
+		merge_undisplay_node_selection ();
+
+	widget = glade_xml_get_widget (merge->xmlmerge, "merge_spectvis");
+
+	gdk_draw_rectangle (widget->window, GTK_SPECTVIS (widget)->cursorgc, FALSE, 
+			xpix-MERGE_CATCH_RANGE+1, ypix-MERGE_CATCH_RANGE+1, 
+			2*MERGE_CATCH_RANGE-2, 2*MERGE_CATCH_RANGE-2);
+	merge->selx = xpix;
+	merge->sely = ypix;
+}
+
+/* Returns the node at (xpix, ypix) close to the cursor at (x, y) or NULL */
 MergeNode* merge_get_nearnode (gint xpos, gint ypos, gint *xpix, gint *ypix)
 {
 	MergeWin *merge = glob->merge;
@@ -75,6 +100,13 @@ MergeNode* merge_get_nearnode (gint xpos, gint ypos, gint *xpix, gint *ypix)
 
 	if ((!view) || (!merge->nodelist->len))
 		return NULL;
+
+	if ((xpos < 0) || (ypos < 0))
+	{
+		/* Get cursor position */
+		if (!(gdk_window_at_pointer (&xpos, &ypos)))
+			return NULL;
+	}
 
 	/* Get a nodelist id */
 	for (pos=0.75; pos < (gdouble)merge->nodelist->len + 0.6; pos+=0.5)

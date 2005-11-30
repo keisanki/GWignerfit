@@ -13,6 +13,8 @@ gboolean merge_draw_link (GList *link);
 
 void merge_undisplay_node_selection ();
 
+void merge_display_node_selection (gint xpix, gint ypix);
+
 gboolean merge_is_id_in_list (guint id, GList *list);
 
 GArray* merge_gather_reslist ();
