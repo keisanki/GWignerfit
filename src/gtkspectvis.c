@@ -1810,7 +1810,7 @@ gtk_spect_vis_draw_bars (GtkSpectVis *spectvis)
 			gtk_spect_vis_pixel_to_units (spectvis, 1, 0, &x2, &y);
 			diff = x2 - x1;
 
-			gtk_spect_vis_units_to_pixel (spectvis, bar->pos + pos, 0, &xpixplus, &ypix);
+			gtk_spect_vis_units_to_pixel (spectvis, bar->pos, 0, &xpixplus, &ypix);
 			xpixminus = xpixplus;
 
 			for (pos=0; pos<=1.5*bar->width; pos+=diff)
