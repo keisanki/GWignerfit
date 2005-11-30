@@ -146,15 +146,15 @@ static void spectral_fit_weyl (gdouble *res, guint numres, guint offset)
 	g_return_if_fail (glob->spectral->xmlspect);
 	
 	entry = glade_xml_get_widget (glob->spectral->xmlspect, "spectral_area_entry");
-	snprintf(text, 20, "%f", glob->spectral->area);
+	snprintf (text, 20, "%f", glob->spectral->area);
 	gtk_entry_set_text (GTK_ENTRY (entry), text);
 	
 	entry = glade_xml_get_widget (glob->spectral->xmlspect, "spectral_perimeter_entry");
-	snprintf(text, 20, "%f", glob->spectral->perim);
+	snprintf (text, 20, "%f", glob->spectral->perim);
 	gtk_entry_set_text (GTK_ENTRY (entry), text);
 	
 	entry = glade_xml_get_widget (glob->spectral->xmlspect, "spectral_offset_entry");
-	snprintf(text, 20, "%f", glob->spectral->offset);
+	snprintf (text, 20, "%f", glob->spectral->offset);
 	gtk_entry_set_text (GTK_ENTRY (entry), text);
 }
 
@@ -180,7 +180,7 @@ static gdouble* spectral_get_resonances (guint *numres, gboolean unfold)
 	
 	/* Copy all resonances */
 	for (i=0; i<glob->numres; i++)
-		res[i] = ((Resonance *) g_ptr_array_index(glob->param, i))->frq;
+		res[i] = ((Resonance *) g_ptr_array_index (glob->param, i))->frq;
 
 	/* Mark all undesired resonances with -1 */
 	if ((spectral->selection == 's') && (gtk_tree_model_get_iter_first (model, &iter)))
@@ -196,7 +196,7 @@ static gdouble* spectral_get_resonances (guint *numres, gboolean unfold)
 			(*numres)--;
 		}
 
-		while (gtk_tree_model_iter_next(model, &iter))
+		while (gtk_tree_model_iter_next (model, &iter))
 		{
 			gtk_tree_model_get (model, &iter, 0, &id, -1);
 			id--;
@@ -344,6 +344,7 @@ static void spectral_nfluc ()
 	resonances = spectral_get_resonances (&numres, FALSE);
 	if (numres < 2)
 	{
+		g_free (resonances);
 		spectral_too_few_resonances ();
 		return;
 	}
@@ -389,6 +390,7 @@ static void spectral_nnd ()
 	spectral_remove_graphs ();
 	if (numres < 3)
 	{
+		g_free (resonances);
 		spectral_too_few_resonances ();
 		return;
 	}
@@ -520,6 +522,7 @@ static void spectral_integrated_nnd ()
 	spectral_remove_graphs ();
 	if (numres < 3)
 	{
+		g_free (resonances);
 		spectral_too_few_resonances ();
 		return;
 	}
@@ -651,6 +654,7 @@ static void spectral_sigma2 ()
 	spectral_remove_graphs ();
 	if (numres < 3)
 	{
+		g_free (resonances);
 		spectral_too_few_resonances ();
 		return;
 	}
@@ -821,6 +825,7 @@ static void spectral_delta3 ()
 	spectral_remove_graphs ();
 	if (numres < 3)
 	{
+		g_free (resonances);
 		spectral_too_few_resonances ();
 		return;
 	}
@@ -993,6 +998,7 @@ static void spectral_length ()
 	spectral_remove_graphs ();
 	if (numres < 3)
 	{
+		g_free (resonances);
 		spectral_too_few_resonances ();
 		return;
 	}
@@ -1123,19 +1129,19 @@ void spectral_open_win ()
 		
 		/* Display current Weyl coefficients */
 		entry = glade_xml_get_widget (glob->spectral->xmlspect, "spectral_area_entry");
-		snprintf(text, 20, "%f", glob->spectral->area);
+		snprintf (text, 20, "%f", glob->spectral->area);
 		gtk_entry_set_text (GTK_ENTRY (entry), text);
 		
 		entry = glade_xml_get_widget (glob->spectral->xmlspect, "spectral_perimeter_entry");
-		snprintf(text, 20, "%f", glob->spectral->perim);
+		snprintf (text, 20, "%f", glob->spectral->perim);
 		gtk_entry_set_text (GTK_ENTRY (entry), text);
 		
 		entry = glade_xml_get_widget (glob->spectral->xmlspect, "spectral_offset_entry");
-		snprintf(text, 20, "%f", glob->spectral->offset);
+		snprintf (text, 20, "%f", glob->spectral->offset);
 		gtk_entry_set_text (GTK_ENTRY (entry), text);
 
 		/* Set normalize checkbox */
-		gtk_toggle_button_set_active(
+		gtk_toggle_button_set_active (
 			GTK_TOGGLE_BUTTON (glade_xml_get_widget (glob->spectral->xmlspect, "spectral_norm_button")),
 			glob->spectral->normalize);
 
@@ -1226,7 +1232,7 @@ gboolean spectral_on_area_changed (GtkWidget *entry, GdkEventKey *event, gpointe
 	
 	if ((event->keyval != GDK_Return) && (event->keyval != GDK_KP_Enter)) return FALSE;
 	
-	if (sscanf(gtk_entry_get_text(GTK_ENTRY (entry)), "%lf", &value) != 1) return FALSE;
+	if (sscanf (gtk_entry_get_text (GTK_ENTRY (entry)), "%lf", &value) != 1) return FALSE;
 
 	glob->spectral->area = value;
 	spectral_resonances_changed ();
@@ -1243,7 +1249,7 @@ gboolean spectral_on_perim_changed (GtkWidget *entry, GdkEventKey *event, gpoint
 	
 	if ((event->keyval != GDK_Return) && (event->keyval != GDK_KP_Enter)) return FALSE;
 	
-	if (sscanf(gtk_entry_get_text(GTK_ENTRY (entry)), "%lf", &value) != 1) return FALSE;
+	if (sscanf (gtk_entry_get_text (GTK_ENTRY (entry)), "%lf", &value) != 1) return FALSE;
 
 	glob->spectral->perim = value;
 	spectral_resonances_changed ();
@@ -1260,7 +1266,7 @@ gboolean spectral_on_offset_changed (GtkWidget *entry, GdkEventKey *event, gpoin
 	
 	if ((event->keyval != GDK_Return) && (event->keyval != GDK_KP_Enter)) return FALSE;
 	
-	if (sscanf(gtk_entry_get_text(GTK_ENTRY (entry)), "%lf", &value) != 1) return FALSE;
+	if (sscanf (gtk_entry_get_text (GTK_ENTRY (entry)), "%lf", &value) != 1) return FALSE;
 
 	glob->spectral->offset = value;
 	spectral_resonances_changed ();
@@ -1446,6 +1452,7 @@ gboolean on_spectral_fit_button_clicked (GtkWidget *button)
 	g_return_val_if_fail (resonances, FALSE);
 
 	spectral_fit_weyl (resonances, numres, glob->spectral->first_res - 1);
+	g_free (resonances);
 
 	spectral_resonances_changed ();
 
@@ -1472,7 +1479,7 @@ gboolean on_spectral_1st_res_keypressed (GtkWidget *entry, GdkEventKey *event, g
 	
 	if ((event->keyval != GDK_Return) && (event->keyval != GDK_KP_Enter)) return FALSE;
 	
-	if (sscanf(gtk_entry_get_text(GTK_ENTRY (entry)), "%i", &value) != 1) return FALSE;
+	if (sscanf (gtk_entry_get_text (GTK_ENTRY (entry)), "%i", &value) != 1) return FALSE;
 	if (value < 1) return FALSE;
 
 	glob->spectral->first_res = value;
@@ -1511,7 +1518,7 @@ gboolean on_spectral_bins_keypressed (GtkWidget *entry, GdkEventKey *event, gpoi
 	
 	if ((event->keyval != GDK_Return) && (event->keyval != GDK_KP_Enter)) return FALSE;
 	
-	if (sscanf(gtk_entry_get_text(GTK_ENTRY (entry)), "%i", &value) != 1) return FALSE;
+	if (sscanf (gtk_entry_get_text (GTK_ENTRY (entry)), "%i", &value) != 1) return FALSE;
 	if (value < 3) return FALSE;
 
 	glob->spectral->bins = value;
@@ -1582,7 +1589,7 @@ gboolean on_spectral_export_data (GtkMenuItem *menuitem, gpointer user_data)
 	g_return_val_if_fail (glob->spectral->xmlspect, FALSE);
 
 	if (glob->path)
-		path = g_strdup_printf("%s%c", glob->path, G_DIR_SEPARATOR);
+		path = g_strdup_printf ("%s%c", glob->path, G_DIR_SEPARATOR);
 
 	filename = get_filename ("Select datafile for export...", path, 2);
 	g_free (path);
@@ -1709,7 +1716,7 @@ gboolean on_spectral_export_ps (GtkMenuItem *menuitem, gpointer user_data)
 	dialog = glade_xml_get_widget (xmldialog, "export_ps_dialog");
 
 	/* Connect the select filename button */
-	g_signal_connect(
+	g_signal_connect (
 			G_OBJECT (glade_xml_get_widget (xmldialog, "button10")), 
 			"clicked",
 			(GCallback) export_select_filename,
