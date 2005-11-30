@@ -1777,7 +1777,7 @@ gtk_spect_vis_draw_bars (GtkSpectVis *spectvis)
 {
 	GList *barpointer;
 	GtkSpectVisBar *bar;
-	gint xpix, ypix;
+	gint xpix, xpixplus, xpixminus, ypix;
 	gdouble pos, fade, diff, x1, x2, y;
 	GdkColor color;
 	GdkGC *gc;
@@ -1810,31 +1810,33 @@ gtk_spect_vis_draw_bars (GtkSpectVis *spectvis)
 			gtk_spect_vis_pixel_to_units (spectvis, 1, 0, &x2, &y);
 			diff = x2 - x1;
 
+			gtk_spect_vis_units_to_pixel (spectvis, bar->pos + pos, 0, &xpixplus, &ypix);
+			xpixminus = xpixplus;
+
 			for (pos=0; pos<=1.5*bar->width; pos+=diff)
 			{
-				gtk_spect_vis_units_to_pixel (spectvis, bar->pos + pos, 0, &xpix, &ypix);
-
 				fade = 1 / ( pow(2*pos/bar->width,2) + 1 );
 				color.red   = 65535 - (65535 - bar->col.red  ) * fade;
 				color.green = 65535 - (65535 - bar->col.green) * fade;
 				color.blue  = 65535 - (65535 - bar->col.blue ) * fade;
 				gdk_gc_set_rgb_fg_color (gc, &color);
 
-				if ((xpix > spectvis->view->graphboxxoff) &&
-				    (xpix < spectvis->view->graphboxxoff + spectvis->view->graphboxwidth))
+				if ((xpixplus > spectvis->view->graphboxxoff) &&
+				    (xpixplus < spectvis->view->graphboxxoff + spectvis->view->graphboxwidth))
 					gdk_draw_line (spectvis->pixmap,
 						       gc,
-						       xpix, spectvis->view->graphboxyoff,
-						       xpix, spectvis->view->graphboxyoff - spectvis->view->graphboxheight);
+						       xpixplus, spectvis->view->graphboxyoff,
+						       xpixplus, spectvis->view->graphboxyoff - spectvis->view->graphboxheight);
 
-				gtk_spect_vis_units_to_pixel (spectvis, bar->pos - pos, 0, &xpix, &ypix);
-				if ((xpix > spectvis->view->graphboxxoff) &&
-				    (xpix < spectvis->view->graphboxxoff + spectvis->view->graphboxwidth))
+				if ((xpixminus > spectvis->view->graphboxxoff) &&
+				    (xpixminus < spectvis->view->graphboxxoff + spectvis->view->graphboxwidth))
 					gdk_draw_line (spectvis->pixmap,
 						       gc,
-						       xpix, spectvis->view->graphboxyoff,
-						       xpix, spectvis->view->graphboxyoff - spectvis->view->graphboxheight);
+						       xpixminus, spectvis->view->graphboxyoff,
+						       xpixminus, spectvis->view->graphboxyoff - spectvis->view->graphboxheight);
 				
+				xpixplus ++;
+				xpixminus--;
 			}
 
 			/* Draw an extra line a bit darker at bar->pos */

@@ -21,7 +21,9 @@ GArray* merge_gather_reslist ();
 
 void merge_highlight_width (MergeNode *node);
 
-MergeNode* merge_get_nearnode (gint xpos, gint ypos, gint *xpix, gint *ypix);
+void merge_show_resonance_info (MergeNode *node);
+
+MergeNode* merge_get_nearnode (gint xpos, gint ypos, gint *xpix, gint *ypix, gboolean endonly);
 
 void merge_link_two_nodes (MergeNode *node1, MergeNode *node2);
 
@@ -30,5 +32,9 @@ gboolean merge_delres (MergeNode *node);
 void merge_add_reslist (GPtrArray *reslist, gchar *datafilename, gchar *name);
 
 void merge_statusbar_message (gchar *format, ...);
+
+gboolean merge_remove_spect_graph (gint uid);
+
+gboolean merge_spect_graph_show_node (MergeNode *node);
 
 #endif

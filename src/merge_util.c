@@ -24,6 +24,9 @@
 
 extern GlobalData *glob;
 
+/* Forward declarations */
+static gboolean merge_add_spect_graph (gchar *datafilename, gint uid);
+
 /********** Basic handling of the node graph *********************************/
 
 /* Zoom x so that all resonances can be seen */
@@ -84,14 +87,15 @@ void merge_display_node_selection (gint xpix, gint ypix)
 	merge->sely = ypix;
 }
 
-/* Returns the node at (xpix, ypix) close to the cursor at (x, y) or NULL */
-MergeNode* merge_get_nearnode (gint xpos, gint ypos, gint *xpix, gint *ypix)
+/* Returns the node at (xpix, ypix) close to the cursor at (x, y) or NULL.
+ * If endonly == TURE, react only if close to the end of a node. */
+MergeNode* merge_get_nearnode (gint xpos, gint ypos, gint *xpix, gint *ypix, gboolean endonly)
 {
 	MergeWin *merge = glob->merge;
 	GPtrArray *nodes;
 	GtkSpectVis *graph;
 	GtkSpectVisViewport *view;
-	gint i, diff, lastdiff, id = -1;
+	gint i, diff, lastdiff, ypix2, id = -1;
 	gdouble pos;
 
 	graph = GTK_SPECTVIS (glade_xml_get_widget (merge->xmlmerge, "merge_spectvis"));
@@ -109,13 +113,34 @@ MergeNode* merge_get_nearnode (gint xpos, gint ypos, gint *xpix, gint *ypix)
 	}
 
 	/* Get a nodelist id */
-	for (pos=0.75; pos < (gdouble)merge->nodelist->len + 0.6; pos+=0.5)
+	if (endonly)
 	{
-		*ypix = view->graphboxyoff - (gdouble) view->graphboxheight / (view->ymax - view->ymin) * (pos - view->ymin);
-		if (abs (*ypix - ypos) < MERGE_CATCH_RANGE)
+		/* Be only sensitive for node ends */
+		for (pos=0.75; pos < (gdouble)merge->nodelist->len + 0.6; pos+=0.5)
 		{
-			id = (gint) floor (pos+0.5) - 1;
-			break;
+			*ypix = view->graphboxyoff - (gdouble) view->graphboxheight / (view->ymax - view->ymin) * (pos - view->ymin);
+			if (abs (*ypix - ypos) < MERGE_CATCH_RANGE)
+			{
+				id = (gint) floor (pos+0.5) - 1;
+				break;
+			}
+		}
+	}
+	else
+	{
+		/* Anywhere near the node is good */
+		for (pos=0.75; pos < (gdouble)merge->nodelist->len + 0.6; pos+=1.0)
+		{
+			*ypix = view->graphboxyoff - (gdouble) view->graphboxheight / (view->ymax - view->ymin) * (pos   - view->ymin);
+			ypix2 = view->graphboxyoff - (gdouble) view->graphboxheight / (view->ymax - view->ymin) *(pos+0.5- view->ymin);
+			if ((ypos < *ypix + MERGE_CATCH_RANGE) && (ypos > ypix2 - MERGE_CATCH_RANGE))
+			{
+				id = (gint) floor (pos+0.5) - 1;
+				/* Take middle of node as y position */
+				*ypix = view->graphboxyoff - (gdouble) view->graphboxheight / 
+					(view->ymax - view->ymin) * (floor (pos+0.5) - view->ymin);
+				break;
+			}
 		}
 	}
 
@@ -318,7 +343,7 @@ void merge_highlight_width (MergeNode *node)
 		color.green = 62000;
 		color.blue  = color.red = 20000;
 
-		width = node->res->width / 1.5;
+		width = node->res->width / 3.0;
 		if (width > 1e9)
 		{
 			width = 1e9;
@@ -331,6 +356,25 @@ void merge_highlight_width (MergeNode *node)
 	}
 
 	gtk_spect_vis_redraw (GTK_SPECTVIS (graph));
+}
+
+void merge_show_resonance_info (MergeNode *node)
+{
+	GtkLabel *label;
+	gchar *text;
+
+	label = GTK_LABEL (glade_xml_get_widget (glob->merge->xmlmerge, "merge_info_label"));
+	
+	if (node)
+		text = g_strdup_printf ("frequency = %.6f GHz, width = %.3f %s", 
+				node->res->frq / 1e9, 
+				node->res->width / pow (10, glob->prefs->widthunit),
+				glob->prefs->widthunit == 6 ? "MHz" : "kHz");
+	else
+		text = g_strdup_printf ("(none)");
+
+	gtk_label_set_text (label, text);
+	g_free (text);
 }
 
 /********** Basic link and node handling *************************************/
@@ -408,6 +452,9 @@ void merge_add_reslist (GPtrArray *reslist, gchar *datafilename, gchar *name)
 	gtk_spect_vis_zoom_y_all (graph);
 	merge_zoom_x_all ();
 	gtk_spect_vis_redraw (graph);
+
+	/* Add to spectra graph */
+	merge_add_spect_graph (datafilename, uid);
 }
 
 /* Takes a node and removes links associated with it, determined by type.
@@ -767,4 +814,156 @@ void merge_statusbar_message (gchar *format, ...)
 	g_free (message);
 
 	g_timeout_add (5*1000, merge_statusbar_message_remove, GINT_TO_POINTER (context_id));
+}
+
+/********** The spectrum graph ***********************************************/
+
+/* Load spectrum in datafilename and add it to the spectrum graph */
+static gboolean merge_add_spect_graph (gchar *datafilename, gint uid)
+{
+	GtkSpectVis *spectgraph;
+	MergeWin *merge;
+	GdkColor color;
+	DataVector *data;
+	gint index;
+
+	g_return_val_if_fail (datafilename, FALSE);
+	g_return_val_if_fail (uid, FALSE);
+	g_return_val_if_fail (glob->merge, FALSE);
+
+	merge = glob->merge;
+	spectgraph = GTK_SPECTVIS (glade_xml_get_widget (merge->xmlmerge, "merge_spect_graph"));
+
+	data = import_datafile (datafilename, FALSE);
+	if (!data)
+		return FALSE;
+
+	color.red   = 45000;
+	color.green = 45000;
+	color.blue  = 45000;
+
+	index = gtk_spect_vis_data_add (
+			spectgraph,
+			data->x,
+			data->y,
+			data->len,
+			color, 'l');
+
+	g_return_val_if_fail (gtk_spect_vis_request_id (spectgraph, index, uid), FALSE);
+
+	if (glob->prefs->datapoint_marks)
+		gtk_spect_vis_set_graphtype (spectgraph, index, 'm');
+
+	gtk_spect_vis_zoom_x_all (spectgraph);
+	gtk_spect_vis_zoom_y_all (spectgraph);
+	gtk_spect_vis_redraw (spectgraph);
+
+	return TRUE;
+}
+
+/* Remove a spectrum with uid from the spectrum graph */
+gboolean merge_remove_spect_graph (gint uid)
+{
+	GtkSpectVis *spectgraph;
+	MergeWin *merge;
+	GtkSpectVisData *data;
+	
+	g_return_val_if_fail (uid, FALSE);
+	g_return_val_if_fail (glob->merge, FALSE);
+
+	merge = glob->merge;
+	spectgraph = GTK_SPECTVIS (glade_xml_get_widget (merge->xmlmerge, "merge_spect_graph"));
+
+	data = gtk_spect_vis_get_data_by_uid (spectgraph, uid);
+	if (!data)
+		return FALSE;
+
+	g_free (data->X);
+	g_free (data->Y);
+
+	gtk_spect_vis_data_remove (spectgraph, uid);
+	gtk_spect_vis_redraw (spectgraph);
+
+	return TRUE;
+}
+
+/* Zooms the spectrum graph around node, highlighting it and marking the
+ * resonance with a bar. If node == NULL, remove the bar. */
+gboolean merge_spect_graph_show_node (MergeNode *node)
+{
+	static guint baruid = 0;
+	static guint lastgraphuid = 0;
+	GtkSpectVis *spectgraph;
+	MergeWin *merge;
+	GdkColor color;
+	gdouble width;
+	
+	g_return_val_if_fail (glob->merge, FALSE);
+
+	merge = glob->merge;
+	spectgraph = GTK_SPECTVIS (glade_xml_get_widget (merge->xmlmerge, "merge_spect_graph"));
+
+	if (baruid)
+	{
+		gtk_spect_vis_remove_bar (spectgraph, baruid);
+		baruid = 0;
+		if (lastgraphuid)
+		{
+			color.red   = 45000;
+			color.green = 45000;
+			color.blue  = 45000;
+
+			gtk_spect_vis_set_data_color (spectgraph, lastgraphuid, color);
+
+			lastgraphuid = 0;
+		}
+
+		if (!node)
+			gtk_spect_vis_redraw (spectgraph);
+	}
+
+	if (node)
+	{	
+
+		/* Draw bar */
+		width = node->res->width / 3.0;
+		if (width > 1e9)
+		{
+			width = 1e9;
+			color.red   = 52000;
+			color.green = 10000;
+			color.blue  = 40000;
+		}
+		else
+		{
+			color.blue  = color.red = 20000;
+			color.green = 62000;
+		}
+
+		baruid = gtk_spect_vis_add_bar (spectgraph, node->res->frq, width, color);
+		gtk_spect_vis_zoom_x_to (spectgraph,
+				node->res->frq - 3*width,
+				node->res->frq + 3*width);
+		gtk_spect_vis_zoom_y_all (spectgraph);
+
+		/* Change color of graph */
+		color.red   = 45000 / 2;
+		color.green = 45000 / 2;
+		color.blue  = 45000 / 2;
+
+		lastgraphuid = GPOINTER_TO_INT (g_ptr_array_index (merge->graphuid, node->id - 1));
+		gtk_spect_vis_set_data_color (spectgraph, lastgraphuid, color);
+
+		gtk_spect_vis_redraw (spectgraph);
+	}
+
+	return TRUE;
+}
+
+/* Mark a position in the spectrum graph */
+gint merge_spect_handle_value_selected (GtkSpectVis *spectvis, gdouble *xval, gdouble *yval)
+{
+	gtk_spect_vis_mark_point (spectvis, *xval, *yval);
+
+	return 0;
 }

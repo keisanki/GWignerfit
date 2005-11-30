@@ -194,6 +194,7 @@ typedef struct
 	GPtrArray *graphuid;		/* Array with graph uids */
 	GPtrArray *origlen;		/* Original length of nodelists */
 	GPtrArray *links;		/* Links between the "same" resonances */
+	GPtrArray *spectra;		/* Array with measured spectra for nodelists */
 	void *nearnode;			/* The nearest MergeNode the cursor points to */
 	guint flag;			/* A flag to identify click events */
 	gint selx, sely;		/* Coordinates of selection marker */

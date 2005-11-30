@@ -74,6 +74,7 @@ void merge_open_win ()
 	glob->merge->graphuid     = g_ptr_array_new ();
 	glob->merge->origlen      = g_ptr_array_new ();
 	glob->merge->links        = g_ptr_array_new ();
+	glob->merge->spectra      = g_ptr_array_new ();
 	glob->merge->selx         = -1;
 
 	xmlmerge = glade_xml_new (GLADEFILE, "merge_win", NULL);
@@ -138,7 +139,7 @@ void merge_purge (gboolean free_only)
 	MergeWin *merge;
 	GPtrArray *curnodelist;
 	GtkSpectVisData *data;
-	GtkSpectVis *graph;
+	GtkSpectVis *graph, *spectgraph;
 	gint i, j, uid;
 	
 	if (!glob->merge)
@@ -147,11 +148,14 @@ void merge_purge (gboolean free_only)
 	merge = glob->merge;
 
 	graph = GTK_SPECTVIS (glade_xml_get_widget (merge->xmlmerge, "merge_spectvis"));
+	spectgraph = GTK_SPECTVIS (glade_xml_get_widget (merge->xmlmerge, "merge_spect_graph"));
 
 	/* Free polygon data by removing it */
 	merge_draw_remove_all ();
 
 	merge_highlight_width (NULL);
+	merge_spect_graph_show_node (NULL);
+	merge_show_resonance_info (NULL);
 	
 	for (i=0; i<merge->nodelist->len; i++)
 	{
@@ -162,9 +166,17 @@ void merge_purge (gboolean free_only)
 		g_ptr_array_foreach (curnodelist, (GFunc) g_free, NULL);
 		g_ptr_array_free (curnodelist, TRUE);
 
-		/* Free graph data */
+		/* Free node graph data */
 		uid = GPOINTER_TO_INT (g_ptr_array_index (merge->graphuid, i));
 		data = gtk_spect_vis_get_data_by_uid (graph, uid);
+		if (data)
+		{
+			g_free (data->X);
+			g_free (data->Y);
+		}
+
+		/* Free spectra graph data */
+		data = gtk_spect_vis_get_data_by_uid (spectgraph, uid);
 		if (data)
 		{
 			g_free (data->X);
@@ -187,6 +199,7 @@ void merge_purge (gboolean free_only)
 	if ((merge->xmlmerge) && (!free_only))
 	{
 		gtk_widget_destroy (glade_xml_get_widget (merge->xmlmerge, "merge_spectvis"));
+		gtk_widget_destroy (glade_xml_get_widget (merge->xmlmerge, "merge_spect_graph"));
 		gtk_widget_destroy (glade_xml_get_widget (merge->xmlmerge, "merge_win"));
 	}
 
@@ -985,6 +998,9 @@ gboolean on_merge_remove_list_activate (GtkWidget *button)
 	g_free (data->Y);
 	gtk_spect_vis_data_remove (graph, uid);
 
+	/* Remove spectrum graph */
+	merge_remove_spect_graph (uid);
+
 	/* Update position of impulse graphs with bigger IDs */
 	for (i=id+1; i<merge->graphuid->len; i++)
 	{
@@ -1040,7 +1056,7 @@ gboolean on_merge_add_link_activate (GtkWidget *button)
 	glob->merge->flag &= ~MERGE_FLAG_MARK;
 	glob->merge->flag &= ~MERGE_FLAG_DELRES;
 
-	glob->merge->nearnode = merge_get_nearnode (-1, -1, &xpix, &ypix);
+	glob->merge->nearnode = merge_get_nearnode (-1, -1, &xpix, &ypix, TRUE);
 	if (glob->merge->nearnode)
 		merge_display_node_selection (xpix, ypix);
 	
@@ -1057,7 +1073,7 @@ gboolean on_merge_delete_link_activate (GtkWidget *button)
 	glob->merge->flag &= ~MERGE_FLAG_MARK;
 	glob->merge->flag &= ~MERGE_FLAG_DELRES;
 
-	glob->merge->nearnode = merge_get_nearnode (-1, -1, &xpix, &ypix);
+	glob->merge->nearnode = merge_get_nearnode (-1, -1, &xpix, &ypix, TRUE);
 	if (glob->merge->nearnode)
 		merge_display_node_selection (xpix, ypix);
 	
@@ -1141,7 +1157,7 @@ gboolean on_merge_remove_resonance_activate (GtkWidget *button)
 	glob->merge->flag &= ~MERGE_FLAG_MARK;
 	glob->merge->flag &= ~MERGE_FLAG_DEL;
 
-	glob->merge->nearnode = merge_get_nearnode (-1, -1, &xpix, &ypix);
+	glob->merge->nearnode = merge_get_nearnode (-1, -1, &xpix, &ypix, FALSE);
 	if (glob->merge->nearnode)
 		merge_display_node_selection (xpix, ypix);
 	
@@ -1262,6 +1278,8 @@ gint merge_handle_value_selected (GtkSpectVis *spectvis, gdouble *xval, gdouble 
 		node = (MergeNode *) merge->nearnode;
 
 		merge_highlight_width (node);
+		merge_spect_graph_show_node (node);
+		merge_show_resonance_info (node);
 		return 0;
 	}
 
@@ -1277,6 +1295,8 @@ gint merge_handle_value_selected (GtkSpectVis *spectvis, gdouble *xval, gdouble 
 
 		merge_delres (node);
 		merge_highlight_width (NULL);
+		merge_spect_graph_show_node (NULL);
+		merge_show_resonance_info (NULL);
 		return 0;
 	}
 	
@@ -1296,7 +1316,10 @@ gboolean merge_motion_notify (GtkWidget *widget, GdkEventMotion *event)
 		return FALSE;
 
 	/* Get a node nearby */
-	nearnode = merge_get_nearnode (event->x, event->y, &xpix, &ypix);
+	if ((merge->flag & MERGE_FLAG_ADD) || (merge->flag & MERGE_FLAG_DEL))
+		nearnode = merge_get_nearnode (event->x, event->y, &xpix, &ypix, TRUE);
+	else
+		nearnode = merge_get_nearnode (event->x, event->y, &xpix, &ypix, FALSE);
 
 	if (!nearnode)
 	{
@@ -1321,6 +1344,7 @@ gboolean merge_leave_notify (GtkWidget *widget, GdkEventMotion *event)
 	return FALSE;
 }
 
+/* Highlight resonance on Ctrl + first mouse button */
 gboolean merge_handle_button_press (GtkWidget *widget, GdkEventButton *event)
 {
 	MergeNode *nearnode;
@@ -1331,8 +1355,10 @@ gboolean merge_handle_button_press (GtkWidget *widget, GdkEventButton *event)
 
 	if ((event->button == 1) && (event->state & GDK_CONTROL_MASK))
 	{
-		nearnode = merge_get_nearnode (event->x, event->y, &xpix, &ypix);
+		nearnode = merge_get_nearnode (event->x, event->y, &xpix, &ypix, FALSE);
 		merge_highlight_width (nearnode);
+		merge_spect_graph_show_node (nearnode);
+		merge_show_resonance_info (nearnode);
 		return TRUE;
 	}
 
