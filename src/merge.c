@@ -21,6 +21,7 @@
 #define MERGE_FLAG_DEL    (1 << 1)
 #define MERGE_FLAG_MARK   (1 << 2)
 #define MERGE_FLAG_DELRES (1 << 3)
+#define MERGE_FLAG_MEAS   (1 << 4)
 
 extern GlobalData *glob;
 
@@ -448,7 +449,7 @@ static gboolean merge_load_links (gchar *selected_filename, const gchar *label)
 		
 		if (!(strcmp (tokens[0], "file")))
 		{
-			text = g_strjoinv (NULL, tokens+1);
+			text = g_strjoinv (" ", tokens+1);
 			if (!merge_load_file_helper (text))
 			{
 				dialog_message ("Error while processing line %d of section.", pos+1);
@@ -1055,6 +1056,7 @@ gboolean on_merge_add_link_activate (GtkWidget *button)
 	glob->merge->flag &= ~MERGE_FLAG_DEL;
 	glob->merge->flag &= ~MERGE_FLAG_MARK;
 	glob->merge->flag &= ~MERGE_FLAG_DELRES;
+	glob->merge->flag &= ~MERGE_FLAG_MEAS;
 
 	glob->merge->nearnode = merge_get_nearnode (-1, -1, &xpix, &ypix, TRUE);
 	if (glob->merge->nearnode)
@@ -1072,10 +1074,25 @@ gboolean on_merge_delete_link_activate (GtkWidget *button)
 	glob->merge->flag &= ~MERGE_FLAG_ADD;
 	glob->merge->flag &= ~MERGE_FLAG_MARK;
 	glob->merge->flag &= ~MERGE_FLAG_DELRES;
+	glob->merge->flag &= ~MERGE_FLAG_MEAS;
 
 	glob->merge->nearnode = merge_get_nearnode (-1, -1, &xpix, &ypix, TRUE);
 	if (glob->merge->nearnode)
 		merge_display_node_selection (xpix, ypix);
+	
+	return TRUE;
+}
+
+/* Add a single link via user input */
+gboolean on_merge_measure_distance_activate (GtkWidget *button)
+{
+	glob->merge->flag |= MERGE_FLAG_MEAS;
+	glob->merge->flag &= ~MERGE_FLAG_ADD;
+	glob->merge->flag &= ~MERGE_FLAG_DEL;
+	glob->merge->flag &= ~MERGE_FLAG_MARK;
+	glob->merge->flag &= ~MERGE_FLAG_DELRES;
+
+	merge_statusbar_message ("Mark first frequency on the graph");
 	
 	return TRUE;
 }
@@ -1143,6 +1160,7 @@ gboolean on_merge_highlight_activate (GtkWidget *button)
 	glob->merge->flag &= ~MERGE_FLAG_ADD;
 	glob->merge->flag &= ~MERGE_FLAG_DEL;
 	glob->merge->flag &= ~MERGE_FLAG_DELRES;
+	glob->merge->flag &= ~MERGE_FLAG_MEAS;
 	
 	return TRUE;
 }
@@ -1156,6 +1174,7 @@ gboolean on_merge_remove_resonance_activate (GtkWidget *button)
 	glob->merge->flag &= ~MERGE_FLAG_ADD;
 	glob->merge->flag &= ~MERGE_FLAG_MARK;
 	glob->merge->flag &= ~MERGE_FLAG_DEL;
+	glob->merge->flag &= ~MERGE_FLAG_MEAS;
 
 	glob->merge->nearnode = merge_get_nearnode (-1, -1, &xpix, &ypix, FALSE);
 	if (glob->merge->nearnode)
@@ -1177,8 +1196,10 @@ void merge_handle_viewport_changed (GtkSpectVis *spectvis, gchar *zoomtype)
 gint merge_handle_value_selected (GtkSpectVis *spectvis, gdouble *xval, gdouble *yval)
 {
 	static MergeNode *node1 = NULL;
+	static gdouble measure = -1.0;
 	MergeNode *node;
 	MergeWin *merge;
+	gchar *text;
 	
 	g_return_val_if_fail (glob->merge, 0);
 	merge = glob->merge;
@@ -1299,6 +1320,52 @@ gint merge_handle_value_selected (GtkSpectVis *spectvis, gdouble *xval, gdouble 
 		merge_show_resonance_info (NULL);
 		return 0;
 	}
+
+	if (merge->flag & MERGE_FLAG_MEAS)
+	{
+		if (measure < 0.0)
+		{
+			measure = *xval;
+			merge_statusbar_message ("Mark second frequency on the graph");
+			return 0;
+		}
+		else
+		{
+			merge->flag &= ~MERGE_FLAG_DELRES;
+			measure =  fabs (*xval - measure);
+
+			if (measure > 1e9)
+			{
+				measure /= 1e9;
+				text = g_strdup_printf ("GHz");
+			}
+			else if (measure > 1e6)
+			{
+				measure /= 1e6;
+				text = g_strdup_printf ("MHz");
+			}
+			else if (measure > 1e3)
+			{
+				measure /= 1e3;
+				text = g_strdup_printf ("kHz");
+			}
+			else
+				text = g_strdup_printf ("Hz");
+
+			dialog_message ("The distance between the two selected points is:\n%.3f %s", 
+					measure, text);
+
+			g_free (text);
+			measure = -1.0;
+			return 0;
+		}
+	}
+	else
+	{
+		merge->flag &= ~MERGE_FLAG_DELRES;
+		measure = -1.0;
+		return 0;
+	}
 	
 	gtk_spect_vis_mark_point (spectvis, *xval, *yval);
 
@@ -1312,7 +1379,7 @@ gboolean merge_motion_notify (GtkWidget *widget, GdkEventMotion *event)
 	MergeNode *nearnode;
 	gint xpix, ypix;
 
-	if (!merge->flag)
+	if ((!merge->flag) || (merge->flag & MERGE_FLAG_MEAS))
 		return FALSE;
 
 	/* Get a node nearby */

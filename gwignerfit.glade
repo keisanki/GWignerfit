@@ -8493,7 +8493,7 @@ Please check and decide what to do.</property>
 		      <accelerator key="O" modifiers="GDK_CONTROL_MASK" signal="activate"/>
 
 		      <child internal-child="image">
-			<widget class="GtkImage" id="image1091">
+			<widget class="GtkImage" id="image1103">
 			  <property name="visible">True</property>
 			  <property name="stock">gtk-open</property>
 			  <property name="icon_size">1</property>
@@ -8515,7 +8515,7 @@ Please check and decide what to do.</property>
 		      <accelerator key="S" modifiers="GDK_CONTROL_MASK" signal="activate"/>
 
 		      <child internal-child="image">
-			<widget class="GtkImage" id="image1092">
+			<widget class="GtkImage" id="image1104">
 			  <property name="visible">True</property>
 			  <property name="stock">gtk-save</property>
 			  <property name="icon_size">1</property>
@@ -8537,7 +8537,7 @@ Please check and decide what to do.</property>
 		      <accelerator key="V" modifiers="GDK_CONTROL_MASK" signal="activate"/>
 
 		      <child internal-child="image">
-			<widget class="GtkImage" id="image1093">
+			<widget class="GtkImage" id="image1105">
 			  <property name="visible">True</property>
 			  <property name="stock">gtk-save-as</property>
 			  <property name="icon_size">1</property>
@@ -8559,7 +8559,7 @@ Please check and decide what to do.</property>
 		      <accelerator key="I" modifiers="GDK_CONTROL_MASK" signal="activate"/>
 
 		      <child internal-child="image">
-			<widget class="GtkImage" id="image1094">
+			<widget class="GtkImage" id="image1106">
 			  <property name="visible">True</property>
 			  <property name="stock">gtk-add</property>
 			  <property name="icon_size">1</property>
@@ -8581,7 +8581,7 @@ Please check and decide what to do.</property>
 		      <accelerator key="Delete" modifiers="0" signal="activate"/>
 
 		      <child internal-child="image">
-			<widget class="GtkImage" id="image1095">
+			<widget class="GtkImage" id="image1107">
 			  <property name="visible">True</property>
 			  <property name="stock">gtk-remove</property>
 			  <property name="icon_size">1</property>
@@ -8603,7 +8603,7 @@ Please check and decide what to do.</property>
 		      <accelerator key="E" modifiers="GDK_CONTROL_MASK" signal="activate"/>
 
 		      <child internal-child="image">
-			<widget class="GtkImage" id="image1096">
+			<widget class="GtkImage" id="image1108">
 			  <property name="visible">True</property>
 			  <property name="stock">gtk-justify-fill</property>
 			  <property name="icon_size">1</property>
@@ -8631,7 +8631,7 @@ Please check and decide what to do.</property>
 		      <accelerator key="W" modifiers="GDK_CONTROL_MASK" signal="activate"/>
 
 		      <child internal-child="image">
-			<widget class="GtkImage" id="image1097">
+			<widget class="GtkImage" id="image1109">
 			  <property name="visible">True</property>
 			  <property name="stock">gtk-close</property>
 			  <property name="icon_size">1</property>
@@ -8666,7 +8666,7 @@ Please check and decide what to do.</property>
 		      <accelerator key="A" modifiers="GDK_CONTROL_MASK" signal="activate"/>
 
 		      <child internal-child="image">
-			<widget class="GtkImage" id="image1098">
+			<widget class="GtkImage" id="image1110">
 			  <property name="visible">True</property>
 			  <property name="stock">gtk-add</property>
 			  <property name="icon_size">1</property>
@@ -8688,7 +8688,7 @@ Please check and decide what to do.</property>
 		      <accelerator key="D" modifiers="GDK_CONTROL_MASK" signal="activate"/>
 
 		      <child internal-child="image">
-			<widget class="GtkImage" id="image1099">
+			<widget class="GtkImage" id="image1111">
 			  <property name="visible">True</property>
 			  <property name="stock">gtk-remove</property>
 			  <property name="icon_size">1</property>
@@ -8709,7 +8709,7 @@ Please check and decide what to do.</property>
 		      <signal name="activate" handler="on_merge_delete_all_links_activate" last_modification_time="Fri, 25 Nov 2005 13:21:56 GMT"/>
 
 		      <child internal-child="image">
-			<widget class="GtkImage" id="image1100">
+			<widget class="GtkImage" id="image1112">
 			  <property name="visible">True</property>
 			  <property name="stock">gtk-delete</property>
 			  <property name="icon_size">1</property>
@@ -8731,7 +8731,7 @@ Please check and decide what to do.</property>
 		      <accelerator key="J" modifiers="GDK_CONTROL_MASK" signal="activate"/>
 
 		      <child internal-child="image">
-			<widget class="GtkImage" id="image1101">
+			<widget class="GtkImage" id="image1113">
 			  <property name="visible">True</property>
 			  <property name="stock">gtk-execute</property>
 			  <property name="icon_size">1</property>
@@ -8766,7 +8766,7 @@ Please check and decide what to do.</property>
 		      <accelerator key="H" modifiers="GDK_CONTROL_MASK" signal="activate"/>
 
 		      <child internal-child="image">
-			<widget class="GtkImage" id="image1102">
+			<widget class="GtkImage" id="image1114">
 			  <property name="visible">True</property>
 			  <property name="stock">gtk-find</property>
 			  <property name="icon_size">1</property>
@@ -8788,9 +8788,31 @@ Please check and decide what to do.</property>
 		      <accelerator key="R" modifiers="GDK_CONTROL_MASK" signal="activate"/>
 
 		      <child internal-child="image">
-			<widget class="GtkImage" id="image1103">
+			<widget class="GtkImage" id="image1115">
 			  <property name="visible">True</property>
 			  <property name="stock">gtk-remove</property>
+			  <property name="icon_size">1</property>
+			  <property name="xalign">0.5</property>
+			  <property name="yalign">0.5</property>
+			  <property name="xpad">0</property>
+			  <property name="ypad">0</property>
+			</widget>
+		      </child>
+		    </widget>
+		  </child>
+
+		  <child>
+		    <widget class="GtkImageMenuItem" id="measure_distance">
+		      <property name="visible">True</property>
+		      <property name="label" translatable="yes">_Measure distance</property>
+		      <property name="use_underline">True</property>
+		      <signal name="activate" handler="on_merge_measure_distance_activate" last_modification_time="Thu, 01 Dec 2005 08:30:19 GMT"/>
+		      <accelerator key="M" modifiers="GDK_CONTROL_MASK" signal="activate"/>
+
+		      <child internal-child="image">
+			<widget class="GtkImage" id="image1116">
+			  <property name="visible">True</property>
+			  <property name="stock">gtk-dialog-info</property>
 			  <property name="icon_size">1</property>
 			  <property name="xalign">0.5</property>
 			  <property name="yalign">0.5</property>

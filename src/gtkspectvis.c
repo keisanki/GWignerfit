@@ -14,7 +14,7 @@
 
 #define COORD_BORDER_DIST	5
 #define MIN_DATAPOINTS_VIEW	4	/* actually it is one more */
-#define MIN_IMPULSES_VIEW	2	/* actually it is one more */
+#define MIN_IMPULSES_VIEW	1	/* actually it is one more */
 #define ADD_MARK_DISTANCE	20
 
 #define g_marshal_value_peek_pointer(v)		g_value_get_pointer (v)
@@ -1566,6 +1566,11 @@ gtk_spect_vis_draw_graphs_fast (GtkSpectVis *spectvis, GdkGC *gc, GtkSpectVisDat
 				if (min[j] == G_MAXINT) break;
 			}
 	}
+
+	/* "j" should now be the last position plus one in the arrays where
+	 * line information is stored. If it is _not_ bigger or equal than the
+	 * startpoint something must have gone grossly wrong. */
+	g_return_if_fail ((j >= startpoint) && (j > 0));
 	
 	/* Prevent variable over- and underruns */
 	for (i=startpoint; i < j; i++)
