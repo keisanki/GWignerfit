@@ -204,13 +204,14 @@ void free_datavector (DataVector *vec)
 	DataVector *testvec;
 	gboolean in_use = FALSE;
 
-	if (vec == NULL) return;
+	if ((!vec) || (!vec->x))
+		return;
 
 	if (glob->overlaystore)
 		for (i=0; i<glob->overlayspectra->len; i++)
 		{
 			testvec = (DataVector *) g_ptr_array_index (glob->overlayspectra, i);
-			if ((vec->x == testvec->x) && (vec != testvec))
+			if ((testvec) && (vec->x == testvec->x) && (vec != testvec))
 				in_use = TRUE;
 		}
 
@@ -222,10 +223,15 @@ void free_datavector (DataVector *vec)
 
 	/* Free x only if it is not used by another dataset */
 	if (!in_use)
+	{
 		g_free (vec->x);
+		vec->x = NULL;
+	}
 	
 	g_free (vec->y);
 	g_free (vec->file);
+	vec->y = NULL;
+	vec->file = NULL;
 
 	g_free (vec);
 	vec = NULL;

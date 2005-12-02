@@ -74,6 +74,7 @@ MERGE_FLAG_ADD	merge.c	20;"	d	file:
 MERGE_FLAG_DEL	merge.c	21;"	d	file:
 MERGE_FLAG_DELRES	merge.c	23;"	d	file:
 MERGE_FLAG_MARK	merge.c	22;"	d	file:
+MERGE_FLAG_MEAS	merge.c	24;"	d	file:
 MERGE_LINK_B	merge_util.c	21;"	d	file:
 MERGE_LINK_G	merge_util.c	20;"	d	file:
 MERGE_LINK_R	merge_util.c	19;"	d	file:
@@ -399,16 +400,16 @@ merge_load_del_helper	merge.c	/^static gboolean merge_load_del_helper (gchar *te
 merge_load_file_helper	merge.c	/^static gboolean merge_load_file_helper (gchar *text)$/;"	f	file:
 merge_load_link_helper	merge.c	/^static gboolean merge_load_link_helper (gchar **tokens)$/;"	f	file:
 merge_load_links	merge.c	/^static gboolean merge_load_links (gchar *selected_filename, const gchar *label)$/;"	f	file:
-merge_load_links_cleanup	merge.c	409;"	d	file:
-merge_load_links_cleanup	merge.c	498;"	d	file:
+merge_load_links_cleanup	merge.c	410;"	d	file:
+merge_load_links_cleanup	merge.c	499;"	d	file:
 merge_motion_notify	merge.c	/^gboolean merge_motion_notify (GtkWidget *widget, GdkEventMotion *event)$/;"	f
 merge_open_win	merge.c	/^void merge_open_win ()$/;"	f
 merge_purge	merge.c	/^void merge_purge (gboolean free_only)$/;"	f
 merge_read_resonances	merge.c	/^static gint merge_read_resonances (gchar *selected_filename, const gchar *label, GPtrArray **reslist, gchar **datafilename)$/;"	f	file:
 merge_remove_spect_graph	merge_util.c	/^gboolean merge_remove_spect_graph (gint uid)$/;"	f
 merge_reslist_compare	merge_util.c	/^static gint merge_reslist_compare (gconstpointer a_in, gconstpointer b_in)$/;"	f	file:
-merge_resonancefile_cleanup	merge.c	232;"	d	file:
-merge_resonancefile_cleanup	merge.c	330;"	d	file:
+merge_resonancefile_cleanup	merge.c	233;"	d	file:
+merge_resonancefile_cleanup	merge.c	331;"	d	file:
 merge_save_links	merge.c	/^void merge_save_links (FILE *datafile, gchar *section, gchar *newline)$/;"	f
 merge_show_numres	merge.c	/^void merge_show_numres (GtkTreeViewColumn *col, GtkCellRenderer *renderer, $/;"	f
 merge_show_resonance_info	merge_util.c	/^void merge_show_resonance_info (MergeNode *node)$/;"	f
@@ -469,6 +470,7 @@ on_merge_delete_link_activate	merge.c	/^gboolean on_merge_delete_link_activate (
 on_merge_export_activate	merge.c	/^gboolean on_merge_export_activate (GtkWidget *button)$/;"	f
 on_merge_find_links_activate	merge.c	/^gboolean on_merge_find_links_activate (GtkWidget *button)$/;"	f
 on_merge_highlight_activate	merge.c	/^gboolean on_merge_highlight_activate (GtkWidget *button)$/;"	f
+on_merge_measure_distance_activate	merge.c	/^gboolean on_merge_measure_distance_activate (GtkWidget *button)$/;"	f
 on_merge_new_activate	merge.c	/^gboolean on_merge_new_activate (GtkWidget *button)$/;"	f
 on_merge_open_activate	merge.c	/^gboolean on_merge_open_activate (GtkWidget *button)$/;"	f
 on_merge_remove_list_activate	merge.c	/^gboolean on_merge_remove_list_activate (GtkWidget *button)$/;"	f
@@ -533,6 +535,7 @@ overlay_remove_all	overlay.c	/^void overlay_remove_all ()$/;"	f
 overlay_remove_files	overlay.c	/^void overlay_remove_files (GtkWidget *widget, gpointer user_data)$/;"	f
 overlay_remove_from_list	overlay.c	/^static gboolean overlay_remove_from_list (guint uid)$/;"	f	file:
 overlay_selection_changed	overlay.c	/^static void overlay_selection_changed (GtkTreeSelection *treeselection, GtkTreeModel *model)$/;"	f	file:
+overlay_set_color	overlay.c	/^gboolean overlay_set_color (guint uid, GdkColor color)$/;"	f
 overlay_show_window	overlay.c	/^void overlay_show_window ()$/;"	f
 overlay_swap_files	overlay.c	/^void overlay_swap_files (GtkWidget *widget, gpointer user_data)$/;"	f
 param_compare	helpers.c	/^gint param_compare (gconstpointer a_in, gconstpointer b_in)$/;"	f
@@ -550,7 +553,7 @@ r	spectral_numeric.c	/^typedef struct FCOMPLEX {float r,i;} fcomplex;$/;"	m	stru
 read_datafile	processdata.c	/^gboolean read_datafile (gchar *selected_filename, gboolean called_from_open) $/;"	f
 read_resonancefile	processdata.c	/^gint read_resonancefile (gchar *selected_filename, const gchar *label)$/;"	f
 read_resonancefile_cleanup	processdata.c	608;"	d	file:
-read_resonancefile_cleanup	processdata.c	906;"	d	file:
+read_resonancefile_cleanup	processdata.c	939;"	d	file:
 remove_resonance	resonancelist.c	/^void remove_resonance (GtkTreeIter iter)$/;"	f
 remove_selected_resonance	resonancelist.c	/^void remove_selected_resonance ()$/;"	f
 reslist_update_widthunit	resonancelist.c	/^void reslist_update_widthunit ()$/;"	f

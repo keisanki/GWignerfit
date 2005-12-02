@@ -623,11 +623,13 @@ gint read_resonancefile (gchar *selected_filename, const gchar *label)
 #endif
 	gdouble frqerr, widerr, amperr, phaserr;
 	gdouble tauerr=0.0, scaleerr=0.0, gphaseerr=0.0;
-	gint numres=0, pos=0, i, ovrlaynum=0;
+	gint numres=0, pos=0, i, ovrlaynum=0, offset;
+	guint r, g, b;
 	Resonance *resonance=NULL;
 	FourierComponent *fcomp=NULL;
-	GPtrArray *ovrlays, *lines;
+	GPtrArray *ovrlays, *lines, *colors;
 	GArray *stddev;
+	GdkColor *color;
 
 	/* Get section */
 	lines = ls_read_section (selected_filename, (gchar *) label, '=');
@@ -661,6 +663,7 @@ gint read_resonancefile (gchar *selected_filename, const gchar *label)
 	text = g_new0 (gchar, 256);
 	command = g_new0 (gchar, 256);
 	ovrlays = g_ptr_array_new ();
+	colors  = g_ptr_array_new ();
 	stddev = g_array_new (FALSE, TRUE, sizeof (gdouble));
 
 	numres = 0;
@@ -716,15 +719,38 @@ gint read_resonancefile (gchar *selected_filename, const gchar *label)
 			  {
 				  /* text may not hold the complete filename if it
 				   * contained spaces. */
-				  if (!strncmp(command, "file", 200)) 
-					  datafilename = g_strdup (line+5);
+				  if ((!strncmp(command, "file", 200)) && (strlen (line) > 6))
+					datafilename = g_strdup (line+5);
 
 				  /* Remember overlays for later addition */
 				  if ((!strncmp(command, "ovrlay", 200)) && datafilename)
 				  {
+					offset = 0;
+					color = g_new (GdkColor, 1);
+					
+					if ((line[7] == '#') && (strlen(line) > 16) && (line[14] == ' ') &&
+					   (sscanf (line+8, "%02x%02x%02x", &r, &g, &b) == 3))
+					{
+						/* Line has color information */
+						offset = 8;
+						color->red   = (guint) ((gfloat)r/255.0*65535.0);
+						color->green = (guint) ((gfloat)g/255.0*65535.0);
+						color->blue  = (guint) ((gfloat)b/255.0*65535.0);
+					}
+					else
+					{
+						color->red   = 45000;
+						color->green = 45000;
+						color->blue  = 45000;
+					}
+
 					g_ptr_array_add (
 						ovrlays,
-						(gpointer) g_strdup (line+7)
+						(gpointer) g_strdup (line+7+offset)
+					);
+					g_ptr_array_add (
+						colors,
+						color
 					);
 					ovrlaynum++;
 				  }
@@ -877,9 +903,16 @@ gint read_resonancefile (gchar *selected_filename, const gchar *label)
 		{
 			overlay_file (g_ptr_array_index (ovrlays, i));
 			g_free (g_ptr_array_index (ovrlays, i));
+
+			/* uid from last glob->overlayspectra entry */
+			overlay_set_color (
+					((DataVector *) g_ptr_array_index (glob->overlayspectra, glob->overlayspectra->len-1))->index, 
+					*(GdkColor *) g_ptr_array_index (colors, i));
+			g_free (g_ptr_array_index (colors, i));
 		}
 	}
 	g_ptr_array_free (ovrlays, TRUE);
+	g_ptr_array_free (colors, TRUE);
 
 	/* Add parameter errors */
 	g_free (glob->stddev);
@@ -963,6 +996,7 @@ gboolean load_gwf_resonance_file (gchar *filename)
 void save_write_section (FILE *datafile, gchar *section, gchar *newline)
 {
 	GSList *overlays, *overlayspos;
+	GdkColor color;
 	gchar *text;
 	Resonance *res;
 	FourierComponent *fcomp;
@@ -985,7 +1019,14 @@ void save_write_section (FILE *datafile, gchar *section, gchar *newline)
 	{
 		overlayspos = overlays;
 		do {
-			fprintf (datafile, "ovrlay\t%s%s",
+			overlay_get_color (&color, FALSE, GPOINTER_TO_UINT (overlayspos->data), NULL);
+			fprintf (datafile, "ovrlay\t#%02x%02x%02x",
+					(guint) (((gfloat) color.red)/65535.0*256.0),
+					(guint) (((gfloat) color.green)/65535.0*256.0),
+					(guint) (((gfloat) color.blue)/65535.0*256.0));
+			overlayspos = g_slist_next (overlayspos);
+			g_return_if_fail (overlayspos);
+			fprintf (datafile, " %s%s",
 					(gchar *) overlayspos->data,
 					newline);
 		} while ((overlayspos = g_slist_next (overlayspos)));

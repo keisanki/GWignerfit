@@ -205,7 +205,10 @@ gint main (gint argc, char *argv[])
 	if (glob->overlayspectra)
 	{
 		for (i=0; i<glob->overlayspectra->len; i++)
+		{
 			free_datavector ((DataVector *) g_ptr_array_index (glob->overlayspectra, i));
+			glob->overlayspectra->pdata[i] = NULL;
+		}
 		gtk_list_store_clear (glob->overlaystore);
 		glob->overlaystore = NULL;
 		g_ptr_array_free (glob->overlayspectra, TRUE);

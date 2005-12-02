@@ -118,6 +118,26 @@ gboolean overlay_get_color (GdkColor *color, gboolean selected, guint uid, GtkTr
 	return TRUE;
 }
 
+/* Set the color of the overlay with the given uid */
+gboolean overlay_set_color (guint uid, GdkColor color)
+{
+	GtkSpectVis *graph = GTK_SPECTVIS (glade_xml_get_widget (gladexml, "graph"));
+	GtkTreeIter iter;
+
+	g_return_val_if_fail (uid, FALSE);
+	g_return_val_if_fail (overlay_get_iter_by_uid (uid, &iter), FALSE);
+
+	gtk_list_store_set (glob->overlaystore, &iter,
+			OVERLAY_COLOR_R, color.red,
+			OVERLAY_COLOR_G, color.green,
+			OVERLAY_COLOR_B, color.blue,
+			-1);
+
+	gtk_spect_vis_set_data_color (graph, uid, color);
+
+	return TRUE;
+}
+
 /* Change the color of a overlay */
 gboolean overlay_color_change (GtkWidget *widget, GdkEvent *event)
 {
@@ -753,6 +773,7 @@ void overlay_swap_files (GtkWidget *widget, gpointer user_data)
 	fourier_set_color (uid, color);
 }
 
+/* Return a list of id, filename, id, filename, ... */
 GSList* overlay_get_filenames ()
 {
 	GSList *list = NULL;
@@ -761,10 +782,16 @@ GSList* overlay_get_filenames ()
 	if (!glob->overlaystore) return NULL;
 
 	for (i=0; i<glob->overlayspectra->len; i++)
+	{
+		list = g_slist_append (
+				list, 
+				GUINT_TO_POINTER (((DataVector *) g_ptr_array_index (glob->overlayspectra, i))->index)
+			);
 		list = g_slist_append (
 				list, 
 				((DataVector *) g_ptr_array_index (glob->overlayspectra, i))->file
 			);
+	}
 	
 	return list;
 }
