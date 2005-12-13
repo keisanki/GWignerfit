@@ -6,6 +6,7 @@
 /* Columns in merge_treeview */
 enum {
 	MERGE_ID_COL = 0,
+	MERGE_SHORTNAME_COL,
 	MERGE_LIST_COL,
 	MERGE_DATAFILE_COL,
 	MERGE_N_COLUMNS

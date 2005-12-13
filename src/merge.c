@@ -87,6 +87,7 @@ void merge_open_win ()
 	glob->merge->store = gtk_list_store_new (MERGE_N_COLUMNS,
 			G_TYPE_UINT,
 			G_TYPE_STRING,
+			G_TYPE_STRING,
 			G_TYPE_STRING);
 
 	gtk_tree_view_set_model (
@@ -103,11 +104,11 @@ void merge_open_win ()
 	gtk_tree_view_column_set_sort_column_id (column, -1);
 	gtk_tree_view_append_column (GTK_TREE_VIEW (treeview), column);
 
-	/* LIST_COL */
+	/* SHORTNAME_COL */
 	renderer = gtk_cell_renderer_text_new ();
 	column = gtk_tree_view_column_new_with_attributes (
 			"resonance list", renderer,
-			"text", MERGE_LIST_COL,
+			"text", MERGE_SHORTNAME_COL,
 			NULL);
 	gtk_tree_view_column_set_resizable (column, TRUE);
 	gtk_tree_view_column_set_sort_column_id (column, -1);
@@ -523,7 +524,20 @@ static gboolean merge_load_file_helper (gchar *text)
 	filename = text;
 
 	if (merge_read_resonances (filename, section, &reslist, &datafilename) < 0)
+	{
+		g_free (datafilename);
+		g_ptr_array_free (reslist, TRUE);
 		return FALSE;
+	}
+
+	/* Error, no resonances found in section */
+	if (reslist->len == 0)
+	{
+		dialog_message ("Cannot add the empty resonance list %s:%s.", filename, section);
+		g_free (datafilename);
+		g_ptr_array_free (reslist, TRUE);
+		return FALSE;
+	}
 
 	text[i] = ':';
 	g_ptr_array_sort (reslist, param_compare);
@@ -705,6 +719,17 @@ gboolean on_merge_add_list_activate (GtkWidget *button)
 		g_free (section);
 		g_ptr_array_free (reslist, TRUE);
 		g_free (datafilename);
+		return FALSE;
+	}
+
+	/* At least one resonance is needed */
+	if (reslist->len == 0)
+	{
+		g_free (filename);
+		g_free (section);
+		g_ptr_array_free (reslist, TRUE);
+		g_free (datafilename);
+		dialog_message ("Cannot add an empty resonance list.");
 		return FALSE;
 	}
 
@@ -995,8 +1020,11 @@ gboolean on_merge_remove_list_activate (GtkWidget *button)
 	/* Remove graph and free data */
 	uid = GPOINTER_TO_INT (g_ptr_array_index (merge->graphuid, id));
 	data = gtk_spect_vis_get_data_by_uid (graph, uid);
-	g_free (data->X);
-	g_free (data->Y);
+	if (data)
+	{
+		g_free (data->X);
+		g_free (data->Y);
+	}
 	gtk_spect_vis_data_remove (graph, uid);
 
 	/* Remove spectrum graph */

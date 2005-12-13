@@ -391,6 +391,7 @@ void merge_add_reslist (GPtrArray *reslist, gchar *datafilename, gchar *name)
 	gdouble *x;
 	ComplexDouble *y;
 	gint i, uid;
+	gchar *shortname;
 	
 	g_return_if_fail (reslist);
 
@@ -415,13 +416,18 @@ void merge_add_reslist (GPtrArray *reslist, gchar *datafilename, gchar *name)
 	}
 	g_ptr_array_add (merge->nodelist, curnodelist);
 
+	shortname = g_path_get_basename (name);
+
 	/* Add to liststore */
 	gtk_list_store_append (merge->store, &iter);
 	gtk_list_store_set (merge->store, &iter,
-			MERGE_ID_COL,       merge->nodelist->len,
-			MERGE_LIST_COL,     name,
-			MERGE_DATAFILE_COL, datafilename,
+			MERGE_ID_COL,        merge->nodelist->len,
+			MERGE_LIST_COL,      name,
+			MERGE_SHORTNAME_COL, shortname,
+			MERGE_DATAFILE_COL,  datafilename,
 			-1);
+
+	g_free (shortname);
 
 	/* Add to graph */
 	graph = GTK_SPECTVIS (glade_xml_get_widget (merge->xmlmerge, "merge_spectvis"));
@@ -734,14 +740,22 @@ gboolean merge_delres (MergeNode *node)
 	g_return_val_if_fail (node, FALSE);
 
 	graph = GTK_SPECTVIS (glade_xml_get_widget (glob->merge->xmlmerge, "merge_spectvis"));
-	
-	/* Update a possible link */
-	if (node->link)
-		merge_delete_link_node (node, 0);
 
 	/* Get graph data */
 	uid = GPOINTER_TO_INT (g_ptr_array_index (merge->graphuid, node->id-1));
 	data = gtk_spect_vis_get_data_by_uid (graph, uid);
+
+	/* Cannot delete last node */
+	if (data->len == 1)
+	{
+		dialog_message ("You cannot remove the last node of a resonance list. "
+				"Remove the resonance list instead.");
+		return FALSE;
+	}
+	
+	/* Update a possible link */
+	if (node->link)
+		merge_delete_link_node (node, 0);
 
 	/* Remove datapoint from graph data */
 	X = g_new (gdouble, data->len - 1);
