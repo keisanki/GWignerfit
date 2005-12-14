@@ -399,8 +399,18 @@ gboolean on_minfrqentry_changed (GtkWidget *entry, GdkEventKey *event, gpointer 
 	if (sscanf(gtk_entry_get_text(GTK_ENTRY (entry)), "%lf", &value) != 1) return FALSE;
 
 	glob->gparam->min = value * 1e9;
-	visualize_update_min_max (0);
-	visualize_theory_graph ();
+
+	if (glob->fft || glob->fcomp->theo)
+	{
+		/* Update theory, as the FFT or fcomp graphs may
+		 * depend on the frequency window. */
+		visualize_update_min_max (0);
+		visualize_theory_graph ();
+	}
+	else
+		/* Update with redraw */
+		visualize_update_min_max (1);
+
 	set_unsaved_changes ();
 
 	statusbar_message ("Minimal frequency changed to %lf GHz.", value);
@@ -419,8 +429,18 @@ gboolean on_maxfrqentry_changed (GtkWidget *entry, GdkEventKey *event, gpointer 
 		return FALSE;
 
 	glob->gparam->max = value * 1e9;
-	visualize_update_min_max (0);
-	visualize_theory_graph ();
+
+	if (glob->fft || glob->fcomp->theo)
+	{
+		/* Update theory, as the FFT or fcomp graphs may
+		 * depend on the frequency window. */
+		visualize_update_min_max (0);
+		visualize_theory_graph ();
+	}
+	else
+		/* Update with redraw */
+		visualize_update_min_max (1);
+
 	set_unsaved_changes ();
 
 	statusbar_message ("Maximal frequency changed to %lf GHz.", value);

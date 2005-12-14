@@ -192,6 +192,11 @@ void fourier_update_main_graphs ()
 	if ((!fft) || (!glob->data) || (!glob->theory)) return;
 
 	graph = GTK_SPECTVIS (glade_xml_get_widget (fft->xmlfft, "fft_spectvis"));
+
+	/* TODO:
+	 * This gets called, when the frequency window changes, too. This functions
+	 * ignores this however. The correct behavior would be to update the FFt 
+	 * frequency window, too. */
 	
 	/* FFT of data graph */
 	startfrq = fft->fmin >= 0    ? fft->fmin : glob->data->x[0];

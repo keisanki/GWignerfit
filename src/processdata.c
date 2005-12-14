@@ -517,11 +517,22 @@ void set_new_main_data (DataVector *newdata, gboolean called_from_open)
 	show_global_parameters (glob->gparam);
 
 	on_load_spectrum ();
-	visualize_update_min_max (0);
 	visualize_draw_data ();
-	visualize_theory_graph ();
+	if (!called_from_open)
+	{
+		visualize_update_min_max (0);
+		visualize_theory_graph ();
+	}
 
 	disable_undo ();
+
+	if (called_from_open)
+	{
+		/* Activating the transmission or reflection menu below will
+		 * trigger visualize_theory_graph() which recalculates the theory. */
+		statusbar_message ("Open: Calculating theory graph...");
+		while (gtk_events_pending ()) gtk_main_iteration ();
+	}
 
 	if (glob->IsReflection)
 	{
@@ -877,6 +888,8 @@ gint read_resonancefile (gchar *selected_filename, const gchar *label)
 
 	if (datafilename) 
 	{
+		statusbar_message ("Open: Reading spectrum data...");
+		while (gtk_events_pending ()) gtk_main_iteration ();
 		read_datafile (datafilename, TRUE);
 		g_free (datafilename);
 	}
@@ -901,6 +914,9 @@ gint read_resonancefile (gchar *selected_filename, const gchar *label)
 	{
 		for (i=0; i<ovrlaynum; i++)
 		{
+			statusbar_message ("Open: Overlaying spectrum %d of %d...", i, ovrlaynum);
+			while (gtk_events_pending ()) gtk_main_iteration ();
+
 			overlay_file (g_ptr_array_index (ovrlays, i));
 			g_free (g_ptr_array_index (ovrlays, i));
 
@@ -930,7 +946,7 @@ gint read_resonancefile (gchar *selected_filename, const gchar *label)
 	}
 	g_array_free (stddev, TRUE);
 
-	statusbar_message ("Loaded %i resonances", numres);
+	statusbar_message ("Open: Loaded %i resonances", numres);
 	set_busy_cursor (FALSE);
 
 	return numres;
@@ -975,7 +991,11 @@ gboolean load_gwf_resonance_file (gchar *filename)
 		g_free (title);
 
 		visualize_update_min_max (0);
-		visualize_theory_graph ();
+
+		/* No need to update theory, this has already been done by
+		 * set_new_main_data() via the transmission activate callback. */
+		//visualize_theory_graph ();
+
 		spectral_resonances_changed ();
 		unset_unsaved_changes ();
 	}
