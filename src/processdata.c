@@ -352,13 +352,13 @@ DataVector *import_datafile (gchar *filename, gboolean interactive)
 					fmax *= 1e9;
 				}
 				else
-				{
 					data_is_fft = FALSE;
-				}
 			}
 			continue;
 		}
 
+		numpoints++;
+#if 0
 		if (sscanf (dataline, "%lf %lf %lf", &f, &y.re, &y.im) != 3) 
 		{
 			/* A line without data and not a comment */
@@ -373,8 +373,9 @@ DataVector *import_datafile (gchar *filename, gboolean interactive)
 		} else {
 			numpoints++;
 		}
+#endif
 	}
-
+	
 	if ((data_is_fft) && (interactive))
 	{
 		if (dialog_question ("You are trying to import what looks like a time domain spectrum. Should the import be continued and a reverse Fourier Transform be applied?") == GTK_RESPONSE_NO)
