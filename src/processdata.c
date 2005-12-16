@@ -527,13 +527,11 @@ void set_new_main_data (DataVector *newdata, gboolean called_from_open)
 
 	disable_undo ();
 
-	if (called_from_open)
-	{
-		/* Activating the transmission or reflection menu below will
-		 * trigger visualize_theory_graph() which recalculates the theory. */
-		statusbar_message ("Open: Calculating theory graph...");
-		while (gtk_events_pending ()) gtk_main_iteration ();
-	}
+	/* Do not trigger the callback */
+	g_signal_handlers_block_by_func (
+			glade_xml_get_widget (gladexml, "reflection"),
+			on_reflection_activate,
+			NULL);
 
 	if (glob->IsReflection)
 	{
@@ -579,6 +577,11 @@ void set_new_main_data (DataVector *newdata, gboolean called_from_open)
 			FALSE
 		);
 	}
+
+	g_signal_handlers_unblock_by_func (
+			glade_xml_get_widget (gladexml, "reflection"),
+			on_reflection_activate,
+			NULL);
 }
 
 gboolean read_datafile (gchar *selected_filename, gboolean called_from_open) 
@@ -910,6 +913,10 @@ gint read_resonancefile (gchar *selected_filename, const gchar *label)
 		FALSE
 	);
 
+	statusbar_message ("Open: Calculating theory graph...");
+	while (gtk_events_pending ()) gtk_main_iteration ();
+	visualize_theory_graph ();
+
 	/* Add overlays */
 	if (ovrlaynum && glob->data)
 	{
@@ -992,10 +999,6 @@ gboolean load_gwf_resonance_file (gchar *filename)
 		g_free (title);
 
 		visualize_update_min_max (0);
-
-		/* No need to update theory, this has already been done by
-		 * set_new_main_data() via the transmission activate callback. */
-		//visualize_theory_graph ();
 
 		spectral_resonances_changed ();
 		unset_unsaved_changes ();

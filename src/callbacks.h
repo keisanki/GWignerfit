@@ -15,6 +15,8 @@ void import_data (GtkMenuItem *menuitem, gpointer user_data);
 
 void on_open1_activate (GtkMenuItem *menuitem, gpointer user_data);
 
+gboolean on_reflection_activate (GtkMenuItem *menuitem, gpointer user_data);
+
 void sigusr1_handler (int num);
 
 void sigchld_handler (int num);
