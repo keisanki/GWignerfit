@@ -3,7 +3,7 @@
   "http://www.oasis-open.org/docbook/xml/4.4/docbookx.dtd" [
 <!--"/usr/share/sgml/docbook/xml-dtd-4.4-1.0-26/docbookx.dtd" [ -->
 	<!ENTITY legal SYSTEM "legal.xml">
-	<!ENTITY appversion "2005-11-13">
+	<!ENTITY appversion "2005-12-22">
 	<!ENTITY manrevision "1.0">
 	<!ENTITY date "August 2005">
 	<!ENTITY app "<application>GWignerFit</application>">
@@ -448,18 +448,6 @@
 		</para>
 		<variablelist>
 			<varlistentry>
-				<term><guimenuitem>Fourier components</guimenuitem></term>
-				<listitem>
-					<para>If you have done transmission measurements in small cavities or
-						using bad cables you may get annoying periodic transmission
-						modulations that cannot be described by the "normal" theory of
-						complex Wigner functions. Use this dialog to identify those
-						fluctuations in the time domain and to take them into account as
-						additional Fourier components. See <xref linkend="gwf-fcomp" /> for
-						more detailed explanations.</para>
-				</listitem>
-			</varlistentry>
-			<varlistentry>
 				<term><guimenuitem>Measure distance</guimenuitem></term>
 				<listitem>
 					<para>To measure the frequency interval between two arbitrary points
@@ -510,6 +498,27 @@
 						resonance lists. Your current list of resonance frequencies will be
 						the source of the analysis. See <xref linkend="gwignerfit-spectral"
 						/> for a thorough explanation of this function.</para>
+				</listitem>
+			</varlistentry>
+			<varlistentry>
+				<term><guimenuitem>Merge resonance lists</guimenuitem></term>
+				<listitem>
+					<para>Use this module if you have several resonance lists and want to
+						merge them into one to get a complete resonance level scheme. A
+						detailed description of this function can be found in <xref
+						linkend="gwignerfit-merge" />.</para>
+				</listitem>
+			</varlistentry>
+			<varlistentry>
+				<term><guimenuitem>Fourier components</guimenuitem></term>
+				<listitem>
+					<para>If you have done transmission measurements in small cavities or
+						using bad cables you may get annoying periodic transmission
+						modulations that cannot be described by the "normal" theory of
+						complex Wigner functions. Use this dialog to identify those
+						fluctuations in the time domain and to take them into account as
+						additional Fourier components. See <xref linkend="gwf-fcomp" /> for
+						more detailed explanations.</para>
 				</listitem>
 			</varlistentry>
 		</variablelist>
@@ -674,7 +683,7 @@
 				</listitem>
 				<listitem>
 					<para>&app; expects the frequency/time intervals between two
-						successive lines to be equal, i.e. plus 200&nbsp;KHz between each
+						successive lines to be equal, i.e. plus 200&nbsp;kHz between each
 						frequency dataset.</para>
 				</listitem>
 				<listitem>
@@ -2157,6 +2166,480 @@
 	</sect2>
 </sect1>
 
+<!-- ============= The Merge resonance list window =========== -->
+<sect1 id="gwignerfit-merge">
+	<title>Merge Resonance Lists</title>
+
+	<para>A spectrum does only contain a part of the information of the measured
+		resonator because the antennae do only probe the system at at most two
+		different points. This makes the task of compiling complete resonance lists
+		somewhat difficult as one has to make measurements using different antennae
+		combinations, identify the visible resonances in each spectra and deduce the
+		complete resonance list from those subsets. Though the basic problem cannot
+		be overcome, &app; includes a tool to simplify the last step of this
+		process: To merge many resonance lists into one (hopefully) complete list.
+	</para>
+
+	<figure id="merge-win">
+		<title>Merge resonance lists window</title>
+		<screenshot>
+			<mediaobject>
+				<imageobject><imagedata
+						fileref="figures/gwf_merge.eps" scale="45" format="EPS"/>
+				</imageobject>
+				<imageobject><imagedata
+						fileref="figures/gwf_merge.png" format="PNG"/>
+				</imageobject>
+				<textobject>
+					<phrase>Shows the merge resonance lists window.</phrase>
+				</textobject>
+			</mediaobject>
+		</screenshot>
+	</figure>
+
+	<para>This module, which works more or less independently from the rest of
+		the program, can be accessed via
+		<menuchoice>
+			<guimenu>Analyze</guimenu>
+			<guimenuitem>Merge resonance lists</guimenuitem>
+		</menuchoice> (or use the shortcut
+		<keycombo>
+			<keycap>Ctrl</keycap>
+			<keycap>J</keycap>
+		</keycombo>).
+		A screenshot of the corresponding window (with some work already done in
+		it) is shown in <xref linkend="merge-win" />. It consists of five main
+		elements:
+	</para>
+
+	<variablelist>
+		<varlistentry>
+			<term>Menubar</term>
+			<listitem>
+				<para>Through this menubar all relevant actions can be started. Its
+					elements will be discussed in <xref linkend="gwf-merge-menubar" />.
+				</para>
+			</listitem>
+		</varlistentry>
+		<varlistentry>
+			<term>Resonance nodes view</term>
+			<listitem>
+				<para>This is the part of the window where most of the actual work is
+					done. Each resonance of each resonance list is represented by a short
+					blue line, and will be referred to as a <emphasis>node</emphasis>
+					here. Orange lines connect nodes from different lists and symbolize
+					that those nodes belong to the same physical resonance of the system.
+					A much more detailed description of this is given in
+					<xref	linkend="gwf-merge-nodes" />.
+				</para>
+			</listitem>
+		</varlistentry>
+		<varlistentry>
+			<term>Spectra graph</term>
+			<listitem>
+				<para>Sometimes the very abstract representation of the nodes view may
+					not provide sufficient information to be able to decide which
+					resonances belong together and which do not. The spectra graph
+					displays the raw spectra corresponding to each resonance list. See
+					<xref linkend="gwf-merge-nodes" /> for more information.
+				</para>
+			</listitem>
+		</varlistentry>
+		<varlistentry>
+			<term>Resonance lists overview</term>
+			<listitem>
+				<para>This list has an entry for each resonance list that has been
+					imported and is thus visualized in the nodes view. It displays the
+					ID, the name of the &app; session file and the number of resonances
+					for each resonance list.
+				</para>
+			</listitem>
+		</varlistentry>
+		<varlistentry>
+			<term>Statusbar</term>
+			<listitem>
+				<para>The statusbar provides some feedback about what &app; does and
+					reports on the success or failure of many actions.
+				</para>
+			</listitem>
+		</varlistentry>
+	</variablelist>
+
+	<sect2 id="gwf-merge-menubar">
+		<title>The Menubar of the Merge Window</title>
+
+		<para>This section will explain all menu entries that can be found in the
+			menubar of the merge window.</para>
+
+		<sect3 id="gwf-merge-file">
+			<title>The merge <guimenu>File</guimenu> menu</title>
+
+			<para>Through the <guimenu>File</guimenu> you can load and save earlier
+				merge sessions, import resonance lists and export that result of your
+				work, a merged resonance list.</para>
+
+			<variablelist>
+				<varlistentry>
+					<term><guimenuitem>New</guimenuitem></term>
+					<listitem>
+						<para>This will reset the merge window to the same state it has
+							been in after you opened it. Your current changes in this window
+							will be lost if they haven't been saved yet.
+						</para>
+					</listitem>
+				</varlistentry>
+				<varlistentry>
+					<term><guimenuitem>Open</guimenuitem></term>
+					<listitem>
+						<para>You can restore a complete merge session with the
+							<guimenuitem>Open</guimenuitem> function. This must not be mixed
+							with the session files created by the main save functionality of
+							&app;. If you have resonance <emphasis>and</emphasis> merge
+							information in one file &app; will only show you the merge
+							sections, as the other are not of use here. Please read the
+							explanation for the <guimenuitem>Save</guimenuitem> function,
+							which comes next in this manual, too.
+						</para>
+					</listitem>
+				</varlistentry>
+				<varlistentry>
+					<term><guimenuitem>Save</guimenuitem></term>
+					<listitem>
+						<para>Just as with the main <guimenuitem>Save</guimenuitem>
+							function of &app; the complete current state of the merge window
+							can be saved. The session files are structured in the same way as
+							the "normal" session files, also called gwf files (see <xref
+							linkend="gwignerfit-save-work" />). You can use the same gwf file
+							to store sections with resonance information and sections with
+							merge information. The sections are internally marked so that
+							&app; can distinguish between both types to guarantee that
+							nothing gets mixed up.
+						</para>
+						<para><emphasis>Warning:</emphasis> &app; does not save the
+							position of each resonance node. It just saves what resonance
+							lists have been imported, what resonances have been deleted (see
+							<xref linkend="gwf-merge-resonance" />) and the links that have
+							been created. This means that the original resonance sections
+							must <emphasis>not</emphasis> be altered afterward (or only if
+							you really know what you are doing) as this may invalidate your
+							saved merge session.
+						</para>
+						<para>You will only be asked for a section label and a filename the
+							first time you use this function. On consecutive calls &app; uses
+							those values to overwrite the old section with the new state.
+						</para>
+					</listitem>
+				</varlistentry>
+				<varlistentry>
+					<term><guimenuitem>Save As...</guimenuitem></term>
+					<listitem>
+						<para>This function does in principle the same thing as the
+							<guimenuitem>Save</guimenuitem> function explained above. It
+							will, however, <emphasis>always</emphasis> ask for a section
+							label and filename.
+						</para>
+					</listitem>
+				</varlistentry>
+				<varlistentry>
+					<term><guimenuitem>Add resonance list</guimenuitem></term>
+					<listitem>
+						<para>Before you can do anything with the merge window, resonance
+							lists need to be imported. This is done with <guimenuitem>Add
+							resonance list</guimenuitem>. The resonance list &app; expects
+							now is just a normal resonance section of a gwf file that has
+							been created using the main save function of &app;.
+						</para>
+					</listitem>
+				</varlistentry>
+				<varlistentry>
+					<term><guimenuitem>Remove resonance list</guimenuitem></term>
+					<listitem>
+						<para>This action will remove the resonance list which is currently
+							selected in the "resonance lists overview". Any affected links
+							will up updated accordingly. A convenient shortcut for this menu
+							item is <keycap>Delete</keycap>.
+						</para>
+					</listitem>
+				</varlistentry>
+				<varlistentry>
+					<term><guimenuitem>Export merged list</guimenuitem></term>
+					<listitem>
+						<para>The whole merge module has been created to compile a single,
+							complete list with all resonance frequencies from several
+							measurements. Use this export function to save this list into a
+							text file. It will contain the following information: A header
+							with some information about what resonance lists have been
+							included in this merge and two columns with a consecutively
+							numbered ID and the actual resonance frequency. Each resonance
+							frequency is calculated as the average between all resonances in
+							a link group.
+						</para>
+					</listitem>
+				</varlistentry>
+				<varlistentry>
+					<term><guimenuitem>Close window</guimenuitem></term>
+					<listitem>
+						<para>This will just close the merge window, all unsaved changes
+							will be lost. &app; itself keeps on running.
+						</para>
+					</listitem>
+				</varlistentry>
+			</variablelist>
+		</sect3>
+		<sect3 id="gwf-merge-links">
+			<title>The merge <guimenu>Links</guimenu> menu</title>
+
+			<para>All actions that concern the links between resonance nodes are
+				collected in this menu.</para>
+			
+			<variablelist>
+				<varlistentry>
+					<term><guimenuitem>Add link</guimenuitem></term>
+					<listitem>
+						<para>Resonance nodes that belong to the same physical resonance
+							are linked together. This is done by choosing <guimenuitem>Add
+							link</guimenuitem> and selecting the two nodes that should be
+							linked together in the "resonance nodes view" (see <xref
+							linkend="gwf-merge-nodes" />. For this operation the ends of the
+							blue lines representing the resonance node are sensitive to
+							clicks with the left mouse button. If you get within some pixels
+							of such a point with the mouse pointer a rectangle will be drawn
+							around it as visual feedback. 
+						</para>
+					</listitem>
+				</varlistentry>
+				<varlistentry>
+					<term><guimenuitem>Delete link</guimenuitem></term>
+					<listitem>
+						<para>Links that are not correct can be deleted with this function.
+							The sensitive points in the "resonance nodes view" are again the
+							ends of the resonance node lines. Click on those to delete a
+							joining link.
+						</para>
+					</listitem>
+				</varlistentry>
+				<varlistentry>
+					<term><guimenuitem>Delete all links</guimenuitem></term>
+					<listitem>
+						<para>This action removes all links between all resonance
+							nodes.
+						</para>
+					</listitem>
+				</varlistentry>
+				<varlistentry>
+					<term><guimenuitem>Automatic merge</guimenuitem></term>
+					<listitem>
+						<para>Drawing obvious links between some hundred resonances is
+							tiring and error-prone. The <guimenuitem>Automatic
+							merge</guimenuitem> tries to create links between resonance nodes
+							that have, within their widths, the same frequencies. The
+							algorithm used is not really that sophisticated, make sure to
+							check its work. The automatic merger works best if no links are
+							defined yet, as it considers only nodes that do not already have
+							any links associated with them. Therefore this is typically the
+							first action to be done after the required resonance lists have
+							been added.
+						</para>
+					</listitem>
+				</varlistentry>
+			</variablelist>
+		</sect3>
+		<sect3 id="gwf-merge-resonance">
+			<title>The merge <guimenu>Resonance</guimenu> menu</title>
+
+			<para>The entries of the <guimenu>Resonance</guimenu> menu provide
+				functions that work on the resonance and frequency level. Information
+				about individual resonances can be obtained, resonances can be removed
+				from a list and frequency intervals can be measured.</para>
+
+			<variablelist>
+				<varlistentry>
+					<term><guimenuitem>Highlight width</guimenuitem></term>
+					<listitem>
+						<para>With this function you can get further information on a
+							selected resonance. Choose this menu item and then click on the
+							resonance node that you are interested in (for this operation the
+							whole blue resonance node line is sensitive). Three things will
+							happen then:
+							<itemizedlist>
+								<listitem>
+									<para>The width of the resonance will be visualized by a
+										green bar in the "resonance nodes view". The width of this
+										bar is exactly one FWHM.</para>
+								</listitem>
+								<listitem>
+									<para>The resonance frequency and width are numerically
+										displayed behind the <guilabel>Selected
+										resonance</guilabel> label.</para>
+								</listitem>
+								<listitem>
+									<para>The "spectra graph" zooms to the selected resonance,
+										the corresponding spectrum is drawn in a darker color.
+										Again a green bar marks the FWHM of the resonance.</para>
+								</listitem>
+							</itemizedlist>
+							To unmark the resonance choose this menu item again and click
+							somewhere on the "resonance nodes view" where no node is drawn.
+						</para>
+						<para>A very convenient shortcut for highlighting a resonance is to
+							use <keycap>Ctrl</keycap> + left mouse button on a resonance
+							node.
+						</para>
+					</listitem>
+				</varlistentry>
+				<varlistentry>
+					<term><guimenuitem>Remove resonance</guimenuitem></term>
+					<listitem>
+						<para>You will notice that some spectra can only be fitted by
+							adding "ghost" resonances. Resonances that should not correspond
+							to any physical resonances but are just needed to account for
+							background effects or miscalibration. Those resonances are
+							typically much broader that the "real" ones. As those resonances
+							should of course not be included in the merged list they need to
+							be removed.
+						</para>
+						<para>To remove such a "ghost" resonance select <guimenuitem>Remove
+							resonance</guimenuitem> and click on the corresponding resonance
+							node. For this operation the whole blue line is sensitive.
+						</para>
+					</listitem>
+				</varlistentry>
+				<varlistentry>
+					<term><guimenuitem>Measure distance</guimenuitem></term>
+					<listitem>
+						<para>This is well the known function most of &app;'s graphical
+							displays feature. Click on two positions on the "resonance nodes
+							view" and &app; will display the frequency difference between the
+							two points. Note: This function does <emphasis>not</emphasis>
+							work with the "spectra graph".
+						</para>
+					</listitem>
+				</varlistentry>
+			</variablelist>
+		</sect3>
+	</sect2>
+
+	<sect2 id="gwf-merge-nodes">
+		<title>How to do a Merge</title>
+		<para>This section will give you a detailed step-by-step instruction of
+			<emphasis>how</emphasis> to do a complete merge.
+		</para>
+
+		<para>After opening the merge window
+			(<menuchoice>
+				<guimenu>Analyze</guimenu>
+				<guimenuitem>Merge resonance lists</guimenuitem>
+			</menuchoice>) the first step is to import the resonance lists that are
+			to be merged. This is done with
+			<menuchoice>
+				<guimenu>File</guimenu>
+				<guimenuitem>Add resonance list</guimenuitem>
+			</menuchoice>. You have to choose a <filename>.gwf</filename> file there
+			with resonance information created by &app;. After selecting the label of
+			the section &app; reads all resonances and the filename of the measured
+			spectrum. The spectrum is then loaded and displayed in the "spectra
+			graph". All resonances in this section build a new resonance list that is
+			visualized in the "resonance nodes view". This view has a vertical blue
+			line for each resonance. The abscissa gives the frequency in GHz, the
+			ordinate just enumerates the resonance lists. Do this import procedure
+			for all lists that you wish to merge.
+		</para>
+
+		<para>Now that all resonances are imported it is time to introduce two
+			terms: <emphasis>node</emphasis> and <emphasis>link</emphasis>. Each
+			resonance forms a node and links can be drawn between nodes. A node is
+			represented by a blue line, a link by an orange one in the "resonance
+			nodes view". The idea is that all nodes which are connected by links
+			represent the same physical resonance and thus need to be merged into one
+			resonance later. You need to know how to create links now. The first step
+			will normally be to let &app; create an initial set of links for you.
+			This is done by
+			<menuchoice>
+				<guimenu>Links</guimenu>
+				<guimenuitem>Automatic merge</guimenuitem>
+			</menuchoice>.
+			The result will by no means be perfect but it should provide a good
+			starting point for your further work. You can manipulate links with the
+			<guimenuitem>Add link</guimenuitem> and <guimenuitem>Delete
+			link</guimenuitem> functions of the <guimenu>Links</guimenu> menu. The
+			<guimenuitem>Add link</guimenuitem> function requires you to click on two
+			nodes that you want to connect, that is the endpoints of the blue lines. A
+			link is being deleted with the <guimenuitem>Delete link</guimenuitem>
+			function. Click on an endpoint of a link and it will be removed.
+		</para>
+
+		<para>In many cases the information of the "resonance nodes view" will not
+			be sufficient to decide where a resonance belongs to. This is where
+			resonance highlighting and the "spectra graph" come into play. You can
+			select a resonance either via
+			<menuchoice>
+				<guimenu>Resonance</guimenu>
+				<guimenuitem>Highlight width</guimenuitem>
+			</menuchoice>
+			or by just doing a <keycap>Ctrl</keycap> + left mouse button click on a
+			resonance node. The resonance will now be highlighted by a green bar
+			whose width is exactly the FWHM of the resonance (see <xref
+			linkend="gwf-merge-resonance" />). The numerical values of the resonance
+			frequency and the width are displayed next to the <guilabel>Selected
+			resonance</guilabel> label. Finally the "spectra graph" draws the
+			spectrum of the selected resonance in a darker color and zooms to the
+			appropriate resonance. This should help you to determine the
+			relationships between resonances. To unmark a resonance choose the
+			<guimenuitem>Highlight width</guimenuitem> option once again and click
+			somewhere on the "resonance nodes view" with no resonance node nearby.
+		</para>
+
+		<para>The "spectra graph" behaves like any other graph in &app; which
+			means that you can navigate through it in the usual manner (see <xref
+			linkend="gwf-navigate" />) to view any part of the spectrum. However,
+			you cannot change the display type, that is the graph can only show
+			absolute values in normal scale.
+		</para>
+
+		<para>Having taken a closer look at a resonance node you might have come to
+			the conclusion that there really is <emphasis>no</emphasis> physical
+			resonance at this place. This can happen if a resonance has only been
+			needed during the fit to take background effects into account. Those
+			"ghosts" must be removed from the list of resonances, of course. Choose
+			<menuchoice>
+				<guimenu>Resonance</guimenu>
+				<guimenuitem>Remove resonance</guimenuitem>
+			</menuchoice>
+			from the menubar and click somewhere on a node to remove it. You cannot
+			delete the last resonance node in a resonance list as this would leave
+			you with an empty resonance list. Remove the whole list instead.
+		</para>
+
+		<para>Now that all links are placed it is time to talk about the save and
+			export functions: You can save the current state of the "merge resonance
+			lists" window into a <filename>.gwf</filename> file and you can export
+			the merged resonance list into a separate file. The save functions works
+			exactly the same way as already described in <xref linkend="gwf-save" />.
+			Sections that contain merge information are completely independent from
+			sections with resonance information. Thus they can coexist peacefully in
+			the same <filename>.gwf</filename> file. You could even use the same
+			section label twice, for a resonance section and a merge section.
+		</para>
+
+		<para>Finally, we are at the point where all this merge business leads to a
+			list with resonance frequencies. This list is created and saved through
+			the export function that can be accessed via
+			<menuchoice>
+				<guimenu>File</guimenu>
+				<guimenuitem>Export merged list</guimenuitem>
+			</menuchoice>.
+			You can now choose a filename under which the list is to be saved. The
+			resulting file consists of a header with information on the utilized
+			resonance lists and a data part. The data part is divided into two
+			columns. The first column gives each resonance a number starting at one.
+			The second column contains the resonance frequencies in Hz. The resonance
+			requencies are calculated as the average between all resonances in a
+			link group.
+		</para>
+		
+	</sect2>
+</sect1>
+
 <!-- ============= Work in time domain ======================= -->
 <sect1 id="gwignerfit-fft">
 	<title>Working in the Time Domain</title>
@@ -2340,8 +2823,8 @@
 							in nanoseconds (ns). However, by multiplying the values of the
 							axis by the speed of light one can interpret it as a length in
 							meter (m), that is the distance light would travel in vacuum
-							after the given time. Use those two options to switch between the
-							two possible scalings.</para>
+							during the given time. Use those two options to switch between
+							the two possible scalings.</para>
 					</listitem>
 				</varlistentry>
 				<varlistentry>
