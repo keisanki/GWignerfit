@@ -24,6 +24,7 @@ void prefs_set_default ()
 	glob->prefs->datapoint_marks = TRUE;
 	glob->prefs->sortparam = FALSE;
 	glob->prefs->fit_converge_detect = TRUE;
+	glob->prefs->relative_paths = FALSE;
 	glob->prefs->res_export = -1;
 	glob->prefs->cal_tauO = 20.837e-12;
 	glob->prefs->cal_tauS = 22.548e-12;
@@ -60,6 +61,7 @@ void prefs_save (Preferences *prefs)
 	fprintf (fh, "datapoint_marks = %d\n", prefs->datapoint_marks);
 	fprintf (fh, "sortparam = %d\n", prefs->sortparam);
 	fprintf (fh, "fit_converge_detect = %d\n", prefs->fit_converge_detect);
+	fprintf (fh, "relative_paths = %d\n", prefs->relative_paths);
 	fprintf (fh, "res_export = %d\n", prefs->res_export);
 	fprintf (fh, "cal_tauO = %e\n", prefs->cal_tauO);
 	fprintf (fh, "cal_tauS = %e\n", prefs->cal_tauS);
@@ -137,6 +139,8 @@ void prefs_load (Preferences *prefs)
 			prefs->sortparam = val;
 		if (!g_ascii_strncasecmp (cmd, "fit_converge_detect", 20))
 			prefs->fit_converge_detect = val;
+		if (!g_ascii_strncasecmp (cmd, "relative_paths", 15))
+			prefs->relative_paths = val;
 		if (!g_ascii_strncasecmp (cmd, "res_export", 11))
 			prefs->res_export = val;
 	}
@@ -194,6 +198,10 @@ void prefs_change_win ()
 		GTK_TOGGLE_BUTTON (glade_xml_get_widget (xmldialog, "prefs_sortparam_check")), 
 		glob->prefs->sortparam);
 
+	gtk_toggle_button_set_active (
+		GTK_TOGGLE_BUTTON (glade_xml_get_widget (xmldialog, "prefs_relative_check")), 
+		glob->prefs->relative_paths);
+
 	result = gtk_dialog_run (GTK_DIALOG (dialog));
 
 	if (result == GTK_RESPONSE_OK)
@@ -230,6 +238,12 @@ void prefs_change_win ()
 			glob->prefs->save_overlays = TRUE;
 		else
 			glob->prefs->save_overlays = FALSE;
+
+		if (gtk_toggle_button_get_active (
+			GTK_TOGGLE_BUTTON (glade_xml_get_widget (xmldialog, "prefs_relative_check"))))
+			glob->prefs->relative_paths = TRUE;
+		else
+			glob->prefs->relative_paths = FALSE;
 
 		if (gtk_toggle_button_get_active (
 			GTK_TOGGLE_BUTTON (glade_xml_get_widget (xmldialog, "datapoint_marks_check"))))

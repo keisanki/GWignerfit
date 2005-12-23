@@ -172,7 +172,7 @@ gchar* ls_input_section (gchar *defsec)
 /* Executes write_callback at the correct position in filename so that it can
  * write its information into the file. Returns TRUE on success. */
 gboolean ls_save_file_exec (gchar *filename, gchar *section, gchar marker, gint exists,
-		    void (*write_callback) (FILE *datafile, gchar *section, gchar *newline))
+		    void (*write_callback) (FILE *datafile, gchar *filename, gchar *section, gchar *newline))
 {
 	GString *old_file_before = NULL, *old_file_after = NULL;
 	gchar line[256], *newline;
@@ -310,7 +310,7 @@ gboolean ls_save_file_exec (gchar *filename, gchar *section, gchar marker, gint 
 	}
 
 	/* Write content into section */
-	(* write_callback) (datafile, section, newline);
+	(* write_callback) (datafile, filename, section, newline);
 	
 	/* A newline before the next section */
 	fprintf (datafile, "%s", newline);
@@ -331,7 +331,7 @@ gboolean ls_save_file_exec (gchar *filename, gchar *section, gchar marker, gint 
  * The section will be prepended by the marker character.
  * Asks the user about overwrites. Returns TRUE on successful write. */
 gboolean ls_save_file (gchar *selected_filename, gchar *section, gchar marker,
-		void (*write_callback) (FILE *datafile, gchar *section, gchar *newline)) 
+		void (*write_callback) (FILE *datafile, gchar *filename, gchar *section, gchar *newline)) 
 {
 	gchar line[256];
 	FILE *datafile;

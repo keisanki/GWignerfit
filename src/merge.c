@@ -273,17 +273,23 @@ static gint merge_read_resonances (gchar *selected_filename, const gchar *label,
 		/* Actually parse the section */
 
 		/* Begin "Florian Schaefer" style */
+		if (g_str_has_prefix (line, "file"))
+		{
+			if (sscanf(line, "%250s\t%250s", command, text) == 2)
+			{
+				/* text may not hold the complete filename if it
+				 * contained spaces. */
+				if (!strncmp(command, "file", 200)) 
+					*datafilename = filename_make_absolute (line+5, selected_filename);
+			}
+
+			continue;
+		}
+		
 		i = sscanf(line, "%250s\t%lf\t%lf\t%lf\t%lf%lf\t%lf\t%lf\t%lf", 
 				command, &frq, &wid, &amp, &phas, &frqerr, &widerr, &amperr, &phaserr);
 		switch (i) {
-			case 1: /* Datafile */
-			  if (sscanf(line, "%250s\t%250s", command, text) == 2)
-			  {
-				  /* text may not hold the complete filename if it
-				   * contained spaces. */
-				  if (!strncmp(command, "file", 200)) 
-					  *datafilename = g_strdup (line+5);
-			  }
+			case 1:
 			  break;
 			case 5: /* Resonance data */
 
@@ -332,13 +338,13 @@ static gint merge_read_resonances (gchar *selected_filename, const gchar *label,
 #undef merge_resonancefile_cleanup
 
 /* Store all link information into a file */
-void merge_save_links (FILE *datafile, gchar *section, gchar *newline)
+void merge_save_links (FILE *datafile, gchar *filename, gchar *section, gchar *newline)
 {
 	GtkTreeModel *model = GTK_TREE_MODEL (glob->merge->store);
 	GtkTreeIter iter;
 	MergeWin *merge = glob->merge;
 	GPtrArray *list;
-	gchar *text;
+	gchar *text, *name;
 	gint i, j, k, origlen, curnum, nextnum;
 	GList *linkiter;
 
@@ -354,7 +360,15 @@ void merge_save_links (FILE *datafile, gchar *section, gchar *newline)
 	do
 	{
 		gtk_tree_model_get (model, &iter, MERGE_LIST_COL, &text, -1);
-		fprintf (datafile, "file\t%s%s", text, newline);
+		if (glob->prefs->relative_paths)
+		{
+			if (!(name = filename_make_relative (text, filename)) )
+				name = g_strdup (text);
+			fprintf (datafile, "file\t%s%s", name, newline);
+			g_free (name);
+		}
+		else
+			fprintf (datafile, "file\t%s%s", text, newline);
 	}
 	while (gtk_tree_model_iter_next (model, &iter));
 
@@ -416,7 +430,7 @@ void merge_save_links (FILE *datafile, gchar *section, gchar *newline)
 static gboolean merge_load_links (gchar *selected_filename, const gchar *label)
 {
 	GPtrArray *lines;
-	gchar *line, *text;
+	gchar *line, *text1, *text2;
 	gchar **tokens;
 	gint pos;
 
@@ -450,15 +464,17 @@ static gboolean merge_load_links (gchar *selected_filename, const gchar *label)
 		
 		if (!(strcmp (tokens[0], "file")))
 		{
-			text = g_strjoinv (" ", tokens+1);
-			if (!merge_load_file_helper (text))
+			text1 = g_strjoinv (" ", tokens+1);
+			text2 = filename_make_absolute (text1, selected_filename);
+			if (!merge_load_file_helper (text2))
 			{
 				dialog_message ("Error while processing line %d of section.", pos+1);
 				//merge_load_links_cleanup;
 				//g_free (text);
 				//return FALSE;
 			}
-			g_free (text);
+			g_free (text1);
+			g_free (text2);
 		}
 
 		if (!(strcmp (tokens[0], "del")))

@@ -54,4 +54,10 @@ void bubbleSort (gdouble *array, int length);
 
 gchar* get_timestamp ();
 
+gchar* normalize_path (gchar *inpath);
+
+gchar* filename_make_relative (gchar *inname, gchar *inbase);
+
+gchar* filename_make_absolute (gchar *name, gchar *base);
+
 #endif

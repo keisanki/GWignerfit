@@ -1040,3 +1040,129 @@ gchar* get_timestamp ()
 
 	return time_string;
 }
+
+/* Converts strings like '/a/b/../c/./d/test.dat' into 'a/c/d/test.dat',
+ * the inpath must be absolute. */
+gchar* normalize_path (gchar *inpath)
+{
+	gchar **parts;
+	gint i=0, dots=0;
+	GString *gstr;
+
+	g_return_val_if_fail (inpath, NULL);
+	g_return_val_if_fail (inpath[0] == G_DIR_SEPARATOR, NULL);
+	
+	parts = g_strsplit (inpath, G_DIR_SEPARATOR_S, 0);
+
+	/* Go to last path element */
+	while (parts[i+1])
+		i++;
+
+	gstr = g_string_new (parts[i]);
+	gstr = g_string_prepend (gstr, G_DIR_SEPARATOR_S);
+	i--;
+
+	while (i>0)
+	{
+		if (!strncmp (parts[i], "..", 3))
+			dots++;
+		else if (strncmp (parts[i], ".", 2))
+		{
+			if (dots > 0)
+				dots--;
+			else
+			{
+				gstr = g_string_prepend (gstr, parts[i]);
+				gstr = g_string_prepend (gstr, G_DIR_SEPARATOR_S);
+			}
+		}
+		i--;
+	}
+	
+	/* g_string_free returns the string data */
+	return g_string_free (gstr, FALSE);
+}
+
+/* Return a string that gives the file described by inname (must be an absolute
+ * path) in a notation relative to the absolute filename given by inbase. */
+gchar* filename_make_relative (gchar *inname, gchar *inbase)
+{
+	gchar *name, *base;
+	gchar **namedirs, **basedirs;
+	GString *gstr;
+	gint pos=0, i=0;
+
+	g_return_val_if_fail (inname, NULL);
+	g_return_val_if_fail (inbase, NULL);
+	g_return_val_if_fail (inname[0] == G_DIR_SEPARATOR, NULL);
+	g_return_val_if_fail (inbase[0] == G_DIR_SEPARATOR, NULL);
+
+	name = normalize_path (inname);
+	base = normalize_path (inbase);
+	g_return_val_if_fail (name && base, NULL);
+
+	namedirs = g_strsplit (name, G_DIR_SEPARATOR_S, 0);
+	basedirs = g_strsplit (base, G_DIR_SEPARATOR_S, 0);
+
+	gstr = g_string_new (NULL);
+
+	/* Find the first position where the paths differ */
+	while (namedirs[pos] && basedirs[pos] && 
+	       (!strcmp (namedirs[pos], basedirs[pos])) )
+		pos++;
+
+	/* Are there more path elements in basedirs? */
+	if (basedirs[pos+1])
+	{
+		g_string_append_printf (gstr, "%s%c", "..", G_DIR_SEPARATOR);
+
+		i = pos;
+		while (basedirs[i+2])
+		{
+			g_string_append_printf (gstr, "%s%c", "..", G_DIR_SEPARATOR);
+			i++;
+		}
+	}
+
+	/* Append the rest of the path */
+	i = pos;
+	while (namedirs[i] && namedirs[i+1])
+	{
+		g_string_append_printf (gstr, "%s%c", namedirs[i], G_DIR_SEPARATOR);
+		i++;
+	}
+
+	/* Append filename */
+	g_string_append_printf (gstr, "%s", namedirs[i]);
+
+	g_strfreev (namedirs);
+	g_strfreev (basedirs);
+
+	/* g_string_free returns the string data */
+	return g_string_free (gstr, FALSE);
+}
+
+/* Returns an absolute filename for a name relative to base:
+ * name = ../test.dat, base = /home/schaefer/test/test.gwf
+ * -> return: /home/schaefer/test.dat 
+ * Returns name, if it is already absolute. */
+gchar* filename_make_absolute (gchar *name, gchar *base)
+{
+	gchar *tmp, *dirname, *retval;
+	
+	g_return_val_if_fail (name, NULL);
+	g_return_val_if_fail (base, NULL);
+	g_return_val_if_fail (base[0] == G_DIR_SEPARATOR, NULL);
+	
+	if (name[0] == G_DIR_SEPARATOR)
+		return g_strdup (name);
+
+	dirname = g_path_get_dirname (base);
+	tmp = g_build_filename (dirname, name, NULL);
+	g_free (dirname);
+
+	retval = normalize_path (tmp);
+	g_free (tmp);
+
+	return retval;
+}

@@ -392,7 +392,7 @@ DataVector *import_datafile (gchar *filename, gboolean interactive)
 	}
 
 	data = new_datavector (numpoints);
-	data->file = g_strdup (filename);
+	data->file = normalize_path (filename);
 
 #ifdef NO_ZLIB
 	rewind (datafile);
@@ -726,25 +726,23 @@ gint read_resonancefile (gchar *selected_filename, const gchar *label)
 		/* End "Stefan Bittner" style */
 #endif
 		/* Begin "Florian Schaefer" style */
-		i = sscanf (line, "%250s\t%lf\t%lf\t%lf\t%lf%lf\t%lf\t%lf\t%lf", 
-				command, &frq, &wid, &amp, &phas, &frqerr, &widerr, &amperr, &phaserr);
-		switch (i) {
-			case 1: /* Overlay */
-			  if (sscanf(line, "%250s\t%250s", command, text) == 2)
-			  {
-				  /* text may not hold the complete filename if it
-				   * contained spaces. */
-				  if ((!strncmp(command, "file", 200)) && (strlen (line) > 6))
-					datafilename = g_strdup (line+5);
+		if ((g_str_has_prefix (line, "file")) || (g_str_has_prefix (line, "ovrlay")))
+		{
+			if (sscanf(line, "%250s\t%250s", command, text) == 2)
+			{
+				/* text may not hold the complete filename if it
+				 * contained spaces. */
+				if ((!strncmp(command, "file", 200)) && (strlen (line) > 6))
+					datafilename = filename_make_absolute (line+5, selected_filename);
 
-				  /* Remember overlays for later addition */
-				  if ((!strncmp(command, "ovrlay", 200)) && datafilename)
-				  {
+				/* Remember overlays for later addition */
+				if ((!strncmp(command, "ovrlay", 200)) && datafilename)
+				{
 					offset = 0;
 					color = g_new (GdkColor, 1);
-					
+
 					if ((line[7] == '#') && (strlen(line) > 16) && (line[14] == ' ') &&
-					   (sscanf (line+8, "%02x%02x%02x", &r, &g, &b) == 3))
+							(sscanf (line+8, "%02x%02x%02x", &r, &g, &b) == 3))
 					{
 						/* Line has color information */
 						offset = 8;
@@ -761,21 +759,33 @@ gint read_resonancefile (gchar *selected_filename, const gchar *label)
 
 					g_ptr_array_add (
 						ovrlays,
-						(gpointer) g_strdup (line+7+offset)
-					);
+						(gpointer) filename_make_absolute (line+7+offset, selected_filename)
+						);
 					g_ptr_array_add (
 						colors,
 						color
-					);
+						);
 					ovrlaynum++;
-				  }
-			  }
-			  else
-			  {
-				  dialog_message ("Error: Unrecognized command '%s' in line %i of section.\n", command, pos);
-				  read_resonancefile_cleanup;
-				  return -1;
-			  }
+				}
+			}
+			else
+			{
+				dialog_message ("Error: Unrecognized command '%s' in line %i of section.\n", command, pos);
+				read_resonancefile_cleanup;
+				return -1;
+			}
+
+			continue;
+		}
+		
+		i = sscanf (line, "%250s\t%lf\t%lf\t%lf\t%lf%lf\t%lf\t%lf\t%lf", 
+				command, &frq, &wid, &amp, &phas, &frqerr, &widerr, &amperr, &phaserr);
+
+		switch (i) {
+			case 1:
+			  dialog_message("Error: Unrecognized command '%s' in line %i of section.\n", command, pos);
+			  read_resonancefile_cleanup;
+			  return -1;
 			  break;
 			case 2: /* Global parameter */
 			  if (!strncmp(command, "minfrq", 200)) {glob->gparam->min = frq * 1e9;}
@@ -966,6 +976,7 @@ gint read_resonancefile (gchar *selected_filename, const gchar *label)
  * Returns TRUE on success. */
 gboolean load_gwf_resonance_file (gchar *filename)
 {
+	GtkWidget *graph = glade_xml_get_widget (gladexml, "graph");
 	gchar *title, *basename;
 	gchar *section = NULL;
 	GList *sections = NULL;
@@ -998,7 +1009,8 @@ gboolean load_gwf_resonance_file (gchar *filename)
 		g_free (basename);
 		g_free (title);
 
-		visualize_update_min_max (0);
+		gtk_spect_vis_zoom_y_all (GTK_SPECTVIS (graph));
+		visualize_update_min_max (1);
 
 		spectral_resonances_changed ();
 		unset_unsaved_changes ();
@@ -1017,11 +1029,11 @@ gboolean load_gwf_resonance_file (gchar *filename)
 }
 
 /* Function to write all resonance information into datafile */
-void save_write_section (FILE *datafile, gchar *section, gchar *newline)
+void save_write_section (FILE *datafile, gchar *filename, gchar *section, gchar *newline)
 {
 	GSList *overlays, *overlayspos;
 	GdkColor color;
-	gchar *text;
+	gchar *text, *name;
 	Resonance *res;
 	FourierComponent *fcomp;
 	gint i;
@@ -1034,7 +1046,17 @@ void save_write_section (FILE *datafile, gchar *section, gchar *newline)
 	g_free (text);
 	
 	if ((glob->data) && (glob->data->file))
-		fprintf (datafile, "file\t%s%s", glob->data->file, newline);
+	{
+		if (glob->prefs->relative_paths)
+		{
+			if (!(name = filename_make_relative (glob->data->file, filename)) )
+				name = g_strdup (glob->data->file);
+			fprintf (datafile, "file\t%s%s", name, newline);
+			g_free (name);
+		}
+		else
+			fprintf (datafile, "file\t%s%s", glob->data->file, newline);
+	}
 
 	/* print the overlayed datafiles */
 	overlays = overlay_get_filenames ();
@@ -1050,9 +1072,17 @@ void save_write_section (FILE *datafile, gchar *section, gchar *newline)
 					(guint) (((gfloat) color.blue)/65535.0*256.0));
 			overlayspos = g_slist_next (overlayspos);
 			g_return_if_fail (overlayspos);
-			fprintf (datafile, " %s%s",
-					(gchar *) overlayspos->data,
-					newline);
+
+			if (glob->prefs->relative_paths)
+			{
+				if (!(name = filename_make_relative ((gchar *) overlayspos->data, filename)) )
+					name = g_strdup ((gchar *) overlayspos->data);
+				fprintf (datafile, " %s%s", name, newline);
+				g_free (name);
+			}
+			else
+				fprintf (datafile, " %s%s", (gchar *) overlayspos->data, newline);
+			
 		} while ((overlayspos = g_slist_next (overlayspos)));
 
 		g_slist_free (overlays);

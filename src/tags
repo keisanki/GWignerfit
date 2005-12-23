@@ -218,6 +218,8 @@ fcomp_what_to_fit	fcomp.c	/^void fcomp_what_to_fit (gint *ia)$/;"	f
 fcomp_win_close	fcomp.c	/^gboolean fcomp_win_close (GtkWidget *button)$/;"	f
 fcomplex	spectral_numeric.c	/^typedef struct FCOMPLEX {float r,i;} fcomplex;$/;"	t	file:
 file_is_writeable	helpers.c	/^gboolean file_is_writeable (gchar *filename)$/;"	f
+filename_make_absolute	helpers.c	/^gchar *filename_make_absolute (gchar *name, gchar *base)$/;"	f
+filename_make_relative	helpers.c	/^gchar* filename_make_relative (gchar *inname, gchar *inbase)$/;"	f
 find_isolated_resonances	processdata.c	/^gint find_isolated_resonances (gfloat thresh)$/;"	f
 find_resonance_at	processdata.c	/^Resonance *find_resonance_at (double frq, DataVector *d)$/;"	f
 fit	numeric.c	/^void fit (gint *ia)$/;"	f
@@ -400,17 +402,17 @@ merge_load_del_helper	merge.c	/^static gboolean merge_load_del_helper (gchar *te
 merge_load_file_helper	merge.c	/^static gboolean merge_load_file_helper (gchar *text)$/;"	f	file:
 merge_load_link_helper	merge.c	/^static gboolean merge_load_link_helper (gchar **tokens)$/;"	f	file:
 merge_load_links	merge.c	/^static gboolean merge_load_links (gchar *selected_filename, const gchar *label)$/;"	f	file:
-merge_load_links_cleanup	merge.c	410;"	d	file:
-merge_load_links_cleanup	merge.c	499;"	d	file:
+merge_load_links_cleanup	merge.c	425;"	d	file:
+merge_load_links_cleanup	merge.c	516;"	d	file:
 merge_motion_notify	merge.c	/^gboolean merge_motion_notify (GtkWidget *widget, GdkEventMotion *event)$/;"	f
 merge_open_win	merge.c	/^void merge_open_win ()$/;"	f
 merge_purge	merge.c	/^void merge_purge (gboolean free_only)$/;"	f
 merge_read_resonances	merge.c	/^static gint merge_read_resonances (gchar *selected_filename, const gchar *label, GPtrArray **reslist, gchar **datafilename)$/;"	f	file:
 merge_remove_spect_graph	merge_util.c	/^gboolean merge_remove_spect_graph (gint uid)$/;"	f
 merge_reslist_compare	merge_util.c	/^static gint merge_reslist_compare (gconstpointer a_in, gconstpointer b_in)$/;"	f	file:
-merge_resonancefile_cleanup	merge.c	233;"	d	file:
-merge_resonancefile_cleanup	merge.c	331;"	d	file:
-merge_save_links	merge.c	/^void merge_save_links (FILE *datafile, gchar *section, gchar *newline)$/;"	f
+merge_resonancefile_cleanup	merge.c	234;"	d	file:
+merge_resonancefile_cleanup	merge.c	338;"	d	file:
+merge_save_links	merge.c	/^void merge_save_links (FILE *datafile, gchar *filename, gchar *section, gchar *newline)$/;"	f
 merge_show_numres	merge.c	/^void merge_show_numres (GtkTreeViewColumn *col, GtkCellRenderer *renderer, $/;"	f
 merge_show_resonance_info	merge_util.c	/^void merge_show_resonance_info (MergeNode *node)$/;"	f
 merge_spect_graph_show_node	merge_util.c	/^gboolean merge_spect_graph_show_node (MergeNode *node)$/;"	f
@@ -426,6 +428,7 @@ network_gui_to_struct	network.c	/^static int network_gui_to_struct ()$/;"	f	file
 network_open_win	network.c	/^void network_open_win ()$/;"	f
 network_struct_to_gui	network.c	/^static void network_struct_to_gui ()$/;"	f	file:
 new_datavector	helpers.c	/^DataVector *new_datavector (guint len)$/;"	f
+normalize_path	helpers.c	/^gchar* normalize_path (gchar *inpath)$/;"	f
 nrerror	nrutil.c	/^void nrerror(char error_text[])$/;"	f
 nrerror	nrutil.c	/^void nrerror(error_text)$/;"	f
 nrtexterror	nrutil.c	/^void nrtexterror(char error_text[])$/;"	f
@@ -552,14 +555,14 @@ quit_application	callbacks.c	/^gboolean quit_application (GtkWidget *widget, Gdk
 r	spectral_numeric.c	/^typedef struct FCOMPLEX {float r,i;} fcomplex;$/;"	m	struct:FCOMPLEX	file:
 read_datafile	processdata.c	/^gboolean read_datafile (gchar *selected_filename, gboolean called_from_open) $/;"	f
 read_resonancefile	processdata.c	/^gint read_resonancefile (gchar *selected_filename, const gchar *label)$/;"	f
-read_resonancefile_cleanup	processdata.c	608;"	d	file:
-read_resonancefile_cleanup	processdata.c	939;"	d	file:
+read_resonancefile_cleanup	processdata.c	623;"	d	file:
+read_resonancefile_cleanup	processdata.c	973;"	d	file:
 remove_resonance	resonancelist.c	/^void remove_resonance (GtkTreeIter iter)$/;"	f
 remove_selected_resonance	resonancelist.c	/^void remove_selected_resonance ()$/;"	f
 reslist_update_widthunit	resonancelist.c	/^void reslist_update_widthunit ()$/;"	f
 resonance_check_all	resonancelist.c	/^void resonance_check_all (gboolean type)$/;"	f
 resonance_toggle_row	resonancelist.c	/^void resonance_toggle_row ()$/;"	f
-save_write_section	processdata.c	/^void save_write_section (FILE *datafile, gchar *section, gchar *newline)$/;"	f
+save_write_section	processdata.c	/^void save_write_section (FILE *datafile, gchar *filename, gchar *section, gchar *newline)$/;"	f
 select_res_by_id	resonancelist.c	/^gboolean select_res_by_id (gint id)$/;"	f
 set_busy_cursor	helpers.c	/^void set_busy_cursor (gboolean busy)$/;"	f
 set_icons	gwignerfit.c	/^void set_icons ()$/;"	f

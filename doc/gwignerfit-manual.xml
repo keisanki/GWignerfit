@@ -3514,6 +3514,24 @@
 			</listitem>
 		</varlistentry>
 		<varlistentry>
+			<term><guilabel>Use relative paths in gwf files</guilabel></term>
+			<listitem>
+				<para>You can define how &app; includes datafile names in
+					<filename>.gwf</filename> files. If this option is
+					<emphasis>not</emphasis> checked, all filenames are stored as
+					absolute positions. That means that you can move the
+					<filename>.gwf</filename> file around and &app; will still find the
+					files with the spectra data, but the position of the spectra files
+					must not be changed. If this option <emphasis>is</emphasis> enabled,
+					&app; stores only relative positions in the session file, that is the
+					position of the spectra files relative to the
+					<filename>.gwf</filename> file. This way you can move both (the data
+					and the session files) around as long as their relative positions in
+					the filesystem stay the same.
+				</para>
+			</listitem>
+		</varlistentry>
+		<varlistentry>
 			<term><guibutton>Cancel</guibutton></term>
 			<listitem>
 				<para>Close the preferences dialog discarding any changes made.

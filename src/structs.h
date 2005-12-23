@@ -103,6 +103,7 @@ typedef struct
 	gboolean datapoint_marks;	/* Mark the datapoints in the graph? */
 	gboolean sortparam;		/* Sort glob->param array by frequencies? */
 	gboolean fit_converge_detect;	/* Stop fit automatically if converged? */
+	gboolean relative_paths;	/* Save relative paths in gwf files? */
 	gint res_export;		/* Bitmask of parameters for resonance export */
 	gdouble cal_tauO;		/* Open calibration standard: signal delay */
 	gdouble cal_tauS;		/* Short calibration standard: signal delay */

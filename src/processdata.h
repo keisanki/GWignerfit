@@ -21,7 +21,7 @@ void read_datafile (gchar *selected_filename, gint called_from_open);
 
 gboolean load_gwf_resonance_file (gchar *filename);
 
-void save_write_section (FILE *datafile, gchar *section, gchar *newline);
+void save_write_section (FILE *datafile, gchar *filename, gchar *section, gchar *newline);
 
 gboolean is_datafile (gchar *filename);
 
