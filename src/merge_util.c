@@ -460,7 +460,8 @@ void merge_add_reslist (GPtrArray *reslist, gchar *datafilename, gchar *name)
 	gtk_spect_vis_redraw (graph);
 
 	/* Add to spectra graph */
-	merge_add_spect_graph (datafilename, uid);
+	if (datafilename)
+		merge_add_spect_graph (datafilename, uid);
 }
 
 /* Takes a node and removes links associated with it, determined by type.
@@ -916,6 +917,9 @@ gboolean merge_spect_graph_show_node (MergeNode *node)
 
 	merge = glob->merge;
 	spectgraph = GTK_SPECTVIS (glade_xml_get_widget (merge->xmlmerge, "merge_spect_graph"));
+
+	if ((!spectgraph->data) || (!spectgraph->view))
+		return FALSE;
 
 	if (baruid)
 	{

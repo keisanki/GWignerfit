@@ -1230,7 +1230,7 @@ gboolean on_merge_remove_resonance_activate (GtkWidget *button)
 /* Zooming, etc. */
 void merge_handle_viewport_changed (GtkSpectVis *spectvis, gchar *zoomtype)
 {
-	if (zoomtype == "a")
+	if (*zoomtype == 'a')
 		merge_zoom_x_all ();
 	
 	gtk_spect_vis_redraw (spectvis);
