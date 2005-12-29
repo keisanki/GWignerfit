@@ -18,7 +18,7 @@ extern GladeXML *gladexml;
 
 /* Forward declarations */
 void uncheck_res_out_of_frq_win (gdouble min, gdouble max);
-gint get_selected_resonance_iter (GtkTreeIter *iter);
+GtkTreeIter* get_selected_resonance_iters (gint *numiters);
 
 enum {
 	ID_COL = 0, 
@@ -182,15 +182,18 @@ void resonance_check_all (gboolean type)
 void resonance_toggle_row ()
 {
 	GtkTreeModel *model = GTK_TREE_MODEL (glob->store);
-	GtkTreeIter iter;
-	gint numchecked = 0;
+	GtkTreeIter *iters;
+	gint numchecked = 0, i, numiters;
 	gboolean frq, wid, amp, phas, type;
 
 	g_return_if_fail (GTK_IS_TREE_MODEL (model));
+	iters = get_selected_resonance_iters (&numiters);
 
-	if (get_selected_resonance_iter (&iter))
+	/* Decide whether to check or to uncheck. */
+	i = 0;
+	while (i < numiters)
 	{
-		gtk_tree_model_get (model, &iter,
+		gtk_tree_model_get (model, iters+i,
 				FIT_FRQ_COL, &frq,
 				FIT_WID_COL, &wid,
 				FIT_AMP_COL, &amp,
@@ -201,19 +204,28 @@ void resonance_toggle_row ()
 		if (wid)  numchecked++;
 		if (amp)  numchecked++;
 		if (phas) numchecked++;
+		i++;
+	}
+	if (numchecked > 2*numiters - 1)
+		type = FALSE;
+	else
+		type = TRUE;
 
-		if (numchecked > 1)
-			type = FALSE;
-		else
-			type = TRUE;
-
-		gtk_list_store_set (glob->store, &iter,
+	/* Do it */
+	i = 0;
+	while (i < numiters)
+	{
+		gtk_list_store_set (glob->store, iters+i,
 				FIT_FRQ_COL, type,
 				FIT_WID_COL, type,
 				FIT_AMP_COL, type,
 				FIT_PHAS_COL, type,
 				-1);
+
+		i++;
 	}
+
+	g_free (iters);
 }
 
 /* Calculate the value for the Q column */
@@ -240,11 +252,11 @@ void calculate_q_func (GtkTreeViewColumn *col, GtkCellRenderer *renderer,
 /* Create a liststore and populate the treeview with columns */
 void set_up_resonancelist () 
 {
-	GtkWidget *treeview;
+	GtkTreeView *treeview;
 	GtkTreeViewColumn *column;
 	GtkCellRenderer *renderer, *togglerenderer;
 
-	treeview = glade_xml_get_widget (gladexml, "restreeview");
+	treeview = GTK_TREE_VIEW (glade_xml_get_widget (gladexml, "restreeview"));
 	glob->store = gtk_list_store_new (N_COLUMNS,
 			G_TYPE_UINT,
 			G_TYPE_DOUBLE,
@@ -257,7 +269,7 @@ void set_up_resonancelist ()
 			G_TYPE_BOOLEAN);
 
 	gtk_tree_view_set_model (
-			GTK_TREE_VIEW (treeview),
+			treeview,
 			GTK_TREE_MODEL (glob->store));
 
 	renderer = gtk_cell_renderer_text_new ();
@@ -269,7 +281,7 @@ void set_up_resonancelist ()
 			NULL);
 	gtk_tree_view_column_set_resizable (column, FALSE);
 	gtk_tree_view_column_set_sort_column_id (column, ID_COL);
-	gtk_tree_view_append_column (GTK_TREE_VIEW (treeview), column);
+	gtk_tree_view_append_column (treeview, column);
 	column_separator;
 
 	/* FRQ_COL */
@@ -283,7 +295,7 @@ void set_up_resonancelist ()
 			NULL);
 	gtk_tree_view_column_set_resizable (column, TRUE);
 	gtk_tree_view_column_set_sort_column_id (column, FRQ_COL);
-	gtk_tree_view_append_column (GTK_TREE_VIEW (treeview), column);
+	gtk_tree_view_append_column (treeview, column);
 
 	/* FIT_FRQ_COL */
 	togglerenderer = gtk_cell_renderer_toggle_new ();
@@ -292,7 +304,7 @@ void set_up_resonancelist ()
 			"", togglerenderer,
 			"active", FIT_FRQ_COL,
 			NULL);
-	gtk_tree_view_append_column (GTK_TREE_VIEW (treeview), column);
+	gtk_tree_view_append_column (treeview, column);
 	gtk_tree_view_column_set_clickable (column, TRUE);
 	g_signal_connect (column, "clicked", G_CALLBACK (column_clicked_callback), GUINT_TO_POINTER(FIT_FRQ_COL));
 	column_separator;
@@ -308,7 +320,7 @@ void set_up_resonancelist ()
 			NULL);
 	gtk_tree_view_column_set_resizable (column, TRUE);
 	gtk_tree_view_column_set_sort_column_id (column, WID_COL);
-	gtk_tree_view_append_column (GTK_TREE_VIEW (treeview), column);
+	gtk_tree_view_append_column (treeview, column);
 	if (glob->prefs->widthunit == 6)
 		gtk_tree_view_column_set_title (column, "width [MHz]");
 	if (glob->prefs->widthunit == 3)
@@ -321,7 +333,7 @@ void set_up_resonancelist ()
 			"", togglerenderer,
 			"active", FIT_WID_COL,
 			NULL);
-	gtk_tree_view_append_column (GTK_TREE_VIEW (treeview), column);
+	gtk_tree_view_append_column (treeview, column);
 	gtk_tree_view_column_set_clickable (column, TRUE);
 	g_signal_connect (column, "clicked", G_CALLBACK (column_clicked_callback), GUINT_TO_POINTER(FIT_WID_COL));
 	column_separator;
@@ -337,7 +349,7 @@ void set_up_resonancelist ()
 			NULL);
 	gtk_tree_view_column_set_resizable (column, TRUE);
 	gtk_tree_view_column_set_sort_column_id (column, AMP_COL);
-	gtk_tree_view_append_column (GTK_TREE_VIEW (treeview), column);
+	gtk_tree_view_append_column (treeview, column);
 
 	/* FIT_AMP_COL */
 	togglerenderer = gtk_cell_renderer_toggle_new ();
@@ -346,7 +358,7 @@ void set_up_resonancelist ()
 			"", togglerenderer,
 			"active", FIT_AMP_COL,
 			NULL);
-	gtk_tree_view_append_column (GTK_TREE_VIEW (treeview), column);
+	gtk_tree_view_append_column (treeview, column);
 	gtk_tree_view_column_set_clickable (column, TRUE);
 	g_signal_connect (column, "clicked", G_CALLBACK (column_clicked_callback), GUINT_TO_POINTER(FIT_AMP_COL));
 	column_separator;
@@ -362,7 +374,7 @@ void set_up_resonancelist ()
 			NULL);
 	gtk_tree_view_column_set_resizable (column, TRUE);
 	gtk_tree_view_column_set_sort_column_id (column, PHAS_COL);
-	gtk_tree_view_append_column (GTK_TREE_VIEW (treeview), column);
+	gtk_tree_view_append_column (treeview, column);
 
 	/* FIT_PHAS_COL */
 	togglerenderer = gtk_cell_renderer_toggle_new ();
@@ -371,7 +383,7 @@ void set_up_resonancelist ()
 			"", togglerenderer,
 			"active", FIT_PHAS_COL,
 			NULL);
-	gtk_tree_view_append_column (GTK_TREE_VIEW (treeview), column);
+	gtk_tree_view_append_column (treeview, column);
 	gtk_tree_view_column_set_clickable (column, TRUE);
 	g_signal_connect (column, "clicked", G_CALLBACK (column_clicked_callback), GUINT_TO_POINTER(FIT_PHAS_COL));
 	column_separator;
@@ -384,12 +396,17 @@ void set_up_resonancelist ()
 			"Q", renderer,
 			NULL);
 	gtk_tree_view_column_set_resizable (column, TRUE);
-	gtk_tree_view_append_column (GTK_TREE_VIEW (treeview), column);
+	gtk_tree_view_append_column (treeview, column);
 	gtk_tree_view_column_set_cell_data_func (
 			column,
 			renderer,
 			calculate_q_func,
 			NULL, NULL);
+
+	/* Set selection mode to multiple */
+	gtk_tree_selection_set_mode (
+			gtk_tree_view_get_selection (treeview),
+			GTK_SELECTION_MULTIPLE);
 }
 
 #undef column_separator
@@ -518,46 +535,107 @@ void update_resonance_list (GPtrArray *param)
 	}
 }
 
-gint get_selected_resonance (gboolean failok)
+/* Return a zero terminated array of all selected resonance IDs */
+gint* get_selected_resonance_ids (gboolean failok)
 {
 	GtkTreeSelection *selection;
 	GtkTreeModel     *model;
 	GtkTreeIter       iter;
-	gint id = -1;
+	GList            *sellist, *listiter;
+	gint             *id = NULL, i = 0;
 
 	selection = gtk_tree_view_get_selection (
 			GTK_TREE_VIEW (
 				glade_xml_get_widget (gladexml, "restreeview")
 			)
 		);
-	if (gtk_tree_selection_get_selected(selection, &model, &iter))
+
+	model   = GTK_TREE_MODEL (glob->store);
+	sellist = gtk_tree_selection_get_selected_rows (selection, NULL);
+	id      = g_new0 (gint, g_list_length (sellist)+1);
+
+	if (g_list_length (sellist))
 	{
-		gtk_tree_model_get (model, &iter, ID_COL, &id, -1);
+		listiter = sellist;
+		while (listiter)
+		{
+			gtk_tree_model_get_iter (model, &iter, listiter->data);
+			gtk_tree_model_get (model, &iter, ID_COL, id+i, -1);
+
+			listiter = g_list_next (listiter);
+			i++;
+		}
 	}
 	else
 	{
-		if (!failok) dialog_message ("No row selected.");
+		if (!failok) 
+			dialog_message ("No row selected.");
 	}
+
+	g_list_foreach (sellist, (GFunc) gtk_tree_path_free, NULL);
+	g_list_free (sellist);
 
 	return id;
 }
 
-gint get_selected_resonance_iter (GtkTreeIter *iter)
+/* Returns an array of all selected resonance iters. The number of elements are
+ * returned via numiters. */
+GtkTreeIter* get_selected_resonance_iters (gint *numiters)
 {
 	GtkTreeSelection *selection;
+	GtkTreeIter      *iters;
 	GtkTreeModel     *model;
+	GList            *sellist, *listiter;
+	gint              i=0;
 
 	selection = gtk_tree_view_get_selection (
 			GTK_TREE_VIEW (
 				glade_xml_get_widget (gladexml, "restreeview")
 			)
 		);
-	if (gtk_tree_selection_get_selected (selection, &model, iter))
-		return 1;
-	else
-		dialog_message ("No row selected.");
 
-	return 0;
+	model   = GTK_TREE_MODEL (glob->store);
+	sellist = gtk_tree_selection_get_selected_rows (selection, NULL);
+	iters   = g_new0 (GtkTreeIter, g_list_length (sellist)+1);
+
+	*numiters = g_list_length (sellist);
+	if (*numiters)
+	{
+		listiter = sellist;
+		while (listiter)
+		{
+			gtk_tree_model_get_iter (model, iters + i, listiter->data);
+
+			listiter = g_list_next (listiter);
+			i++;
+		}
+	}
+
+	g_list_foreach (sellist, (GFunc) gtk_tree_path_free, NULL);
+	g_list_free (sellist);
+
+	return iters;
+}
+
+gint get_resonance_id_by_cursur ()
+{
+	GtkTreeView  *treeview;
+	GtkTreeModel *model;
+	GtkTreePath  *path;
+	GtkTreeIter   iter;
+	gint          id = 0;
+
+	treeview = GTK_TREE_VIEW (glade_xml_get_widget (gladexml, "restreeview"));
+	gtk_tree_view_get_cursor (treeview, &path, NULL);
+	if (!path)
+		return 0;
+	
+	model = GTK_TREE_MODEL (glob->store);
+	gtk_tree_model_get_iter (model, &iter, path);
+	gtk_tree_model_get (model, &iter, ID_COL, &id, -1);
+	gtk_tree_path_free (path);
+
+	return id;
 }
 
 void remove_resonance (GtkTreeIter iter)
@@ -604,10 +682,11 @@ void remove_resonance (GtkTreeIter iter)
 
 void remove_selected_resonance ()
 {
-	GtkTreeIter iter;
+	GtkTreeIter *iters;
 	GtkTreeSelection *selection;
 	GtkTreeModel *model;
 	GList *pathlist;
+	gint numiters, i=0;
 
 	selection = gtk_tree_view_get_selection ( GTK_TREE_VIEW (
 			glade_xml_get_widget (gladexml, "restreeview")));
@@ -618,13 +697,17 @@ void remove_selected_resonance ()
 		return;
 	}
 	
-	/* Get path of selected resonance */
+	/* Get path of selected resonances */
 	model     = GTK_TREE_MODEL (glob->store);
 	pathlist  = gtk_tree_selection_get_selected_rows (selection, &model);
 
-	/* Remove resonance */
-	gtk_tree_model_get_iter (model, &iter, (GtkTreePath *) pathlist->data);
-	remove_resonance (iter);
+	iters = get_selected_resonance_iters (&numiters);
+	while (i < numiters)
+	{
+		remove_resonance (iters[i]);
+		i++;
+	}
+	g_free (iters);
 
 	/* Select the old path -> the next resonance in the list */
 	gtk_tree_selection_select_path (selection, (GtkTreePath *) pathlist->data);

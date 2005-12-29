@@ -1697,7 +1697,7 @@ since September 2004</property>
       <signal name="activate" handler="on_check_all_activate" last_modification_time="Thu, 10 Mar 2005 09:28:02 GMT"/>
 
       <child internal-child="image">
-	<widget class="GtkImage" id="image866">
+	<widget class="GtkImage" id="image1117">
 	  <property name="visible">True</property>
 	  <property name="stock">gtk-yes</property>
 	  <property name="icon_size">1</property>
@@ -1718,7 +1718,7 @@ since September 2004</property>
       <signal name="activate" handler="on_uncheck_all_activate" last_modification_time="Thu, 10 Mar 2005 09:28:02 GMT"/>
 
       <child internal-child="image">
-	<widget class="GtkImage" id="image867">
+	<widget class="GtkImage" id="image1118">
 	  <property name="visible">True</property>
 	  <property name="stock">gtk-no</property>
 	  <property name="icon_size">1</property>
@@ -1734,12 +1734,12 @@ since September 2004</property>
   <child>
     <widget class="GtkImageMenuItem" id="fit_this_resonance">
       <property name="visible">True</property>
-      <property name="label" translatable="yes">Fit this resonance</property>
+      <property name="label" translatable="yes">Fit selected resonances</property>
       <property name="use_underline">True</property>
       <signal name="activate" handler="on_fit_this_resonance_activate" last_modification_time="Sun, 03 Oct 2004 09:51:27 GMT"/>
 
       <child internal-child="image">
-	<widget class="GtkImage" id="image868">
+	<widget class="GtkImage" id="image1119">
 	  <property name="visible">True</property>
 	  <property name="stock">gtk-execute</property>
 	  <property name="icon_size">1</property>
@@ -1753,7 +1753,7 @@ since September 2004</property>
   </child>
 
   <child>
-    <widget class="GtkMenuItem" id="separator1">
+    <widget class="GtkSeparatorMenuItem" id="separator1">
       <property name="visible">True</property>
     </widget>
   </child>
@@ -1761,13 +1761,13 @@ since September 2004</property>
   <child>
     <widget class="GtkImageMenuItem" id="remove_resonance">
       <property name="visible">True</property>
-      <property name="label" translatable="yes">Remove resonance</property>
+      <property name="label" translatable="yes">Remove resonances</property>
       <property name="use_underline">True</property>
       <signal name="activate" handler="on_remove_resonance_activate" last_modification_time="Sun, 03 Oct 2004 11:30:20 GMT"/>
       <accelerator key="Delete" modifiers="0" signal="activate"/>
 
       <child internal-child="image">
-	<widget class="GtkImage" id="image869">
+	<widget class="GtkImage" id="image1120">
 	  <property name="visible">True</property>
 	  <property name="stock">gtk-remove</property>
 	  <property name="icon_size">1</property>
@@ -1788,7 +1788,7 @@ since September 2004</property>
       <signal name="activate" handler="on_clear_resonancelist_activate" last_modification_time="Mon, 18 Oct 2004 13:56:05 GMT"/>
 
       <child internal-child="image">
-	<widget class="GtkImage" id="image870">
+	<widget class="GtkImage" id="image1121">
 	  <property name="visible">True</property>
 	  <property name="stock">gtk-delete</property>
 	  <property name="icon_size">1</property>
@@ -1810,7 +1810,7 @@ since September 2004</property>
       <accelerator key="A" modifiers="GDK_CONTROL_MASK" signal="activate"/>
 
       <child internal-child="image">
-	<widget class="GtkImage" id="image871">
+	<widget class="GtkImage" id="image1122">
 	  <property name="visible">True</property>
 	  <property name="stock">gtk-add</property>
 	  <property name="icon_size">1</property>
@@ -1831,7 +1831,7 @@ since September 2004</property>
       <signal name="activate" handler="on_add_resonance_activate" last_modification_time="Sun, 03 Oct 2004 09:48:32 GMT"/>
 
       <child internal-child="image">
-	<widget class="GtkImage" id="image872">
+	<widget class="GtkImage" id="image1123">
 	  <property name="visible">True</property>
 	  <property name="stock">gtk-add</property>
 	  <property name="icon_size">1</property>

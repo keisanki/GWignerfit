@@ -530,8 +530,10 @@ void set_new_main_data (DataVector *newdata, gboolean called_from_open)
 	/* Do not trigger the callback */
 	g_signal_handlers_block_by_func (
 			glade_xml_get_widget (gladexml, "reflection"),
-			on_reflection_activate,
-			NULL);
+			on_reflection_activate, NULL);
+	g_signal_handlers_block_by_func (
+			glade_xml_get_widget (gladexml, "transmission"),
+			on_transmission_activate, NULL);
 
 	if (glob->IsReflection)
 	{
@@ -580,8 +582,10 @@ void set_new_main_data (DataVector *newdata, gboolean called_from_open)
 
 	g_signal_handlers_unblock_by_func (
 			glade_xml_get_widget (gladexml, "reflection"),
-			on_reflection_activate,
-			NULL);
+			on_reflection_activate, NULL);
+	g_signal_handlers_unblock_by_func (
+			glade_xml_get_widget (gladexml, "transmission"),
+			on_transmission_activate, NULL);
 }
 
 gboolean read_datafile (gchar *selected_filename, gboolean called_from_open) 

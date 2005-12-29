@@ -3,7 +3,7 @@
   "http://www.oasis-open.org/docbook/xml/4.4/docbookx.dtd" [
 <!--"/usr/share/sgml/docbook/xml-dtd-4.4-1.0-26/docbookx.dtd" [ -->
 	<!ENTITY legal SYSTEM "legal.xml">
-	<!ENTITY appversion "2005-12-22">
+	<!ENTITY appversion "2005-12-29">
 	<!ENTITY manrevision "1.0">
 	<!ENTITY date "August 2005">
 	<!ENTITY app "<application>GWignerFit</application>">
@@ -1565,21 +1565,21 @@
 					</listitem>
 				</varlistentry>
 				<varlistentry>
-					<term><guimenuitem>Fit this resonance</guimenuitem></term>
+					<term><guimenuitem>Fit selected resonances</guimenuitem></term>
 					<listitem>
 						<para>This is some kind of a shortcut if you only want to optimize
-							the parameters of the currently selected resonance but don't want
+							the parameters of the currently selected resonances but don't want
 							to uncheck the checkboxes of all other resonance parameters.
 							Choosing this item will start a fitting process that considers
 							only those parameters to be free that are a) of the currently
-							selected resonance and b) whose checkboxes are checked. No global
+							selected resonances and b) whose checkboxes are checked. No global
 							parameters will be changed during the fit.</para>
 					</listitem>
 				</varlistentry>
 				<varlistentry>
-					<term><guimenuitem>Remove resonance</guimenuitem></term>
+					<term><guimenuitem>Remove resonances</guimenuitem></term>
 					<listitem>
-						<para>Deletes the currently selected resonance from the resonance
+						<para>Deletes the currently selected resonances from the resonance
 							list and thus from the theory graph. The shortcut
 							<keycap>Delete</keycap> may come in handy for this.</para>
 					</listitem>

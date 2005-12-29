@@ -656,24 +656,32 @@ void on_fit_activate (GtkMenuItem *menuitem, gpointer user_data)
 
 void on_fit_this_resonance_activate (GtkMenuItem *menuitem, gpointer user_data)
 {
-	gint *ia, i, id, j;
+	gint *ia, i, *id, j, idpos;
 
 	/* ia will be freed by start_fit() */
 	ia = g_new0 (gint, TOTALNUMPARAM+1);
 
-	id = get_selected_resonance (FALSE);
+	id = get_selected_resonance_ids (FALSE);
 
-	if (id > 0)
+	if (id[0] > 0)
 	{
 		what_to_fit (ia);
 
 		/* A backup can never hurt */
 		create_backup ();
 		
-		/* only one resonance should be fitted */
+		/* only the selected resonances should be fitted */
 		for (i=0; i<glob->numres; i++)
 		{
-			if (i != id-1) 
+			idpos = 0;
+			while (id[idpos])
+			{
+				if (i == id[idpos]-1) 
+					break;
+				idpos++;
+			}
+
+			if (i != id[idpos]-1)
 				ia[4*i+1] = ia[4*i+2] = ia[4*i+3] = ia[4*i+4] = 0;
 		}
 
@@ -682,14 +690,16 @@ void on_fit_this_resonance_activate (GtkMenuItem *menuitem, gpointer user_data)
 
 		/* ia[0] will hold the number of free parameters */
 		ia[0] = 0;
-		for (i=1; i<5; i++) 
-			if (ia[4*(id-1)+i]) 
+		for (i=1; i<TOTALNUMPARAM+1; i++) 
+			if (ia[i]) 
 				ia[0]++;
 		
 		visualize_restore_cursor ();
 		
 		fit (ia);
 	}
+
+	g_free (id);
 }
 
 void on_clear_resonancelist_activate (GtkMenuItem *menuitem, gpointer user_data)

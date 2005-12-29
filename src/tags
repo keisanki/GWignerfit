@@ -170,8 +170,8 @@ cisi	spectral_numeric.c	/^void cisi(float x, float *ci, float *si)$/;"	f
 clear_resonancelist	resonancelist.c	/^void clear_resonancelist ()$/;"	f
 cmulti_re	compl_mrqmin.c	/^inline double cmulti_re(ComplexDouble a, ComplexDouble b) {$/;"	f
 column_clicked_callback	resonancelist.c	/^static void column_clicked_callback (GtkTreeViewColumn *column, gpointer user_data)$/;"	f	file:
-column_separator	resonancelist.c	236;"	d	file:
-column_separator	resonancelist.c	395;"	d	file:
+column_separator	resonancelist.c	241;"	d	file:
+column_separator	resonancelist.c	405;"	d	file:
 convert_matrix	nrutil.c	/^double **convert_matrix(double *a, long nrl, long nrh, long ncl, long nch)$/;"	f
 convert_matrix	nrutil.c	/^float **convert_matrix(a,nrl,nrh,ncl,nch)$/;"	f
 covsrt	compl_mrqmin.c	/^void covsrt(double **covar, int ma, int ia[], int mfit)$/;"	f
@@ -218,7 +218,7 @@ fcomp_what_to_fit	fcomp.c	/^void fcomp_what_to_fit (gint *ia)$/;"	f
 fcomp_win_close	fcomp.c	/^gboolean fcomp_win_close (GtkWidget *button)$/;"	f
 fcomplex	spectral_numeric.c	/^typedef struct FCOMPLEX {float r,i;} fcomplex;$/;"	t	file:
 file_is_writeable	helpers.c	/^gboolean file_is_writeable (gchar *filename)$/;"	f
-filename_make_absolute	helpers.c	/^gchar *filename_make_absolute (gchar *name, gchar *base)$/;"	f
+filename_make_absolute	helpers.c	/^gchar* filename_make_absolute (gchar *name, gchar *base)$/;"	f
 filename_make_relative	helpers.c	/^gchar* filename_make_relative (gchar *inname, gchar *inbase)$/;"	f
 find_isolated_resonances	processdata.c	/^gint find_isolated_resonances (gfloat thresh)$/;"	f
 find_resonance_at	processdata.c	/^Resonance *find_resonance_at (double frq, DataVector *d)$/;"	f
@@ -277,8 +277,9 @@ get_defaultname	helpers.c	/^gchar *get_defaultname (gchar *suffix)$/;"	f
 get_filename	helpers.c	/^gchar *get_filename (const gchar *title, const gchar *defaultname, gchar check)$/;"	f
 get_filename_helper	helpers.c	/^static gboolean get_filename_helper (char *filename, gchar check)$/;"	f	file:
 get_res_iter_by_id	resonancelist.c	/^GtkTreeIter *get_res_iter_by_id (gint wanted_id)$/;"	f
-get_selected_resonance	resonancelist.c	/^gint get_selected_resonance (gboolean failok)$/;"	f
-get_selected_resonance_iter	resonancelist.c	/^gint get_selected_resonance_iter (GtkTreeIter *iter)$/;"	f
+get_resonance_id_by_cursur	resonancelist.c	/^gint get_resonance_id_by_cursur ()$/;"	f
+get_selected_resonance_ids	resonancelist.c	/^gint* get_selected_resonance_ids (gboolean failok)$/;"	f
+get_selected_resonance_iters	resonancelist.c	/^GtkTreeIter* get_selected_resonance_iters (gint *numiters)$/;"	f
 get_timestamp	helpers.c	/^gchar* get_timestamp ()$/;"	f
 get_unique_frqs	helpers.c	/^GPtrArray *get_unique_frqs ()$/;"	f
 gladexml	gwignerfit.c	/^GladeXML *gladexml;$/;"	v
@@ -555,8 +556,8 @@ quit_application	callbacks.c	/^gboolean quit_application (GtkWidget *widget, Gdk
 r	spectral_numeric.c	/^typedef struct FCOMPLEX {float r,i;} fcomplex;$/;"	m	struct:FCOMPLEX	file:
 read_datafile	processdata.c	/^gboolean read_datafile (gchar *selected_filename, gboolean called_from_open) $/;"	f
 read_resonancefile	processdata.c	/^gint read_resonancefile (gchar *selected_filename, const gchar *label)$/;"	f
-read_resonancefile_cleanup	processdata.c	623;"	d	file:
-read_resonancefile_cleanup	processdata.c	973;"	d	file:
+read_resonancefile_cleanup	processdata.c	627;"	d	file:
+read_resonancefile_cleanup	processdata.c	977;"	d	file:
 remove_resonance	resonancelist.c	/^void remove_resonance (GtkTreeIter iter)$/;"	f
 remove_selected_resonance	resonancelist.c	/^void remove_selected_resonance ()$/;"	f
 reslist_update_widthunit	resonancelist.c	/^void reslist_update_widthunit ()$/;"	f

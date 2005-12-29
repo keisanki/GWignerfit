@@ -546,12 +546,23 @@ gint visualize_handle_signal_marked (GtkSpectVis *spectvis, gdouble *xval, gdoub
 void visualize_update_res_bar (gboolean redraw)
 {
 	GtkWidget *graph = glade_xml_get_widget (gladexml, "graph");
-	gint id = get_selected_resonance (TRUE);
+	gint *id, tryid;
 	gdouble width;
 	Resonance *res;
 	GdkColor col;
 
-	if (!glob->data) return;
+	if (!glob->data)
+		return;
+
+	/* Try to get the selected resonance by the cursor position first. */
+	if ((tryid = get_resonance_id_by_cursur ()))
+	{
+		id = g_new (gint, 1);
+		id[0] = tryid;
+	}
+	else
+		id = get_selected_resonance_ids (TRUE);
+
 
 	/* glob->bars[0] holds the green resonance bar */
 	if (glob->bars[0] != 0)
@@ -561,14 +572,17 @@ void visualize_update_res_bar (gboolean redraw)
 		glob->bars[0] = 0;
 	}
 
-	if (id < 1) 
+	if (id[0] == 0) 
 	{
 		/* do nothing but a redraw if no resonance is selected */
-		if (redraw) gtk_spect_vis_redraw (GTK_SPECTVIS (graph));
+		if (redraw) 
+			gtk_spect_vis_redraw (GTK_SPECTVIS (graph));
+		g_free (id);
 		return;
 	}
 
-	res = g_ptr_array_index (glob->param, id-1);
+	res = g_ptr_array_index (glob->param, id[0]-1);
+	g_free (id);
 
 	col.green = 62000;
 	col.blue = col.red = 20000;

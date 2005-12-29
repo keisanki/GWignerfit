@@ -17,15 +17,15 @@ void show_global_parameters (GlobalParam *gparam);
 
 void update_resonance_list (GPtrArray *param);
 
-gint get_selected_resonance (gboolean failok);
+gint* get_selected_resonance_ids (gboolean failok);
 
-gint get_selected_resonance_iter (GtkTreeIter *iter);
+gint get_selected_resonance_iters (GtkTreeIter **iters);
+
+gint get_resonance_id_by_cursur ();
 
 GtkTreeIter *get_res_iter_by_id (gint wanted_id);
 
 gboolean select_res_by_id (gint id);
-
-void remove_resonance (GtkTreeIter iter);
 
 void remove_selected_resonance ();
 
