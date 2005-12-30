@@ -27,4 +27,6 @@ void ok_dialog (GtkWidget *entry, gpointer dialog);
 
 void on_save_as_activate (GtkMenuItem *menuitem, gpointer write_callback);
 
+gboolean on_comment_done (GtkWidget *widget, gpointer data);
+
 #endif

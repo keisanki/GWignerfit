@@ -880,6 +880,7 @@ void on_load_spectrum ()
 	gtk_widget_set_sensitive (glade_xml_get_widget (gladexml, "overlay_spectra"), TRUE);
 	gtk_widget_set_sensitive (glade_xml_get_widget (gladexml, "zoom_selection"), TRUE);
 	gtk_widget_set_sensitive (glade_xml_get_widget (gladexml, "export"), TRUE);
+	gtk_widget_set_sensitive (glade_xml_get_widget (gladexml, "comment"), TRUE);
 	gtk_widget_set_sensitive (glade_xml_get_widget (gladexml, "graph_as_postscript"), TRUE);
 	gtk_widget_set_sensitive (glade_xml_get_widget (gladexml, "measure_distance"), TRUE);
 	gtk_widget_set_sensitive (glade_xml_get_widget (gladexml, "integrate_spectrum"), TRUE);
@@ -896,6 +897,7 @@ void on_delete_spectrum ()
 	gtk_widget_set_sensitive (glade_xml_get_widget (gladexml, "overlay_spectra"), FALSE);
 	gtk_widget_set_sensitive (glade_xml_get_widget (gladexml, "zoom_selection"), FALSE);
 	gtk_widget_set_sensitive (glade_xml_get_widget (gladexml, "export"), FALSE);
+	gtk_widget_set_sensitive (glade_xml_get_widget (gladexml, "comment"), FALSE);
 	gtk_widget_set_sensitive (glade_xml_get_widget (gladexml, "graph_as_postscript"), FALSE);
 	gtk_widget_set_sensitive (glade_xml_get_widget (gladexml, "measure_distance"), FALSE);
 	gtk_widget_set_sensitive (glade_xml_get_widget (gladexml, "integrate_spectrum"), FALSE);
@@ -904,6 +906,7 @@ void on_delete_spectrum ()
 	gtk_widget_set_sensitive (glade_xml_get_widget (gladexml, "fourier_components"), FALSE);
 
 	on_fft_close_activate (NULL, NULL);
+	on_comment_done (NULL, (gpointer) 1);
 }
 
 /* Create a backup file with the name of the resonancefile plus '~' suffix */

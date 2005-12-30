@@ -649,6 +649,7 @@ gint read_resonancefile (gchar *selected_filename, const gchar *label)
 	GPtrArray *ovrlays, *lines, *colors;
 	GArray *stddev;
 	GdkColor *color;
+	gchar *comment = NULL, *commenttmp;
 
 	/* Get section */
 	lines = ls_read_section (selected_filename, (gchar *) label, '=');
@@ -694,6 +695,15 @@ gint read_resonancefile (gchar *selected_filename, const gchar *label)
 		line = (gchar *) g_ptr_array_index (lines, pos);
 
 		/* Comment lines start with either '%' or '#' */
+		if ((strlen (line) > 2) && (line[0] == '#') && (line[1] == ' '))
+		{
+			if (comment)
+				commenttmp = g_strdup_printf ("%s%s\n", comment, line+2);
+			else
+				commenttmp = g_strdup_printf ("%s\n", line+2);
+			g_free (comment);
+			comment = commenttmp;
+		}
 		if ((*line == '%') || (*line == '#') || (strlen (line) == 0)) continue;
 
 		/* Actually parse the section */
@@ -904,6 +914,9 @@ gint read_resonancefile (gchar *selected_filename, const gchar *label)
 
 	glob->numres = numres;
 
+	g_free (glob->comment);
+	glob->comment = comment;
+
 	if (datafilename) 
 	{
 		statusbar_message ("Open: Reading spectrum data...");
@@ -1000,6 +1013,8 @@ gboolean load_gwf_resonance_file (gchar *filename)
 	if (!section)
 		return FALSE;
 
+	on_comment_done (NULL, (gpointer) 1);
+
 	if (read_resonancefile (filename, section) >= 0)
 	{
 		glob->section = section;
@@ -1040,10 +1055,37 @@ void save_write_section (FILE *datafile, gchar *filename, gchar *section, gchar 
 	gchar *text, *name;
 	Resonance *res;
 	FourierComponent *fcomp;
-	gint i;
+	gint i, j;
 
 	/* print the section into the datafile */
 	fprintf (datafile, "=%s%s", section, newline);
+
+	/* print comments */
+	if (glob->comment && strlen (glob->comment))
+	{
+		fprintf (datafile, "# ");
+		j = 0;
+		for (i=0; i<strlen (glob->comment); i++)
+		{
+			if (j > 250)
+			{
+				fprintf (datafile, "%c%s# ", glob->comment[i], newline);
+				j = 0;
+				continue;
+			}
+			
+			if (glob->comment[i] != '\n')
+			{
+				fputc (glob->comment[i], datafile);
+				j++;
+			}
+			else
+				if (i < strlen (glob->comment)-1)
+					fprintf (datafile, "%s# ", newline);
+				else
+					fprintf (datafile, "%s", newline);
+		}
+	}
 
 	text = get_timestamp ();
 	fprintf (datafile, "date\t%s%s", text, newline);

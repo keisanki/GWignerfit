@@ -159,6 +159,8 @@ gint main (gint argc, char *argv[])
 	glob->fcomp->quotient = NULL;
 	glob->fcomp->theo = NULL;
 	glob->merge = NULL;
+	glob->commentxml = NULL;
+	glob->comment = NULL;
 
 	/* Set the preferences to the default values */
 	glob->prefs = NULL;

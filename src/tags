@@ -170,8 +170,8 @@ cisi	spectral_numeric.c	/^void cisi(float x, float *ci, float *si)$/;"	f
 clear_resonancelist	resonancelist.c	/^void clear_resonancelist ()$/;"	f
 cmulti_re	compl_mrqmin.c	/^inline double cmulti_re(ComplexDouble a, ComplexDouble b) {$/;"	f
 column_clicked_callback	resonancelist.c	/^static void column_clicked_callback (GtkTreeViewColumn *column, gpointer user_data)$/;"	f	file:
-column_separator	resonancelist.c	241;"	d	file:
-column_separator	resonancelist.c	405;"	d	file:
+column_separator	resonancelist.c	248;"	d	file:
+column_separator	resonancelist.c	412;"	d	file:
 convert_matrix	nrutil.c	/^double **convert_matrix(double *a, long nrl, long nrh, long ncl, long nch)$/;"	f
 convert_matrix	nrutil.c	/^float **convert_matrix(a,nrl,nrh,ncl,nch)$/;"	f
 covsrt	compl_mrqmin.c	/^void covsrt(double **covar, int ma, int ia[], int mfit)$/;"	f
@@ -440,6 +440,8 @@ on_calibrate_spectrum_activate	callbacks.c	/^void on_calibrate_spectrum_activate
 on_check_all_activate	callbacks.c	/^void on_check_all_activate (GtkMenuItem *menuitem, gpointer user_data)$/;"	f
 on_clear_resonancelist_activate	callbacks.c	/^void on_clear_resonancelist_activate (GtkMenuItem *menuitem, gpointer user_data)$/;"	f
 on_close_dialog	callbacks.c	/^gboolean on_close_dialog (GtkWidget *button)$/;"	f
+on_comment_activate	callbacks.c	/^void on_comment_activate (GtkMenuItem *menuitem, gpointer user_data)$/;"	f
+on_comment_done	callbacks.c	/^gboolean on_comment_done (GtkWidget *widget, gpointer data)$/;"	f
 on_delete_spectrum	helpers.c	/^void on_delete_spectrum ()$/;"	f
 on_estimate_data_noise_activate	callbacks.c	/^void on_estimate_data_noise_activate (GtkMenuItem *menuitem, gpointer user_data)$/;"	f
 on_estimate_global_parameters_activate	callbacks.c	/^void on_estimate_global_parameters_activate (GtkMenuItem *menuitem, gpointer user_data)$/;"	f
@@ -557,7 +559,7 @@ r	spectral_numeric.c	/^typedef struct FCOMPLEX {float r,i;} fcomplex;$/;"	m	stru
 read_datafile	processdata.c	/^gboolean read_datafile (gchar *selected_filename, gboolean called_from_open) $/;"	f
 read_resonancefile	processdata.c	/^gint read_resonancefile (gchar *selected_filename, const gchar *label)$/;"	f
 read_resonancefile_cleanup	processdata.c	627;"	d	file:
-read_resonancefile_cleanup	processdata.c	977;"	d	file:
+read_resonancefile_cleanup	processdata.c	990;"	d	file:
 remove_resonance	resonancelist.c	/^void remove_resonance (GtkTreeIter iter)$/;"	f
 remove_selected_resonance	resonancelist.c	/^void remove_selected_resonance ()$/;"	f
 reslist_update_widthunit	resonancelist.c	/^void reslist_update_widthunit ()$/;"	f

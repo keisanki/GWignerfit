@@ -3,7 +3,7 @@
   "http://www.oasis-open.org/docbook/xml/4.4/docbookx.dtd" [
 <!--"/usr/share/sgml/docbook/xml-dtd-4.4-1.0-26/docbookx.dtd" [ -->
 	<!ENTITY legal SYSTEM "legal.xml">
-	<!ENTITY appversion "2005-12-29">
+	<!ENTITY appversion "2005-12-30">
 	<!ENTITY manrevision "1.0">
 	<!ENTITY date "August 2005">
 	<!ENTITY app "<application>GWignerFit</application>">
@@ -310,6 +310,16 @@
 					<para>For further usage of the knowledge gained by using &app; you
 						can export various aspects of your work here, see
 						<xref linkend="gwf-export" />.</para>
+				</listitem>
+			</varlistentry>
+			<varlistentry>
+				<term><guimenuitem>Comment...</guimenuitem></term>
+				<listitem>
+					<para>This function will open a small text entry dialog. You can use
+						it to enter arbitrary information. The commentary is being saved
+						together with all the other data of a &app; session if you use the
+						<guimenuitem>Save</guimenuitem> function mentioned above.
+					</para>
 				</listitem>
 			</varlistentry>
 			<varlistentry>
@@ -2633,7 +2643,7 @@
 			resonance lists and a data part. The data part is divided into two
 			columns. The first column gives each resonance a number starting at one.
 			The second column contains the resonance frequencies in Hz. The resonance
-			requencies are calculated as the average between all resonances in a
+			frequencies are calculated as the average between all resonances in a
 			link group.
 		</para>
 		

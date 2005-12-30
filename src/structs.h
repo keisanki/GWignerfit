@@ -251,6 +251,8 @@ typedef struct
 	CalWin *calwin;			/* Structure for the calibration dialog window */
 	FourierCompWin *fcomp;		/* Structure for the fourier components window */
 	MergeWin *merge;		/* Structure for the merge resonance lists window */
+	GladeXML *commentxml;		/* GladeXML struct for the comment dialog */
+	gchar *comment;			/* For arbitrary comments of the gwf section */
 } GlobalData;
 
 #endif

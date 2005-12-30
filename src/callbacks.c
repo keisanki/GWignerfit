@@ -111,6 +111,7 @@ void on_new_activate (GtkMenuItem *menuitem, gpointer user_data)
 	g_free (glob->resonancefile);
 	g_free (glob->section);
 	g_free (glob->stddev);
+	g_free (glob->comment);
 
 	g_free (glob->spectral);
 	glob->spectral = NULL;
@@ -125,6 +126,7 @@ void on_new_activate (GtkMenuItem *menuitem, gpointer user_data)
 	glob->resonancefile = NULL;
 	glob->section = NULL;
 	glob->stddev = NULL;
+	glob->comment = NULL;
 	glob->gparam = g_new0 (GlobalParam, 1);
 	glob->fitwindow.fit_GThread = NULL;
 	if (glob->flag & FLAG_VNA_MEAS)
@@ -979,4 +981,77 @@ void on_manual_activate (GtkMenuItem *menuitem, gpointer user_data)
 void on_merge_resonancelists_activate (GtkMenuItem *menuitem, gpointer user_data)
 {
 	merge_open_win ();
+}
+
+void on_comment_activate (GtkMenuItem *menuitem, gpointer user_data)
+{
+	GtkTextView *textview;
+	GtkTextBuffer *buffer;
+	GtkTextIter textiter;
+
+	if (glob->commentxml)
+		return;
+	
+	glob->commentxml = glade_xml_new (GLADEFILE, "comment_dialog", NULL);
+	glade_xml_signal_autoconnect (glob->commentxml);
+
+	if (glob->comment)
+	{
+		textview = GTK_TEXT_VIEW (glade_xml_get_widget (glob->commentxml, "comment_text"));
+		buffer   = gtk_text_view_get_buffer (GTK_TEXT_VIEW (textview));
+		gtk_text_buffer_get_end_iter (buffer, &textiter);
+		gtk_text_buffer_insert (buffer, &textiter, glob->comment, -1);
+	}
+}
+
+gboolean on_comment_done (GtkWidget *widget, gpointer data)
+{
+//	GtkWidget *toplevel, *vbox, *sw;
+	GtkTextView *textview;
+	GtkTextBuffer *buffer;
+	GtkTextIter start, stop;
+	gchar *newcomment;
+
+	if (!glob->commentxml)
+		return FALSE;
+
+#if 0
+	/* Walk through dialog to recover textview widget */
+	toplevel = gtk_widget_get_toplevel (widget);
+	vbox = GTK_DIALOG (toplevel)->vbox;
+	sw = ((GtkBoxChild *) (GTK_BOX (vbox)->children->next->next->data))->widget;
+	textview = GTK_TEXT_VIEW (gtk_bin_get_child (GTK_BIN (sw)));
+#endif
+	textview = GTK_TEXT_VIEW (glade_xml_get_widget (glob->commentxml, "comment_text"));
+	g_return_val_if_fail (GTK_IS_TEXT_VIEW (textview), FALSE);
+
+	if (data)
+	{
+		/* Close window without saving comment */
+		gtk_widget_destroy (glade_xml_get_widget (glob->commentxml, "comment_dialog"));
+		g_free (glob->commentxml);
+		glob->commentxml = NULL;
+		return TRUE;
+	}
+
+	buffer = gtk_text_view_get_buffer (textview);
+	gtk_text_buffer_get_start_iter (buffer, &start);
+	gtk_text_buffer_get_end_iter   (buffer, &stop);
+
+	newcomment = gtk_text_buffer_get_text (buffer, &start, &stop, FALSE);
+	if ((!glob->comment && strlen (newcomment)) ||             /* both comments are empty */
+	    (glob->comment && strcmp (glob->comment, newcomment))) /* comment does not exist or comment changed */
+	{
+		/* The comment has changed */
+		g_free (glob->comment);
+		glob->comment = newcomment;
+		set_unsaved_changes ();
+	}
+	else
+		g_free (newcomment);
+	
+	gtk_widget_destroy (glade_xml_get_widget (glob->commentxml, "comment_dialog"));
+	g_free (glob->commentxml);
+	glob->commentxml = NULL;
+	return TRUE;
 }
