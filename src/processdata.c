@@ -1080,11 +1080,18 @@ void save_write_section (FILE *datafile, gchar *filename, gchar *section, gchar 
 				j++;
 			}
 			else
+			{
+				j = 0;
 				if (i < strlen (glob->comment)-1)
 					fprintf (datafile, "%s# ", newline);
 				else
 					fprintf (datafile, "%s", newline);
+			}
 		}
+
+		if (j)
+			/* The last character has NOT been a '\n'. */
+			fprintf (datafile, "%s", newline);
 	}
 
 	text = get_timestamp ();
