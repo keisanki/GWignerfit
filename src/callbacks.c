@@ -564,7 +564,7 @@ void on_remove_resonance_activate (GtkMenuItem *menuitem, gpointer user_data)
 
 void on_save_as_activate (GtkMenuItem *menuitem, gpointer user_data)
 {
-	gchar *defaultname, *filename, *newsection, *title;
+	gchar *defaultname, *filename, *newsection, *title, *basename;
 
 	newsection = ls_input_section (glob->section);
 	if (!newsection)
@@ -592,9 +592,11 @@ void on_save_as_activate (GtkMenuItem *menuitem, gpointer user_data)
 		g_free (glob->resonancefile);
 		glob->resonancefile = g_strdup (filename);
 
-		title = g_strdup_printf ("%s:%s - GWignerFit", g_path_get_basename (glob->resonancefile), glob->section);
+		basename = g_filename_display_basename (glob->resonancefile);
+		title = g_strdup_printf ("%s:%s - GWignerFit", basename, glob->section);
 		gtk_window_set_title (GTK_WINDOW (glade_xml_get_widget (gladexml, "mainwindow")), title);
 		g_free (title);
+		g_free (basename);
 
 		statusbar_message ("Save operation successful");
 		unset_unsaved_changes ();

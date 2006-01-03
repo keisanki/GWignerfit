@@ -362,7 +362,7 @@ static gboolean get_filename_helper (char *filename, gchar check)
 }
 
 /* Asks the user for a filename */
-gchar *get_filename (const gchar *title, const gchar *defaultname, gchar check)
+gchar *get_filename_old (const gchar *title, const gchar *defaultname, gchar check)
 {
 	GtkWidget *filew;
 	gint result;
@@ -410,6 +410,95 @@ gchar *get_filename (const gchar *title, const gchar *defaultname, gchar check)
 
 	gtk_widget_destroy (filew);
 	return filename;
+}
+
+gchar *get_filename (const gchar *title, const gchar *defaultname, gchar type)
+{
+	GtkWidget *filew;
+	gint result;
+	gchar *filename = NULL, *base, *localname, *tmp;
+	gboolean selection_done = FALSE;
+
+	/* type: 
+	 * 1     : open an existing file -> file must be readable
+	 * 0 or 2: choose filename for writing -> file must be writeable
+	 */
+	
+	if (type == 1)
+	{
+		/* Open existing file */
+		filew = gtk_file_chooser_dialog_new (title ? title : "Open File",
+				NULL,
+				GTK_FILE_CHOOSER_ACTION_OPEN,
+				GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
+				GTK_STOCK_OPEN, GTK_RESPONSE_ACCEPT,
+				NULL);
+	}
+	else
+	{
+		/* Save existing file */
+		filew = gtk_file_chooser_dialog_new (title ? title : "Save File",
+				NULL,
+				GTK_FILE_CHOOSER_ACTION_SAVE,
+				GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
+				GTK_STOCK_SAVE, GTK_RESPONSE_ACCEPT,
+				NULL);
+		//gtk_file_chooser_set_do_overwrite_confirmation (GTK_FILE_CHOOSER (filew), TRUE);
+	}
+
+	gtk_file_chooser_set_local_only (GTK_FILE_CHOOSER (filew), TRUE);
+	gtk_file_chooser_set_select_multiple (GTK_FILE_CHOOSER (filew), FALSE);
+
+	if (defaultname)
+	{
+		/* Select directory if last character is a G_DIR_SEPARATOR */
+		if ((strlen(defaultname)>1) && (defaultname[strlen(defaultname)-1] == G_DIR_SEPARATOR))
+			gtk_file_chooser_set_current_folder (GTK_FILE_CHOOSER (filew), defaultname);
+		else
+		{
+			gtk_file_chooser_set_filename (GTK_FILE_CHOOSER (filew), defaultname);
+
+			tmp = g_path_get_basename (defaultname);
+			base = g_filename_to_utf8 (tmp, -1, NULL, NULL, NULL);
+			g_free (tmp);
+			gtk_file_chooser_set_current_name (GTK_FILE_CHOOSER (filew), base);
+			g_free (base);
+		}
+	}
+
+	/* Keep the filew running untill the user has made a good choice(TM) */
+	while (!selection_done)
+	{
+		result = gtk_dialog_run (GTK_DIALOG (filew));
+
+		if (result == GTK_RESPONSE_ACCEPT)
+		{
+			filename = gtk_file_chooser_get_filename (GTK_FILE_CHOOSER (filew));
+
+			if (!(selection_done = get_filename_helper (filename, type)))
+			{
+				g_free (filename);
+				filename = NULL;
+			}
+		}
+		else
+			selection_done = TRUE;
+	}
+
+	gtk_widget_destroy (filew);
+
+	if (filename)
+	{
+		localname = g_filename_from_utf8 (filename, -1, NULL, NULL, NULL);
+		g_free (filename);
+		
+		g_free (glob->path);
+		glob->path = g_path_get_dirname (localname);
+
+		return localname;
+	}
+
+	return NULL;
 }
 
 /* Update the FitWindow with the given fitwinparam information. */

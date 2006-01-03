@@ -501,7 +501,7 @@ void set_new_main_data (DataVector *newdata, gboolean called_from_open)
 	{
 		calculate_global_paramters (glob->data, glob->gparam);
 
-		basename = g_path_get_basename (glob->data->file);
+		basename = g_filename_display_basename (glob->data->file);
 		title = g_strdup_printf ("(%s) - GWignerFit", basename);
 		gtk_window_set_title (
 				GTK_WINDOW (glade_xml_get_widget(gladexml, "mainwindow")), 
@@ -1022,7 +1022,7 @@ gboolean load_gwf_resonance_file (gchar *filename)
 		visualize_update_res_bar (0);
 		show_global_parameters (glob->gparam);
 
-		basename = g_path_get_basename (glob->resonancefile);
+		basename = g_filename_display_basename (glob->resonancefile);
 		title = g_strdup_printf ("%s:%s - GWignerFit", basename, glob->section);
 		gtk_window_set_title (GTK_WINDOW (glade_xml_get_widget(gladexml, "mainwindow")), title);
 		g_free (basename);

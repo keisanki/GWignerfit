@@ -400,7 +400,7 @@ gboolean overlay_file (gchar *filename)
 	
 	return TRUE;
 }
-
+#if 0
 /* Takes the selected files in the given file_selection and calls overlay_file
  * for each filename.
  */
@@ -426,6 +426,7 @@ static gboolean overlay_add_files (GtkWidget *widget, gpointer user_data)
 	
 	return FALSE;
 }
+#endif
 
 /* Returns the DataVector for the given uid */
 DataVector *overlay_get_data_by_uid (guint uid)
@@ -519,9 +520,43 @@ void overlay_remove_files (GtkWidget *widget, gpointer user_data)
 /* Open a file_selection dialog to query the files to be added. */
 void overlay_file_selection ()
 {
+	GtkWidget *graph = glade_xml_get_widget (gladexml, "graph");
 	GtkWidget *filew;
-	gchar *filename;
+	gchar *defaultname;
+	GSList *filenames;
 
+	filew = gtk_file_chooser_dialog_new ("Select datafiles",
+			NULL,
+			GTK_FILE_CHOOSER_ACTION_OPEN,
+			GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
+			GTK_STOCK_OPEN, GTK_RESPONSE_ACCEPT,
+			NULL);
+
+	gtk_file_chooser_set_local_only (GTK_FILE_CHOOSER (filew), TRUE);
+	gtk_file_chooser_set_select_multiple (GTK_FILE_CHOOSER (filew), TRUE);
+
+	defaultname = get_defaultname (NULL);
+	gtk_file_chooser_set_current_folder (GTK_FILE_CHOOSER (filew), defaultname);
+	g_free (defaultname);
+
+	if (gtk_dialog_run (GTK_DIALOG (filew)) == GTK_RESPONSE_ACCEPT)
+	{
+		filenames = gtk_file_chooser_get_filenames (GTK_FILE_CHOOSER (filew));
+
+		if (glob->overlayspectra == NULL)
+			glob->overlayspectra = g_ptr_array_new ();
+
+		g_slist_foreach (filenames, (GFunc) overlay_file, NULL);
+
+		g_slist_foreach (filenames, (GFunc) g_free, NULL);
+		g_slist_free (filenames);
+		
+		gtk_spect_vis_redraw (GTK_SPECTVIS (graph));
+	}
+
+	gtk_widget_destroy (filew);
+
+#if 0
 	filew = gtk_file_selection_new ("Select datafile");
 	gtk_file_selection_set_select_multiple (GTK_FILE_SELECTION (filew), TRUE);
 
@@ -554,6 +589,7 @@ void overlay_file_selection ()
 			NULL);
 
 	gtk_widget_show (filew);
+#endif
 }
 
 /* Removes all overlayed data from the graph and clears the store. */
@@ -742,7 +778,7 @@ void overlay_swap_files (GtkWidget *widget, gpointer user_data)
 	if (!glob->resonancefile)
 	{
 		/* The title should hold the filename, change it. */
-		basename = g_path_get_basename (glob->data->file);
+		basename = g_filename_display_basename (glob->data->file);
 
 		g_mutex_lock (glob->threads->flaglock);
 		if ((glob->flag & FLAG_CHANGES))
