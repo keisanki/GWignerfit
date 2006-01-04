@@ -14,7 +14,8 @@ DOCDIR  = doc
 INSTALL = install
 STRIP   = strip
 
-SPEEDOPTIMIZE = "-march=pentium4"
+ARCH = pentium4
+SPEEDOPTIMIZE = "-march=$(ARCH)"
 
 all:
 	@ for i in $(SUBDIRS); do\
