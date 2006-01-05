@@ -752,7 +752,7 @@ gboolean on_fourier_export_ps (GtkMenuItem *menuitem, gpointer user_data)
 			G_OBJECT (glade_xml_get_widget (xmldialog, "button10")), 
 			"clicked",
 			(GCallback) export_select_filename,
-			glade_xml_get_widget (xmldialog, "ps_filename_entry"));
+			xmldialog);
 
 	/* Put some default text into the GtkEntry fields */
 	if (glob->section)
