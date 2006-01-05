@@ -24,14 +24,15 @@ typedef struct {
 static void mrqcof_cal (MrqminData *data)
 {
 	int k,mfit=0;
-	register int m, j, l, i;
+	register int m, j, l, i, *ia;
 	double sig2i;
 	ComplexDouble wt, ymod, dy, *dyda;
 
 	dyda = cdvector (1, data->ma);
+	ia   = data->ia;
 	
 	for (j=1; j<=data->ma; j++)
-		if (data->ia[j])
+		if (ia[j])
 			mfit++;
 	
 	for (j=1; j<=mfit; j++)
@@ -49,13 +50,13 @@ static void mrqcof_cal (MrqminData *data)
 		dy.re = data->d->y[i].re - ymod.re;
 		dy.im = data->d->y[i].im - ymod.im;
 		
-		for (j=0,l=1;l<=data->ma;l++)
+		for (j=0,l=1; l<=data->ma; l++)
 		{
-			if (data->ia[l])
+			if (ia[l])
 			{
 				wt = cc(dyda[l]);
 				for (j++,k=0,m=1; m<=l; m++)
-					if (data->ia[m])
+					if (ia[m])
 						data->alpha[j][++k] += cmulti_re(wt, dyda[m])*sig2i;
 				data->beta[j] += cmulti_re(dy, wt)*sig2i;
 			}
@@ -73,6 +74,8 @@ static void mrqcof_cal (MrqminData *data)
 	
 	free_cdvector (dyda, 1, data->ma);
 
+	/* Setting the callback function to NULL will be the marker that this
+	 * thread is done with its job. mrqcof() waits for this signature. */
 	data->funcs = NULL;
 }
 
@@ -196,6 +199,8 @@ int mrqcof_get_num_cpu ()
 		if (g_str_has_prefix (dataline, "processor"))
 			num_cpu++;
 	}
+
+	fclose (cpuinfo);
 
 	g_return_val_if_fail (num_cpu, 1);
 	return num_cpu;
