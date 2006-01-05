@@ -767,18 +767,14 @@ gboolean select_res_by_id (gint id)
 	if (!selection)
 		return FALSE;
 	
+	/* Select row with resonance */
+	gtk_tree_selection_unselect_all (selection);
 	gtk_tree_selection_select_iter (selection, iter);
 
+	/* Scroll to row in resonance list */
 	column = gtk_tree_view_get_column (treeview, ID_COL);
 	path = gtk_tree_model_get_path (GTK_TREE_MODEL (glob->store), iter);
-
-	gtk_tree_view_scroll_to_cell (
-			treeview,
-			path,
-			column,
-			TRUE,
-			0.5,
-			0);
+	gtk_tree_view_scroll_to_cell (treeview, path, column, TRUE, 0.5, 0);
 
 	visualize_update_res_bar (TRUE);
 

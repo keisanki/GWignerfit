@@ -532,35 +532,40 @@ gboolean update_fit_window (FitWindowParam *fitwinparam)
 	{
 		label = GTK_LABEL (glade_xml_get_widget (fitwinparam->xmlfit, "frequency_range_label"));
 		text = g_strdup_printf ("%f - %f GHz", fitwinparam->min / 1e9, fitwinparam->max / 1e9);
-		gtk_label_set_text(label, text);
-		g_free(text);
+		gtk_label_set_text (label, text);
+		g_free (text);
 	}
 	
 	if (fitwinparam->numpoints > 0)
 	{
 		label = GTK_LABEL (glade_xml_get_widget (fitwinparam->xmlfit, "num_datapoints_label"));
 		text = g_strdup_printf ("%i", fitwinparam->numpoints);
-		gtk_label_set_text(label, text);
-		g_free(text);
+		gtk_label_set_text (label, text);
+		g_free (text);
 	}
 	
 	if (fitwinparam->freeparam > 0)
 	{
 		label = GTK_LABEL (glade_xml_get_widget (fitwinparam->xmlfit, "free_parameters_label"));
 		text = g_strdup_printf ("%i", fitwinparam->freeparam);
-		gtk_label_set_text(label, text);
-		g_free(text);
+		gtk_label_set_text (label, text);
+		g_free (text);
 	}
 	
 	label = GTK_LABEL (glade_xml_get_widget (fitwinparam->xmlfit, "rms_label"));
-	text = g_strdup_printf ("%.10e", fitwinparam->chi);
-	gtk_label_set_text(label, text);
-	g_free(text);
+	if (fitwinparam->chi > 0)
+	{
+		text = g_strdup_printf ("%.10e", fitwinparam->chi);
+		gtk_label_set_text (label, text);
+		g_free (text);
+	}
+	else
+		gtk_label_set_text (label, "(not determined yet)");
 	
 	if (fitwinparam->text)
 	{
 		label = GTK_LABEL (glade_xml_get_widget (fitwinparam->xmlfit, "last_iteration_label"));
-		gtk_label_set_text(label, fitwinparam->text);
+		gtk_label_set_text (label, fitwinparam->text);
 	}
 	
 	percentage = (float) fitwinparam->iter / fitwinparam->maxiter;
@@ -574,7 +579,7 @@ gboolean update_fit_window (FitWindowParam *fitwinparam)
 			GTK_PROGRESS_BAR (glade_xml_get_widget (fitwinparam->xmlfit, "fit_progressbar")),
 			text
 			);
-	g_free(text);
+	g_free (text);
 
 	g_mutex_unlock (glob->threads->fitwinlock);
 
