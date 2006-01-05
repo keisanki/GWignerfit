@@ -14,7 +14,9 @@ ComplexDouble *cdvector(long nl, long nh);
 
 void free_cdvector(ComplexDouble *v, long nl, long nh);
 
-ComplexDouble cc(ComplexDouble x);
+inline ComplexDouble cc(ComplexDouble x);
+
+inline double cmulti_re(ComplexDouble a, ComplexDouble b);
 
 double re(ComplexDouble x);
 
@@ -28,10 +30,5 @@ void covsrt(double **covar, int ma, int ia[], int mfit);
 void mrqmin(DataVector *d, double sig[], int ndata, double a[], int ia[],
 	int ma, double **covar, double **alpha, double *chisq,
 	void (*funcs)(double, double [], ComplexDouble *, ComplexDouble [], int), double *alamda);
-
-/* d and sig start at 0 */
-void mrqcof(DataVector *d, double sig[], int ndata, double a[], int ia[],
-	int ma, double **alpha, double beta[], double *chisq,
-	void (*funcs)(double, double [], ComplexDouble *, ComplexDouble [], int));
 
 #endif

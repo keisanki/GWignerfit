@@ -47,7 +47,7 @@ FIT_WID_COL	export.c	/^	FIT_FRQ_COL, FIT_WID_COL, FIT_AMP_COL, FIT_PHAS_COL,$/;"
 FIT_WID_COL	resonancelist.c	/^	FIT_FRQ_COL, FIT_WID_COL, FIT_AMP_COL, FIT_PHAS_COL,$/;"	e	file:
 FPMIN	spectral_numeric.c	136;"	d	file:
 FPMIN	spectral_numeric.c	66;"	d	file:
-FREE_ARG	compl_mrqmin.c	8;"	d	file:
+FREE_ARG	compl_mrqmin.c	9;"	d	file:
 FREE_ARG	nrutil.c	308;"	d	file:
 FREE_ARG	nrutil.c	9;"	d	file:
 FRQ_COL	export.c	/^	FRQ_COL, WID_COL, AMP_COL, PHAS_COL,$/;"	e	file:
@@ -83,9 +83,10 @@ MERGE_NODE_G	merge_util.c	16;"	d	file:
 MERGE_NODE_R	merge_util.c	15;"	d	file:
 MIN_DATAPOINTS_VIEW	gtkspectvis.c	16;"	d	file:
 MIN_IMPULSES_VIEW	gtkspectvis.c	17;"	d	file:
-NRANSI	compl_mrqmin.c	211;"	d	file:
-NRANSI	compl_mrqmin.c	40;"	d	file:
-NR_END	compl_mrqmin.c	7;"	d	file:
+MrqminData	compl_mrqcof.c	/^} MrqminData;$/;"	t	file:
+NRANSI	compl_mrqmin.c	169;"	d	file:
+NRANSI	compl_mrqmin.c	41;"	d	file:
+NR_END	compl_mrqmin.c	8;"	d	file:
 NR_END	nrutil.c	307;"	d	file:
 NR_END	nrutil.c	8;"	d	file:
 N_COLUMNS	export.c	/^	N_COLUMNS$/;"	e	file:
@@ -115,8 +116,8 @@ SPECTRAL_LENGTH	spectral.c	27;"	d	file:
 SPECTRAL_NND	spectral.c	23;"	d	file:
 SPECTRAL_S2	spectral.c	25;"	d	file:
 SPECTRAL_WEYL	spectral.c	21;"	d	file:
-SWAP	compl_mrqmin.c	115;"	d	file:
-SWAP	compl_mrqmin.c	41;"	d	file:
+SWAP	compl_mrqmin.c	116;"	d	file:
+SWAP	compl_mrqmin.c	42;"	d	file:
 SWAP	fourier.c	19;"	d	file:
 SWAP	fourier.c	71;"	d	file:
 TMIN	spectral_numeric.c	137;"	d	file:
@@ -140,8 +141,11 @@ VNA_RECV_TOUT	network.c	35;"	d	file:
 VNA_STAT_LEN	network.c	32;"	d	file:
 WID_COL	export.c	/^	FRQ_COL, WID_COL, AMP_COL, PHAS_COL,$/;"	e	file:
 WID_COL	resonancelist.c	/^	FRQ_COL, WID_COL, AMP_COL, PHAS_COL,$/;"	e	file:
+a	compl_mrqcof.c	/^	double *a;$/;"	m	file:
 add_resonance_to_list	resonancelist.c	/^void add_resonance_to_list (Resonance *res)$/;"	f
+alpha	compl_mrqcof.c	/^	double **alpha;$/;"	m	file:
 ampbut	export.c	/^	GtkToggleButton *idbut, *frqbut, *widbut, *ampbut, *phasbut, *qualbut, *stddevbut;$/;"	m	file:
+beta	compl_mrqcof.c	/^	double *beta;$/;"	m	file:
 bubbleSort	helpers.c	/^void bubbleSort (gdouble *array, int length)$/;"	f
 c_add	calibrate.c	/^ComplexDouble c_add (ComplexDouble a, ComplexDouble b)$/;"	f
 c_div	calibrate.c	/^ComplexDouble c_div (ComplexDouble a, ComplexDouble b)$/;"	f
@@ -166,6 +170,7 @@ cdvector	compl_mrqmin.c	/^ComplexDouble *cdvector(long nl, long nh)$/;"	f
 cell_edited_callback	resonancelist.c	/^static gboolean cell_edited_callback (GtkCellRendererText *cell, const gchar *path, gchar *text, gpointer data)$/;"	f	file:
 cell_toggle_callback	resonancelist.c	/^static void cell_toggle_callback (GtkCellRendererToggle *cell, gchar *path, gpointer data)$/;"	f	file:
 check_and_take_parameters	helpers.c	/^gboolean check_and_take_parameters (gdouble *p)$/;"	f
+chisq	compl_mrqcof.c	/^	double *chisq;$/;"	m	file:
 cisi	spectral_numeric.c	/^void cisi(float x, float *ci, float *si)$/;"	f
 clear_resonancelist	resonancelist.c	/^void clear_resonancelist ()$/;"	f
 cmulti_re	compl_mrqmin.c	/^inline double cmulti_re(ComplexDouble a, ComplexDouble b) {$/;"	f
@@ -180,6 +185,7 @@ create_param_array	numeric.c	/^void create_param_array (GPtrArray *param, GPtrAr
 create_param_structs	numeric.c	/^void create_param_structs (GPtrArray *param, GPtrArray *fcomp, GlobalParam *gparam, double *p, gint numres, gint numfcomp)$/;"	f
 cvector	nrutil.c	/^unsigned char *cvector(long nl, long nh)$/;"	f
 cvector	nrutil.c	/^unsigned char *cvector(nl,nh)$/;"	f
+d	compl_mrqcof.c	/^	DataVector *d;$/;"	m	file:
 delete_backup	helpers.c	/^void delete_backup ()$/;"	f
 dialog_message	helpers.c	/^gboolean dialog_message (gchar *format, ...)$/;"	f
 dialog_question	helpers.c	/^gint dialog_question (gchar *format, ...)$/;"	f
@@ -271,11 +277,13 @@ free_submatrix	nrutil.c	/^void free_submatrix(double **b, long nrl, long nrh, lo
 free_vector	nrutil.c	/^void free_vector(float *v, long nl, long nh)$/;"	f
 free_vector	nrutil.c	/^void free_vector(v,nl,nh)$/;"	f
 frqbut	export.c	/^	GtkToggleButton *idbut, *frqbut, *widbut, *ampbut, *phasbut, *qualbut, *stddevbut;$/;"	m	file:
+funcs	compl_mrqcof.c	/^	void (*funcs)(double, double [], ComplexDouble *, ComplexDouble [], int);$/;"	m	file:
 g_marshal_value_peek_pointer	gtkspectvis.c	20;"	d	file:
 gaussj	compl_mrqmin.c	/^void gaussj(double **a, int n, double **b, int m)$/;"	f
 get_defaultname	helpers.c	/^gchar *get_defaultname (gchar *suffix)$/;"	f
-get_filename	helpers.c	/^gchar *get_filename (const gchar *title, const gchar *defaultname, gchar check)$/;"	f
+get_filename	helpers.c	/^gchar *get_filename (const gchar *title, const gchar *defaultname, gchar type)$/;"	f
 get_filename_helper	helpers.c	/^static gboolean get_filename_helper (char *filename, gchar check)$/;"	f	file:
+get_filename_old	helpers.c	/^gchar *get_filename_old (const gchar *title, const gchar *defaultname, gchar check)$/;"	f
 get_res_iter_by_id	resonancelist.c	/^GtkTreeIter *get_res_iter_by_id (gint wanted_id)$/;"	f
 get_resonance_id_by_cursur	resonancelist.c	/^gint get_resonance_id_by_cursur ()$/;"	f
 get_selected_resonance_ids	resonancelist.c	/^gint* get_selected_resonance_ids (gboolean failok)$/;"	f
@@ -352,6 +360,7 @@ gtk_spect_vis_zoom_x_to	gtkspectvis.c	/^gtk_spect_vis_zoom_x_to (GtkSpectVis *sp
 gtk_spect_vis_zoom_y	gtkspectvis.c	/^gtk_spect_vis_zoom_y (GtkSpectVis *spectvis, gdouble center, gdouble factor)$/;"	f
 gtk_spect_vis_zoom_y_all	gtkspectvis.c	/^gtk_spect_vis_zoom_y_all (GtkSpectVis *spectvis)$/;"	f
 i	spectral_numeric.c	/^typedef struct FCOMPLEX {float r,i;} fcomplex;$/;"	m	struct:FCOMPLEX	file:
+ia	compl_mrqcof.c	/^	int *ia;$/;"	m	file:
 idbut	export.c	/^	GtkToggleButton *idbut, *frqbut, *widbut, *ampbut, *phasbut, *qualbut, *stddevbut;$/;"	m	file:
 imatrix	nrutil.c	/^int **imatrix(long nrl, long nrh, long ncl, long nch)$/;"	f
 imatrix	nrutil.c	/^int **imatrix(nrl,nrh,ncl,nch)$/;"	f
@@ -371,6 +380,7 @@ ls_select_section	loadsave.c	/^gchar* ls_select_section (GList *sections, gchar 
 ls_strip_newline	loadsave.c	/^static void ls_strip_newline (gchar *line)$/;"	f	file:
 lvector	nrutil.c	/^unsigned long *lvector(long nl, long nh)$/;"	f
 lvector	nrutil.c	/^unsigned long *lvector(nl,nh)$/;"	f
+ma	compl_mrqcof.c	/^	int ma;$/;"	m	file:
 main	gwignerfit.c	/^gint main (gint argc, char *argv[]) $/;"	f
 make_unique_dataset	processdata.c	/^gboolean make_unique_dataset (DataVector *data)$/;"	f
 matrix	nrutil.c	/^float **matrix(long nrl, long nrh, long ncl, long nch)$/;"	f
@@ -422,9 +432,14 @@ merge_statusbar_message	merge_util.c	/^void merge_statusbar_message (gchar *form
 merge_statusbar_message_remove	merge_util.c	/^static gboolean merge_statusbar_message_remove (gpointer data)$/;"	f	file:
 merge_undisplay_node_selection	merge_util.c	/^void merge_undisplay_node_selection ()$/;"	f
 merge_zoom_x_all	merge_util.c	/^void merge_zoom_x_all ()$/;"	f
-mrqcof	compl_mrqmin.c	/^void mrqcof(DataVector *d, double sig[], int ndata, double a[], int ia[],$/;"	f
+mrqcof	compl_mrqcof.c	/^void mrqcof (DataVector *d, double sig[], int ndata, double a[], int ia[],$/;"	f
+mrqcof_cal	compl_mrqcof.c	/^static void mrqcof_cal (MrqminData *data)$/;"	f	file:
+mrqcof_cleanup	compl_mrqcof.c	/^void mrqcof_cleanup ()$/;"	f
+mrqcof_get_num_cpu	compl_mrqcof.c	/^int mrqcof_get_num_cpu ()$/;"	f
+mrqcof_prepare	compl_mrqcof.c	/^void mrqcof_prepare ()$/;"	f
 mrqmin	compl_mrqmin.c	/^void mrqmin(DataVector *d, double sig[], int ndata, double a[], int ia[],$/;"	f
 n_drag_types	dnd.c	/^static gint n_drag_types = sizeof(drag_types) \/ sizeof(drag_types[0]);$/;"	v	file:
+ndata	compl_mrqcof.c	/^	int ndata;$/;"	m	file:
 network_gui_to_struct	network.c	/^static int network_gui_to_struct ()$/;"	f	file:
 network_open_win	network.c	/^void network_open_win ()$/;"	f
 network_struct_to_gui	network.c	/^static void network_struct_to_gui ()$/;"	f	file:
@@ -526,7 +541,6 @@ on_vna_start_activate	network.c	/^void on_vna_start_activate (GtkMenuItem *menui
 on_vna_sweep_mode_change	network.c	/^void on_vna_sweep_mode_change (GtkToggleButton *toggle, gpointer user_data)$/;"	f
 on_zoom_selection_activate	callbacks.c	/^void on_zoom_selection_activate (GtkMenuItem *menuitem, gpointer user_data)$/;"	f
 overlay_add_data	overlay.c	/^gboolean overlay_add_data (DataVector *overlaydata)$/;"	f
-overlay_add_files	overlay.c	/^static gboolean overlay_add_files (GtkWidget *widget, gpointer user_data) $/;"	f	file:
 overlay_add_to_list	overlay.c	/^static void overlay_add_to_list (gchar *filename, guint uid, GdkColor color)$/;"	f	file:
 overlay_close_window	overlay.c	/^gboolean overlay_close_window (GtkWidget *button)$/;"	f
 overlay_color_change	overlay.c	/^gboolean overlay_color_change (GtkWidget *widget, GdkEvent *event)$/;"	f
@@ -575,6 +589,7 @@ set_up_resonancelist	resonancelist.c	/^void set_up_resonancelist () $/;"	f
 set_up_undo	helpers.c	/^void set_up_undo ()$/;"	f
 show_about_window	callbacks.c	/^gboolean show_about_window (void)$/;"	f
 show_global_parameters	resonancelist.c	/^void show_global_parameters (GlobalParam *gparam)$/;"	f
+sig	compl_mrqcof.c	/^	double *sig;$/;"	m	file:
 silence_region	processdata.c	/^static void silence_region (DataVector *d, gint n, gint pos, gfloat thresh)$/;"	f	file:
 spect_vis_signals	gtkspectvis.c	/^static guint spect_vis_signals[LAST_SIGNAL] = {0};$/;"	v	file:
 spectral_cal_d3_goe	spectral.c	/^gfloat spectral_cal_d3_goe (gfloat L, gfloat x)$/;"	f

@@ -12,6 +12,7 @@
 #include "resonancelist.h"
 #include "callbacks.h"
 #include "visualize.h"
+#include "compl_mrqcof.h"
 
 extern GlobalData *glob;
 extern GladeXML *gladexml;
@@ -561,6 +562,9 @@ static gint start_fit (gpointer params)
 
 		data.x = glob->data->x + startpos;
 		data.y = glob->data->y + startpos;
+
+		/* Set up SMP calculation */
+		mrqcof_prepare ();
 	
 		/* Do the fit */
 		retval = ApplyMrqmin (
@@ -572,6 +576,9 @@ static gint start_fit (gpointer params)
 			glob->prefs->iterations,/* number of iterations */
 			&DeriveComplexWigner	/* pointer to fitfunction */
 		);
+
+		/* Tidy SMP calculation up */
+		mrqcof_cleanup ();
 
 		if (!(glob->flag & FLAG_FIT_CANCEL))
 		{

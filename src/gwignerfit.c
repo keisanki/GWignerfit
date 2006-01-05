@@ -161,6 +161,7 @@ gint main (gint argc, char *argv[])
 	glob->merge = NULL;
 	glob->commentxml = NULL;
 	glob->comment = NULL;
+	glob->smp = NULL;
 
 	/* Set the preferences to the default values */
 	glob->prefs = NULL;
@@ -201,6 +202,8 @@ gint main (gint argc, char *argv[])
 	g_mutex_free (glob->threads->theorylock);
 	g_mutex_free (glob->threads->fitwinlock);
 	g_thread_pool_free (glob->threads->pool, TRUE, TRUE);
+
+	g_free (glob->smp);
 
 	/* Give the memory free */
 	gtk_widget_destroy (glade_xml_get_widget (gladexml, "mainwindow"));

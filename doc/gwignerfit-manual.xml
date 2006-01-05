@@ -114,6 +114,9 @@
 			<para>"Unlimited" number of resonances for the theory.</para>
 		</listitem>
 		<listitem>
+			<para>Support for multiprocessor systems.</para>
+		</listitem>
+		<listitem>
 			<para>Possibility to overlay several spectra for better
 				comparison.</para>
 		</listitem>
@@ -124,6 +127,10 @@
 		<listitem>
 			<para>The most common spectral statistics can be calculated and
 				visualized in real time.</para>
+		</listitem>
+		<listitem>
+			<para>A special merge module allows an easy comparison of resonance
+				lists in order to build a complete set of resonances.</para>
 		</listitem>
 		<listitem>
 			<para>Spectral data can be measured directly through a HP8510 compatible

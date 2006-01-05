@@ -222,6 +222,12 @@ typedef struct
 
 typedef struct
 {
+	gint num_cpu;			/* The number of CPUs in the system */
+	GThreadPool* pool;		/* Pool of threads for computations */
+} SMPdata;
+
+typedef struct
+{
 	DataVector *data;		/* The complex measured data plus frequencies */
 	DataVector *theory;		/* The complex theory data */
 	gdouble noise;			/* Stddev of data due to thermal noise */
@@ -253,6 +259,7 @@ typedef struct
 	MergeWin *merge;		/* Structure for the merge resonance lists window */
 	GladeXML *commentxml;		/* GladeXML struct for the comment dialog */
 	gchar *comment;			/* For arbitrary comments of the gwf section */
+	SMPdata *smp;			/* Structure for SMP parallel computation */
 } GlobalData;
 
 #endif

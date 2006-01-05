@@ -3,6 +3,7 @@
 #include <math.h>
 
 #include "structs.h"
+#include "compl_mrqcof.h"
 
 #define NR_END 1
 #define FREE_ARG char*
@@ -113,49 +114,6 @@ void covsrt(double **covar, int ma, int ia[], int mfit)
 	}
 }
 #undef SWAP
-
-void mrqcof(DataVector *d, double sig[], int ndata, double a[], int ia[],
-	int ma, double **alpha, double beta[], double *chisq,
-	void (*funcs)(double, double [], ComplexDouble *, ComplexDouble [], int))
-{
-	int k,mfit=0;
-	register int m, j, l, i;
-	double sig2i;
-	ComplexDouble wt, ymod, dy, *dyda;
-
-	dyda=cdvector(1,ma);
-	for (j=1;j<=ma;j++)
-		if (ia[j]) mfit++;
-	for (j=1;j<=mfit;j++) {
-		for (k=1;k<=j;k++) alpha[j][k]=0.0;
-		beta[j]=0.0;
-	}
-	*chisq=0.0;
-	for (i=0;i<ndata;i++) {
-		(*funcs)(d->x[i],a,&ymod,dyda,ma);
-		sig2i=1.0/(sig[i]*sig[i]);
-		dy.re=d->y[i].re - ymod.re;
-		dy.im=d->y[i].im - ymod.im;
-//	printf("sig2i %e, dy.re %e, dy.im %e, y.re %e, ymod.re %e \n", sig2i, dy.re, dy.im, d[i].y.re ,ymod.re);
-		for (j=0,l=1;l<=ma;l++) {
-			if (ia[l]) {
-				wt=cc(dyda[l]);
-				for (j++,k=0,m=1;m<=l;m++)
-					if (ia[m]) alpha[j][++k] += cmulti_re(wt, dyda[m])*sig2i;
-				beta[j] += cmulti_re(dy, wt)*sig2i;
-			}
-		}
-		*chisq += cmulti_re(dy, cc(dy))*sig2i;
-	
-		/* get out of here if someone canceled the fit */
-		extern GlobalData *glob;
-		if ( !(glob->flag & FLAG_FIT_RUN) )
-			break;
-	}
-	for (j=2;j<=mfit;j++)
-		for (k=1;k<j;k++) alpha[k][j]=alpha[j][k];
-	free_cdvector(dyda,1,ma);
-}
 
 void mrqmin(DataVector *d, double sig[], int ndata, double a[], int ia[],
 	int ma, double **covar, double **alpha, double *chisq,
