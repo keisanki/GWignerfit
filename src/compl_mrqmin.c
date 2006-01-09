@@ -8,6 +8,8 @@
 #define NR_END 1
 #define FREE_ARG char*
 
+extern GlobalData *glob;
+
 ComplexDouble *cdvector(long nl, long nh)
 {
 	ComplexDouble *v;
@@ -86,12 +88,18 @@ void gaussj(double **a, int n, double **b, int m)
 				for (l=1;l<=n;l++) a[ll][l] -= a[icol][l]*dum;
 				for (l=1;l<=m;l++) b[ll][l] -= b[icol][l]*dum;
 			}
+	
+		/* get out of here if someone canceled the fit */
+		if ( !(glob->flag & FLAG_FIT_RUN) )
+			break;
 	}
-	for (l=n;l>=1;l--) {
-		if (indxr[l] != indxc[l])
-			for (k=1;k<=n;k++)
-				SWAP(a[k][indxr[l]],a[k][indxc[l]]);
-	}
+	if (glob->flag & FLAG_FIT_RUN)
+		for (l=n;l>=1;l--) {
+			if (indxr[l] != indxc[l])
+				for (k=1;k<=n;k++)
+					SWAP(a[k][indxr[l]],a[k][indxc[l]]);
+		}
+
 	free_ivector(ipiv,1,n);
 	free_ivector(indxr,1,n);
 	free_ivector(indxc,1,n);
