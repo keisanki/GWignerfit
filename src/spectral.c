@@ -131,7 +131,7 @@ static void spectral_fit_weyl (gdouble *res, guint numres, guint offset)
 	}
 
 	/* Solve the set of equations, rhs[1..3][1] holds the solution */
-	gaussj (A, 3, rhs, 1);
+	gaussj (A, 3, rhs, 1, 0);
 
 	/* Extract the solutions */
 	glob->spectral->offset = rhs[1][1];

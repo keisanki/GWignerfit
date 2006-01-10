@@ -22,7 +22,7 @@ double re(ComplexDouble x);
 
 ComplexDouble cmulti(ComplexDouble a, ComplexDouble b);
 
-void gaussj(double **a, int n, double **b, int m);
+void gaussj(double **a, int n, double **b, int m, int cancelcheck);
 
 void covsrt(double **covar, int ma, int ia[], int mfit);
 

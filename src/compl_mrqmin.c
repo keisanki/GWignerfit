@@ -43,7 +43,7 @@ inline double cmulti_re(ComplexDouble a, ComplexDouble b) {
 #define NRANSI
 #define SWAP(a,b) {temp=(a);(a)=(b);(b)=temp;}
 
-void gaussj(double **a, int n, double **b, int m)
+void gaussj(double **a, int n, double **b, int m, int cancelcheck)
 {
 	int *indxc,*indxr,*ipiv;
 	int icol,irow,l;
@@ -90,10 +90,10 @@ void gaussj(double **a, int n, double **b, int m)
 			}
 	
 		/* get out of here if someone canceled the fit */
-		if ( !(glob->flag & FLAG_FIT_RUN) )
+		if (cancelcheck && !(glob->flag & FLAG_FIT_RUN) )
 			break;
 	}
-	if (glob->flag & FLAG_FIT_RUN)
+	if ((!cancelcheck) || (glob->flag & FLAG_FIT_RUN))
 		for (l=n;l>=1;l--) {
 			if (indxr[l] != indxc[l])
 				for (k=1;k<=n;k++)
@@ -147,7 +147,7 @@ void mrqmin(DataVector *d, double sig[], int ndata, double a[], int ia[],
 		covar[j][j]=alpha[j][j]*(1.0+(*alamda));
 		oneda[j][1]=beta[j];
 	}
-	gaussj(covar,mfit,oneda,1);
+	gaussj(covar,mfit,oneda,1,1);
 	for (j=1;j<=mfit;j++) da[j]=oneda[j][1];
 	if (*alamda == 0.0) {
 		covsrt(covar,ma,ia,mfit);
