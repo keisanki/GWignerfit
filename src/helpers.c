@@ -7,6 +7,7 @@
 #include <stdlib.h>
 #include <math.h>
 #include <sys/time.h>
+#define __USE_XOPEN
 #include <time.h>
 
 #include "structs.h"
@@ -1136,6 +1137,35 @@ gchar* get_timestamp ()
 	strftime (time_string, 23, "%Y-%m-%d %H:%M:%S", ptm);
 
 	return time_string;
+}
+
+/* Compare two timestamps in the format created by get_timestamp().
+ * Returns -1 if a is earlier, +1 if a is later, 0 otherwise. */
+gint compare_timestamps (const gchar* a, const gchar* b)
+{
+	struct tm tm;
+	time_t timea, timeb;
+	double diff;
+
+	g_return_val_if_fail (a || b, 0);
+
+	strptime (a, "%Y-%m-%d %H:%M:%S", &tm);
+	timea = mktime (&tm);
+	g_return_val_if_fail (timea > 0, 0);
+	
+	strptime (a, "%Y-%m-%d %H:%M:%S", &tm);
+	timeb = mktime (&tm);
+	g_return_val_if_fail (timeb > 0, 0);
+
+	/* seconds between timea and timeb */
+	diff = difftime (timea, timeb);
+
+	if (diff > 0)
+		return -1;
+	else if (diff < 0)
+		return +1;
+	else
+		return 0;
 }
 
 /* Converts strings like '/a/b/../c/./d/test.dat' into 'a/c/d/test.dat',

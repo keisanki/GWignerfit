@@ -960,8 +960,8 @@ gboolean merge_spect_graph_show_node (MergeNode *node)
 
 		baruid = gtk_spect_vis_add_bar (spectgraph, node->res->frq, width, color);
 		gtk_spect_vis_zoom_x_to (spectgraph,
-				node->res->frq - 3*width,
-				node->res->frq + 3*width);
+				node->res->frq - 5*width,
+				node->res->frq + 5*width);
 		gtk_spect_vis_zoom_y_all (spectgraph);
 
 		/* Change color of graph */

@@ -1120,9 +1120,9 @@ void save_write_section (FILE *datafile, gchar *filename, gchar *section, gchar 
 		do {
 			overlay_get_color (&color, FALSE, GPOINTER_TO_UINT (overlayspos->data), NULL);
 			fprintf (datafile, "ovrlay\t#%02x%02x%02x",
-					(guint) (((gfloat) color.red)/65535.0*256.0),
-					(guint) (((gfloat) color.green)/65535.0*256.0),
-					(guint) (((gfloat) color.blue)/65535.0*256.0));
+					(guint) (((gfloat) color.red)/65535.0*255.0),
+					(guint) (((gfloat) color.green)/65535.0*255.0),
+					(guint) (((gfloat) color.blue)/65535.0*255.0));
 			overlayspos = g_slist_next (overlayspos);
 			g_return_if_fail (overlayspos);
 
