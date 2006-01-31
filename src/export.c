@@ -708,9 +708,14 @@ gboolean export_graph_ps ()
 		}
 
 		/* Export! */
-		gtk_spect_vis_export_ps (spectvis, uids, filename, title, 
+		if (!gtk_spect_vis_export_ps (spectvis, uids, filename, title, 
 					 "frequency (GHz)", NULL, footer, 
-					 legend, pos, lt);
+					 legend, pos, lt))
+		{
+			dialog_message ("Error: Could not create graph. Is gnuplot installed on your system?");
+			if (filename[0] != '|')
+				unlink (filename);
+		}
 
 		/* Tidy up */
 		g_array_free (uids, TRUE);

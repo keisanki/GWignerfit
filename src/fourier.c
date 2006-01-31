@@ -727,12 +727,13 @@ gboolean on_fourier_export_ps (GtkMenuItem *menuitem, gpointer user_data)
 	/* This function is mostly stolen from export_graph_ps(). */
 	
 	const gchar *filename, *title, *footer;
+	const gchar *filen, *path;
 	GArray *uids, *legend, *lt;
 	GtkSpectVis *spectvis;
 	GladeXML *xmldialog;
 	GtkWidget *dialog;
 	GtkToggleButton *toggle;
-	gboolean showlegend = FALSE;
+	gboolean status, showlegend = FALSE;
 	GtkTreeIter iter;
 	GtkTreeModel *model;
 	guint overlayid;
@@ -778,8 +779,15 @@ gboolean on_fourier_export_ps (GtkMenuItem *menuitem, gpointer user_data)
 
 	if (gtk_dialog_run (GTK_DIALOG (dialog)) == GTK_RESPONSE_OK)
 	{
-		filename = gtk_entry_get_text (GTK_ENTRY (
+		path = gtk_entry_get_text (GTK_ENTRY (
+				glade_xml_get_widget (xmldialog, "ps_path_entry")));
+		filen = gtk_entry_get_text (GTK_ENTRY (
 				glade_xml_get_widget (xmldialog, "ps_filename_entry")));
+		if (path)
+			filename = g_build_filename (path, filen, NULL);
+		else
+			filename = g_strdup (filen);
+
 		title = gtk_entry_get_text (GTK_ENTRY (
 				glade_xml_get_widget (xmldialog, "ps_title_entry")));
 		footer = gtk_entry_get_text (GTK_ENTRY (
@@ -912,13 +920,20 @@ gboolean on_fourier_export_ps (GtkMenuItem *menuitem, gpointer user_data)
 		if (gtk_check_menu_item_get_active (GTK_CHECK_MENU_ITEM (
 					glade_xml_get_widget (glob->fft->xmlfft, "abscissa_ns")
 					)))
-			gtk_spect_vis_export_ps (spectvis, uids, filename, title, 
+			status = gtk_spect_vis_export_ps (spectvis, uids, filename, title, 
 						 "time [ns]", NULL, footer, 
 						 legend, pos, lt);
 		else
-			gtk_spect_vis_export_ps (spectvis, uids, filename, title, 
+			status = gtk_spect_vis_export_ps (spectvis, uids, filename, title, 
 						 "length [m]", NULL, footer, 
 						 legend, pos, lt);
+
+		if (!status)
+		{
+			dialog_message ("Error: Could not create graph. Is gnuplot installed on your system?");
+			if (filename[0] != '|')
+				unlink (filename);
+		}
 
 		/* Tidy up */
 		g_array_free (uids, TRUE);

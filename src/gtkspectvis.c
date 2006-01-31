@@ -2260,7 +2260,7 @@ gtk_spect_vis_export_ps (GtkSpectVis *spectvis, GArray *uids,
 	if (footer)
 		gnuplot_cmd (g, "set label 1 \"%s\" at screen 0.99,0.015 right font \"Helvetica,9\"", footer);
 
-	gnuplot_cmd (g, "set terminal postscript enhanced color solid");
+	gnuplot_cmd (g, "set terminal postscript color solid");
 	gnuplot_cmd (g, "set output \"%s\"", filename);
 	gnuplot_cmd (g, "replot");
 

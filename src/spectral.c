@@ -1695,6 +1695,7 @@ gboolean on_spectral_export_data (GtkMenuItem *menuitem, gpointer user_data)
 gboolean on_spectral_export_ps (GtkMenuItem *menuitem, gpointer user_data)
 {
 	const gchar *filename, *title, *footer;
+	const gchar *filen, *path;
 	GArray *uids, *legend, *lt;
 	GtkSpectVis *spectvis;
 	GladeXML *xmldialog;
@@ -1746,8 +1747,15 @@ gboolean on_spectral_export_ps (GtkMenuItem *menuitem, gpointer user_data)
 
 	if (gtk_dialog_run (GTK_DIALOG (dialog)) == GTK_RESPONSE_OK)
 	{
-		filename = gtk_entry_get_text (GTK_ENTRY (
+		path = gtk_entry_get_text (GTK_ENTRY (
+				glade_xml_get_widget (xmldialog, "ps_path_entry")));
+		filen = gtk_entry_get_text (GTK_ENTRY (
 				glade_xml_get_widget (xmldialog, "ps_filename_entry")));
+		if (path)
+			filename = g_build_filename (path, filen, NULL);
+		else
+			filename = g_strdup (filen);
+
 		title = gtk_entry_get_text (GTK_ENTRY (
 				glade_xml_get_widget (xmldialog, "ps_title_entry")));
 		footer = gtk_entry_get_text (GTK_ENTRY (
@@ -1922,9 +1930,14 @@ gboolean on_spectral_export_ps (GtkMenuItem *menuitem, gpointer user_data)
 		}
 
 		/* Export! */
-		gtk_spect_vis_export_ps (spectvis, uids, filename, title, 
+		if (!gtk_spect_vis_export_ps (spectvis, uids, filename, title, 
 					 xlabel, ylabel, footer, 
-					 legend, pos, lt);
+					 legend, pos, lt))
+		{
+			dialog_message ("Error: Could not create graph. Is gnuplot installed on your system?");
+			if (filename[0] != '|')
+				unlink (filename);
+		}
 
 		/* Tidy up */
 		g_array_free (uids, TRUE);
