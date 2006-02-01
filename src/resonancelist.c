@@ -953,7 +953,7 @@ void reslist_update_widthunit ()
 gboolean import_resonance_list (gchar *filename)
 {
 	Resonance *res = NULL;
-	gchar dataline[100];
+	gchar dataline[200];
 	FILE *datafile;
 	gdouble col1, col2, oldcol1, frq, is_in_ghz = 1.0;
 	gboolean numbercol = FALSE;
@@ -972,7 +972,7 @@ gboolean import_resonance_list (gchar *filename)
 	oldcol1 = -1.0;
 	col2 = 0.0;
 	while (!feof (datafile)) {
-		if (!(fgets (dataline, 99, datafile)))
+		if (!(fgets (dataline, 199, datafile)))
 			continue;
 
 		if ((dataline[0] == '#') || (dataline[0] == '\n') || (dataline[0] == '\r'))
@@ -1010,7 +1010,7 @@ gboolean import_resonance_list (gchar *filename)
 	rewind (datafile);
 	i = 0;
 	while (!feof (datafile)) {
-		if (!(fgets (dataline, 99, datafile)))
+		if (!(fgets (dataline, 199, datafile)))
 			continue;
 
 		if ((dataline[0] == '#') || (dataline[0] == '\n') || (dataline[0] == '\r'))

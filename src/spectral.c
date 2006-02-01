@@ -18,13 +18,14 @@ extern GladeXML *gladexml;
 
 #define SPECTRAL_GRAPH_POINTS 2048
 
-#define SPECTRAL_WEYL    1
-#define SPECTRAL_FLUC    2
-#define SPECTRAL_NND     3
-#define SPECTRAL_INT_NND 4
-#define SPECTRAL_S2      5
-#define SPECTRAL_D3      6
-#define SPECTRAL_LENGTH  7
+#define SPECTRAL_WEYL        1
+#define SPECTRAL_FLUC        2
+#define SPECTRAL_NND         3
+#define SPECTRAL_INT_NND     4
+#define SPECTRAL_S2          5
+#define SPECTRAL_D3          6
+#define SPECTRAL_LENGTH      7
+#define SPECTRAL_WIDTHS_HIST 8
 
 #define COLOR_POISSON	color.red   = 26845; \
 			color.green = 53690; \
@@ -157,17 +158,17 @@ static void spectral_fit_weyl (gdouble *res, guint numres, guint offset)
 	snprintf (text, 20, "%f", glob->spectral->offset);
 	gtk_entry_set_text (GTK_ENTRY (entry), text);
 }
-
-/* Prepares an array with all resonances for the spectral statistics and
- * unfolds it if requested. */
-static gdouble* spectral_get_resonances (guint *numres, gboolean unfold)
+/* Prepares a frequency sorted GPtrArray with all resonances for the spectral
+ * statistcs. */
+static GPtrArray* spectral_get_resonances ()
 {
 	GtkTreeModel *model = GTK_TREE_MODEL (glob->store);
 	SpectralWin *spectral;
 	GtkTreeIter iter;
-	gboolean selected;
-	gdouble *res, *selectedres;
-	guint i, j, id;
+	gboolean toadd;
+	Resonance *res;
+	GPtrArray *resarray = NULL;
+	guint id;
 
 	if (glob->numres == 0)
 		return NULL;
@@ -175,71 +176,69 @@ static gdouble* spectral_get_resonances (guint *numres, gboolean unfold)
 	g_return_val_if_fail (glob->spectral, NULL);
 	spectral = glob->spectral;
 
-	res = g_new (gdouble, glob->numres);
-	*numres = glob->numres;
-	
-	/* Copy all resonances */
-	for (i=0; i<glob->numres; i++)
-		res[i] = ((Resonance *) g_ptr_array_index (glob->param, i))->frq;
+	resarray = g_ptr_array_new ();
 
-	/* Mark all undesired resonances with -1 */
-	if ((spectral->selection == 's') && (gtk_tree_model_get_iter_first (model, &iter)))
-	{
-		/* Take only checked resonances */
-		gtk_tree_model_get (model, &iter, 0, &id, -1);
-		id--;
-	
-		gtk_tree_model_get (model, &iter, 5, &selected, -1);
-		if (!selected) 
-		{
-			res[id] = -1.0;
-			(*numres)--;
-		}
-
-		while (gtk_tree_model_iter_next (model, &iter))
+	if (gtk_tree_model_get_iter_first (model, &iter))
+		do
 		{
 			gtk_tree_model_get (model, &iter, 0, &id, -1);
-			id--;
-		
-			gtk_tree_model_get (model, &iter, 5, &selected, -1);
-			if (!selected) 
+			res = g_ptr_array_index(glob->param, id-1);
+
+			switch (spectral->selection)
 			{
-				res[id] = -1.0;
-				(*numres)--;
+				case 's': /* Selected resonances */
+					gtk_tree_model_get (model, &iter, 5, &toadd, -1);
+					break;
+				case 'w': /* Windowed resonances */
+					if ((res->frq > glob->gparam->max) || (res->frq < glob->gparam->min))
+						toadd = FALSE;
+					else
+						toadd = TRUE;
+					break;
+				default: /* All resonances */
+					toadd = TRUE;
 			}
+
+			if (toadd)
+				g_ptr_array_add (resarray, res);
 		}
-	}
-	
-	if ((spectral->selection == 'w') && (glob->gparam->max > glob->gparam->min))
-	{
-		/* Take only resonances in frequency window */
-		for (i=0; i<glob->numres; i++)
-		{
-			if ((res[i] > glob->gparam->max) || (res[i] < glob->gparam->min))
-			{
-				res[i] = -1.0;
-				(*numres)--;
-			}
-		}
-	}
-	
-	/* Delete all marked resonances from res */
-	if (*numres > 1)
-	{
-		selectedres = g_new (gdouble, *numres);
-		j = 0;
-		for (i=0; i<glob->numres; i++)
-			if (res[i] > 0)
-				selectedres[j++] = res[i];
-		g_free (res);
-		res = selectedres;
-	}
+		while (gtk_tree_model_iter_next (model, &iter));
 
 	/* sort the array */
-	if (numres)
-		bubbleSort (res, *numres);
+	g_ptr_array_sort (resarray, param_compare);
 
-	if (unfold && numres)
+	return resarray;
+}
+
+/* Prepares an array with all resonance frequencies for the spectral statistics
+ * and unfolds it if requested. */
+static gdouble* spectral_get_frequencies (guint *numres, gboolean unfold)
+{
+	SpectralWin *spectral;
+	GPtrArray *resarray;
+	gdouble *res;
+	guint i;
+
+	g_return_val_if_fail (glob->spectral, NULL);
+	spectral = glob->spectral;
+
+	resarray = spectral_get_resonances ();
+	if (!resarray)
+		return NULL;
+	if (!resarray->len)
+	{
+		g_ptr_array_free (resarray, TRUE);
+		*numres = 0;
+		return NULL;
+	}
+
+	*numres = resarray->len;
+	res = g_new (gdouble, *numres);
+
+	for (i=0; i<resarray->len; i++)
+		res[i] = ((Resonance *) g_ptr_array_index (resarray, i))->frq;
+	
+	if (unfold)
 	{
 		/* unfold spectrum */
 		if ((spectral->area == 0) && (spectral->perim == 0) && (spectral->offset == 0))
@@ -248,6 +247,40 @@ static gdouble* spectral_get_resonances (guint *numres, gboolean unfold)
 		for (i=0; i<*numres; i++)
 			res[i] = spectral_weyl_val (res[i]);
 	}
+
+	g_ptr_array_free (resarray, TRUE);
+
+	return res;
+}
+
+/* Prepares an array with all resonance width for the spectral statistics. */
+static gdouble* spectral_get_width (guint *numres)
+{
+	SpectralWin *spectral;
+	GPtrArray *resarray;
+	gdouble *res;
+	guint i;
+
+	g_return_val_if_fail (glob->spectral, NULL);
+	spectral = glob->spectral;
+
+	resarray = spectral_get_resonances ();
+	if (!resarray)
+		return NULL;
+	if (!resarray->len)
+	{
+		g_ptr_array_free (resarray, TRUE);
+		*numres = 0;
+		return NULL;
+	}
+
+	*numres = resarray->len;
+	res = g_new (gdouble, *numres);
+
+	for (i=0; i<resarray->len; i++)
+		res[i] = ((Resonance *) g_ptr_array_index (resarray, i))->width;
+	
+	g_ptr_array_free (resarray, TRUE);
 
 	return res;
 }
@@ -275,7 +308,7 @@ static void spectral_staircase ()
 
 	spectral_remove_graphs ();
 
-	resonances = spectral_get_resonances (&numres, FALSE);
+	resonances = spectral_get_frequencies (&numres, FALSE);
 	if (numres < 2)
 	{
 		spectral_too_few_resonances ();
@@ -341,7 +374,7 @@ static void spectral_nfluc ()
 
 	spectral_remove_graphs ();
 
-	resonances = spectral_get_resonances (&numres, FALSE);
+	resonances = spectral_get_frequencies (&numres, FALSE);
 	if (numres < 2)
 	{
 		g_free (resonances);
@@ -385,7 +418,7 @@ static void spectral_nnd ()
 	graph = GTK_SPECTVIS (glade_xml_get_widget (glob->spectral->xmlspect, "spectral_spectvis"));
 	g_return_if_fail (graph);
 
-	resonances = spectral_get_resonances (&numres, TRUE);
+	resonances = spectral_get_frequencies (&numres, TRUE);
 
 	spectral_remove_graphs ();
 	if (numres < 3)
@@ -517,7 +550,7 @@ static void spectral_integrated_nnd ()
 	graph = GTK_SPECTVIS (glade_xml_get_widget (glob->spectral->xmlspect, "spectral_spectvis"));
 	g_return_if_fail (graph);
 
-	resonances = spectral_get_resonances (&numres, TRUE);
+	resonances = spectral_get_frequencies (&numres, TRUE);
 
 	spectral_remove_graphs ();
 	if (numres < 3)
@@ -649,7 +682,7 @@ static void spectral_sigma2 ()
 	graph = GTK_SPECTVIS (glade_xml_get_widget (glob->spectral->xmlspect, "spectral_spectvis"));
 	g_return_if_fail (graph);
 
-	resonances = spectral_get_resonances (&numres, TRUE);
+	resonances = spectral_get_frequencies (&numres, TRUE);
 
 	spectral_remove_graphs ();
 	if (numres < 3)
@@ -820,7 +853,7 @@ static void spectral_delta3 ()
 	graph = GTK_SPECTVIS (glade_xml_get_widget (glob->spectral->xmlspect, "spectral_spectvis"));
 	g_return_if_fail (graph);
 
-	resonances = spectral_get_resonances (&numres, TRUE);
+	resonances = spectral_get_frequencies (&numres, TRUE);
 
 	spectral_remove_graphs ();
 	if (numres < 3)
@@ -993,7 +1026,7 @@ static void spectral_length ()
 	graph = GTK_SPECTVIS (glade_xml_get_widget (glob->spectral->xmlspect, "spectral_spectvis"));
 	g_return_if_fail (graph);
 
-	resonances = spectral_get_resonances (&numres, FALSE);
+	resonances = spectral_get_frequencies (&numres, FALSE);
 
 	spectral_remove_graphs ();
 	if (numres < 3)
@@ -1043,6 +1076,76 @@ static void spectral_length ()
 	i = gtk_spect_vis_data_add (graph, dataX, dataY, SPECTRAL_GRAPH_POINTS*4, color, 'l');
 	gtk_spect_vis_request_id (graph, i, 1);
 	gtk_spect_vis_set_axisscale (graph, 1, 0);
+}
+
+/* Draws the NND */
+static void spectral_widths_hist ()
+{
+	GtkSpectVis *graph;
+	SpectralWin *spectral;
+	ComplexDouble *bins;
+	gdouble *widths, *binX;
+	gdouble maxwidth;
+	GdkColor color;
+	guint i, binnr, numres=0;
+
+	g_return_if_fail (glob->spectral);
+	spectral = glob->spectral;
+
+	g_return_if_fail (glob->spectral->bins);
+
+	graph = GTK_SPECTVIS (glade_xml_get_widget (glob->spectral->xmlspect, "spectral_spectvis"));
+	g_return_if_fail (graph);
+
+	widths = spectral_get_width (&numres);
+
+	spectral_remove_graphs ();
+	if (numres < 3)
+	{
+		g_free (widths);
+		spectral_too_few_resonances ();
+		return;
+	}
+
+	bins = g_new0 (ComplexDouble, glob->spectral->bins+2);
+	binX = g_new0 (gdouble, glob->spectral->bins+2);
+
+	/* find largest width */
+	maxwidth = 0;
+	for (i=0; i<numres; i++)
+		if (widths[i] > maxwidth)
+			maxwidth = widths[i];
+
+	/* file spacings into the bins */
+	for (i=0; i<numres; i++)
+	{
+		binnr = (widths[i] < maxwidth) ? (guint) (widths[i]/maxwidth * (glob->spectral->bins)) : glob->spectral->bins-1;
+
+		if (binnr+1 < 0)
+			binnr = -1;
+		else if (binnr+1 > glob->spectral->bins+1)
+			binnr = glob->spectral->bins;
+		
+		if (glob->spectral->normalize)
+			bins[binnr+1].abs += 1/(gdouble) numres;
+		else
+			bins[binnr+1].abs += 1.0;
+	}
+
+	g_free (widths);
+
+	/* Left border of each bin */
+	for (i=0; i<glob->spectral->bins+1; i++)
+		binX[i+1] = (gdouble) i * maxwidth / (gdouble) glob->spectral->bins;
+
+	color.red   = 65535;
+	color.green = 0;
+	color.blue  = 0;
+
+	i = gtk_spect_vis_data_add (graph, binX, bins, glob->spectral->bins+2, color, 'l');
+	gtk_spect_vis_request_id (graph, i, 1);
+	gtk_spect_vis_set_graphtype (graph, 1, 'h');
+	gtk_spect_vis_set_axisscale (graph, 1e6, 0);
 }
 
 /* Opens a new spectral window if necessary */
@@ -1171,7 +1274,7 @@ void spectral_resonances_changed ()
 			return;
 
 		/* Are there really at least two resonances for evaluation? */
-		g_free (spectral_get_resonances (&numres, FALSE));
+		g_free (spectral_get_frequencies (&numres, FALSE));
 		if (numres < 3)
 		{
 			spectral_too_few_resonances ();
@@ -1200,6 +1303,9 @@ void spectral_resonances_changed ()
 				break;
 			case SPECTRAL_LENGTH:
 				spectral_length ();
+				break;
+			case SPECTRAL_WIDTHS_HIST:
+				spectral_widths_hist ();
 				break;
 		}
 
@@ -1350,8 +1456,21 @@ gboolean on_spectral_view_change (GtkMenuItem *menuitem, gpointer user_data)
 	if (gtk_check_menu_item_get_active (item))
 		glob->spectral->view = SPECTRAL_LENGTH;
 
+	item = GTK_CHECK_MENU_ITEM (glade_xml_get_widget (glob->spectral->xmlspect, "spectral_widths_hist"));
+	if (gtk_check_menu_item_get_active (item))
+		glob->spectral->view = SPECTRAL_WIDTHS_HIST;
+
 	gtk_widget_set_sensitive (
 			glade_xml_get_widget (glob->spectral->xmlspect, "hbox19"), 
+			TRUE);
+	gtk_widget_set_sensitive (
+			glade_xml_get_widget (glob->spectral->xmlspect, "spectral_poisson_button"), 
+			TRUE);
+	gtk_widget_set_sensitive (
+			glade_xml_get_widget (glob->spectral->xmlspect, "spectral_goe_button"), 
+			TRUE);
+	gtk_widget_set_sensitive (
+			glade_xml_get_widget (glob->spectral->xmlspect, "spectral_gue_button"), 
 			TRUE);
 			
 	switch (glob->spectral->view)
@@ -1396,6 +1515,17 @@ gboolean on_spectral_view_change (GtkMenuItem *menuitem, gpointer user_data)
 			gtk_widget_hide_all (glade_xml_get_widget (glob->spectral->xmlspect, "spectral_weyl_box"));
 			gtk_widget_hide_all (glade_xml_get_widget (glob->spectral->xmlspect, "spectral_theo_box"));
 			spectral_length ();
+			break;
+		case SPECTRAL_WIDTHS_HIST:
+			gtk_widget_set_sensitive (glade_xml_get_widget (glob->spectral->xmlspect, "label49"), TRUE);
+			gtk_widget_set_sensitive (glade_xml_get_widget (glob->spectral->xmlspect, "spectral_bins_spin"), TRUE);
+			gtk_widget_set_sensitive (glade_xml_get_widget (glob->spectral->xmlspect, "label50"), FALSE);
+			gtk_widget_set_sensitive (glade_xml_get_widget (glob->spectral->xmlspect, "spectral_poisson_button"), FALSE);
+			gtk_widget_set_sensitive (glade_xml_get_widget (glob->spectral->xmlspect, "spectral_goe_button"), FALSE);
+			gtk_widget_set_sensitive (glade_xml_get_widget (glob->spectral->xmlspect, "spectral_gue_button"), FALSE);
+			gtk_widget_hide_all (glade_xml_get_widget (glob->spectral->xmlspect, "spectral_weyl_box"));
+			gtk_widget_show_all (glade_xml_get_widget (glob->spectral->xmlspect, "spectral_theo_box"));
+			spectral_widths_hist ();
 			break;
 	}
 
@@ -1448,7 +1578,7 @@ gboolean on_spectral_fit_button_clicked (GtkWidget *button)
 	graph = GTK_SPECTVIS (glade_xml_get_widget (glob->spectral->xmlspect, "spectral_spectvis"));
 	g_return_val_if_fail (graph, FALSE);
 
-	resonances = spectral_get_resonances (&numres, FALSE);
+	resonances = spectral_get_frequencies (&numres, FALSE);
 	g_return_val_if_fail (resonances, FALSE);
 
 	spectral_fit_weyl (resonances, numres, glob->spectral->first_res - 1);
@@ -1499,10 +1629,14 @@ void on_spectral_bins_changed (GtkSpinButton *spinbutton, gpointer user_data)
 	if (glob->spectral->bins != oldbins)
 	{
 		/* Do not call spectral_resonances_changed(), as I want
-		 * to rezoom y if not normalized. */
-		spectral_nnd ();
+		 * to rezoom y (for spectral_nnd) if not normalized. */
+		if (glob->spectral->view == SPECTRAL_NND)
+			spectral_nnd ();
+		else
+			spectral_widths_hist ();
+
 		graph = GTK_SPECTVIS (glade_xml_get_widget (glob->spectral->xmlspect, "spectral_spectvis"));
-		if (!glob->spectral->normalize)
+		if (!glob->spectral->normalize || (glob->spectral->view == SPECTRAL_WIDTHS_HIST))
 			gtk_spect_vis_zoom_y_all (graph);
 		gtk_spect_vis_redraw (graph);
 	}
@@ -1546,8 +1680,10 @@ void on_spectral_norm_button_toggled (GtkToggleButton *togglebutton, gpointer us
 
 	if (glob->spectral->view == SPECTRAL_NND)
 		spectral_nnd ();
-	else
+	else if (glob->spectral->view == SPECTRAL_INT_NND)
 		spectral_integrated_nnd ();
+	else
+		spectral_widths_hist ();
 
 	graph = GTK_SPECTVIS (glade_xml_get_widget (glob->spectral->xmlspect, "spectral_spectvis"));
 	gtk_spect_vis_zoom_y_all (graph);
@@ -1611,7 +1747,7 @@ gboolean on_spectral_export_data (GtkMenuItem *menuitem, gpointer user_data)
 		return FALSE;
 	}
 
-	resonances = spectral_get_resonances (&numres, FALSE);
+	resonances = spectral_get_frequencies (&numres, FALSE);
 
 	len = spectdata->len;
 	if (spectdata->type == 'h')
@@ -1681,6 +1817,18 @@ gboolean on_spectral_export_data (GtkMenuItem *menuitem, gpointer user_data)
 		case SPECTRAL_LENGTH:
 			fprintf (file, "length spectrum\r\n#\r\n");
 			fprintf (file, "# x [m]\t\tAmplitude\r\n");
+			break;
+		case SPECTRAL_WIDTHS_HIST:
+			fprintf (file, "widths histogram");
+			if (!glob->spectral->normalize)
+				fprintf (file, ", not normalized");
+			fprintf (file, "\r\n# Number of bins: %i\r\n", glob->spectral->bins);
+			fprintf (file, "# 'w' is the left boundary of each bin\r\n#\r\n");
+			if (glob->spectral->normalize)
+				fprintf (file, "# w [Hz]\t\tP(s)\r\n");
+			else
+				fprintf (file, "# w [Hz]\t\tN(s)\r\n");
+			len--;
 			break;
 	}
 

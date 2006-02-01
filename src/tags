@@ -8,9 +8,9 @@ ADD_MARK_DISTANCE	gtkspectvis.c	18;"	d	file:
 AMP_COL	export.c	/^	FRQ_COL, WID_COL, AMP_COL, PHAS_COL,$/;"	e	file:
 AMP_COL	resonancelist.c	/^	FRQ_COL, WID_COL, AMP_COL, PHAS_COL,$/;"	e	file:
 ApplyMrqmin	numeric.c	/^int ApplyMrqmin ($/;"	f
-COLOR_GOE	spectral.c	35;"	d	file:
-COLOR_GUE	spectral.c	32;"	d	file:
-COLOR_POISSON	spectral.c	29;"	d	file:
+COLOR_GOE	spectral.c	36;"	d	file:
+COLOR_GUE	spectral.c	33;"	d	file:
+COLOR_POISSON	spectral.c	30;"	d	file:
 COORD_BORDER_DIST	gtkspectvis.c	15;"	d	file:
 Cadd	spectral_numeric.c	/^static fcomplex Cadd(fcomplex a, fcomplex b)$/;"	f	file:
 Cdiv	spectral_numeric.c	/^static fcomplex Cdiv(fcomplex a, fcomplex b)$/;"	f	file:
@@ -84,8 +84,8 @@ MERGE_NODE_R	merge_util.c	15;"	d	file:
 MIN_DATAPOINTS_VIEW	gtkspectvis.c	16;"	d	file:
 MIN_IMPULSES_VIEW	gtkspectvis.c	17;"	d	file:
 MrqminData	compl_mrqcof.c	/^} MrqminData;$/;"	t	file:
-NRANSI	compl_mrqmin.c	169;"	d	file:
-NRANSI	compl_mrqmin.c	41;"	d	file:
+NRANSI	compl_mrqmin.c	177;"	d	file:
+NRANSI	compl_mrqmin.c	43;"	d	file:
 NR_END	compl_mrqmin.c	8;"	d	file:
 NR_END	nrutil.c	307;"	d	file:
 NR_END	nrutil.c	8;"	d	file:
@@ -116,8 +116,9 @@ SPECTRAL_LENGTH	spectral.c	27;"	d	file:
 SPECTRAL_NND	spectral.c	23;"	d	file:
 SPECTRAL_S2	spectral.c	25;"	d	file:
 SPECTRAL_WEYL	spectral.c	21;"	d	file:
-SWAP	compl_mrqmin.c	116;"	d	file:
-SWAP	compl_mrqmin.c	42;"	d	file:
+SPECTRAL_WIDTHS_HIST	spectral.c	28;"	d	file:
+SWAP	compl_mrqmin.c	124;"	d	file:
+SWAP	compl_mrqmin.c	44;"	d	file:
 SWAP	fourier.c	19;"	d	file:
 SWAP	fourier.c	71;"	d	file:
 TMIN	spectral_numeric.c	137;"	d	file:
@@ -141,6 +142,7 @@ VNA_RECV_TOUT	network.c	35;"	d	file:
 VNA_STAT_LEN	network.c	32;"	d	file:
 WID_COL	export.c	/^	FRQ_COL, WID_COL, AMP_COL, PHAS_COL,$/;"	e	file:
 WID_COL	resonancelist.c	/^	FRQ_COL, WID_COL, AMP_COL, PHAS_COL,$/;"	e	file:
+__USE_XOPEN	helpers.c	10;"	d	file:
 a	compl_mrqcof.c	/^	double *a;$/;"	m	file:
 add_resonance_to_list	resonancelist.c	/^void add_resonance_to_list (Resonance *res)$/;"	f
 alpha	compl_mrqcof.c	/^	double **alpha;$/;"	m	file:
@@ -177,6 +179,7 @@ cmulti_re	compl_mrqmin.c	/^inline double cmulti_re(ComplexDouble a, ComplexDoubl
 column_clicked_callback	resonancelist.c	/^static void column_clicked_callback (GtkTreeViewColumn *column, gpointer user_data)$/;"	f	file:
 column_separator	resonancelist.c	248;"	d	file:
 column_separator	resonancelist.c	412;"	d	file:
+compare_timestamps	helpers.c	/^gint compare_timestamps (const gchar* a, const gchar* b)$/;"	f
 convert_matrix	nrutil.c	/^double **convert_matrix(double *a, long nrl, long nrh, long ncl, long nch)$/;"	f
 convert_matrix	nrutil.c	/^float **convert_matrix(a,nrl,nrh,ncl,nch)$/;"	f
 covsrt	compl_mrqmin.c	/^void covsrt(double **covar, int ma, int ia[], int mfit)$/;"	f
@@ -279,7 +282,7 @@ free_vector	nrutil.c	/^void free_vector(v,nl,nh)$/;"	f
 frqbut	export.c	/^	GtkToggleButton *idbut, *frqbut, *widbut, *ampbut, *phasbut, *qualbut, *stddevbut;$/;"	m	file:
 funcs	compl_mrqcof.c	/^	void (*funcs)(double, double [], ComplexDouble *, ComplexDouble [], int);$/;"	m	file:
 g_marshal_value_peek_pointer	gtkspectvis.c	20;"	d	file:
-gaussj	compl_mrqmin.c	/^void gaussj(double **a, int n, double **b, int m)$/;"	f
+gaussj	compl_mrqmin.c	/^void gaussj(double **a, int n, double **b, int m, int cancelcheck)$/;"	f
 get_defaultname	helpers.c	/^gchar *get_defaultname (gchar *suffix)$/;"	f
 get_filename	helpers.c	/^gchar *get_filename (const gchar *title, const gchar *defaultname, gchar type)$/;"	f
 get_filename_helper	helpers.c	/^static gboolean get_filename_helper (char *filename, gchar check)$/;"	f	file:
@@ -598,7 +601,9 @@ spectral_cal_s2_goe	spectral.c	/^gfloat spectral_cal_s2_goe (gfloat L)$/;"	f
 spectral_cal_s2_gue	spectral.c	/^gfloat spectral_cal_s2_gue (gfloat L)$/;"	f
 spectral_delta3	spectral.c	/^static void spectral_delta3 ()$/;"	f	file:
 spectral_fit_weyl	spectral.c	/^static void spectral_fit_weyl (gdouble *res, guint numres, guint offset)$/;"	f	file:
-spectral_get_resonances	spectral.c	/^static gdouble* spectral_get_resonances (guint *numres, gboolean unfold)$/;"	f	file:
+spectral_get_frequencies	spectral.c	/^static gdouble* spectral_get_frequencies (guint *numres, gboolean unfold)$/;"	f	file:
+spectral_get_resonances	spectral.c	/^static GPtrArray* spectral_get_resonances ()$/;"	f	file:
+spectral_get_width	spectral.c	/^static gdouble* spectral_get_width (guint *numres)$/;"	f	file:
 spectral_handle_value_selected	spectral.c	/^gint spectral_handle_value_selected (GtkSpectVis *spectvis, gdouble *xval, gdouble *yval)$/;"	f
 spectral_handle_viewport_changed	spectral.c	/^void spectral_handle_viewport_changed (GtkSpectVis *spectvis, gchar *zoomtype)$/;"	f
 spectral_integrated_nnd	spectral.c	/^static void spectral_integrated_nnd ()$/;"	f	file:
@@ -615,6 +620,7 @@ spectral_sigma2	spectral.c	/^static void spectral_sigma2 ()$/;"	f	file:
 spectral_staircase	spectral.c	/^static void spectral_staircase ()$/;"	f	file:
 spectral_too_few_resonances	spectral.c	/^static void spectral_too_few_resonances ()$/;"	f	file:
 spectral_weyl_val	spectral.c	/^static gdouble spectral_weyl_val (gdouble x)$/;"	f	file:
+spectral_widths_hist	spectral.c	/^static void spectral_widths_hist ()$/;"	f	file:
 start_fit	numeric.c	/^static gint start_fit (gpointer params)$/;"	f	file:
 statusbar_message	helpers.c	/^void statusbar_message (gchar *format, ...)$/;"	f
 statusbar_message_remove	helpers.c	/^static gint statusbar_message_remove (gpointer data)$/;"	f	file:
