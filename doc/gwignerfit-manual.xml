@@ -3,7 +3,7 @@
   "http://www.oasis-open.org/docbook/xml/4.4/docbookx.dtd" [
 <!--"/usr/share/sgml/docbook/xml-dtd-4.4-1.0-26/docbookx.dtd" [ -->
 	<!ENTITY legal SYSTEM "legal.xml">
-	<!ENTITY appversion "2005-12-30">
+	<!ENTITY appversion "2006-02-01">
 	<!ENTITY manrevision "1.0">
 	<!ENTITY date "August 2005">
 	<!ENTITY app "<application>GWignerFit</application>">
@@ -28,6 +28,7 @@
 	<copyright>
 		<year>2004</year>
 		<year>2005</year>
+		<year>2006</year>
 		<holder>Florian Sch&auml;fer</holder>
 	</copyright>
 	<publisher>
@@ -2913,10 +2914,10 @@
 <sect1 id="gwignerfit-spectral">
 	<title>Spectral statistics</title>
 	<para>This section will explain how to examine statistical properties of a
-		given set of resonance frequencies using &app;. Those statistics are called
-		<emphasis>spectral statistics</emphasis> because the resonances represent
-		the spectrum of the Laplace operator that describes the electrical field
-		inside the cavity.</para>
+		given set of resonance frequencies (or widths) using &app;. Those
+		statistics are called <emphasis>spectral statistics</emphasis> because the
+		resonances represent the spectrum of the Laplace operator that describes
+		the electrical field inside the cavity.</para>
 
 	<para>&app; can evaluate the following statistical measures (refer to
 		<xref linkend="gwf-spectral-view-menu" /> to learn how to choose the
@@ -2976,6 +2977,16 @@
 				been subtracted). Every peak in this spectrum corresponds according to
 				Gutzwiller's trace formula to a classical periodic orbit. The abscissa
 				gives the length of the orbit in meters.</para>
+		</listitem>
+		<listitem>
+			<para>Widths histogram: In contrast to the statistics described till
+				now, this histogram does statistics with the resonance
+				<emphasis>widths</emphasis>. The resonance widths are sorted into a
+				given number of bins. The graph displays how many widths ended up in
+				which bin. The abscissa gives the width in MHz. The ordinate can either
+				show the total number of widths in each bin (that is without
+				normalization) or the fraction of all resonances considered (the
+				normalized case).</para>
 		</listitem>
 	</itemizedlist>
 
@@ -3204,6 +3215,7 @@
 								<guimenuitem>Sigma 2</guimenuitem>,
 								<guimenuitem>Delta 3</guimenuitem> and
 								<guimenuitem>Length spectrum</guimenuitem>
+								<guimenuitem>Widths histogram</guimenuitem>
 					</term>
 					<listitem>
 						<para>&app; will calculate and display the selected spectral

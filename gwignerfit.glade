@@ -5201,7 +5201,7 @@ Please check and decide what to do.</property>
 		  <child>
 		    <widget class="GtkRadioMenuItem" id="spectral_widths_hist">
 		      <property name="visible">True</property>
-		      <property name="label" translatable="yes">Widths histogram</property>
+		      <property name="label" translatable="yes">_Widths histogram</property>
 		      <property name="use_underline">True</property>
 		      <property name="active">False</property>
 		      <property name="group">spectral_staircase</property>
