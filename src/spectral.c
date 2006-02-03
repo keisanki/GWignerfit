@@ -1406,7 +1406,7 @@ gboolean on_spectral_scale_change (GtkMenuItem *menuitem, gpointer user_data)
 	{
 		gtk_spect_vis_set_displaytype (graph, 'l');
 		/* gtk_spect_vis takes the square -> rescale y axis */
-		gtk_spect_vis_set_axisscale (graph, 0, 0.5);
+		gtk_spect_vis_set_axisscale (graph, 0, 2);
 	}
 	
 	gtk_spect_vis_zoom_y_all (graph);
