@@ -5,7 +5,7 @@ ifndef ICONPATH
 ICONPATH = ../pixmap
 endif
 
-SOURCES = gwignerfit.c callbacks.c processdata.c visualize.c helpers.c resonancelist.c compl_mrqmin.c compl_mrqcof.c nrutil.c numeric.c gtkspectvis.c overlay.c dnd.c export.c fourier.c gnuplot_i.c spectral.c spectral_numeric.c network.c preferences.c calibrate.c fcomp.c merge.c loadsave.c merge_util.c
+SOURCES = gwignerfit.c callbacks.c processdata.c visualize.c helpers.c resonancelist.c compl_mrqmin.c compl_mrqcof.c nrutil.c numeric.c gtkspectvis.c overlay.c dnd.c export.c fourier.c gnuplot_i.c spectral.c spectral_numeric.c network.c preferences.c calibrate.c fcomp.c merge.c loadsave.c merge_util.c correl.c
 OBJS    = ${SOURCES:.c=.o}
 	
 CFLAGS  = `pkg-config gtk+-2.0 --cflags` `pkg-config libglade-2.0 --cflags` `pkg-config gthread-2.0 --cflags` -DGLADEFILE=\"${GLADEFILE}\" -DICONPATH=\"${ICONPATH}\" ${EXTRACFLAGS}

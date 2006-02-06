@@ -20,6 +20,7 @@
 #include "spectral.h"
 #include "fcomp.h"
 #include "loadsave.h"
+#include "correl.h"
 
 /* Global variables */
 extern GladeXML *gladexml;
@@ -982,8 +983,10 @@ void on_load_spectrum ()
 	gtk_widget_set_sensitive (glade_xml_get_widget (gladexml, "fourier_transform"), TRUE);
 	gtk_widget_set_sensitive (glade_xml_get_widget (gladexml, "fourier_transform_window"), TRUE);
 	gtk_widget_set_sensitive (glade_xml_get_widget (gladexml, "fourier_components"), TRUE);
+	gtk_widget_set_sensitive (glade_xml_get_widget (gladexml, "correlation_function"), TRUE);
 
 	on_fft_close_activate (NULL, NULL);
+	on_correl_close_activate (NULL, NULL);
 }
 
 /* Gets called each time the main spectrum is deleted */
@@ -999,8 +1002,11 @@ void on_delete_spectrum ()
 	gtk_widget_set_sensitive (glade_xml_get_widget (gladexml, "fourier_transform"), FALSE);
 	gtk_widget_set_sensitive (glade_xml_get_widget (gladexml, "fourier_transform_window"), FALSE);
 	gtk_widget_set_sensitive (glade_xml_get_widget (gladexml, "fourier_components"), FALSE);
+	gtk_widget_set_sensitive (glade_xml_get_widget (gladexml, "correlation_function"), FALSE);
+	gtk_widget_set_sensitive (glade_xml_get_widget (gladexml, "spectral_stat"), FALSE);
 
 	on_fft_close_activate (NULL, NULL);
+	on_correl_close_activate (NULL, NULL);
 	on_comment_done (NULL, (gpointer) 1);
 }
 
@@ -1205,6 +1211,8 @@ gchar* normalize_path (gchar *inpath)
 		}
 		i--;
 	}
+
+	g_strfreev (parts);
 	
 	/* g_string_free returns the string data */
 	return g_string_free (gstr, FALSE);

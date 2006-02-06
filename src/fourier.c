@@ -722,6 +722,136 @@ void on_fft_measure_distance_activate (GtkMenuItem *menuitem, gpointer user_data
 	g_mutex_unlock (glob->threads->flaglock);
 }
 
+/* Create a postscript from the graph */
+gboolean on_fourier_export_ps (GtkMenuItem *menuitem, gpointer user_data)
+{
+	GtkSpectVis *spectvis;
+	GArray *uids, *legend, *lt;
+	gchar *default_footer=NULL, *basename;
+	gchar *selected_filename, *selected_title, *selected_footer;
+	gboolean selected_theory, selected_overlay;
+	gchar selected_legend;
+	GtkTreeIter iter;
+	GtkTreeModel *model;
+	guint overlayid;
+	gint linetype;
+	gchar *str;
+
+	spectvis = GTK_SPECTVIS (glade_xml_get_widget (glob->fft->xmlfft, "fft_spectvis"));
+	g_return_val_if_fail (spectvis, FALSE);
+
+	/* Put some default text into the GtkEntry fields */
+	if (glob->section)
+	{
+		basename = g_path_get_basename (glob->resonancefile);
+		default_footer = g_strdup_printf ("file: %s (%s)", basename, glob->section);
+		g_free (basename);
+	}
+	else if ((glob->data) && (glob->data->file))
+	{
+		basename = g_path_get_basename (glob->data->file);
+		default_footer = g_strdup_printf ("file: %s", basename);
+		g_free (basename);
+	}
+	
+	if (!postscript_export_dialog (
+		NULL,
+		NULL,
+		default_footer,
+		TRUE,
+		glob->overlaystore ? TRUE : FALSE,
+		&selected_filename,
+		&selected_title,
+		&selected_footer,
+		&selected_theory,
+		&selected_overlay,
+		&selected_legend
+	   ))
+	{
+		g_free (default_footer);
+		return FALSE;
+	}
+	g_free (default_footer);
+
+	uids   = g_array_new (FALSE, FALSE, sizeof (guint) );
+	legend = g_array_new (FALSE, FALSE, sizeof (gchar*));
+	lt     = g_array_new (FALSE, FALSE, sizeof (gint)  );
+
+	if (selected_overlay && glob->overlaystore)
+	{
+		/* Include the overlay graphs */
+		model = GTK_TREE_MODEL (glob->overlaystore);
+
+		if (gtk_tree_model_get_iter_first (model, &iter))
+		{
+			gtk_tree_model_get (model, &iter, 0, &overlayid, -1);
+			g_array_append_val (uids, overlayid);
+
+			/* Set the linetype */
+			/* g_array_append_val needs a variable as second parameter */
+			linetype = 9;
+			g_array_append_val (lt, linetype);
+
+			str = g_strdup_printf ("overlay");
+			g_array_append_val (legend, str);
+			str = "";
+
+			while (gtk_tree_model_iter_next (model, &iter))
+			{
+				gtk_tree_model_get (model, &iter, 0, &overlayid, -1);
+				g_array_append_val (uids, overlayid);
+				g_array_append_val (legend, str);
+				g_array_append_val (lt, linetype);
+			}
+		}
+	}
+	
+	/* Always include the data graph */;
+	g_array_append_val (uids, glob->data->index);
+	str = g_strdup_printf ("data");
+	g_array_append_val (legend, str);
+
+	linetype = 1;
+	g_array_append_val (lt, linetype);
+
+	if (selected_theory)
+	{
+		/* Include the theory graph */
+		g_array_append_val (uids, glob->theory->index);
+		str = g_strdup_printf ("theory");
+		g_array_append_val (legend, str);
+
+		linetype = 3;
+		g_array_append_val (lt, linetype);
+	}
+
+	/* Export! */
+	if (gtk_check_menu_item_get_active (GTK_CHECK_MENU_ITEM (
+				glade_xml_get_widget (glob->fft->xmlfft, "abscissa_ns")
+				)))
+		str = "time [ns]";
+	else
+		str = "length [m]";
+
+	if (!gtk_spect_vis_export_ps (spectvis, uids, selected_filename, selected_title, 
+				 str, NULL, selected_footer, legend, selected_legend, lt))
+	{
+		dialog_message ("Error: Could not create graph. Is gnuplot installed on your system?");
+		if (selected_filename[0] != '|')
+			unlink (selected_filename);
+	}
+
+	/* Tidy up */
+	g_array_free (uids, TRUE);
+	g_array_free (legend, TRUE);
+	g_array_free (lt, TRUE);
+	g_free (selected_filename);
+	g_free (selected_title);
+	g_free (selected_footer);
+
+	return TRUE;
+}
+#if 0
 gboolean on_fourier_export_ps (GtkMenuItem *menuitem, gpointer user_data)
 {
 	/* This function is mostly stolen from export_graph_ps(). */
@@ -946,6 +1076,7 @@ gboolean on_fourier_export_ps (GtkMenuItem *menuitem, gpointer user_data)
 
 	return TRUE;
 }
+#endif
 
 gint fourier_handle_value_selected (GtkSpectVis *spectvis, gdouble *xval, gdouble *yval)
 {

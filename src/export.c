@@ -510,25 +510,28 @@ gboolean export_select_filename (GtkButton *button, gpointer user_data)
 	return TRUE;
 }
 
-gboolean export_graph_ps ()
+/* Show the export postscript dialog */
+gboolean postscript_export_dialog (
+		const gchar *default_filename,
+		const gchar *default_title,
+		const gchar *default_footer,
+		const gboolean include_theory,
+		const gboolean include_overlay,
+		gchar **selected_filename,
+		gchar **selected_title,
+		gchar **selected_footer,
+		gboolean *selected_theory,
+		gboolean *selected_overlay,
+		gchar *selected_legend
+		)
 {
-	const gchar *filename, *title, *footer;
-	const gchar *filen, *path;
-	GArray *uids, *legend, *lt;
-	GtkSpectVis *spectvis;
 	GladeXML *xmldialog;
 	GtkWidget *dialog;
 	GtkToggleButton *toggle;
-	gboolean showlegend = FALSE;
-	GtkTreeIter iter;
-	GtkTreeModel *model;
-	guint overlayid;
-	gint linetype;
-	gchar *str, *basename, pos;
+	const gchar *filen, *path, *title, *footer;
+	gchar *filename, *basename;
 	FILE *file;
-
-	spectvis = GTK_SPECTVIS (glade_xml_get_widget (gladexml, "graph"));
-	g_return_val_if_fail (spectvis, FALSE);
+	gboolean retval;
 
 	/* Load the widgets */
 	xmldialog = glade_xml_new (GLADEFILE, "export_ps_dialog", NULL);
@@ -541,28 +544,43 @@ gboolean export_graph_ps ()
 			(GCallback) export_select_filename,
 			xmldialog);
 
-	/* Put some default text into the GtkEntry fields */
-	if (glob->section)
+	/* Set default elements */
+	if (default_filename)
 	{
-		basename = g_path_get_basename (glob->resonancefile);
-		str = g_strdup_printf ("file: %s (%s)", basename, glob->section);
-		g_free (basename);
-
-		gtk_entry_set_text (GTK_ENTRY (
-				glade_xml_get_widget (xmldialog, "ps_footer_entry")),
-				str);
-	}
-	else if ((glob->data) && (glob->data->file))
-	{
-		basename = g_path_get_basename (glob->data->file);
-		str = g_strdup_printf ("file: %s", basename);
-		g_free (basename);
-
-		gtk_entry_set_text (GTK_ENTRY (
-				glade_xml_get_widget (xmldialog, "ps_footer_entry")),
-				str);
+		// TODO
 	}
 
+	if (default_title)
+		gtk_entry_set_text (GTK_ENTRY (
+			glade_xml_get_widget (xmldialog, "ps_title_entry")),
+			default_title);
+
+	if (default_footer)
+		gtk_entry_set_text (GTK_ENTRY (
+			glade_xml_get_widget (xmldialog, "ps_footer_entry")),
+			default_footer);
+
+	if (!include_theory)
+	{
+		gtk_widget_set_sensitive (
+			glade_xml_get_widget (xmldialog, "ps_theory_check"), 
+			FALSE);
+		gtk_toggle_button_set_active (
+			GTK_TOGGLE_BUTTON (glade_xml_get_widget (xmldialog, "ps_theory_check")), 
+			FALSE);
+	}
+
+	if (!include_overlay)
+	{
+		gtk_widget_set_sensitive (
+			glade_xml_get_widget (xmldialog, "ps_overlay_check"), 
+			FALSE);
+		gtk_toggle_button_set_active (
+			GTK_TOGGLE_BUTTON (glade_xml_get_widget (xmldialog, "ps_overlay_check")),
+			FALSE);
+	}
+
+	/* Run dialog */
 	if (gtk_dialog_run (GTK_DIALOG (dialog)) == GTK_RESPONSE_OK)
 	{
 		path = gtk_entry_get_text (GTK_ENTRY (
@@ -591,9 +609,8 @@ gboolean export_graph_ps ()
 				/* File exists, do not overwrite it. */
 				fclose (file);
 				g_free (basename);
-				//g_free ((gchar *) filename);
+				g_free (filename);
 				gtk_widget_destroy (dialog);
-				statusbar_message ("Postscript export canceled by user");
 
 				return FALSE;
 			}
@@ -606,7 +623,9 @@ gboolean export_graph_ps ()
 				/* Something went wrong during file deletion */
 				gtk_widget_destroy (dialog);
 				dialog_message ("Error: Cannot delete file %s.", filename);
-				statusbar_message ("Postscript export canceled");
+				g_free (filename);
+
+				return FALSE;
 			}
 		}
 		else if (filename[0] != '|')
@@ -624,108 +643,189 @@ gboolean export_graph_ps ()
 				/* Cannot write to file -> abort */
 				gtk_widget_destroy (dialog);
 				dialog_message ("Error: Cannot write to file %s.", filename);
-				statusbar_message ("Postscript export canceled");
-				//g_free ((gchar *) filename);
+				g_free (filename);
 
 				return FALSE;
 			}
 			fclose (file);
 		}
 
-		uids = g_array_new (FALSE, FALSE, sizeof (guint));
-		legend = g_array_new (FALSE, FALSE, sizeof (gchar*));
-		lt = g_array_new (FALSE, FALSE, sizeof (gint));
-
 		/* Should a legend be displayed? */
-		toggle = GTK_TOGGLE_BUTTON (glade_xml_get_widget (xmldialog, "ps_legend_check"));
-		if (gtk_toggle_button_get_active (toggle))
-			showlegend = TRUE;
-
-		/* And where? */
-		if (gtk_toggle_button_get_active (
-			GTK_TOGGLE_BUTTON (glade_xml_get_widget (xmldialog, "ps_top_button"))))
-			pos = 't';
-		else
-			pos = 'b';
-		
-		toggle = GTK_TOGGLE_BUTTON (glade_xml_get_widget (xmldialog, "ps_overlay_check"));
-		if ((gtk_toggle_button_get_active (toggle)) && (glob->overlaystore))
+		if (selected_legend)
 		{
-			/* Include the overlay graphs */
-			model = GTK_TREE_MODEL (glob->overlaystore);
+			toggle = GTK_TOGGLE_BUTTON (glade_xml_get_widget (xmldialog, "ps_legend_check"));
+			/* And where? */
+			if (gtk_toggle_button_get_active (
+				GTK_TOGGLE_BUTTON (glade_xml_get_widget (xmldialog, "ps_top_button"))
+			   ))
+				*selected_legend = 't';
+			else
+				*selected_legend = 'b';
+			/* No legend */
+			if (!gtk_toggle_button_get_active (toggle))
+				*selected_legend = 0;
+		}
+		
+		if (selected_theory)
+		{
+			/* Include theory? */
+			toggle = GTK_TOGGLE_BUTTON (glade_xml_get_widget (xmldialog, "ps_theory_check"));
+			if (include_theory && gtk_toggle_button_get_active (toggle))
+				*selected_theory = TRUE;
+			else
+				*selected_theory = FALSE;
+		}
+		
+		if (selected_overlay)
+		{
+			/* Include overlays? */
+			toggle = GTK_TOGGLE_BUTTON (glade_xml_get_widget (xmldialog, "ps_overlay_check"));
+			if (include_overlay && gtk_toggle_button_get_active (toggle))
+				*selected_overlay = TRUE;
+			else
+				*selected_overlay = FALSE;
+		}
 
-			if (gtk_tree_model_get_iter_first (model, &iter))
+		if (selected_filename)
+			*selected_filename = g_strdup (filename);
+
+		if (selected_title)
+			*selected_title = g_strdup (title);
+
+		if (selected_footer)
+			*selected_footer = g_strdup (footer);
+		
+		/* Tidy up */
+		g_free (filename);
+		retval = TRUE;
+	}
+	else
+		retval = FALSE;
+
+	gtk_widget_destroy (dialog);
+	return retval;
+}
+
+gboolean export_graph_ps ()
+{
+	GtkSpectVis *spectvis;
+	GArray *uids, *legend, *lt;
+	gchar *default_footer=NULL, *basename, *str;
+	gchar *selected_filename, *selected_title, *selected_footer;
+	gchar selected_legend;
+	gboolean selected_theory, selected_overlay = FALSE;
+	gint linetype;
+	GtkTreeIter iter;
+	GtkTreeModel *model;
+	guint overlayid;
+
+	spectvis = GTK_SPECTVIS (glade_xml_get_widget (gladexml, "graph"));
+	g_return_val_if_fail (spectvis, FALSE);
+
+	/* Put some default text into the GtkEntry fields */
+	if (glob->section)
+	{
+		basename = g_path_get_basename (glob->resonancefile);
+		default_footer = g_strdup_printf ("file: %s (%s)", basename, glob->section);
+		g_free (basename);
+	}
+	else if ((glob->data) && (glob->data->file))
+	{
+		basename = g_path_get_basename (glob->data->file);
+		default_footer = g_strdup_printf ("file: %s", basename);
+		g_free (basename);
+	}
+	
+	if (!postscript_export_dialog (
+		NULL,
+		NULL,
+		default_footer,
+		TRUE,
+		glob->overlaystore ? TRUE : FALSE,
+		&selected_filename,
+		&selected_title,
+		&selected_footer,
+		&selected_theory,
+		&selected_overlay,
+		&selected_legend
+	   ))
+	{
+		statusbar_message ("Postscript export canceled");
+		g_free (default_footer);
+		return FALSE;
+	}
+	g_free (default_footer);
+
+	uids   = g_array_new (FALSE, FALSE, sizeof (guint) );
+	legend = g_array_new (FALSE, FALSE, sizeof (gchar*));
+	lt     = g_array_new (FALSE, FALSE, sizeof (gint)  );
+
+	if (selected_overlay && glob->overlaystore)
+	{
+		/* Include the overlay graphs */
+		model = GTK_TREE_MODEL (glob->overlaystore);
+
+		if (gtk_tree_model_get_iter_first (model, &iter))
+		{
+			gtk_tree_model_get (model, &iter, 0, &overlayid, -1);
+			g_array_append_val (uids, overlayid);
+
+			/* Set the linetype */
+			/* g_array_append_val needs a variable as second parameter */
+			linetype = 9;
+			g_array_append_val (lt, linetype);
+
+			str = g_strdup_printf ("overlay");
+			g_array_append_val (legend, str);
+			str = "";
+
+			while (gtk_tree_model_iter_next (model, &iter))
 			{
 				gtk_tree_model_get (model, &iter, 0, &overlayid, -1);
 				g_array_append_val (uids, overlayid);
-
-				/* Set the linetype */
-				/* g_array_append_val needs a variable as second parameter */
-				linetype = 9;
-				g_array_append_val (lt, linetype);
-
-				if (showlegend)
-					str = g_strdup_printf ("overlay");
-				else
-					str = "";
 				g_array_append_val (legend, str);
-				str = "";
-
-				while (gtk_tree_model_iter_next (model, &iter))
-				{
-					gtk_tree_model_get (model, &iter, 0, &overlayid, -1);
-					g_array_append_val (uids, overlayid);
-					g_array_append_val (legend, str);
-					g_array_append_val (lt, linetype);
-				}
+				g_array_append_val (lt, linetype);
 			}
 		}
-		
-		/* Always include the data graph */;
-		g_array_append_val (uids, glob->data->index);
-		if (showlegend)
-			str = g_strdup_printf ("data");
-		else
-			str = "";
+	}
+	
+	/* Always include the data graph */;
+	g_array_append_val (uids, glob->data->index);
+	str = g_strdup_printf ("data");
+	g_array_append_val (legend, str);
+
+	linetype = 1;
+	g_array_append_val (lt, linetype);
+
+	if (selected_theory)
+	{
+		/* Include the theory graph */
+		g_array_append_val (uids, glob->theory->index);
+		str = g_strdup_printf ("theory");
 		g_array_append_val (legend, str);
 
-		linetype = 1;
+		linetype = 3;
 		g_array_append_val (lt, linetype);
-
-		toggle = GTK_TOGGLE_BUTTON (glade_xml_get_widget (xmldialog, "ps_theory_check"));
-		if (gtk_toggle_button_get_active (toggle))
-		{
-			/* Include the theory graph */
-			g_array_append_val (uids, glob->theory->index);
-			if (showlegend)
-				str = g_strdup_printf ("theory");
-			else
-				str = "";
-			g_array_append_val (legend, str);
-
-			linetype = 3;
-			g_array_append_val (lt, linetype);
-		}
-
-		/* Export! */
-		if (!gtk_spect_vis_export_ps (spectvis, uids, filename, title, 
-					 "frequency (GHz)", NULL, footer, 
-					 legend, pos, lt))
-		{
-			dialog_message ("Error: Could not create graph. Is gnuplot installed on your system?");
-			if (filename[0] != '|')
-				unlink (filename);
-		}
-
-		/* Tidy up */
-		g_array_free (uids, TRUE);
-		g_array_free (legend, TRUE);
-		g_array_free (lt, TRUE);
-		//g_free ((gchar *) filename);
 	}
 
-	gtk_widget_destroy (dialog);
-	statusbar_message ("Postscript export successful");
+	/* Export! */
+	if (!gtk_spect_vis_export_ps (spectvis, uids, selected_filename, selected_title, 
+				 "frequency (GHz)", NULL, selected_footer, 
+				 legend, selected_legend, lt))
+	{
+		dialog_message ("Error: Could not create graph. Is gnuplot installed on your system?");
+		if (selected_filename[0] != '|')
+			unlink (selected_filename);
+	}
 
+	/* Tidy up */
+	g_array_free (uids, TRUE);
+	g_array_free (legend, TRUE);
+	g_array_free (lt, TRUE);
+	g_free (selected_filename);
+	g_free (selected_title);
+	g_free (selected_footer);
+
+	statusbar_message ("Postscript export successful");
 	return TRUE;
 }

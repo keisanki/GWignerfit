@@ -3,7 +3,7 @@
 !_TAG_PROGRAM_AUTHOR	Darren Hiebert	/dhiebert@users.sourceforge.net/
 !_TAG_PROGRAM_NAME	Exuberant Ctags	//
 !_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
-!_TAG_PROGRAM_VERSION	5.5.4	//
+!_TAG_PROGRAM_VERSION	5.5	//
 ADD_MARK_DISTANCE	gtkspectvis.c	18;"	d	file:
 AMP_COL	export.c	/^	FRQ_COL, WID_COL, AMP_COL, PHAS_COL,$/;"	e	file:
 AMP_COL	resonancelist.c	/^	FRQ_COL, WID_COL, AMP_COL, PHAS_COL,$/;"	e	file:
@@ -182,6 +182,14 @@ column_separator	resonancelist.c	412;"	d	file:
 compare_timestamps	helpers.c	/^gint compare_timestamps (const gchar* a, const gchar* b)$/;"	f
 convert_matrix	nrutil.c	/^double **convert_matrix(double *a, long nrl, long nrh, long ncl, long nch)$/;"	f
 convert_matrix	nrutil.c	/^float **convert_matrix(a,nrl,nrh,ncl,nch)$/;"	f
+correl_cal_correl	correl.c	/^static void correl_cal_correl ()$/;"	f	file:
+correl_cal_statistics	correl.c	/^static void correl_cal_statistics ()$/;"	f	file:
+correl_handle_signal_marked	correl.c	/^gint correl_handle_signal_marked (GtkSpectVis *spectvis, gdouble *xval, gdouble *yval)$/;"	f
+correl_handle_viewport_changed	correl.c	/^void correl_handle_viewport_changed (GtkSpectVis *spectvis, gchar *zoomtype)$/;"	f
+correl_maxfrq_changed	correl.c	/^gboolean correl_maxfrq_changed (GtkWidget *entry, GdkEventKey *event, gpointer user_data)$/;"	f
+correl_minfrq_changed	correl.c	/^gboolean correl_minfrq_changed (GtkWidget *entry, GdkEventKey *event, gpointer user_data)$/;"	f
+correl_open_win	correl.c	/^void correl_open_win ()$/;"	f
+correl_update_frq	correl.c	/^static void correl_update_frq ()$/;"	f	file:
 covsrt	compl_mrqmin.c	/^void covsrt(double **covar, int ma, int ia[], int mfit)$/;"	f
 create_backup	helpers.c	/^void create_backup ()$/;"	f
 create_param_array	numeric.c	/^void create_param_array (GPtrArray *param, GPtrArray *fcomp, GlobalParam *gparam, gint numres, gint numfcomp, double *p)$/;"	f
@@ -460,6 +468,11 @@ on_clear_resonancelist_activate	callbacks.c	/^void on_clear_resonancelist_activa
 on_close_dialog	callbacks.c	/^gboolean on_close_dialog (GtkWidget *button)$/;"	f
 on_comment_activate	callbacks.c	/^void on_comment_activate (GtkMenuItem *menuitem, gpointer user_data)$/;"	f
 on_comment_done	callbacks.c	/^gboolean on_comment_done (GtkWidget *widget, gpointer data)$/;"	f
+on_corr_graph_as_postscript_activate	correl.c	/^gboolean on_corr_graph_as_postscript_activate (GtkMenuItem *menuitem, gpointer user_data)$/;"	f
+on_corr_log_scale_activate	correl.c	/^gboolean on_corr_log_scale_activate (GtkMenuItem *menuitem, gpointer user_data)$/;"	f
+on_corr_statistical_data_activate	correl.c	/^gboolean on_corr_statistical_data_activate (GtkMenuItem *menuitem, gpointer user_data)$/;"	f
+on_correl_close_activate	correl.c	/^void on_correl_close_activate (GtkMenuItem *menuitem, gpointer user_data)$/;"	f
+on_correlation_function_activate	callbacks.c	/^void on_correlation_function_activate (GtkMenuItem *menuitem, gpointer user_data)$/;"	f
 on_delete_spectrum	helpers.c	/^void on_delete_spectrum ()$/;"	f
 on_estimate_data_noise_activate	callbacks.c	/^void on_estimate_data_noise_activate (GtkMenuItem *menuitem, gpointer user_data)$/;"	f
 on_estimate_global_parameters_activate	callbacks.c	/^void on_estimate_global_parameters_activate (GtkMenuItem *menuitem, gpointer user_data)$/;"	f
@@ -565,6 +578,7 @@ param_compare	helpers.c	/^gint param_compare (gconstpointer a_in, gconstpointer 
 parent_class	gtkspectvis.c	/^static GtkWidgetClass *parent_class = NULL;$/;"	v	file:
 parse_commandline	gwignerfit.c	/^void parse_commandline (gint argc, char *argv[])$/;"	f
 phasbut	export.c	/^	GtkToggleButton *idbut, *frqbut, *widbut, *ampbut, *phasbut, *qualbut, *stddevbut;$/;"	m	file:
+postscript_export_dialog	export.c	/^gboolean postscript_export_dialog ($/;"	f
 prefs_change_win	preferences.c	/^void prefs_change_win ()$/;"	f
 prefs_load	preferences.c	/^void prefs_load (Preferences *prefs)$/;"	f
 prefs_save	preferences.c	/^void prefs_save (Preferences *prefs)$/;"	f

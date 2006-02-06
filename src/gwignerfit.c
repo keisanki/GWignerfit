@@ -162,6 +162,7 @@ gint main (gint argc, char *argv[])
 	glob->commentxml = NULL;
 	glob->comment = NULL;
 	glob->smp = NULL;
+	glob->correl = NULL;
 
 	/* Set the preferences to the default values */
 	glob->prefs = NULL;

@@ -2141,7 +2141,7 @@ gtk_spect_vis_export_ps (GtkSpectVis *spectvis, GArray *uids,
 	g_return_val_if_fail (uids, FALSE);
 	g_return_val_if_fail (uids->len > 0, FALSE);
 	g_return_val_if_fail (filename, FALSE);
-	g_return_val_if_fail ((legendpos == 't') || (legendpos == 'b'), FALSE);
+	g_return_val_if_fail ((legendpos == 't') || (legendpos == 'b') || (legendpos == 0), FALSE);
 
 	/* Initialize the gnuplot stuff. */
 	g = gnuplot_init ();
@@ -2186,6 +2186,8 @@ gtk_spect_vis_export_ps (GtkSpectVis *spectvis, GArray *uids,
 	/* Set the position of the legend. */
 	if (legendpos == 'b')
 		gnuplot_cmd (g, "set key bottom right");
+	else if (legendpos == 0)
+		gnuplot_cmd (g, "unset key");
 
 	/* Add a graph for each id in uids. */
 	for (arraypos=0; arraypos<uids->len; arraypos++)
@@ -2290,12 +2292,11 @@ gtk_spect_vis_mark_point (GtkSpectVis *spectvis, gdouble xval, gdouble yval)
 	/* Convert yval in case of logarithmic scale */
 	if (spectvis->displaytype == 'l')
 	{
-		dummy.abs = yval/spectvis->yAxisScale;
+		dummy.abs = yval;
 		yval = gtk_spect_vis_cal_db (dummy);
 	}
-	else
-		yval /= spectvis->yAxisScale;
-
+	
+	yval /= spectvis->yAxisScale;
 	xval /= spectvis->xAxisScale;
 
 	/* Try to find a sensible precision for the coordinate labels */

@@ -1839,264 +1839,171 @@ gboolean on_spectral_export_data (GtkMenuItem *menuitem, gpointer user_data)
 	g_free (resonances);
 	return TRUE;
 }
+
 /* Export postscript of current graph */
 gboolean on_spectral_export_ps (GtkMenuItem *menuitem, gpointer user_data)
 {
-	const gchar *filename, *title, *footer;
-	const gchar *filen, *path;
+	GtkSpectVis *graph;
 	GArray *uids, *legend, *lt;
-	GtkSpectVis *spectvis;
-	GladeXML *xmldialog;
-	GtkWidget *dialog;
-	GtkToggleButton *toggle;
-	gboolean showlegend = FALSE;
-	gint linetype, uid;
-	gchar *str, *basename, *xlabel = NULL, *ylabel = NULL, *ylabel2, pos;
-	FILE *file;
+	gchar *default_footer=NULL, *basename, *str;
+	gchar *selected_filename, *selected_title, *selected_footer;
+	gchar *xlabel = NULL, *ylabel = NULL, *ylabel2;
+	gchar selected_legend;
+	gboolean selected_theory;
+	gint uid, linetype;
 
 	if ((!glob->spectral) || (!glob->spectral->xmlspect))
 		return FALSE;
 
-	spectvis = GTK_SPECTVIS (glade_xml_get_widget (glob->spectral->xmlspect, "spectral_spectvis"));
-
-	/* Load the widgets */
-	xmldialog = glade_xml_new (GLADEFILE, "export_ps_dialog", NULL);
-	gtk_widget_hide_all (glade_xml_get_widget (xmldialog, "ps_overlay_check"));
-	dialog = glade_xml_get_widget (xmldialog, "export_ps_dialog");
-
-	/* Connect the select filename button */
-	g_signal_connect (
-			G_OBJECT (glade_xml_get_widget (xmldialog, "button10")), 
-			"clicked",
-			(GCallback) export_select_filename,
-			xmldialog);
-
-	/* Put some default text into the GtkEntry fields */
 	if (glob->section)
 	{
 		basename = g_path_get_basename (glob->resonancefile);
-		str = g_strdup_printf ("file: %s (%s)", basename, glob->section);
+		default_footer = g_strdup_printf ("file: %s (%s)", basename, glob->section);
 		g_free (basename);
-
-		gtk_entry_set_text (GTK_ENTRY (
-				glade_xml_get_widget (xmldialog, "ps_footer_entry")),
-				str);
 	}
 	else if ((glob->data) && (glob->data->file))
 	{
 		basename = g_path_get_basename (glob->data->file);
-		str = g_strdup_printf ("file: %s", basename);
+		default_footer = g_strdup_printf ("file: %s", basename);
 		g_free (basename);
-
-		gtk_entry_set_text (GTK_ENTRY (
-				glade_xml_get_widget (xmldialog, "ps_footer_entry")),
-				str);
 	}
-
-	if (gtk_dialog_run (GTK_DIALOG (dialog)) == GTK_RESPONSE_OK)
+	
+	if (!postscript_export_dialog (
+		NULL,
+		NULL,
+		default_footer,
+		TRUE,
+		FALSE,
+		&selected_filename,
+		&selected_title,
+		&selected_footer,
+		&selected_theory,
+		NULL,
+		&selected_legend
+	   ))
 	{
-		path = gtk_entry_get_text (GTK_ENTRY (
-				glade_xml_get_widget (xmldialog, "ps_path_entry")));
-		filen = gtk_entry_get_text (GTK_ENTRY (
-				glade_xml_get_widget (xmldialog, "ps_filename_entry")));
-		if (path)
-			filename = g_build_filename (path, filen, NULL);
-		else
-			filename = g_strdup (filen);
+		g_free (default_footer);
+		return FALSE;
+	}
+	g_free (default_footer);
 
-		title = gtk_entry_get_text (GTK_ENTRY (
-				glade_xml_get_widget (xmldialog, "ps_title_entry")));
-		footer = gtk_entry_get_text (GTK_ENTRY (
-				glade_xml_get_widget (xmldialog, "ps_footer_entry")));
+	uids   = g_array_new (FALSE, FALSE, sizeof (guint) );
+	legend = g_array_new (FALSE, FALSE, sizeof (gchar*));
+	lt     = g_array_new (FALSE, FALSE, sizeof (gint)  );
 
-		/* Does the file already exist? */
-		file = fopen (filename, "r");
-		if (file)
-		{
-			basename = g_path_get_basename (filename);
+	/* Always include the data graph */;
+	uid = 1;
+	g_array_append_val (uids, uid);
+	if (glob->spectral->view == SPECTRAL_WIDTHS_HIST)
+		str = g_strdup_printf ("widths histogram");
+	else
+		str = g_strdup_printf ("spectral data");
+	g_array_append_val (legend, str);
 
-			if (dialog_question ("File '%s' already exists, overwrite?", basename)
-					!= GTK_RESPONSE_YES)
-			{
-				/* File exists, do not overwrite it. */
-				fclose (file);
-				g_free (basename);
-				gtk_widget_destroy (dialog);
-				statusbar_message ("Postscript export canceled by user");
+	linetype = 1;
+	g_array_append_val (lt, linetype);
 
-				return FALSE;
-			}
+	if (selected_theory)
+	{
+		/* Include the theory graphs */
 
-			fclose (file);
-			g_free (basename);
-
-			if (unlink (filename))
-			{
-				/* Something went wrong during file deletion */
-				gtk_widget_destroy (dialog);
-				dialog_message ("Cannot delete file %s.", filename);
-				statusbar_message ("Postscript export canceled");
-			}
-		}
-		else if (filename[0] != '|')
-		{
-			/* Is the file writeable? */
-
-			/* Do this check only, if the first char isn't a pipe.
-			 * If it is, the user wants to pass the ps to another
-			 * application such as lpr.
-			 */
-
-			file = fopen (filename, "w");
-			if (!file)
-			{
-				/* Cannot write to file -> abort */
-				gtk_widget_destroy (dialog);
-				dialog_message ("Cannot write to file %s.", filename);
-				statusbar_message ("Postscript export canceled");
-
-				return FALSE;
-			}
-			fclose (file);
-		}
-
-		uids = g_array_new (FALSE, FALSE, sizeof (guint));
-		legend = g_array_new (FALSE, FALSE, sizeof (gchar*));
-		lt = g_array_new (FALSE, FALSE, sizeof (gint));
-
-		/* Should a legend be displayed? */
-		toggle = GTK_TOGGLE_BUTTON (glade_xml_get_widget (xmldialog, "ps_legend_check"));
-		if (gtk_toggle_button_get_active (toggle))
-			showlegend = TRUE;
-
-		/* And where? */
-		if (gtk_toggle_button_get_active (
-			GTK_TOGGLE_BUTTON (glade_xml_get_widget (xmldialog, "ps_top_button"))))
-			pos = 't';
-		else
-			pos = 'b';
-		
-		/* Always include the data graph */;
-		uid = 1;
+		/* Poisson */
+		uid = 2;
 		g_array_append_val (uids, uid);
-		if (showlegend)
-			str = g_strdup_printf ("spectral data");
+		if (glob->spectral->view == SPECTRAL_WEYL)
+			str = g_strdup_printf ("Weyl fit");
 		else
-			str = "";
+			str = g_strdup_printf ("Poisson");
 		g_array_append_val (legend, str);
-
-		linetype = 1;
+		linetype = 3;
 		g_array_append_val (lt, linetype);
 
-		toggle = GTK_TOGGLE_BUTTON (glade_xml_get_widget (xmldialog, "ps_theory_check"));
-		if (gtk_toggle_button_get_active (toggle))
-		{
-			/* Include the theory graph */
+		/* GOE */
+		uid = 3;
+		g_array_append_val (uids, uid);
+		str = g_strdup_printf ("GOE");
+		g_array_append_val (legend, str);
+		linetype = 4;
+		g_array_append_val (lt, linetype);
 
-			/* Poisson */
-			uid = 2;
-			g_array_append_val (uids, uid);
-			if ((showlegend) && (glob->spectral->view == SPECTRAL_WEYL))
-				str = g_strdup_printf ("Weyl fit");
-			else if (showlegend)
-				str = g_strdup_printf ("Poisson");
-			else
-				str = "";
-			g_array_append_val (legend, str);
-			linetype = 3;
-			g_array_append_val (lt, linetype);
-
-			/* GOE */
-			uid = 3;
-			g_array_append_val (uids, uid);
-			if (showlegend)
-				str = g_strdup_printf ("GOE");
-			else
-				str = "";
-			g_array_append_val (legend, str);
-			linetype = 4;
-			g_array_append_val (lt, linetype);
-
-			/* Poisson */
-			uid = 4;
-			g_array_append_val (uids, uid);
-			if (showlegend)
-				str = g_strdup_printf ("GUE");
-			else
-				str = "";
-			g_array_append_val (legend, str);
-			linetype = 2;
-			g_array_append_val (lt, linetype);
-		}
-
-		/* Choose a xlabel */
-		switch (glob->spectral->view)
-		{
-			case SPECTRAL_WEYL:
-				ylabel = g_strdup_printf ("N(f)");
-			case SPECTRAL_FLUC:
-				xlabel = g_strdup_printf ("frequency (GHz)");
-				if (!ylabel)
-					ylabel = g_strdup_printf ("N^{fluc}(f)");
-				break;
-			case SPECTRAL_NND:
-				if (glob->spectral->normalize)
-					ylabel = g_strdup_printf ("P(s)");
-				else
-					ylabel = g_strdup_printf ("N(s)");
-			case SPECTRAL_INT_NND:
-				xlabel = g_strdup_printf ("spacing");
-				if (!ylabel)
-				{
-					if (glob->spectral->normalize)
-						ylabel = g_strdup_printf ("{/Symbol=18 \362}P(s)");
-					else
-						ylabel = g_strdup_printf ("{/Symbol=18 \362}N(s)");
-				}
-				break;
-			case SPECTRAL_S2:
-				ylabel = g_strdup_printf ("{/Symbol S}(l)");
-			case SPECTRAL_D3:
-				xlabel = g_strdup_printf ("length");
-				if (!ylabel)
-					ylabel = g_strdup_printf ("{/Symbol D}(l)");
-				break;
-			case SPECTRAL_LENGTH:
-				xlabel = g_strdup_printf ("length (m)");
-				ylabel = g_strdup_printf ("intensity");
-				break;
-		}
-
-		if (gtk_check_menu_item_get_active (
-			GTK_CHECK_MENU_ITEM (
-				glade_xml_get_widget (glob->spectral->xmlspect, "spectral_log_scale")
-			)))
-		{
-			ylabel2 = g_strdup_printf ("%s (dB)", ylabel);
-			g_free (ylabel);
-			ylabel = ylabel2;
-		}
-
-		/* Export! */
-		if (!gtk_spect_vis_export_ps (spectvis, uids, filename, title, 
-					 xlabel, ylabel, footer, 
-					 legend, pos, lt))
-		{
-			dialog_message ("Error: Could not create graph. Is gnuplot installed on your system?");
-			if (filename[0] != '|')
-				unlink (filename);
-		}
-
-		/* Tidy up */
-		g_array_free (uids, TRUE);
-		g_array_free (legend, TRUE);
-		g_array_free (lt, TRUE);
-		g_free (xlabel);
-		g_free (ylabel);
+		/* Poisson */
+		uid = 4;
+		g_array_append_val (uids, uid);
+		str = g_strdup_printf ("GUE");
+		g_array_append_val (legend, str);
+		linetype = 2;
+		g_array_append_val (lt, linetype);
 	}
 
-	gtk_widget_destroy (dialog);
-	statusbar_message ("Postscript export successful");
+	/* Choose a xlabel */
+	switch (glob->spectral->view)
+	{
+		case SPECTRAL_WEYL:
+			ylabel = g_strdup_printf ("N(f)");
+		case SPECTRAL_FLUC:
+			xlabel = g_strdup_printf ("frequency (GHz)");
+			if (!ylabel)
+				ylabel = g_strdup_printf ("N^{fluc}(f)");
+			break;
+		case SPECTRAL_NND:
+			if (glob->spectral->normalize)
+				ylabel = g_strdup_printf ("P(s)");
+			else
+				ylabel = g_strdup_printf ("N(s)");
+		case SPECTRAL_INT_NND:
+			xlabel = g_strdup_printf ("spacing");
+			if (!ylabel)
+			{
+				if (glob->spectral->normalize)
+					ylabel = g_strdup_printf ("{/Symbol=18 \362}P(s)");
+				else
+					ylabel = g_strdup_printf ("{/Symbol=18 \362}N(s)");
+			}
+			break;
+		case SPECTRAL_S2:
+			ylabel = g_strdup_printf ("{/Symbol S}(l)");
+		case SPECTRAL_D3:
+			xlabel = g_strdup_printf ("length");
+			if (!ylabel)
+				ylabel = g_strdup_printf ("{/Symbol D}(l)");
+			break;
+		case SPECTRAL_LENGTH:
+			xlabel = g_strdup_printf ("length (m)");
+			ylabel = g_strdup_printf ("intensity");
+			break;
+	}
+
+	if (gtk_check_menu_item_get_active (
+		GTK_CHECK_MENU_ITEM (
+			glade_xml_get_widget (glob->spectral->xmlspect, "spectral_log_scale")
+		)))
+	{
+		ylabel2 = g_strdup_printf ("%s (dB)", ylabel);
+		g_free (ylabel);
+		ylabel = ylabel2;
+	}
+
+	/* Export! */
+	graph = GTK_SPECTVIS (glade_xml_get_widget (glob->spectral->xmlspect, "spectral_spectvis"));
+	if (!gtk_spect_vis_export_ps (graph, uids, selected_filename, selected_title, 
+				 xlabel, ylabel, selected_footer, 
+				 legend, selected_legend, lt))
+	{
+		dialog_message ("Error: Could not create graph. Is gnuplot installed on your system?");
+		if (selected_filename[0] != '|')
+			unlink (selected_filename);
+	}
+
+	/* Tidy up */
+	g_array_free (uids, TRUE);
+	g_array_free (legend, TRUE);
+	g_array_free (lt, TRUE);
+	g_free (xlabel);
+	g_free (ylabel);
+
+	g_free (selected_filename);
+	g_free (selected_title);
+	g_free (selected_footer);
 
 	return TRUE;
 }

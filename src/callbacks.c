@@ -25,6 +25,7 @@
 #include "fcomp.h"
 #include "merge.h"
 #include "loadsave.h"
+#include "correl.h"
 
 extern GlobalData *glob;
 extern GladeXML *gladexml;
@@ -983,6 +984,17 @@ void on_manual_activate (GtkMenuItem *menuitem, gpointer user_data)
 void on_merge_resonancelists_activate (GtkMenuItem *menuitem, gpointer user_data)
 {
 	merge_open_win ();
+}
+
+void on_correlation_function_activate (GtkMenuItem *menuitem, gpointer user_data)
+{
+	if (!glob->data) 
+	{
+		dialog_message ("Please import some spectrum data first.");
+		return;
+	}
+
+	correl_open_win ();
 }
 
 void on_comment_activate (GtkMenuItem *menuitem, gpointer user_data)

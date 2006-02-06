@@ -228,6 +228,14 @@ typedef struct
 
 typedef struct
 {
+	GladeXML *xmlcorrel;		/* GladeXML struct of correlation function window */
+	gdouble min;			/* Start frequency in Hz */
+	gdouble max;			/* Stop frequency in Hz */
+	DataVector *data;		/* Graph data */
+} CorrelWin;
+
+typedef struct
+{
 	DataVector *data;		/* The complex measured data plus frequencies */
 	DataVector *theory;		/* The complex theory data */
 	gdouble noise;			/* Stddev of data due to thermal noise */
@@ -260,6 +268,7 @@ typedef struct
 	GladeXML *commentxml;		/* GladeXML struct for the comment dialog */
 	gchar *comment;			/* For arbitrary comments of the gwf section */
 	SMPdata *smp;			/* Structure for SMP parallel computation */
+	CorrelWin *correl;		/* Structure for the correlation function window */
 } GlobalData;
 
 #endif
