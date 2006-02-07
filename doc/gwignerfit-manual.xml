@@ -3,7 +3,7 @@
   "http://www.oasis-open.org/docbook/xml/4.4/docbookx.dtd" [
 <!--"/usr/share/sgml/docbook/xml-dtd-4.4-1.0-26/docbookx.dtd" [ -->
 	<!ENTITY legal SYSTEM "legal.xml">
-	<!ENTITY appversion "2006-02-01">
+	<!ENTITY appversion "2006-02-07">
 	<!ENTITY manrevision "1.0">
 	<!ENTITY date "August 2005">
 	<!ENTITY app "<application>GWignerFit</application>">
@@ -537,6 +537,16 @@
 						fluctuations in the time domain and to take them into account as
 						additional Fourier components. See <xref linkend="gwf-fcomp" /> for
 						more detailed explanations.</para>
+				</listitem>
+			</varlistentry>
+			<varlistentry>
+				<term><guimenuitem>Correlation function</guimenuitem></term>
+				<listitem>
+					<para>This function calculates the so called correlation function of
+						the currently active main dataset. It provides the correlation
+						length and additionally some further statistical data for the
+						spectrum. Further explanations can be found in <xref
+						linkend="gwignerfit-spectrum-stat" />.</para>
 				</listitem>
 			</varlistentry>
 		</variablelist>
@@ -1128,8 +1138,9 @@
 
 					<itemizedlist>
 						<listitem>
-							<para><guilabel>Postscript filename</guilabel>:
-								The filename of the postscript file, you can use the
+							<para><guilabel>Path</guilabel> and <guilabel>Filename</guilabel>:
+								This gives the filename of the postscript file to be created
+								divided into its path and the filename itself. You can use the
 								<guibutton>Select</guibutton> button to bring up a file
 								selector dialog to select a filename.
 							</para>
@@ -2910,323 +2921,528 @@
 	</sect2>
 </sect1>
 
-<!-- ============= Spectral statistics ======================= -->
-<sect1 id="gwignerfit-spectral">
-	<title>Spectral statistics</title>
-	<para>This section will explain how to examine statistical properties of a
-		given set of resonance frequencies (or widths) using &app;. Those
-		statistics are called <emphasis>spectral statistics</emphasis> because the
-		resonances represent the spectrum of the Laplace operator that describes
-		the electrical field inside the cavity.</para>
+<!-- ============= Statistics ================================ -->
+<sect1 id="gwignerfit-statistics">
+	<title>Statistics</title>
+	<para>One primary method in the field of quantum chaos is the statistical
+		analysis of the data at hand. Statistics can be done on a large variety of
+		raw data. &app; tries to help you with two common types of analyses:
+		<emphasis>spectrum statistics</emphasis> and <emphasis>spectral
+		statistics</emphasis>. The former deals with the measured spectrum itself
+		and is explained in <xref linkend="gwignerfit-spectrum-stat" />, the latter
+		analyzes a set of resonances that have been deduced from a spectrum. The
+		module for spectral statistics is described in 
+		<xref linkend="gwignerfit-spectral" />.
+	</para>
 
-	<para>&app; can evaluate the following statistical measures (refer to
-		<xref linkend="gwf-spectral-view-menu" /> to learn how to choose the
-		statistic to be shown):</para>
+	<sect2 id="gwignerfit-spectrum-stat">
+		<title>Spectrum Statistics &mdash; The Correlation Function</title>
+		<para>A very direct approach to the analysis of a spectrum is to 
+			analyze just the spectrum itself. One such tool for the analysis of a
+			spectrum is the <emphasis>correlation function</emphasis>. Its definition
+			is given in <xref linkend="eqn-correl" />. The constant <emphasis
+			role="italic">N</emphasis> is chosen in such a way that <emphasis
+			role="italic">C</emphasis>(0)=1
+			<!--
+			<inlineequation>
+				<alt role="tex">$C(0) = 1$</alt>
+				<graphic fileref="figures/eqn_correl_norm.png" />
+			</inlineequation>
+			-->
+			holds. The square of the correlation function's absolute value should
+			have &mdash; for transmission spectra &mdash; a Lorentz like shape.
+			The value of <emphasis role="italic">&epsiv;</emphasis> where this
+			squared function value is equal to 1/2, that is 
+			<inlineequation>
+				<alt role="tex">$|C(\epsilon)|^2 = 1/2$</alt>
+				<graphic fileref="figures/eqn_correl_len.png" />
+			</inlineequation>,
+			is being called <emphasis>correlation length</emphasis>.
+		</para>
+		<equation id="eqn-correl">
+			<title>The correlation function</title>
+			<alt role="tex">
+				\[
+				C_{ab}(\epsilon) = \frac{1}{N}\, \int_{\nu_{\rm min}}^{\nu_{\rm max}}\,
+					S_{ab}(\nu) S_{ab}^\ast(\nu+\epsilon)\, {\rm d}\nu
+				\]
+			</alt>
+			<graphic fileref="figures/eqn_correl.png"/>
+		</equation>
 
-	<itemizedlist>
-		<listitem>
-			<para>Staircase: This is the most fundamental level statistic. The number
-				of levels up to a certain frequency is given as a function of this
-				frequency. The Weyl formula says that the level density for a two
-				dimensional system should increase like a polynomial of second
-				order. &app; calculates the best fit polynomial, adds it to the
-				graph and displays the corresponding Weyl coefficients.</para>
-		</listitem>
-		<listitem>
-			<para>Fluctuations: If you subtract the Weyl curve from the staircase
-				function you will get a function fluctuating around zero. Missing
-				levels will become visible as jumps in this graph.</para>
-		</listitem>
-		<listitem>
-			<para>NND: This is the nearest neighbor distribution which is a
-				statistic of the spacings between adjacent resonance frequencies (that
-				have been unfolded to a mean spacing of unity). The spacings are binned
-				and displayed as a histogram. Random matrix theory provides predictions
-				for Poisson, GOE and GUE like spectra, those can be displayed,
-				too.</para>
-		</listitem>
-		<listitem>
-			<para>Integrated NND: As the name already suggests, this is the
-				integrated version of the NND. Think of it as a information of how many
-				spacings are smaller than the value given on the abscissa. The
-				integrated random matrix predictions can again be included.</para>
-		</listitem>
-		<listitem>
-			<para>Sigma 2: This is one possible measure for correlations on larger
-				scales. It expresses the variance of the number of levels (the
-				ordinate) in intervals of a certain length (the abscissa). This is a
-				rather complex measure and may take some time to calculate depending on
-				the speed of your computer and the number of resonances in your
-				dataset. Poisson, GOE and GUE graphs are available.</para>
-		</listitem>
-		<listitem>
-			<para>Delta 3: The statistical test (also known as Dyson-Metha
-				statistics) measures the long-range correlations, the rigidity of the
-				graph, and thus provides similar information as the Sigma 2 statistics.
-				The idea behind Delta 3 is to approximate the unfolded staircase
-				function (which should be a straight line) by segments of straight
-				lines of a given length (again the abscissa). The average root mean
-				square error of this approximation is the Delta 3 value. A Sigma 2
-				value can be converted into the Delta 3 measure with a simple integral.
-				The theoretical predictions are obtained by numerically integrating the
-				Sigma 2 predictions.</para>
-		</listitem>
-		<listitem>
-			<para>Length spectrum: This is the Fourier-transformed spectrum of the
-				eigenvalue density (where the trivial Weyl contribution has already
-				been subtracted). Every peak in this spectrum corresponds according to
-				Gutzwiller's trace formula to a classical periodic orbit. The abscissa
-				gives the length of the orbit in meters.</para>
-		</listitem>
-		<listitem>
-			<para>Widths histogram: In contrast to the statistics described till
-				now, this histogram does statistics with the resonance
-				<emphasis>widths</emphasis>. The resonance widths are sorted into a
-				given number of bins. The graph displays how many widths ended up in
-				which bin. The abscissa gives the width in MHz. The ordinate can either
-				show the total number of widths in each bin (that is without
-				normalization) or the fraction of all resonances considered (the
-				normalized case).</para>
-		</listitem>
-	</itemizedlist>
-
-	<sect2 id="gwf-spectral-usage">
-		<title>How to use the spectral statistics window</title>
-		<para>You will need to add at least four resonances to your resonance list
-			(see <xref linkend="gwf-find-res" />) before you can use the spectral
-			statistics module. To activate this function and to open the spectral
-			statistics window choose
+		<para>To calculate and visualize the correlation function select
 			<menuchoice>
 				<guimenu>Analyze</guimenu>
-				<guimenuitem>Spectral statistics</guimenuitem>
+				<guimenuitem>Correlation function</guimenuitem>
 			</menuchoice>
-			from the menubar of the main window or type
-			<keycombo>
-				<keycap>Ctrl</keycap>
-				<keycap>C</keycap>
-			</keycombo>.
-			<figure id="spectral-win">
-				<title>The spectral statistics window</title>
-				<screenshot>
-					<mediaobject>
-						<imageobject><imagedata
-								fileref="figures/gwf_spectral.eps" scale="50" format="EPS"/>
-						</imageobject>
-						<imageobject><imagedata
-								fileref="figures/gwf_spectral.png" format="PNG"/>
-						</imageobject>
-						<textobject>
-							<phrase>Shows the spectral statistics window with the default view,
-								the staircase function.</phrase>
-						</textobject>
-					</mediaobject>
-				</screenshot>
-			</figure>
-			Up comes a new window which should look similar to <xref
-			linkend="spectral-win" />. The red graph is the staircase function of your
-			dataset and the blue one is the fitted Weyl function. At the bottom of the
-			window there are three text-entries that display the current coefficients
-			of the Weyl function: The area, the perimeter and a constant offset. The
-			spinbutton labeled <guilabel># 1st res</guilabel> allows you to specify
-			the level number of the resonance with the lowest frequency. If the first
-			frequency	of your considered resonances belongs to  the ground state of
-			your system this entry should display "1". If the lowest frequency
-			represents the first excited state you should set this to "2", and so on.
-			You can change the value of each entry be entering a new number and
-			pressing <keycap>Enter</keycap> or you can use the up and down arrows of
-			the spinbutton. To get back to a best-fit Weyl function press the
-			<guibutton>Fit Weyl</guibutton> button.
+			from the menubar of the main window. The new window will look similar to
+			the one shown in <xref linkend="correl-win" />. It is divided into four
+			parts: A menubar, an area for the graph, a region for the frequency range
+			settings and a part to display the results of the analysis.
 		</para>
 
-		<figure id="spectral-bottom">
-			<title>The alternate bottom of the spectral statistics window</title>
+		<figure id="correl-win">
+			<title>The correlation function window</title>
 			<screenshot>
 				<mediaobject>
 					<imageobject><imagedata
-							fileref="figures/gwf_bottom.eps" scale="50" format="EPS"/>
+							fileref="figures/gwf_correl_window.eps" scale="50" format="EPS"/>
 					</imageobject>
 					<imageobject><imagedata
-							fileref="figures/gwf_bottom.png" format="PNG"/>
+							fileref="figures/gwf_correl_window.png" format="PNG"/>
 					</imageobject>
 					<textobject>
-						<phrase>If the statistics type is not set to "Staircase" or
-							"Fluctuations" the bottom of the spectral statistics window will
-							look like this.
-						</phrase>
+						<phrase>Shows the correlation function window.</phrase>
 					</textobject>
 				</mediaobject>
 			</screenshot>
 		</figure>
 
-		<para>The entries described in the last paragraph are only available, if the
-			graph type is set to "Staircase" or "Fluctuations". The bottom of the
-			spectral statistics window will change if one of the other possible
-			statistics is selected (see <xref linkend="spectral-bottom" />). The
-			leftmost entry shows the <guilabel>Number of bins</guilabel> for the NND
-			histogram, it is disabled for the other statistics. You can choose whether
-			the NND and the Integrated NND graphs are to be normalized to one with the
-			<guilabel>normalize</guilabel> checkbox. If you disable it, the ordinate
-			will display the total number of resonances in each bin or up to a certain
-			frequency.
-		</para>
+		<variablelist>
+			<varlistentry>
+				<term><guimenuitem>The menubar</guimenuitem></term>
+				<listitem>
+					<para>It gives you access to fundamental functions of this window to
+						export your data or to change the view of the graph. See <xref
+						linkend="gwf-correl-menubar" /> for an explanation of the menu
+						entries.
+					</para>
+				</listitem>
+			</varlistentry>
+			<varlistentry>
+				<term><guimenuitem>The correlation graph</guimenuitem></term>
+				<listitem>
+					<para>This graph displays the <emphasis>square</emphasis> of the
+						correlation function's absolute value (see <xref
+						linkend="eqn-correl" />). The abscissa gives the value of
+						<emphasis role="italic">&epsiv;</emphasis> in MHz, the ordinate
+						reads the corresponding function's value. You can choose between a
+						normal scale (the default) or a logarithmic scale by pressing
+						either <keycap>n</keycap> or <keycap>l</keycap> (cf. <xref
+						linkend="gwf-correl-menubar" />).
+				</para>
+				</listitem>
+			</varlistentry>
+			<varlistentry>
+				<term><guimenuitem>The frequency range area</guimenuitem></term>
+				<listitem>
+					<para>The integral of the correlation function has to be taken over a
+						certain frequency range. The default range is taken from the Min
+						and Max frequencies of the main window. You can modify this range
+						here. Input the new boundaries into the <guilabel>Start
+						frequency</guilabel> and <guilabel>Stop frequency</guilabel> fields
+						(in GHz). Each input operation has to be ended by pressing
+						<keycap>Enter</keycap> which will cause the changes to be adopted
+						and the the graph to be recalculated.</para>
+					<para>If many datapoints are in the selected frequency range the
+						calculation can become very time consuming. The
+						<guilabel>Granularity</guilabel> setting has been introduced to
+						accommodate for this. If this value is set to 1 every single data
+						point is taken into account for the calculation. If it is set to 2
+						only every other datapoint is considered and so on. &app; sets this
+						to a default value so that the first calculation will not take
+						unnecessarily much time. Updates to the
+						<guilabel>Granularity</guilabel> do not take effect at once. Press
+						<keycap>Enter</keycap> in one of the frequency range fields to
+						update the calculation.
+					</para>
+				</listitem>
+			</varlistentry>
+			<varlistentry>
+				<term><guimenuitem>Numerical analysis results</guimenuitem></term>
+				<listitem>
+					<para>This part provides you a) with the <guilabel>Correlation
+						length</guilabel> value and b) with further <guilabel>Spectrum
+						averages</guilabel>. The correlation length is the frequency where
+						the above graph is equal to 1/2. As the correlation function can
+						for a discrete dataset only be evaluated at discrete points, &app;
+						interpolates the correlation length from the two closest lying
+						points on the graph. The spectrum averages provide some very basic
+						information on the spectrum in your selected frequency range. The
+						angle brackets denote the average over all points. Those averages
+						are not influenced by the granularity value, all datapoints are
+						always included.
+					</para>
+				</listitem>
+			</varlistentry>
+		</variablelist>
 
-		<para>There are predictions for most of the statistical measures. &app; can
-			overlay them into the graph so that they will provide a means for
-			statistical tests. You can select which predictions are to be included with
-			the checkboxes behind the label <guilabel>Include theory predictions
-			for</guilabel>. The colors of the checkboxes are used in the graph for
-			the corresponding plot.
-		</para>
-
-		<para>&app; keeps the graphs of the spectral statistics window always up to
-			date. This means that every change to your resonance list or the number
-			of resonances to be taken into account have an immediate effect on the
-			statistics graph. This is especially useful in combination with the
-			"Fluctuations" graph as you can see online where a resonance may be
-			missing in your resonance list.
-		</para>
-	</sect2>
-
-	<sect2 id="gwf-spectral-menubar">
-		<title>The Menubar of the Spectral Statistics Window</title>
-		<para>This section will explain the different entries of the menubar of the
-			spectral statistics window.</para>
-
-		<sect3 id="gwf-spectral-file-menu">
-			<title>The spectral statistics <guimenu>File</guimenu> menu</title>
-
-			<para>The <guimenu>File</guimenu> menu contains the following
-			entries:</para>
-
+		<sect3 id="gwf-correl-menubar">
+			<title>The Menubar of the Correlation Function Window</title>
+			<para>The correlation window's menubar has only a fistful of entries.
+				They will be explained in this section. First, the
+				<guimenu>File</guimenu> menu:
+			</para>
+			
 			<variablelist>
 				<varlistentry>
 					<term><guimenuitem>Export</guimenuitem></term>
 					<listitem>
-						<para>The main task of the spectral statistics module is to
-							calculate several statistical measures for your frequency
-							dataset. You can export the datapoints of the resulting graph
-							here or you can create a postscript of the whole graph.
+						<para>This menuitem contains a submenu with the two menuitems
+							<guimenuitem>Graph as postscript...</guimenuitem> and
+							<guimenuitem>Statistical data...</guimenuitem>. Use them to
+							make a postscript from the current graph (see <xref
+							linkend="gwf-export" /> for further details on the postscript
+							export) or to export the datapoints of the graph into a datafile.
+							The statistical data will also include the spectrum average
+							values at the beginning of the file.
 						</para>
-
-						<para>This menu has the following submenus:</para>
-
-						<itemizedlist>
-							<listitem>
-								<para><guimenuitem>Statistical data...</guimenuitem>:
-									This exports the datapoints (that is the red curve in the
-									graph view) of the currently displayed statistic into a file.
-									&app; will add a descriptive header to the file that explains
-									what statistic has been used and includes the crucial
-									parameters such as Weyl coefficients, number of resonances
-									and frequency range.
-								</para>
-							</listitem>
-							<listitem>
-								<para><guimenuitem>Graph as postscript...</guimenuitem>:
-									Saves the current view of the statistics graph as a
-									postscript file. For a description of the export dialog see
-									<xref linkend="gwf-export-ps" /> (the only difference is that
-									you cannot include overlays here, as the statistics module
-									does not know such a thing).
-								</para>
-							</listitem>
-						</itemizedlist>
 					</listitem>
 				</varlistentry>
 				<varlistentry>
-					<term><guimenuitem>Close window</guimenuitem></term>
+					<term><guimenuitem>Close</guimenuitem></term>
 					<listitem>
-						<para>Closes the spectral statistics window, &app; will keep on
-							running.
+						<para>Use this to close the correlation function window. &app;
+							itself will keep on running.
 						</para>
 					</listitem>
 				</varlistentry>
 			</variablelist>
-		</sect3>
 
-		<sect3 id="gwf-spectral-selection-menu">
-			<title>The spectral statistics <guimenu>Selection</guimenu> menu</title>
-
-			<para>The <guimenu>Selection</guimenu> menu allows you to specify what
-				resonances are to be taken into account for the statistical analysis.
-				It contains the following entries:</para>
-
-			<variablelist>
-				<varlistentry>
-					<term><guimenuitem>All resonances</guimenuitem></term>
-					<listitem>
-						<para>The resonance frequency of each resonance in the main
-							resonance list are used for the statistical analysis.
-						</para>
-					</listitem>
-				</varlistentry>
-				<varlistentry>
-					<term><guimenuitem>Windowed resonances</guimenuitem></term>
-					<listitem>
-						<para>All resonances whose frequencies are within the selected Min-
-							and Max-frequency window are included in the analysis.
-						</para>
-					</listitem>
-				</varlistentry>
-				<varlistentry>
-					<term><guimenuitem>Checked resonances</guimenuitem></term>
-					<listitem>
-						<para>Only those resonance frequencies whose checkboxes are checked
-							(that is, they are considered as free parameters for a fit) are
-							to be taken into account.
-						</para>
-					</listitem>
-				</varlistentry>
-			</variablelist>
-		</sect3>
-
-		<sect3 id="gwf-spectral-view-menu">
-			<title>The spectral statistics <guimenu>View</guimenu> menu</title>
-
-			<para>The <guimenu>View</guimenu> has two tasks. You can change the
-				appearance of the graph (logarithmic or normal scale) and the type of
-				spectral analysis that should be performed.</para>
+			<para>And now the <guimenu>View</guimenu> menu:</para>
 
 			<variablelist>
 				<varlistentry>
 					<term><guimenuitem>Normal scale</guimenuitem></term>
 					<listitem>
-						<para>Everything on the statistics graph will be displayed in
-							normal scale.
+						<para>If this option is active the ordinate axis is in normal
+							scale.
 						</para>
 					</listitem>
 				</varlistentry>
 				<varlistentry>
-					<term><guimenuitem>Logarithmic scale</guimenuitem></term>
+					<term><guimenuitem>Log scale</guimenuitem></term>
 					<listitem>
-						<para>This option will display cause the graph to be in logarithmic
-							scale which is similar to the dB scale of the main graph.
-							However, the absolute values are <emphasis>not</emphasis> squared
-							before taking the logarithm. This means that there is a factor of
-							two with respect of the "normal" dB scale.
-						</para>
-					</listitem>
-				</varlistentry>
-				<varlistentry>
-					<term><guimenuitem>Staircase</guimenuitem>,
-						    <guimenuitem>Fluctuations</guimenuitem>,
-								<guimenuitem>NND</guimenuitem>,
-								<guimenuitem>Integrated NND</guimenuitem>,
-								<guimenuitem>Sigma 2</guimenuitem>,
-								<guimenuitem>Delta 3</guimenuitem> and
-								<guimenuitem>Length spectrum</guimenuitem>
-								<guimenuitem>Widths histogram</guimenuitem>
-					</term>
-					<listitem>
-						<para>&app; will calculate and display the selected spectral
-							measure. See the beginning of <xref linkend="gwignerfit-spectral" />
-							for an explanation of the different statistical measures.
+						<para>Activate this item to change the ordinate of the graph to a
+							logarithmic scale. Unlike the logarithmic scale of the main
+							graph, the function value is <emphasis>not</emphasis> squared
+							before the conversion into dB takes place, that is an absolute
+							value of 0.5 is converted into roughly -3&nbsp;dB.
 						</para>
 					</listitem>
 				</varlistentry>
 			</variablelist>
+			
+		</sect3>
+	</sect2>
+
+	<sect2 id="gwignerfit-spectral">
+		<title>Spectral Statistics</title>
+		<para>This section will explain how to examine statistical properties of a
+			given set of resonance frequencies (or widths) using &app;. Those
+			statistics are called <emphasis>spectral statistics</emphasis> because
+			the resonances represent the spectrum of the Laplace operator that
+			describes the electrical field inside the cavity.</para>
+
+		<para>&app; can evaluate the following statistical measures (refer to
+			<xref linkend="gwf-spectral-view-menu" /> to learn how to choose the
+			statistic to be shown):</para>
+
+		<itemizedlist>
+			<listitem>
+				<para>Staircase: This is the most fundamental level statistic. The
+					number of levels up to a certain frequency is given as a function of
+					this frequency. The Weyl formula says that the level density for a
+					two dimensional system should increase like a polynomial of second
+					order. &app; calculates the best fit polynomial, adds it to the
+					graph and displays the corresponding Weyl coefficients.</para>
+			</listitem>
+			<listitem>
+				<para>Fluctuations: If you subtract the Weyl curve from the staircase
+					function you will get a function fluctuating around zero. Missing
+					levels will become visible as jumps in this graph.</para>
+			</listitem>
+			<listitem>
+				<para>NND: This is the nearest neighbor distribution which is a
+					statistic of the spacings between adjacent resonance frequencies (that
+					have been unfolded to a mean spacing of unity). The spacings are binned
+					and displayed as a histogram. Random matrix theory provides predictions
+					for Poisson, GOE and GUE like spectra, those can be displayed,
+					too.</para>
+			</listitem>
+			<listitem>
+				<para>Integrated NND: As the name already suggests, this is the
+					integrated version of the NND. Think of it as a information of how many
+					spacings are smaller than the value given on the abscissa. The
+					integrated random matrix predictions can again be included.</para>
+			</listitem>
+			<listitem>
+				<para>Sigma 2: This is one possible measure for correlations on larger
+					scales. It expresses the variance of the number of levels (the
+					ordinate) in intervals of a certain length (the abscissa). This is a
+					rather complex measure and may take some time to calculate depending on
+					the speed of your computer and the number of resonances in your
+					dataset. Poisson, GOE and GUE graphs are available.</para>
+			</listitem>
+			<listitem>
+				<para>Delta 3: The statistical test (also known as Dyson-Metha
+					statistics) measures the long-range correlations, the rigidity of the
+					graph, and thus provides similar information as the Sigma 2 statistics.
+					The idea behind Delta 3 is to approximate the unfolded staircase
+					function (which should be a straight line) by segments of straight
+					lines of a given length (again the abscissa). The average root mean
+					square error of this approximation is the Delta 3 value. A Sigma 2
+					value can be converted into the Delta 3 measure with a simple integral.
+					The theoretical predictions are obtained by numerically integrating the
+					Sigma 2 predictions.</para>
+			</listitem>
+			<listitem>
+				<para>Length spectrum: This is the Fourier-transformed spectrum of the
+					eigenvalue density (where the trivial Weyl contribution has already
+					been subtracted). Every peak in this spectrum corresponds according to
+					Gutzwiller's trace formula to a classical periodic orbit. The abscissa
+					gives the length of the orbit in meters.</para>
+			</listitem>
+			<listitem>
+				<para>Widths histogram: In contrast to the statistics described till
+					now, this histogram does statistics with the resonance
+					<emphasis>widths</emphasis>. The resonance widths are sorted into a
+					given number of bins. The graph displays how many widths ended up in
+					which bin. The abscissa gives the width in MHz. The ordinate can either
+					show the total number of widths in each bin (that is without
+					normalization) or the fraction of all resonances considered (the
+					normalized case).</para>
+			</listitem>
+		</itemizedlist>
+
+		<sect3 id="gwf-spectral-usage">
+			<title>How to use the Spectral Statistics Window</title>
+			<para>You will need to add at least four resonances to your resonance list
+				(see <xref linkend="gwf-find-res" />) before you can use the spectral
+				statistics module. To activate this function and to open the spectral
+				statistics window choose
+				<menuchoice>
+					<guimenu>Analyze</guimenu>
+					<guimenuitem>Spectral statistics</guimenuitem>
+				</menuchoice>
+				from the menubar of the main window or type
+				<keycombo>
+					<keycap>Ctrl</keycap>
+					<keycap>C</keycap>
+				</keycombo>.
+				<figure id="spectral-win">
+					<title>The spectral statistics window</title>
+					<screenshot>
+						<mediaobject>
+							<imageobject><imagedata
+									fileref="figures/gwf_spectral.eps" scale="50" format="EPS"/>
+							</imageobject>
+							<imageobject><imagedata
+									fileref="figures/gwf_spectral.png" format="PNG"/>
+							</imageobject>
+							<textobject>
+								<phrase>Shows the spectral statistics window with the default view,
+									the staircase function.</phrase>
+							</textobject>
+						</mediaobject>
+					</screenshot>
+				</figure>
+				Up comes a new window which should look similar to <xref
+				linkend="spectral-win" />. The red graph is the staircase function of your
+				dataset and the blue one is the fitted Weyl function. At the bottom of the
+				window there are three text-entries that display the current coefficients
+				of the Weyl function: The area, the perimeter and a constant offset. The
+				spinbutton labeled <guilabel># 1st res</guilabel> allows you to specify
+				the level number of the resonance with the lowest frequency. If the first
+				frequency	of your considered resonances belongs to  the ground state of
+				your system this entry should display "1". If the lowest frequency
+				represents the first excited state you should set this to "2", and so on.
+				You can change the value of each entry be entering a new number and
+				pressing <keycap>Enter</keycap> or you can use the up and down arrows of
+				the spinbutton. To get back to a best-fit Weyl function press the
+				<guibutton>Fit Weyl</guibutton> button.
+			</para>
+
+			<figure id="spectral-bottom">
+				<title>The alternate bottom of the spectral statistics window</title>
+				<screenshot>
+					<mediaobject>
+						<imageobject><imagedata
+								fileref="figures/gwf_bottom.eps" scale="50" format="EPS"/>
+						</imageobject>
+						<imageobject><imagedata
+								fileref="figures/gwf_bottom.png" format="PNG"/>
+						</imageobject>
+						<textobject>
+							<phrase>If the statistics type is not set to "Staircase" or
+								"Fluctuations" the bottom of the spectral statistics window will
+								look like this.
+							</phrase>
+						</textobject>
+					</mediaobject>
+				</screenshot>
+			</figure>
+
+			<para>The entries described in the last paragraph are only available, if the
+				graph type is set to "Staircase" or "Fluctuations". The bottom of the
+				spectral statistics window will change if one of the other possible
+				statistics is selected (see <xref linkend="spectral-bottom" />). The
+				leftmost entry shows the <guilabel>Number of bins</guilabel> for the NND
+				histogram, it is disabled for the other statistics. You can choose whether
+				the NND and the Integrated NND graphs are to be normalized to one with the
+				<guilabel>normalize</guilabel> checkbox. If you disable it, the ordinate
+				will display the total number of resonances in each bin or up to a certain
+				frequency.
+			</para>
+
+			<para>There are predictions for most of the statistical measures. &app; can
+				overlay them into the graph so that they will provide a means for
+				statistical tests. You can select which predictions are to be included with
+				the checkboxes behind the label <guilabel>Include theory predictions
+				for</guilabel>. The colors of the checkboxes are used in the graph for
+				the corresponding plot.
+			</para>
+
+			<para>&app; keeps the graphs of the spectral statistics window always up to
+				date. This means that every change to your resonance list or the number
+				of resonances to be taken into account have an immediate effect on the
+				statistics graph. This is especially useful in combination with the
+				"Fluctuations" graph as you can see online where a resonance may be
+				missing in your resonance list.
+			</para>
 		</sect3>
 
+		<sect3 id="gwf-spectral-menubar">
+			<title>The Menubar of the Spectral Statistics Window</title>
+			<para>This section will explain the different entries of the menubar of the
+				spectral statistics window.</para>
+
+			<sect4 id="gwf-spectral-file-menu">
+				<title>The spectral statistics <guimenu>File</guimenu> menu</title>
+
+				<para>The <guimenu>File</guimenu> menu contains the following
+				entries:</para>
+
+				<variablelist>
+					<varlistentry>
+						<term><guimenuitem>Export</guimenuitem></term>
+						<listitem>
+							<para>The main task of the spectral statistics module is to
+								calculate several statistical measures for your frequency
+								dataset. You can export the datapoints of the resulting graph
+								here or you can create a postscript of the whole graph.
+							</para>
+
+							<para>This menu has the following submenus:</para>
+
+							<itemizedlist>
+								<listitem>
+									<para><guimenuitem>Statistical data...</guimenuitem>:
+										This exports the datapoints (that is the red curve in the
+										graph view) of the currently displayed statistic into a file.
+										&app; will add a descriptive header to the file that explains
+										what statistic has been used and includes the crucial
+										parameters such as Weyl coefficients, number of resonances
+										and frequency range.
+									</para>
+								</listitem>
+								<listitem>
+									<para><guimenuitem>Graph as postscript...</guimenuitem>:
+										Saves the current view of the statistics graph as a
+										postscript file. For a description of the export dialog see
+										<xref linkend="gwf-export-ps" /> (the only difference is that
+										you cannot include overlays here, as the statistics module
+										does not know such a thing).
+									</para>
+								</listitem>
+							</itemizedlist>
+						</listitem>
+					</varlistentry>
+					<varlistentry>
+						<term><guimenuitem>Close window</guimenuitem></term>
+						<listitem>
+							<para>Closes the spectral statistics window, &app; will keep on
+								running.
+							</para>
+						</listitem>
+					</varlistentry>
+				</variablelist>
+			</sect4>
+
+			<sect4 id="gwf-spectral-selection-menu">
+				<title>The spectral statistics <guimenu>Selection</guimenu> menu</title>
+
+				<para>The <guimenu>Selection</guimenu> menu allows you to specify what
+					resonances are to be taken into account for the statistical analysis.
+					It contains the following entries:</para>
+
+				<variablelist>
+					<varlistentry>
+						<term><guimenuitem>All resonances</guimenuitem></term>
+						<listitem>
+							<para>The resonance frequency of each resonance in the main
+								resonance list are used for the statistical analysis.
+							</para>
+						</listitem>
+					</varlistentry>
+					<varlistentry>
+						<term><guimenuitem>Windowed resonances</guimenuitem></term>
+						<listitem>
+							<para>All resonances whose frequencies are within the selected Min-
+								and Max-frequency window are included in the analysis.
+							</para>
+						</listitem>
+					</varlistentry>
+					<varlistentry>
+						<term><guimenuitem>Checked resonances</guimenuitem></term>
+						<listitem>
+							<para>Only those resonance frequencies whose checkboxes are checked
+								(that is, they are considered as free parameters for a fit) are
+								to be taken into account.
+							</para>
+						</listitem>
+					</varlistentry>
+				</variablelist>
+			</sect4>
+
+			<sect4 id="gwf-spectral-view-menu">
+				<title>The spectral statistics <guimenu>View</guimenu> menu</title>
+
+				<para>The <guimenu>View</guimenu> has two tasks. You can change the
+					appearance of the graph (logarithmic or normal scale) and the type of
+					spectral analysis that should be performed.</para>
+
+				<variablelist>
+					<varlistentry>
+						<term><guimenuitem>Normal scale</guimenuitem></term>
+						<listitem>
+							<para>Everything on the statistics graph will be displayed in
+								normal scale.
+							</para>
+						</listitem>
+					</varlistentry>
+					<varlistentry>
+						<term><guimenuitem>Logarithmic scale</guimenuitem></term>
+						<listitem>
+							<para>This option will display cause the graph to be in logarithmic
+								scale which is similar to the dB scale of the main graph.
+								However, the absolute values are <emphasis>not</emphasis> squared
+								before taking the logarithm. This means that there is a factor of
+								two with respect of the "normal" dB scale.
+							</para>
+						</listitem>
+					</varlistentry>
+					<varlistentry>
+						<term><guimenuitem>Staircase</guimenuitem>,
+									<guimenuitem>Fluctuations</guimenuitem>,
+									<guimenuitem>NND</guimenuitem>,
+									<guimenuitem>Integrated NND</guimenuitem>,
+									<guimenuitem>Sigma 2</guimenuitem>,
+									<guimenuitem>Delta 3</guimenuitem> and
+									<guimenuitem>Length spectrum</guimenuitem>
+									<guimenuitem>Widths histogram</guimenuitem>
+						</term>
+						<listitem>
+							<para>&app; will calculate and display the selected spectral
+								measure. See the beginning of <xref linkend="gwignerfit-spectral" />
+								for an explanation of the different statistical measures.
+							</para>
+						</listitem>
+					</varlistentry>
+				</variablelist>
+			</sect4>
+
+		</sect3>
 	</sect2>
 </sect1>
 
@@ -3583,17 +3799,9 @@
 <sect1 id="gwignerfet-bugs">
   <title>Known Bugs and Limitations</title>
 	<para>Though the author has done his best to make &app; a stable application
-		he was till now not able to make this wish come true.</para>
-
-	<para>&app; will crash occasionally. According to Murphy's Law, it is very
-		likely that this will happen at the worst possible moment.</para>
-
-<!--
-	<para>&app; will crash from time to time especially while being in the
-		process of fitting your theory. If you export your &app; window through a
-		network to another computer the probability of a crash seems to
-		increase.</para>
-	-->
+		he was till now not able to make this wish come true. &app; will crash
+		occasionally. According to Murphy's Law, it is very likely that this will
+		happen at the worst possible moment.</para>
 
 	<para>Please make sure to save your work really often and learn how to use
 		the backup function described in <xref linkend="gwf-backup" />.</para>
