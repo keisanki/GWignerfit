@@ -955,9 +955,9 @@ gboolean import_resonance_list (gchar *filename)
 	Resonance *res = NULL;
 	gchar dataline[200];
 	FILE *datafile;
-	gdouble col1, col2, oldcol1, frq, is_in_ghz = 1.0;
+	gdouble col1, col2, col3, col4, col5, oldcol1, is_in_ghz = 1.0;
 	gboolean numbercol = FALSE;
-	gint numres, i;
+	gint numres, i, columncount, oldcolumncount;
 
 	if (!filename)
 		return FALSE;
@@ -971,6 +971,7 @@ gboolean import_resonance_list (gchar *filename)
 	numres = 0;
 	oldcol1 = -1.0;
 	col2 = 0.0;
+	oldcolumncount = 0;
 	while (!feof (datafile)) {
 		if (!(fgets (dataline, 199, datafile)))
 			continue;
@@ -978,17 +979,50 @@ gboolean import_resonance_list (gchar *filename)
 		if ((dataline[0] == '#') || (dataline[0] == '\n') || (dataline[0] == '\r'))
 			continue;
 
-		if (sscanf (dataline, "%lf %lf", &col1, &col2) == 0) 
+		numres++;
+		columncount = sscanf (dataline, "%lf %lf %lf %lf %lf", &col1, &col2, &col3, &col4, &col5);
+		if ((oldcolumncount) && (columncount != oldcolumncount))
 		{
-			/* A line without data and not a comment */
+			/* Number of columns changed */
 			fclose (datafile);
-			dialog_message ("Error: Could not parse dataset #%d.", numres+1);
+			dialog_message ("Error: Could not determine file format, number of columns is not constant.");
 			return FALSE;
-		} else {
-			numres++;
+		}
+		oldcolumncount = columncount;
+		
+		switch (columncount)
+		{
+			case 1: 
+				/* Only one column with the frequency */
+				if (col1 < 200)
+					is_in_ghz = 1e9;
+				break;
+			case 2:
+				/* ID plus frequency */
+				if (oldcol1 >= 0)
+				{
+					if ((col1 == oldcol1 + 1) || (col1 == oldcol1))
+						/* First column contains number of resonance */
+						numbercol = TRUE;
+					else if (numbercol)
+					{
+						/* What is this first column? */
+						fclose (datafile);
+						dialog_message ("Error: Could not determine format of 1st column.");
+						return FALSE;
+					}
+				}
 
-			if ((oldcol1 >= 0) && (col2))
-			{
+				if ((((numbercol) && (col2 < 200)) || ((!numbercol) && (col1 < 200))) && (numres > 1))
+					is_in_ghz = 1e9;
+				break;
+			case 4:
+				/* Complete resonance information */
+				if (col1 < 200)
+					is_in_ghz = 1e9;
+				break;
+			case 5:
+				/* ID column plus Complete resonance information */
 				if ((col1 == oldcol1 + 1) || (col1 == oldcol1))
 					/* First column contains number of resonance */
 					numbercol = TRUE;
@@ -999,12 +1033,16 @@ gboolean import_resonance_list (gchar *filename)
 					dialog_message ("Error: Could not determine format of 1st column.");
 					return FALSE;
 				}
-			}
-			oldcol1 = col1;
-
-			if ((((numbercol) && (col2 < 200)) || ((!numbercol) && (col1 < 200))) && (numres > 1))
-				is_in_ghz = 1e9;
+				if (col2 < 200)
+					is_in_ghz = 1e9;
+				break;
+			default:
+				/* A line without data and not a comment */
+				fclose (datafile);
+				dialog_message ("Error: Could not parse dataset #%d.", numres);
+				return FALSE;
 		}
+		oldcol1 = col1;
 	}
 
 	rewind (datafile);
@@ -1019,19 +1057,45 @@ gboolean import_resonance_list (gchar *filename)
 		if (i == numres)
 			continue;
 
-		sscanf (dataline, "%lf %lf", &col1, &col2);
-
-		if (numbercol)
-			frq = col2 * is_in_ghz;
-		else
-			frq = col1 * is_in_ghz;
-
 		res = g_new0 (Resonance, 1);
-		res->frq   = frq;
 		res->width = 0.3e6;
 		res->amp   = 1e4;
-		add_resonance_to_list (res);
+		
+		switch (sscanf (dataline, "%lf %lf %lf %lf %lf", &col1, &col2, &col3, &col4, &col5))
+		{
+			case 1: 
+				/* Just one column with frequencies */
+				res->frq = col1 * is_in_ghz;
+				break;
+			case 2:
+				if (numbercol)
+					res->frq = col2 * is_in_ghz;
+				else
+					res->frq = col1 * is_in_ghz;
+				break;
+			case 4:
+				/* Complete resonance information */
+				res->frq   = col1 * is_in_ghz;
+				res->width = col2 * 1e6;
+				res->amp   = col3;
+				res->phase = col4 / 180 * M_PI;
+				break;
+			case 5:
+				/* ID plus Complete resonance information */
+				res->frq   = col2 * is_in_ghz;
+				res->width = col3 * 1e6;
+				res->amp   = col4;
+				res->phase = col5 / 180 * M_PI;
+				break;
+			default:
+				/* A line without data and not a comment */
+				fclose (datafile);
+				g_free (res);
+				dialog_message ("Error: Could not parse dataset #%d.", i+1);
+				return FALSE;
+		}
 
+		add_resonance_to_list (res);
 		i++;
 	}
 

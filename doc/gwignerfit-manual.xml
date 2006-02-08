@@ -3,7 +3,7 @@
   "http://www.oasis-open.org/docbook/xml/4.4/docbookx.dtd" [
 <!--"/usr/share/sgml/docbook/xml-dtd-4.4-1.0-26/docbookx.dtd" [ -->
 	<!ENTITY legal SYSTEM "legal.xml">
-	<!ENTITY appversion "2006-02-07">
+	<!ENTITY appversion "2006-02-08">
 	<!ENTITY manrevision "1.0">
 	<!ENTITY date "August 2005">
 	<!ENTITY app "<application>GWignerFit</application>">
@@ -779,23 +779,40 @@
 				</para>
 			</listitem>
 			<listitem>
-				<para>All lines containing actual data must consist of one or two
-					numbers. If there is only one column of numbers those numbers have to
-					be the resonance frequency in Hz or in GHz (that is the file has just
-					one frequency per line). If there are two columns, the second one has
-					to contain the frequency information. The first one is then expected
-					to consist of integer numbers that increase by one with every line
-					(and thus could be the number of the resonance). &app; will try to
-					outsmart itself and autodetect what format the datafile follows.
+				<para>The resonance information itself may be formatted in several
+					ways. The following column layouts are possible:
+				</para>
+					<itemizedlist>
+						<listitem>
+							<para>&lt;frequency&gt;</para>
+						</listitem>
+						<listitem>
+							<para>&lt;ID&gt; &lt;frequency&gt;</para>
+						</listitem>
+						<listitem>
+							<para>&lt;frequency&gt; &lt;width&gt; &lt;amplitude&gt; &lt;phase&gt;</para>
+						</listitem>
+						<listitem>
+							<para>&lt;ID&gt; &lt;frequency&gt; &lt;width&gt; &lt;amplitude&gt; &lt;phase&gt;</para>
+						</listitem>
+					</itemizedlist>
+				<para>
+					An ID column must consist of integer numbers that increase by one
+					with each line. Frequencies can either be in Hz or in GHz. Widths
+					must be in MHz and phase information must be given in degree. The
+					decimal separator has to be a period. &app; will try to outsmart
+					itself and autodetect what format the datafile follows.
 				</para>
 			</listitem>
 		</itemizedlist>
-		<para>The imported resonances will be added to your resonance list. The
-			width and amplitude parameters will be set to some default value so that
-			the resonances will be visible and a fit will not fail with a numerical
-			exception. &app; will, however, not try to find more sensible values for
-			those parameters, this is left up to you. A resonance frequency list can
-			be imported, too, if there is no main spectrum datafile loaded.
+		<para>The imported resonances will be added to your resonance list. In the
+			case that not all resonance parameters are defined through the imported
+			file, the width, amplitude and phase parameters will be set to some
+			default value so that the resonances will be visible and a fit will not
+			fail with a numerical exception. &app; will, however, not try to find
+			more sensible values for those parameters, this is left up to you. A
+			resonance frequency list can be imported, too, if there is no main
+			spectrum datafile loaded.
 		</para>
 	</sect2>
 
