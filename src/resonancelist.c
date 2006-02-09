@@ -1033,7 +1033,9 @@ gboolean import_resonance_list (gchar *filename)
 					dialog_message ("Error: Could not determine format of 1st column.");
 					return FALSE;
 				}
-				if (col2 < 200)
+				if ((col2 < 200) && (numbercol))
+					is_in_ghz = 1e9;
+				else if (col1 < 200)
 					is_in_ghz = 1e9;
 				break;
 			default:
@@ -1082,10 +1084,20 @@ gboolean import_resonance_list (gchar *filename)
 				break;
 			case 5:
 				/* ID plus Complete resonance information */
-				res->frq   = col2 * is_in_ghz;
-				res->width = col3 * 1e6;
-				res->amp   = col4;
-				res->phase = col5 / 180 * M_PI;
+				if (numbercol)
+				{
+					res->frq   = col2 * is_in_ghz;
+					res->width = col3 * 1e6;
+					res->amp   = col4;
+					res->phase = col5 / 180 * M_PI;
+				}
+				else
+				{
+					res->frq   = col1 * is_in_ghz;
+					res->width = col2 * 1e6;
+					res->amp   = col3;
+					res->phase = col4 / 180 * M_PI;
+				}
 				break;
 			default:
 				/* A line without data and not a comment */
