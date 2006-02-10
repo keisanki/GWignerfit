@@ -1008,7 +1008,11 @@
 							marked by the mouse crosshairs will always stay at the same
 							position on the screen. Holding <keycap>Ctrl</keycap> while
 							scrolling will zoom the ordinate without changing the frequency
-							axis.
+							axis. If you want to zoom the abscissa (that is the frequency
+							axis) without affecting the ordinate scaling press
+							<keycap>Shift</keycap> while using the scroll-wheel. You can also
+							use <keycap>Shift-Lock</keycap> if you do not want to keep
+							<keycap>Shift</keycap> pressed all the time.
 						</para>
 						<para>
 							If you cannot use a scroll-wheel you can zoom in using
