@@ -1986,7 +1986,9 @@ gtk_spect_vis_button_scroll (GtkWidget *widget, GdkEventScroll *event)
 		else
 		{
 			gtk_spect_vis_zoom_x (GTK_SPECTVIS (widget), xval, 0.80);
-			gtk_spect_vis_zoom_y_all (GTK_SPECTVIS (widget));
+			if (!(event->state & (GDK_SHIFT_MASK | GDK_LOCK_MASK)))
+				/* Rezoom y only, if neither shift nor shift lock is prossed. */
+				gtk_spect_vis_zoom_y_all (GTK_SPECTVIS (widget));
 			g_signal_emit (spectvis, spect_vis_signals[VIEWPORT_CHANGED], 0, "i");
 		}
 	}
@@ -2000,7 +2002,9 @@ gtk_spect_vis_button_scroll (GtkWidget *widget, GdkEventScroll *event)
 		else
 		{
 			gtk_spect_vis_zoom_x (GTK_SPECTVIS (widget), xval, 1.20);
-			gtk_spect_vis_zoom_y_all (GTK_SPECTVIS (widget));
+			if (!(event->state & (GDK_SHIFT_MASK | GDK_LOCK_MASK)))
+				/* Rezoom y only, if neither shift nor shift lock is prossed. */
+				gtk_spect_vis_zoom_y_all (GTK_SPECTVIS (widget));
 			g_signal_emit (spectvis, spect_vis_signals[VIEWPORT_CHANGED], 0, "o");
 		}
 	}
