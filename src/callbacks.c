@@ -345,6 +345,7 @@ void on_open_section_activate (GtkMenuItem *menuitem, gpointer user_data)
 gboolean on_phaseentry_changed (GtkWidget *entry, GdkEventKey *event, gpointer user_data)
 {
 	gdouble value;
+	gchar text[20];
 	
 	if ((event->keyval != GDK_Return) && (event->keyval != GDK_KP_Enter)) return FALSE;
 	
@@ -354,6 +355,8 @@ gboolean on_phaseentry_changed (GtkWidget *entry, GdkEventKey *event, gpointer u
 	visualize_theory_graph ();
 	set_unsaved_changes ();
 
+	snprintf (text, 20, "%f", value);
+	gtk_entry_set_text (GTK_ENTRY (entry), text);
 	statusbar_message ("Global phase changed to %lf degree.", value);
 	
 	return FALSE;
@@ -362,6 +365,7 @@ gboolean on_phaseentry_changed (GtkWidget *entry, GdkEventKey *event, gpointer u
 gboolean on_scaleentry_changed (GtkWidget *entry, GdkEventKey *event, gpointer user_data)
 {
 	gdouble value;
+	gchar text[20];
 	
 	if ((event->keyval != GDK_Return) && (event->keyval != GDK_KP_Enter)) return FALSE;
 	
@@ -371,6 +375,8 @@ gboolean on_scaleentry_changed (GtkWidget *entry, GdkEventKey *event, gpointer u
 	visualize_theory_graph ();
 	set_unsaved_changes ();
 
+	snprintf (text, 20, "%f", value);
+	gtk_entry_set_text (GTK_ENTRY (entry), text);
 	statusbar_message ("Global scale changed to %lf.", value);
 	
 	return FALSE;
@@ -379,6 +385,7 @@ gboolean on_scaleentry_changed (GtkWidget *entry, GdkEventKey *event, gpointer u
 gboolean on_tauentry_changed (GtkWidget *entry, GdkEventKey *event, gpointer user_data)
 {
 	gdouble value;
+	gchar text[20];
 	
 	if ((event->keyval != GDK_Return) && (event->keyval != GDK_KP_Enter)) return FALSE;
 	
@@ -388,6 +395,8 @@ gboolean on_tauentry_changed (GtkWidget *entry, GdkEventKey *event, gpointer use
 	visualize_theory_graph ();
 	set_unsaved_changes ();
 
+	snprintf (text, 20, "%f", value);
+	gtk_entry_set_text (GTK_ENTRY (entry), text);
 	statusbar_message ("Global parameter tau changed to %lf ns.", value);
 	
 	return FALSE;
@@ -396,10 +405,21 @@ gboolean on_tauentry_changed (GtkWidget *entry, GdkEventKey *event, gpointer use
 gboolean on_minfrqentry_changed (GtkWidget *entry, GdkEventKey *event, gpointer user_data)
 {
 	gdouble value;
+	gchar text[20];
 	
-	if ((event->keyval != GDK_Return) && (event->keyval != GDK_KP_Enter)) return FALSE;
+	if ((event->keyval != GDK_Return) && (event->keyval != GDK_KP_Enter))
+		return FALSE;
 	
-	if (sscanf(gtk_entry_get_text(GTK_ENTRY (entry)), "%lf", &value) != 1) return FALSE;
+	if (sscanf(gtk_entry_get_text(GTK_ENTRY (entry)), "%lf", &value) != 1)
+		return FALSE;
+
+	if (value > glob->gparam->max/1e9)
+	{
+		dialog_message ("The minimal frequency must be below the maximal frequency.");
+		snprintf (text, 20, "%f", glob->gparam->min/1e9);
+		gtk_entry_set_text (GTK_ENTRY (entry), text);
+		return FALSE;
+	}
 
 	glob->gparam->min = value * 1e9;
 
@@ -416,6 +436,8 @@ gboolean on_minfrqentry_changed (GtkWidget *entry, GdkEventKey *event, gpointer 
 
 	set_unsaved_changes ();
 
+	snprintf (text, 20, "%f", value);
+	gtk_entry_set_text (GTK_ENTRY (entry), text);
 	statusbar_message ("Minimal frequency changed to %lf GHz.", value);
 	
 	return FALSE;
@@ -424,12 +446,21 @@ gboolean on_minfrqentry_changed (GtkWidget *entry, GdkEventKey *event, gpointer 
 gboolean on_maxfrqentry_changed (GtkWidget *entry, GdkEventKey *event, gpointer user_data)
 {
 	gdouble value;
+	gchar text[20];
 	
 	if ((event->keyval != GDK_Return) && (event->keyval != GDK_KP_Enter))
 		return FALSE;
 	
 	if (sscanf(gtk_entry_get_text(GTK_ENTRY (entry)), "%lf", &value) != 1)
 		return FALSE;
+
+	if (value < glob->gparam->min/1e9)
+	{
+		dialog_message ("The maximal frequency must be above the minimal frequency.");
+		snprintf (text, 20, "%f", glob->gparam->max/1e9);
+		gtk_entry_set_text (GTK_ENTRY (entry), text);
+		return FALSE;
+	}
 
 	glob->gparam->max = value * 1e9;
 
@@ -446,6 +477,8 @@ gboolean on_maxfrqentry_changed (GtkWidget *entry, GdkEventKey *event, gpointer 
 
 	set_unsaved_changes ();
 
+	snprintf (text, 20, "%f", value);
+	gtk_entry_set_text (GTK_ENTRY (entry), text);
 	statusbar_message ("Maximal frequency changed to %lf GHz.", value);
 	
 	return FALSE;
