@@ -3,14 +3,14 @@
 !_TAG_PROGRAM_AUTHOR	Darren Hiebert	/dhiebert@users.sourceforge.net/
 !_TAG_PROGRAM_NAME	Exuberant Ctags	//
 !_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
-!_TAG_PROGRAM_VERSION	5.5	//
+!_TAG_PROGRAM_VERSION	5.5.4	//
 ADD_MARK_DISTANCE	gtkspectvis.c	18;"	d	file:
 AMP_COL	export.c	/^	FRQ_COL, WID_COL, AMP_COL, PHAS_COL,$/;"	e	file:
 AMP_COL	resonancelist.c	/^	FRQ_COL, WID_COL, AMP_COL, PHAS_COL,$/;"	e	file:
 ApplyMrqmin	numeric.c	/^int ApplyMrqmin ($/;"	f
-COLOR_GOE	spectral.c	36;"	d	file:
-COLOR_GUE	spectral.c	33;"	d	file:
-COLOR_POISSON	spectral.c	30;"	d	file:
+COLOR_GOE	spectral.c	37;"	d	file:
+COLOR_GUE	spectral.c	34;"	d	file:
+COLOR_POISSON	spectral.c	31;"	d	file:
 COORD_BORDER_DIST	gtkspectvis.c	15;"	d	file:
 Cadd	spectral_numeric.c	/^static fcomplex Cadd(fcomplex a, fcomplex b)$/;"	f	file:
 Cdiv	spectral_numeric.c	/^static fcomplex Cdiv(fcomplex a, fcomplex b)$/;"	f	file:
@@ -116,7 +116,8 @@ SPECTRAL_LENGTH	spectral.c	27;"	d	file:
 SPECTRAL_NND	spectral.c	23;"	d	file:
 SPECTRAL_S2	spectral.c	25;"	d	file:
 SPECTRAL_WEYL	spectral.c	21;"	d	file:
-SPECTRAL_WIDTHS_HIST	spectral.c	28;"	d	file:
+SPECTRAL_WIDTHS	spectral.c	28;"	d	file:
+SPECTRAL_WIDTHS_HIST	spectral.c	29;"	d	file:
 SWAP	compl_mrqmin.c	124;"	d	file:
 SWAP	compl_mrqmin.c	44;"	d	file:
 SWAP	fourier.c	19;"	d	file:
@@ -634,6 +635,7 @@ spectral_sigma2	spectral.c	/^static void spectral_sigma2 ()$/;"	f	file:
 spectral_staircase	spectral.c	/^static void spectral_staircase ()$/;"	f	file:
 spectral_too_few_resonances	spectral.c	/^static void spectral_too_few_resonances ()$/;"	f	file:
 spectral_weyl_val	spectral.c	/^static gdouble spectral_weyl_val (gdouble x)$/;"	f	file:
+spectral_widths_evol	spectral.c	/^static void spectral_widths_evol ()$/;"	f	file:
 spectral_widths_hist	spectral.c	/^static void spectral_widths_hist ()$/;"	f	file:
 start_fit	numeric.c	/^static gint start_fit (gpointer params)$/;"	f	file:
 statusbar_message	helpers.c	/^void statusbar_message (gchar *format, ...)$/;"	f

@@ -5209,14 +5209,26 @@ Please check and decide what to do.</property>
 		  </child>
 
 		  <child>
-		    <widget class="GtkRadioMenuItem" id="spectral_widths_hist">
+		    <widget class="GtkRadioMenuItem" id="spectral_widths">
 		      <property name="visible">True</property>
-		      <property name="label" translatable="yes">_Widths histogram</property>
+		      <property name="label" translatable="yes">_Width evolution</property>
 		      <property name="use_underline">True</property>
 		      <property name="active">False</property>
 		      <property name="group">spectral_staircase</property>
 		      <signal name="activate" handler="on_spectral_view_change" last_modification_time="Mon, 01 Aug 2005 08:39:16 GMT"/>
 		      <accelerator key="8" modifiers="GDK_CONTROL_MASK" signal="activate"/>
+		    </widget>
+		  </child>
+
+		  <child>
+		    <widget class="GtkRadioMenuItem" id="spectral_widths_hist">
+		      <property name="visible">True</property>
+		      <property name="label" translatable="yes">Wi_dth histogram</property>
+		      <property name="use_underline">True</property>
+		      <property name="active">False</property>
+		      <property name="group">spectral_staircase</property>
+		      <signal name="activate" handler="on_spectral_view_change" last_modification_time="Mon, 01 Aug 2005 08:39:16 GMT"/>
+		      <accelerator key="9" modifiers="GDK_CONTROL_MASK" signal="activate"/>
 		    </widget>
 		  </child>
 		</widget>

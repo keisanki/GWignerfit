@@ -25,7 +25,8 @@ extern GladeXML *gladexml;
 #define SPECTRAL_S2          5
 #define SPECTRAL_D3          6
 #define SPECTRAL_LENGTH      7
-#define SPECTRAL_WIDTHS_HIST 8
+#define SPECTRAL_WIDTHS      8
+#define SPECTRAL_WIDTHS_HIST 9
 
 #define COLOR_POISSON	color.red   = 26845; \
 			color.green = 53690; \
@@ -1078,7 +1079,55 @@ static void spectral_length ()
 	gtk_spect_vis_set_axisscale (graph, 1, 0);
 }
 
-/* Draws the NND */
+/* Draws the widths as a function of the frequency */
+static void spectral_widths_evol ()
+{
+	GtkSpectVis *graph;
+	SpectralWin *spectral;
+	ComplexDouble *Yval;
+	gdouble *widths, *frqs;
+	GdkColor color;
+	guint i, numres;
+
+	g_return_if_fail (glob->spectral);
+	spectral = glob->spectral;
+
+	g_return_if_fail (glob->spectral->bins);
+
+	graph = GTK_SPECTVIS (glade_xml_get_widget (glob->spectral->xmlspect, "spectral_spectvis"));
+	g_return_if_fail (graph);
+
+	frqs   = spectral_get_frequencies (&numres, FALSE);
+
+	spectral_remove_graphs ();
+	if (numres < 3)
+	{
+		g_free (frqs);
+		spectral_too_few_resonances ();
+		return;
+	}
+
+	widths = spectral_get_width (&numres);
+	Yval = g_new0 (ComplexDouble, numres);
+	for (i=0; i<numres; i++)
+	{
+		//Yval[i].abs = widths[i] / 1e6;
+		Yval[i].re  = 0.0;
+		Yval[i].im  = widths[i] / 1e6;
+	}
+	g_free (widths);
+
+	color.red   = 65535;
+	color.green = 0;
+	color.blue  = 0;
+
+	i = gtk_spect_vis_data_add (graph, frqs, Yval, numres, color, 'l');
+	gtk_spect_vis_request_id (graph, i, 1);
+	gtk_spect_vis_set_graphtype (graph, 1, 'i');
+	gtk_spect_vis_set_axisscale (graph, 1e9, 0);
+}
+
+/* Draws the width distribution */
 static void spectral_widths_hist ()
 {
 	GtkSpectVis *graph;
@@ -1304,6 +1353,9 @@ void spectral_resonances_changed ()
 			case SPECTRAL_LENGTH:
 				spectral_length ();
 				break;
+			case SPECTRAL_WIDTHS:
+				spectral_widths_evol ();
+				break;
 			case SPECTRAL_WIDTHS_HIST:
 				spectral_widths_hist ();
 				break;
@@ -1456,6 +1508,10 @@ gboolean on_spectral_view_change (GtkMenuItem *menuitem, gpointer user_data)
 	if (gtk_check_menu_item_get_active (item))
 		glob->spectral->view = SPECTRAL_LENGTH;
 
+	item = GTK_CHECK_MENU_ITEM (glade_xml_get_widget (glob->spectral->xmlspect, "spectral_widths"));
+	if (gtk_check_menu_item_get_active (item))
+		glob->spectral->view = SPECTRAL_WIDTHS;
+
 	item = GTK_CHECK_MENU_ITEM (glade_xml_get_widget (glob->spectral->xmlspect, "spectral_widths_hist"));
 	if (gtk_check_menu_item_get_active (item))
 		glob->spectral->view = SPECTRAL_WIDTHS_HIST;
@@ -1515,6 +1571,11 @@ gboolean on_spectral_view_change (GtkMenuItem *menuitem, gpointer user_data)
 			gtk_widget_hide_all (glade_xml_get_widget (glob->spectral->xmlspect, "spectral_weyl_box"));
 			gtk_widget_hide_all (glade_xml_get_widget (glob->spectral->xmlspect, "spectral_theo_box"));
 			spectral_length ();
+			break;
+		case SPECTRAL_WIDTHS:
+			gtk_widget_hide_all (glade_xml_get_widget (glob->spectral->xmlspect, "spectral_weyl_box"));
+			gtk_widget_hide_all (glade_xml_get_widget (glob->spectral->xmlspect, "spectral_theo_box"));
+			spectral_widths_evol ();
 			break;
 		case SPECTRAL_WIDTHS_HIST:
 			gtk_widget_set_sensitive (glade_xml_get_widget (glob->spectral->xmlspect, "label49"), TRUE);
@@ -1657,9 +1718,13 @@ gboolean on_spectral_bins_keypressed (GtkWidget *entry, GdkEventKey *event, gpoi
 
 	glob->spectral->bins = value;
 
-	spectral_nnd ();
+	if (glob->spectral->view == SPECTRAL_NND)
+		spectral_nnd ();
+	else
+		spectral_widths_hist ();
+
 	graph = GTK_SPECTVIS (glade_xml_get_widget (glob->spectral->xmlspect, "spectral_spectvis"));
-	if (!glob->spectral->normalize)
+	if (!glob->spectral->normalize || (glob->spectral->view == SPECTRAL_WIDTHS_HIST))
 		gtk_spect_vis_zoom_y_all (graph);
 	gtk_spect_vis_redraw (graph);
 	
@@ -1818,8 +1883,12 @@ gboolean on_spectral_export_data (GtkMenuItem *menuitem, gpointer user_data)
 			fprintf (file, "length spectrum\r\n#\r\n");
 			fprintf (file, "# x [m]\t\tAmplitude\r\n");
 			break;
+		case SPECTRAL_WIDTHS:
+			fprintf (file, "width evolution\r\n#\r\n");
+			fprintf (file, "# f [Hz]\t\tw [MHz]\r\n");
+			break;
 		case SPECTRAL_WIDTHS_HIST:
-			fprintf (file, "widths histogram");
+			fprintf (file, "width histogram");
 			if (!glob->spectral->normalize)
 				fprintf (file, ", not normalized");
 			fprintf (file, "\r\n# Number of bins: %i\r\n", glob->spectral->bins);

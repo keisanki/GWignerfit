@@ -826,7 +826,8 @@ void visualize_handle_viewport_changed (GtkSpectVis *spectvis, gchar *zoomtype)
 		g_mutex_unlock (glob->threads->theorylock);
 	}
 
-	if ((*zoomtype != 'I') && (*zoomtype != 'O') && (*zoomtype != 'i') && (*zoomtype != 'o'))
+//	if ((*zoomtype != 'I') && (*zoomtype != 'O') && (*zoomtype != 'i') && (*zoomtype != 'o'))
+	if (flag)
 		gtk_spect_vis_zoom_y_all (GTK_SPECTVIS (graph));
 
 	gtk_spect_vis_redraw (GTK_SPECTVIS (graph));
