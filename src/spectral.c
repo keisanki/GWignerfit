@@ -1111,9 +1111,9 @@ static void spectral_widths_evol ()
 	Yval = g_new0 (ComplexDouble, numres);
 	for (i=0; i<numres; i++)
 	{
-		//Yval[i].abs = widths[i] / 1e6;
 		Yval[i].re  = 0.0;
 		Yval[i].im  = widths[i] / 1e6;
+		Yval[i].abs = widths[i] / 1e6; // For export function
 	}
 	g_free (widths);
 
@@ -1881,7 +1881,7 @@ gboolean on_spectral_export_data (GtkMenuItem *menuitem, gpointer user_data)
 			break;
 		case SPECTRAL_LENGTH:
 			fprintf (file, "length spectrum\r\n#\r\n");
-			fprintf (file, "# x [m]\t\tAmplitude\r\n");
+			fprintf (file, "# x [m]\t\t Amplitude\tPhase [rad]\r\n");
 			break;
 		case SPECTRAL_WIDTHS:
 			fprintf (file, "width evolution\r\n#\r\n");
@@ -1901,8 +1901,13 @@ gboolean on_spectral_export_data (GtkMenuItem *menuitem, gpointer user_data)
 			break;
 	}
 
-	for (; i<len; i++)
-		fprintf (file, "%f\t%g\r\n", spectdata->X[i], spectdata->Y[i].abs);
+	if (glob->spectral->view == SPECTRAL_LENGTH)
+		for (; i<len; i++)
+			fprintf (file, "%f\t%9f\t%f\r\n", spectdata->X[i], spectdata->Y[i].abs,
+					atan2 (spectdata->Y[i].im, spectdata->Y[i].re));
+	else
+		for (; i<len; i++)
+			fprintf (file, "%f\t%g\r\n", spectdata->X[i], spectdata->Y[i].abs);
 
 	fclose (file);
 	g_free (resonances);

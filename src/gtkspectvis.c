@@ -2132,10 +2132,11 @@ gtk_spect_vis_export_ps (GtkSpectVis *spectvis, GArray *uids,
 			 const gchar legendpos, GArray *lt)
 {
 	gnuplot_ctrl *g;
-	gdouble *x, *y, *x2, *y2;
+	gdouble *x, *y, from, to;
 	guint start, stop, len;
 	guint arraypos, i;
 	gint linetype;
+	ComplexDouble tmp;
 	GtkSpectVisViewport *view;
 	GtkSpectVisData *data;
 	gchar *legendstr;
@@ -2204,6 +2205,61 @@ gtk_spect_vis_export_ps (GtkSpectVis *spectvis, GArray *uids,
 		start = data->xmin_arraypos == 0 ? 0 : (data->xmin_arraypos - 1);
 		stop  = data->xmax_arraypos >= data->len - 1 ? data->xmax_arraypos : (data->xmax_arraypos + 1);
 
+		if (data->type == 'i')
+		{
+			/* Draw impulses */
+			linetype  = g_array_index (lt, gint, arraypos);
+			tmp.re    = 0.0;
+			tmp.im    = 0.0;
+			for (i=start; i<=stop; i++)
+			{
+				if (spectvis->displaytype == 'l')
+				{
+					tmp.abs = data->Y[i].re;
+					from = gtk_spect_vis_cal_db (tmp) / spectvis->yAxisScale;
+					tmp.abs = data->Y[i].im;
+					to = gtk_spect_vis_cal_db (tmp) / spectvis->yAxisScale;
+				}
+				else
+				{
+					from = data->Y[i].re / spectvis->yAxisScale;
+					to   = data->Y[i].im / spectvis->yAxisScale;
+				}
+				
+				/* Clip data range to selected range */
+				from = from < view->ymin/spectvis->yAxisScale ? view->ymin/spectvis->yAxisScale : from;
+				from = from > view->ymax/spectvis->yAxisScale ? view->ymax/spectvis->yAxisScale : from;
+				to   = to   < view->ymin/spectvis->yAxisScale ? view->ymin/spectvis->yAxisScale : to  ;
+				to   = to   > view->ymax/spectvis->yAxisScale ? view->ymax/spectvis->yAxisScale : to  ;
+
+				gnuplot_cmd (g, "set arrow from %f,%f to %f,%f nohead lt %d",
+						data->X[i] / spectvis->xAxisScale,
+						from,
+						data->X[i] / spectvis->xAxisScale,
+						to,
+						linetype
+					    );
+			}
+
+			/* A graph cannot be made out of arrows alone -> Redraw the first
+			 * stick by a "real" graph. */
+			x = g_new (gdouble, 2);
+			y = g_new (gdouble, 2);
+
+			x[0] = data->X[i] / spectvis->xAxisScale;
+			x[0] = data->Y[i].re / spectvis->yAxisScale;
+			x[1] = data->X[i] / spectvis->xAxisScale;
+			x[1] = data->Y[i].im / spectvis->yAxisScale;
+
+			legendstr = g_array_index (legend, gchar*, arraypos);
+			gnuplot_plot_xy (g, x, y, 2, legendstr, linetype);
+
+			g_free (x);
+			g_free (y);
+
+			break;
+		}
+
 		x = g_new (gdouble, stop-start+1);
 		y = g_new (gdouble, stop-start+1);
 
@@ -2235,6 +2291,8 @@ gtk_spect_vis_export_ps (GtkSpectVis *spectvis, GArray *uids,
 		if (data->type == 'h')
 		{
 			/* Draw a histogramm */
+			gnuplot_setstyle (g, "steps");
+#if 0
 			x2 = g_new (gdouble, 2*(stop-start)+1);
 			y2 = g_new (gdouble, 2*(stop-start)+1);
 			for (i=0; i<stop-start; i++)
@@ -2253,11 +2311,16 @@ gtk_spect_vis_export_ps (GtkSpectVis *spectvis, GArray *uids,
 			x = x2;
 			y = y2;
 			len = 2*(stop-start)+1;
+#endif
 		}
 
 		linetype  = g_array_index (lt, gint, arraypos);
 		legendstr = g_array_index (legend, gchar*, arraypos);
 		gnuplot_plot_xy (g, x, y, len, legendstr, linetype);
+
+		if (data->type == 'h')
+			/* Set plot style back to lines */
+			gnuplot_setstyle (g, "lines");
 
 		g_free (x);
 		g_free (y);
