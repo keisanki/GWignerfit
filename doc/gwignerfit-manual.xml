@@ -3,7 +3,7 @@
   "http://www.oasis-open.org/docbook/xml/4.4/docbookx.dtd" [
 <!--"/usr/share/sgml/docbook/xml-dtd-4.4-1.0-26/docbookx.dtd" [ -->
 	<!ENTITY legal SYSTEM "legal.xml">
-	<!ENTITY appversion "2006-02-08">
+	<!ENTITY appversion "2006-02-24">
 	<!ENTITY manrevision "1.0">
 	<!ENTITY date "August 2005">
 	<!ENTITY app "<application>GWignerFit</application>">
@@ -3215,14 +3215,22 @@
 					gives the length of the orbit in meters.</para>
 			</listitem>
 			<listitem>
-				<para>Widths histogram: In contrast to the statistics described till
-					now, this histogram does statistics with the resonance
-					<emphasis>widths</emphasis>. The resonance widths are sorted into a
-					given number of bins. The graph displays how many widths ended up in
-					which bin. The abscissa gives the width in MHz. The ordinate can either
-					show the total number of widths in each bin (that is without
-					normalization) or the fraction of all resonances considered (the
-					normalized case).</para>
+				<para>Width evolution: In contrast to the statistics described till
+					now, this and the next method take the resonance
+					<emphasis>widths</emphasis> into account. This graph displays the
+					resonance width as a function of the resonance frequency. The
+					frequency is given as the abscissa in GHz. At each resonance
+					frequency there is a straight vertical line that marks the width of
+					this resonance. The ordinate then reads the withs in MHz.</para>
+			</listitem>
+			<listitem>
+				<para>Width histogram: This histogram does statistics with the
+					resonance widths. The resonance widths are sorted into a given number
+					of bins. The graph displays how many widths ended up in which bin.
+					The abscissa gives the width in MHz. The ordinate can either show the
+					total number of widths in each bin (that is without normalization) or
+					the fraction of all resonances considered (the normalized
+					case).</para>
 			</listitem>
 		</itemizedlist>
 
