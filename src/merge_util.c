@@ -911,7 +911,7 @@ gboolean merge_spect_graph_show_node (MergeNode *node)
 	GtkSpectVis *spectgraph;
 	MergeWin *merge;
 	GdkColor color;
-	gdouble width;
+	gdouble width, displaywidth;
 	
 	g_return_val_if_fail (glob->merge, FALSE);
 
@@ -959,10 +959,17 @@ gboolean merge_spect_graph_show_node (MergeNode *node)
 		}
 
 		baruid = gtk_spect_vis_add_bar (spectgraph, node->res->frq, width, color);
-		gtk_spect_vis_zoom_x_to (spectgraph,
-				node->res->frq - 5*width,
-				node->res->frq + 5*width);
-		gtk_spect_vis_zoom_y_all (spectgraph);
+
+		/* Make sure that the resonance is visible */
+		if ((spectgraph->view->xmin > node->res->frq) ||
+		    (spectgraph->view->xmax < node->res->frq))
+		{
+			displaywidth = spectgraph->view->xmax - spectgraph->view->xmin;
+			gtk_spect_vis_zoom_x_to (spectgraph,
+					node->res->frq - 0.5*displaywidth,
+					node->res->frq + 0.5*displaywidth);
+			gtk_spect_vis_zoom_y_all (spectgraph);
+		}
 
 		/* Change color of graph */
 		color.red   = 45000 / 2;

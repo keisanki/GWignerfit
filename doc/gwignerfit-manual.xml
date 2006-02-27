@@ -3459,7 +3459,8 @@
 									<guimenuitem>Sigma 2</guimenuitem>,
 									<guimenuitem>Delta 3</guimenuitem> and
 									<guimenuitem>Length spectrum</guimenuitem>
-									<guimenuitem>Widths histogram</guimenuitem>
+									<guimenuitem>Width evolution</guimenuitem>
+									<guimenuitem>Width histogram</guimenuitem>
 						</term>
 						<listitem>
 							<para>&app; will calculate and display the selected spectral
