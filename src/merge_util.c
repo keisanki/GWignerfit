@@ -356,6 +356,7 @@ void merge_highlight_width (MergeNode *node)
 	}
 
 	gtk_spect_vis_redraw (GTK_SPECTVIS (graph));
+	glob->merge->selx = -1;
 }
 
 void merge_show_resonance_info (MergeNode *node)
@@ -458,6 +459,7 @@ void merge_add_reslist (GPtrArray *reslist, gchar *datafilename, gchar *name)
 	gtk_spect_vis_zoom_y_all (graph);
 	merge_zoom_x_all ();
 	gtk_spect_vis_redraw (graph);
+	glob->merge->selx = -1;
 
 	/* Add to spectra graph */
 	if (datafilename)
@@ -629,6 +631,7 @@ void merge_link_two_nodes (MergeNode *node1, MergeNode *node2)
 	g_ptr_array_add (merge->links, newlist);
 	merge_draw_link (newlist);
 	gtk_spect_vis_redraw (graph);
+	glob->merge->selx = -1;
 
 	/* Update link information of each node */
 	while (newlist)
@@ -778,6 +781,7 @@ gboolean merge_delres (MergeNode *node)
 	gtk_spect_vis_data_update (graph, uid, X, Y, data->len - 1);
 
 	gtk_spect_vis_redraw (graph);
+	glob->merge->selx = -1;
 
 	/* Remove node from nodelist */
 	g_free (node->res);
@@ -872,6 +876,7 @@ static gboolean merge_add_spect_graph (gchar *datafilename, gint uid)
 	gtk_spect_vis_zoom_x_all (spectgraph);
 	gtk_spect_vis_zoom_y_all (spectgraph);
 	gtk_spect_vis_redraw (spectgraph);
+	glob->merge->selx = -1;
 
 	return TRUE;
 }
@@ -898,6 +903,7 @@ gboolean merge_remove_spect_graph (gint uid)
 
 	gtk_spect_vis_data_remove (spectgraph, uid);
 	gtk_spect_vis_redraw (spectgraph);
+	glob->merge->selx = -1;
 
 	return TRUE;
 }
@@ -937,7 +943,10 @@ gboolean merge_spect_graph_show_node (MergeNode *node)
 		}
 
 		if (!node)
+		{
 			gtk_spect_vis_redraw (spectgraph);
+			glob->merge->selx = -1;
+		}
 	}
 
 	if (node)
@@ -980,6 +989,7 @@ gboolean merge_spect_graph_show_node (MergeNode *node)
 		gtk_spect_vis_set_data_color (spectgraph, lastgraphuid, color);
 
 		gtk_spect_vis_redraw (spectgraph);
+		glob->merge->selx = -1;
 	}
 
 	return TRUE;

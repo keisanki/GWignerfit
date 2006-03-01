@@ -669,14 +669,18 @@ gboolean on_merge_close_activate (GtkWidget *button)
 gboolean on_merge_new_activate (GtkWidget *button)
 {
 	MergeWin *merge = glob->merge;
-	GtkSpectVis *graph;
-	gint i;
+	GtkSpectVis *graph, *spectgraph;
+	gint i, uid;
 
-	graph = GTK_SPECTVIS (glade_xml_get_widget (merge->xmlmerge, "merge_spectvis"));
+	graph      = GTK_SPECTVIS (glade_xml_get_widget (merge->xmlmerge, "merge_spectvis"));
+	spectgraph = GTK_SPECTVIS (glade_xml_get_widget (merge->xmlmerge, "merge_spect_graph"));
 
 	for (i=0; i<merge->graphuid->len; i++)
-		gtk_spect_vis_data_remove (graph, 
-				GPOINTER_TO_INT (g_ptr_array_index (merge->graphuid, i)));
+	{
+		uid = GPOINTER_TO_INT (g_ptr_array_index (merge->graphuid, i));
+		gtk_spect_vis_data_remove (graph, uid);	     /* remove from node graph */
+		gtk_spect_vis_data_remove (spectgraph, uid); /* remove from spectrum graph */
+	}
 
 	merge_draw_remove_all ();
 	
@@ -810,6 +814,7 @@ gboolean on_merge_open_activate (GtkWidget *button)
 
 		graph = GTK_SPECTVIS (glade_xml_get_widget (glob->merge->xmlmerge, "merge_spectvis"));
 		gtk_spect_vis_redraw (graph);
+		glob->merge->selx = -1;
 		
 		merge_statusbar_message ("Session file restored");
 	}
@@ -1087,6 +1092,7 @@ gboolean on_merge_remove_list_activate (GtkWidget *button)
 		gtk_spect_vis_zoom_y_all (graph);
 	}
 	gtk_spect_vis_redraw (graph);
+	glob->merge->selx = -1;
 
 	return TRUE;
 }
@@ -1176,6 +1182,7 @@ gboolean on_merge_delete_all_links_activate (GtkWidget *button)
 
 	graph = GTK_SPECTVIS (glade_xml_get_widget (merge->xmlmerge, "merge_spectvis"));
 	gtk_spect_vis_redraw (graph);
+	glob->merge->selx = -1;
 
 	merge_statusbar_message ("Deleted all links.");
 	
@@ -1234,6 +1241,7 @@ void merge_handle_viewport_changed (GtkSpectVis *spectvis, gchar *zoomtype)
 		merge_zoom_x_all ();
 	
 	gtk_spect_vis_redraw (spectvis);
+	glob->merge->selx = -1;
 }
 
 /* Handle click on graph */
@@ -1254,6 +1262,7 @@ gint merge_handle_value_selected (GtkSpectVis *spectvis, gdouble *xval, gdouble 
 		if (!node)
 		{
 			merge->flag &= ~MERGE_FLAG_ADD;
+			merge_undisplay_node_selection ();
 			merge_statusbar_message ("You are not close enough to a resonance node point.");
 			node1 = NULL;
 			return 0;
@@ -1264,15 +1273,18 @@ gint merge_handle_value_selected (GtkSpectVis *spectvis, gdouble *xval, gdouble 
 			if ((node->link) && (node->link->prev) && (node->link->next))
 			{
 				merge->flag &= ~MERGE_FLAG_ADD;
+				merge_undisplay_node_selection ();
 				merge_statusbar_message ("No free links on this node left.");
 			}
 			else
 				node1 = node;
+
 			return 0;
 		}
 		else
 		{
 			merge->flag &= ~MERGE_FLAG_ADD;
+			merge_undisplay_node_selection ();
 			if ((node->link) && (node->link->prev) && (node->link->next))
 				merge_statusbar_message ("No free links on this node left.");
 			else
@@ -1302,6 +1314,7 @@ gint merge_handle_value_selected (GtkSpectVis *spectvis, gdouble *xval, gdouble 
 	if (merge->flag & MERGE_FLAG_DEL)
 	{
 		merge->flag &= ~MERGE_FLAG_DEL;
+		merge_undisplay_node_selection ();
 		node = (MergeNode *) merge->nearnode;
 		if (!node)
 		{
@@ -1340,6 +1353,7 @@ gint merge_handle_value_selected (GtkSpectVis *spectvis, gdouble *xval, gdouble 
 	if (merge->flag & MERGE_FLAG_MARK)
 	{
 		merge->flag &= ~MERGE_FLAG_MARK;
+		merge_undisplay_node_selection ();
 		node = (MergeNode *) merge->nearnode;
 
 		merge_highlight_width (node);
@@ -1351,6 +1365,7 @@ gint merge_handle_value_selected (GtkSpectVis *spectvis, gdouble *xval, gdouble 
 	if (merge->flag & MERGE_FLAG_DELRES)
 	{
 		merge->flag &= ~MERGE_FLAG_DELRES;
+		merge_undisplay_node_selection ();
 		node = (MergeNode *) merge->nearnode;
 		if (!node)
 		{
@@ -1439,7 +1454,7 @@ gboolean merge_motion_notify (GtkWidget *widget, GdkEventMotion *event)
 		return FALSE;
 	}
 
-	if ((!merge->nearnode) || (merge->nearnode != nearnode))
+	if ((!merge->nearnode) || (merge->nearnode != nearnode) || (merge->selx < 0))
 		merge_display_node_selection (xpix, ypix);
 
 	/* remember closest node */
@@ -1618,6 +1633,7 @@ static void merge_automatic_merge ()
 		}
 	}
 
+	glob->merge->selx = -1;
 	gtk_spect_vis_redraw (
 		GTK_SPECTVIS (glade_xml_get_widget (glob->merge->xmlmerge, "merge_spectvis")));
 }
