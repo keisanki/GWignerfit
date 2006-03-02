@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <stdarg.h>
 #include <math.h>
+#include <errno.h>
 
 #include <gtk/gtk.h>
 #include <glade/glade.h>
@@ -950,6 +951,137 @@ void reslist_update_widthunit ()
 	}
 }
 
+/* This function parses a resonance list like one that has been created by the
+ * export function into a table. The two dimensional array is returned via
+ * ***in_rows, the header with the column labels comes into ***in_header. */
+gboolean import_resonance_list_parse (gchar *filename, gchar ***in_header, gdouble ***in_rows)
+{
+	gchar dataline[200];
+	FILE *datafile;
+	gchar **splitted, **header;
+	gboolean is_comment;
+	gint i, numcolumn, numrow, currow;
+	gdouble **rows, *column;
+
+	if (!filename)
+		return FALSE;
+
+	g_return_val_if_fail (in_header, FALSE);
+	g_return_val_if_fail (in_rows, FALSE);
+
+	datafile = fopen (filename, "r");
+	if (datafile == NULL) {
+		dialog_message ("Error: Could not open file %s.", filename);
+		return FALSE;
+	}
+
+	/* Count number of rows */
+	numrow = 0;
+	while (!feof (datafile)) 
+	{
+		if (!(fgets (dataline, 199, datafile)))
+			continue;
+
+		if ((dataline[0] == '#') || (dataline[0] == '\n') || (dataline[0] == '\r'))
+			continue;
+
+		numrow++;
+	}
+	rewind (datafile);
+
+	rows = g_new0 (gdouble*, numrow+1);
+	*in_rows = rows;
+
+	/* Parse rows */
+	currow = 0;
+	numcolumn = -1;
+	header = NULL;
+	while (!feof (datafile)) 
+	{
+		if (!(fgets (dataline, 199, datafile)))
+			continue;
+
+		if ((dataline[0] == '\n') || (dataline[0] == '\r'))
+			continue;
+
+		if (currow == numrow)
+			continue;
+
+		/* Split string at tabs */
+		splitted = g_strsplit_set (dataline, "\t", 0);
+
+		/* Detect a commentary line */
+		is_comment = FALSE;
+		if (splitted[0] && splitted[0][0] == '#')
+		{
+			splitted[0][0] = ' ';
+			is_comment = TRUE;
+		}
+
+		/* Count number of columns and strip spaces */
+		i=0;
+		while (splitted[i])
+		{
+			g_strstrip (splitted[i]);
+			i++;
+		}
+
+		/* Check for constant number of columns */
+		if ((!is_comment) && (numcolumn > 0) && (i != numcolumn))
+		{
+			g_strfreev (splitted);
+			dialog_message ("Error: Inconsistent number of columns.");
+			fclose (datafile);
+			return FALSE;
+		}
+		numcolumn = i;
+
+		if (is_comment)
+		{
+			/* Save the header */
+			g_strfreev (header);
+			header = splitted;
+			*in_header = header;
+		}
+		else
+		{
+			/* Convert the data into doubles */
+			column = g_new0 (gdouble, numcolumn+1);
+			for (i=0; i<numcolumn; i++)
+			{
+				column[i] = g_ascii_strtod (splitted[i], NULL);
+				if (errno)
+					column[i] = 0.0;
+			}
+
+			rows[currow] = column;
+			currow++;
+
+			g_strfreev (splitted);
+		}
+	}
+	fclose (datafile);
+
+	return TRUE;
+}
+
+/* Returns a multiplier according to the end of *string. */
+static gdouble import_get_unit (gchar *string)
+{
+	if (g_str_has_suffix (string, "[GHz]"))
+			return 1e9;
+	if (g_str_has_suffix (string, "[MHz]"))
+			return 1e6;
+	if (g_str_has_suffix (string, "[kHz]"))
+			return 1e3;
+	if (g_str_has_suffix (string, "[deg]"))
+			return M_PI/180.0;
+
+	/* default for Hz, rad or no given unit */
+	return 1.0;
+}
+
+/* Imports a list with resonance information from *filename. */
 gboolean import_resonance_list (gchar *filename)
 {
 	Resonance *res = NULL;
@@ -958,9 +1090,92 @@ gboolean import_resonance_list (gchar *filename)
 	gdouble col1, col2, col3, col4, col5, oldcol1, is_in_ghz = 1.0;
 	gboolean numbercol = FALSE;
 	gint numres, i, columncount, oldcolumncount;
+	
+	gchar **header = NULL;
+	gdouble **rows = NULL;
+	gdouble *frqs, *widths, *amps, *phases, unit;
+	gint col;
 
 	if (!filename)
 		return FALSE;
+
+	import_resonance_list_parse (filename, &header, &rows);
+	if (header && rows)
+	{
+		/* Count number of rows and columns */
+		numres = 0;
+		while (rows[numres])
+			numres++;
+		columncount = 0;
+		while (header[columncount])
+			columncount++;
+
+		frqs   = g_new0 (gdouble, numres);
+		widths = g_new0 (gdouble, numres);
+		amps   = g_new0 (gdouble, numres);
+		phases = g_new0 (gdouble, numres);
+
+		/* Parse each column */
+		for (col=0; col<columncount; col++)
+		{
+			unit = import_get_unit (header[col]);
+
+			if (g_str_has_prefix (header[col], "frq"))
+				for (i=0; i<numres; i++)
+					frqs[i] = rows[i][col] * unit;
+			
+			if (g_str_has_prefix (header[col], "width"))
+				for (i=0; i<numres; i++)
+					widths[i] = rows[i][col] * unit;
+			
+			if (g_str_has_prefix (header[col], "amp"))
+				for (i=0; i<numres; i++)
+					amps[i] = rows[i][col] * unit;
+			
+			if (g_str_has_prefix (header[col], "phase"))
+				for (i=0; i<numres; i++)
+					phases[i] = rows[i][col] * unit;
+		}
+
+		/* Add resonances to list */
+		for (i=0; i<numres; i++)
+		{
+			res = g_new0 (Resonance, 1);
+			res->frq   = frqs[i];
+			res->width = widths[i] ? widths[i] : 3e5;
+			res->amp   = amps[i] ? amps[i] : 1e4;
+			res->phase = phases[i];
+			add_resonance_to_list (res);
+			
+			g_free (rows[i]);
+		}
+
+		g_strfreev (header);
+		g_free (rows);
+		g_free (frqs);
+		g_free (widths);
+		g_free (amps);
+		g_free (phases);
+
+		statusbar_message ("Imported %i resonance frequencies", numres);
+		spectral_resonances_changed ();
+
+		return TRUE;
+	}
+	
+	if (rows)
+	{
+		/* Rows without a header cannot be used */
+		i = 0;
+		while (rows[i])
+		{
+			g_free (rows[i]);
+			i++;
+		}
+		g_free (rows);
+	}
+
+	/* No header information -> fall back to old parser */
 
 	datafile = fopen (filename, "r");
 	if (datafile == NULL) {

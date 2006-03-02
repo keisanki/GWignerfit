@@ -769,8 +769,10 @@
 				<guimenuitem>Import</guimenuitem>
 				<guimenuitem>Resonance list...</guimenuitem>
 			</menuchoice>
-			from the menubar of the main window. However, your resonance list file
-			will have to stick to the following rules:
+			from the menubar of the main window. The resonance list file can either
+			have been created by &app;'s export function (see <xref
+			linkend="gwf-export"/>) or it can be "self made". If the file has not
+			been created by &app; it will have to stick to the following rules:
 		</para>
 		<itemizedlist>
 			<listitem>
