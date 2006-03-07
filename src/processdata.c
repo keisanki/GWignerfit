@@ -541,18 +541,10 @@ void set_new_main_data (DataVector *newdata, gboolean called_from_open)
 			GTK_CHECK_MENU_ITEM (glade_xml_get_widget (gladexml, "reflection")),
 			TRUE
 		);
-		gtk_widget_set_sensitive (glade_xml_get_widget (gladexml, "tauentry"), FALSE);
-		gtk_widget_set_sensitive (glade_xml_get_widget (gladexml, "tau_check"), FALSE);
-		gtk_widget_set_sensitive (glade_xml_get_widget (gladexml, "label8"), FALSE);
 
 		gtk_widget_set_sensitive (glade_xml_get_widget (gladexml, "scaleentry"), TRUE);
 		gtk_widget_set_sensitive (glade_xml_get_widget (gladexml, "scale_check"), TRUE);
 		gtk_widget_set_sensitive (glade_xml_get_widget (gladexml, "label7"), TRUE);
-
-		gtk_toggle_button_set_active (
-			GTK_TOGGLE_BUTTON (glade_xml_get_widget (gladexml, "tau_check")), 
-			FALSE
-		);
 	}
 	else
 	{
@@ -560,9 +552,6 @@ void set_new_main_data (DataVector *newdata, gboolean called_from_open)
 			GTK_CHECK_MENU_ITEM (glade_xml_get_widget (gladexml, "transmission")),
 			TRUE
 		);
-		gtk_widget_set_sensitive (glade_xml_get_widget (gladexml, "tauentry"), TRUE);
-		gtk_widget_set_sensitive (glade_xml_get_widget (gladexml, "tau_check"), TRUE);
-		gtk_widget_set_sensitive (glade_xml_get_widget (gladexml, "label8"), TRUE);
 
 		gtk_widget_set_sensitive (glade_xml_get_widget (gladexml, "scaleentry"), FALSE);
 		gtk_widget_set_sensitive (glade_xml_get_widget (gladexml, "scale_check"), FALSE);

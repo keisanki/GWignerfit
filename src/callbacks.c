@@ -261,18 +261,10 @@ gboolean on_view_difference_activate (GtkMenuItem *menuitem, gpointer user_data)
 gboolean on_reflection_activate (GtkMenuItem *menuitem, gpointer user_data)
 {
 	glob->IsReflection = 1;
-	gtk_widget_set_sensitive (glade_xml_get_widget (gladexml, "tauentry"), FALSE);
-	gtk_widget_set_sensitive (glade_xml_get_widget (gladexml, "tau_check"), FALSE);
-	gtk_widget_set_sensitive (glade_xml_get_widget (gladexml, "label8"), FALSE);
 
 	gtk_widget_set_sensitive (glade_xml_get_widget (gladexml, "scaleentry"), TRUE);
 	gtk_widget_set_sensitive (glade_xml_get_widget (gladexml, "scale_check"), TRUE);
 	gtk_widget_set_sensitive (glade_xml_get_widget (gladexml, "label7"), TRUE);
-
-	gtk_toggle_button_set_active (
-		GTK_TOGGLE_BUTTON (glade_xml_get_widget (gladexml, "tau_check")), 
-		FALSE
-	);
 
 	visualize_theory_graph ();
 
@@ -282,9 +274,6 @@ gboolean on_reflection_activate (GtkMenuItem *menuitem, gpointer user_data)
 gboolean on_transmission_activate (GtkMenuItem *menuitem, gpointer user_data)
 {
 	glob->IsReflection = 0;
-	gtk_widget_set_sensitive (glade_xml_get_widget (gladexml, "tauentry"), TRUE);
-	gtk_widget_set_sensitive (glade_xml_get_widget (gladexml, "tau_check"), TRUE);
-	gtk_widget_set_sensitive (glade_xml_get_widget (gladexml, "label8"), TRUE);
 
 	gtk_widget_set_sensitive (glade_xml_get_widget (gladexml, "scaleentry"), FALSE);
 	gtk_widget_set_sensitive (glade_xml_get_widget (gladexml, "scale_check"), FALSE);

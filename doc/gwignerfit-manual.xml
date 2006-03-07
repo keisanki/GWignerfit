@@ -3,7 +3,7 @@
   "http://www.oasis-open.org/docbook/xml/4.4/docbookx.dtd" [
 <!--"/usr/share/sgml/docbook/xml-dtd-4.4-1.0-26/docbookx.dtd" [ -->
 	<!ENTITY legal SYSTEM "legal.xml">
-	<!ENTITY appversion "2006-02-24">
+	<!ENTITY appversion "2006-03-02">
 	<!ENTITY manrevision "1.0">
 	<!ENTITY date "August 2005">
 	<!ENTITY app "<application>GWignerFit</application>">
@@ -1501,9 +1501,10 @@
 					<para><guilabel>Tau [ns]</guilabel> <emphasis role="italic">&tau;</emphasis>:
 						This parameter adds a phase to the theory that increases linear in
 						frequency. It may be interpreted as the time (hence its units in
-						nanoseconds) the signal travels in the connecting cables. As this
-						is a effect in transmission measurements this value is inactive for
-						reflection datasets.</para>
+						nanoseconds) the signal travels in the connecting cables. This
+						effect is very important for uncalibrated transmission
+						measurements. It can, however, be useful for (calibrated)
+						reflection measurements, too.</para>
 				</listitem>
 				<listitem>
 					<para><guilabel>Min [GHz]</guilabel>: The lower frequency boundary for
@@ -1633,7 +1634,10 @@
 					<listitem>
 						<para>Deletes the currently selected resonances from the resonance
 							list and thus from the theory graph. The shortcut
-							<keycap>Delete</keycap> may come in handy for this.</para>
+							<keycap>Delete</keycap> may come in handy for this. You will get
+							a confirmation dialog for this operation. To get rid of this
+							precaution see the preferences (<xref linkend="gwignerfit-custom"/>).
+						</para>
 					</listitem>
 				</varlistentry>
 				<varlistentry>
@@ -3728,6 +3732,15 @@
 			</listitem>
 		</varlistentry>
 		<varlistentry>
+			<term><guilabel>Unit for width column</guilabel></term>
+			<listitem>
+				<para>The default is to present all width values in the parameter area
+					in MHz. If your spectrum has many very sharp resonances and you do
+					not want all those small numbers you can change the unit to kHz here.
+				</para>
+			</listitem>
+		</varlistentry>
+		<varlistentry>
 			<term><guilabel>Detect convergence of fit</guilabel></term>
 			<listitem>
 				<para>Enable this option if &app; should automatically stop a running
@@ -3735,15 +3748,6 @@
 					by &app; if there are five consecutive failed iterations and the
 					stepwidth parameter for the first failed iteration has been greater
 					than 10.
-				</para>
-			</listitem>
-		</varlistentry>
-		<varlistentry>
-			<term><guilabel>Unit for width column</guilabel></term>
-			<listitem>
-				<para>The default is to present all width values in the parameter area
-					in MHz. If your spectrum has many very sharp resonances and you do
-					not want all those small numbers you can change the unit to kHz here.
 				</para>
 			</listitem>
 		</varlistentry>

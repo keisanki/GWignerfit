@@ -697,7 +697,7 @@ void remove_selected_resonance ()
 		dialog_message ("No row selected.");
 		return;
 	}
-	
+
 	/* Get path of selected resonances */
 	model     = GTK_TREE_MODEL (glob->store);
 	pathlist  = gtk_tree_selection_get_selected_rows (selection, &model);
@@ -885,7 +885,7 @@ void what_to_fit (gint *ia)
 	if (gtk_toggle_button_get_active (
 		GTK_TOGGLE_BUTTON (glade_xml_get_widget (
 				gladexml, "tau_check"))
-		)) ia[4*glob->numres+3*glob->fcomp->numfcomp+3] = glob->IsReflection ? 0 : 1;
+		)) ia[4*glob->numres+3*glob->fcomp->numfcomp+3] = 1;
 
 	//if (glob->IsReflection) ia[4*glob->numres+3*glob->fcomp->numfcomp+3] = 0;
 
