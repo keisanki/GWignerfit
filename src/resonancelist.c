@@ -777,6 +777,10 @@ gboolean select_res_by_id (gint id)
 	path = gtk_tree_model_get_path (GTK_TREE_MODEL (glob->store), iter);
 	gtk_tree_view_scroll_to_cell (treeview, path, column, TRUE, 0.5, 0);
 
+	/* Set cursor for visualize_update_res_bar () */
+	gtk_tree_view_set_cursor (treeview, path, NULL, FALSE);
+	gtk_tree_path_free (path);
+
 	while (gtk_events_pending ()) gtk_main_iteration ();
 	visualize_update_res_bar (TRUE);
 
