@@ -1065,7 +1065,7 @@ gboolean on_comment_done (GtkWidget *widget, gpointer data)
 	{
 		/* Close window without saving comment */
 		gtk_widget_destroy (glade_xml_get_widget (glob->commentxml, "comment_dialog"));
-		g_free (glob->commentxml);
+		//g_free (glob->commentxml);
 		glob->commentxml = NULL;
 		return TRUE;
 	}
@@ -1087,7 +1087,7 @@ gboolean on_comment_done (GtkWidget *widget, gpointer data)
 		g_free (newcomment);
 	
 	gtk_widget_destroy (glade_xml_get_widget (glob->commentxml, "comment_dialog"));
-	g_free (glob->commentxml);
+	//g_free (glob->commentxml);
 	glob->commentxml = NULL;
 	return TRUE;
 }

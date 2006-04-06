@@ -487,7 +487,7 @@ void on_fft_close_activate (GtkMenuItem *menuitem, gpointer user_data)
 		g_ptr_array_free (glob->fft->data, TRUE);
 	}
 
-	g_free (glob->fft->xmlfft);
+	//g_free (glob->fft->xmlfft);
 	g_free (glob->fft);
 
 	glob->fft = NULL;

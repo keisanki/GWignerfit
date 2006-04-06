@@ -82,7 +82,7 @@ void on_spectral_close_activate (GtkMenuItem *menuitem, gpointer user_data)
 			glade_xml_get_widget (glob->spectral->xmlspect, "spectral_win")
 			);
 
-	g_free (glob->spectral->xmlspect);
+	//g_free (glob->spectral->xmlspect);
 	glob->spectral->xmlspect = NULL;
 }
 

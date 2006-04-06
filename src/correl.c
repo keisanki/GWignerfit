@@ -293,7 +293,7 @@ void on_correl_close_activate (GtkMenuItem *menuitem, gpointer user_data)
 			glade_xml_get_widget (glob->correl->xmlcorrel, "correl_win")
 			);
 
-	g_free (glob->correl->xmlcorrel);
+	//g_free (glob->correl->xmlcorrel);
 	glob->correl->xmlcorrel = NULL;
 
 	free_datavector (glob->correl->data);

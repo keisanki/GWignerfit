@@ -235,7 +235,7 @@ gint main (gint argc, char *argv[])
 	g_free (glob->spectral);
 	if (glob->netwin)
 	{
-		g_free (glob->netwin->xmlnet);
+		//g_free (glob->netwin->xmlnet);
 		g_free (glob->netwin->host);
 		g_free (glob->netwin->path);
 		g_free (glob->netwin->file);
