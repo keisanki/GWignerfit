@@ -113,12 +113,12 @@ gchar* ls_select_section (GList *sections, gchar *default_section)
 							xml, "section_combo_entry"))));
 		
 		gtk_widget_destroy (glade_xml_get_widget (xml, "section_dialog"));
-		g_free (xml);
+//		g_free (xml);
 	}
 	else
 	{
 		gtk_widget_destroy (glade_xml_get_widget (xml, "section_dialog"));
-		g_free (xml);
+//		g_free (xml);
 		return NULL;
 	}
 
