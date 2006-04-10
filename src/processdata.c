@@ -392,7 +392,15 @@ DataVector *import_datafile (gchar *filename, gboolean interactive)
 	}
 
 	data = new_datavector (numpoints);
-	data->file = normalize_path (filename);
+
+	if (g_path_is_absolute (filename))
+		data->file = normalize_path (filename);
+	else
+	{
+		basename = g_get_current_dir ();
+		data->file = filename_make_absolute (filename, basename);
+		g_free (basename);
+	}
 
 #ifdef NO_ZLIB
 	rewind (datafile);

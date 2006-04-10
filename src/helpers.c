@@ -1174,7 +1174,7 @@ gint compare_timestamps (const gchar* a, const gchar* b)
 		return 0;
 }
 
-/* Converts strings like '/a/b/../c/./d/test.dat' into 'a/c/d/test.dat',
+/* Converts strings like '/a/b/../c/./d/test.dat' into '/a/c/d/test.dat',
  * the inpath must be absolute. */
 gchar* normalize_path (gchar *inpath)
 {
