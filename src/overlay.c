@@ -636,6 +636,11 @@ static void overlay_selection_changed (GtkTreeSelection *treeselection, GtkTreeM
 	GdkColor color;
 
 	g_return_if_fail (model != NULL);
+	
+	if (!graph)
+		/* The graph got already destroyed as we are in the process
+		 * of quitting GWignerFit. */
+		return;
 
 	if (gtk_tree_model_get_iter_first (model, &iter))
 		do
