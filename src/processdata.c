@@ -1147,8 +1147,8 @@ void save_write_section (FILE *datafile, gchar *filename, gchar *section, gchar 
 		
 		if ( glob->IsReflection) 
 			fprintf (datafile, "scale\t%f%s", glob->gparam->scale  , newline);
-		if (!glob->IsReflection) 
-			fprintf (datafile, "tau\t%f%s"  , glob->gparam->tau*1e9, newline);
+		
+		fprintf (datafile, "tau\t%f%s"  , glob->gparam->tau*1e9, newline);
 		
 		for (i=0; i<glob->numres; i++)
 		{
@@ -1175,16 +1175,18 @@ void save_write_section (FILE *datafile, gchar *filename, gchar *section, gchar 
 				NormalisePhase(glob->gparam->phase)/M_PI*180, 
 				glob->stddev[4*glob->numres+1]/M_PI*180,
 				newline);
+
 		if ( glob->IsReflection) 
 			fprintf (datafile, "scale\t%f\t%f%s", 
 				glob->gparam->scale,
 				glob->stddev[4*glob->numres+2],
 				newline);
-		if (!glob->IsReflection) 
-			fprintf (datafile, "tau\t%f\t%f%s", 
-				glob->gparam->tau*1e9, 
-				glob->stddev[4*glob->numres+3]*1e9,
-				newline);
+
+		fprintf (datafile, "tau\t%f\t%f%s", 
+			glob->gparam->tau*1e9, 
+			glob->stddev[4*glob->numres+3]*1e9,
+			newline);
+
 		for (i=0; i<glob->numres; i++)
 		{
 			res = g_ptr_array_index(glob->param, i);
