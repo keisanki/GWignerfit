@@ -40,8 +40,8 @@ void DeriveComplexWigner (double x, double a[], ComplexDouble *yfit, ComplexDoub
 		frq = a[i+2];
 		gam = a[i+3];
 		
-		// arctan = (x-frq) ? atan2(gam/2, x-frq) : M_PI/2;
-		arctan = atan2(gam/2, -x+frq);
+		// arctan = (x-frq) ? atan2(-gam/2, x-frq) : M_PI/2;
+		arctan = atan2(-gam/2, +x-frq);
 		sq = 1/sqrt((x-frq)*(x-frq) + gam*gam/4);
 
 		factor = amp*sq*scale;
@@ -66,12 +66,12 @@ void DeriveComplexWigner (double x, double a[], ComplexDouble *yfit, ComplexDoub
 		cosval = cos(factor) * sq * amp;
 
 		/* d / d(frq) */
-		dyda[i+2].re =  sinval * -1;
-		dyda[i+2].im = -cosval * -1;
+		dyda[i+2].re =  sinval;
+		dyda[i+2].im = -cosval;
 
 		/* d / d(gam) */
-		dyda[i+3].re = -cosval/2;
-		dyda[i+3].im = -sinval/2;
+		dyda[i+3].re = -cosval/2 * -1;
+		dyda[i+3].im = -sinval/2 * -1;
 	}
 
 	/* Fit additional fourier components */
@@ -178,7 +178,7 @@ ComplexDouble ComplexWigner (double x, double a[], int ma) {
 		frq = a[i+2];
 		gam = a[i+3];
 
-		arctan = atan2(gam/2, -x+frq);
+		arctan = atan2(-gam/2, +x-frq);
 		sq = 1/sqrt((x-frq)*(x-frq) + gam*gam/4);
 
 		factor = amp*sq*scale;
