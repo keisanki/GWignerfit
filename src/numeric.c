@@ -22,14 +22,14 @@ static void fit_cleanup ();
 /* Derives the complex fit function */
 void DeriveComplexWigner (double x, double a[], ComplexDouble *yfit, ComplexDouble dyda[], int ma) {
 	ComplexDouble fourierval;
-	double amp, phi, frq, gam, alpha, scale, transphase;
+	double amp, phi, frq, gam, alpha, scale;
 	double omega, arctan, sq, factor, sinval, cosval, denom, tmp;
 	int i;
 
 	omega = 2*M_PI*x;
 	alpha = a[ma-2];
+	alpha += -omega*a[ma];
 	scale = glob->IsReflection ? a[ma-1] : 1;
-	transphase = glob->IsReflection ? 0.0 : -omega*a[ma];
 	yfit->re = cos(alpha)*scale * glob->IsReflection;
 	yfit->im = sin(alpha)*scale * glob->IsReflection;
 
@@ -45,10 +45,10 @@ void DeriveComplexWigner (double x, double a[], ComplexDouble *yfit, ComplexDoub
 		sq = 1/sqrt((x-frq)*(x-frq) + gam*gam/4);
 
 		factor = amp*sq*scale;
-		yfit->re += factor * sin(alpha + phi - arctan + transphase);
-		yfit->im -= factor * cos(alpha + phi - arctan + transphase);
+		yfit->re += factor * sin(alpha + phi - arctan);
+		yfit->im -= factor * cos(alpha + phi - arctan);
 
-		factor = alpha + phi - arctan + transphase;
+		factor = alpha + phi - arctan;
 		sinval = sin(factor) * sq * scale;
 		cosval = cos(factor) * sq * scale;
 
@@ -160,14 +160,14 @@ void DeriveComplexWigner (double x, double a[], ComplexDouble *yfit, ComplexDoub
 /* Returns the complex value of the fit function */
 ComplexDouble ComplexWigner (double x, double a[], int ma) {
 	ComplexDouble y, fourierval, tmp;
-	double amp, phi, frq, gam, alpha, scale, transphase, tau;
+	double amp, phi, frq, gam, alpha, scale, tau;
 	double omega, arctan, sq, factor;
 	int i;
 
 	omega = 2*M_PI*x;
 	alpha = a[ma-2];
+	alpha += -omega*a[ma];
 	scale = glob->IsReflection ? a[ma-1] : 1;
-	transphase = glob->IsReflection ? 0.0 : -omega*a[ma];
 	y.re = scale * cos(alpha) * glob->IsReflection;
 	y.im = scale * sin(alpha) * glob->IsReflection;
 
@@ -182,8 +182,8 @@ ComplexDouble ComplexWigner (double x, double a[], int ma) {
 		sq = 1/sqrt((x-frq)*(x-frq) + gam*gam/4);
 
 		factor = amp*sq*scale;
-		y.re += factor * sin(alpha + phi - arctan + transphase);
-		y.im -= factor * cos(alpha + phi - arctan + transphase);
+		y.re += factor * sin(alpha + phi - arctan);
+		y.im -= factor * cos(alpha + phi - arctan);
 	}
 
 	if (glob->fcomp->numfcomp)
