@@ -45,20 +45,20 @@ void DeriveComplexWigner (double x, double a[], ComplexDouble *yfit, ComplexDoub
 		sq = 1/sqrt((x-frq)*(x-frq) + gam*gam/4);
 
 		factor = amp*sq*scale;
-		yfit->re += factor * sin(alpha + phi - arctan);
-		yfit->im -= factor * cos(alpha + phi - arctan);
+		yfit->re -= factor * sin(alpha + phi - arctan);
+		yfit->im += factor * cos(alpha + phi - arctan);
 
 		factor = alpha + phi - arctan;
 		sinval = sin(factor) * sq * scale;
 		cosval = cos(factor) * sq * scale;
 
 		/* d / d(amp) */
-		dyda[i+0].re =  sinval;
-		dyda[i+0].im = -cosval;
+		dyda[i+0].re = -sinval;
+		dyda[i+0].im = +cosval;
 
 		/* d / d(phi) */
-		dyda[i+1].re = amp * cosval;
-		dyda[i+1].im = amp * sinval;
+		dyda[i+1].re = -amp * cosval;
+		dyda[i+1].im = -amp * sinval;
 
 		sq *= sq;
 		factor -= arctan;
@@ -66,12 +66,12 @@ void DeriveComplexWigner (double x, double a[], ComplexDouble *yfit, ComplexDoub
 		cosval = cos(factor) * sq * amp;
 
 		/* d / d(frq) */
-		dyda[i+2].re =  sinval;
-		dyda[i+2].im = -cosval;
+		dyda[i+2].re = -sinval;
+		dyda[i+2].im = +cosval;
 
 		/* d / d(gam) */
-		dyda[i+3].re = -cosval/2 * -1;
-		dyda[i+3].im = -sinval/2 * -1;
+		dyda[i+3].re = -cosval/2;
+		dyda[i+3].im = -sinval/2;
 	}
 
 	/* Fit additional fourier components */
@@ -139,16 +139,16 @@ void DeriveComplexWigner (double x, double a[], ComplexDouble *yfit, ComplexDoub
 	}
 
 	/* d / d(alpha) */
-	dyda[ma-2].re = - yfit->im;
-	dyda[ma-2].im =   yfit->re;
+	dyda[ma-2].re = -yfit->im;
+	dyda[ma-2].im =  yfit->re;
 
 	/* d / d(scale) */
 	dyda[ma-1].re = yfit->re / scale;
 	dyda[ma-1].im = yfit->im / scale;
 
 	/* d / d(tau) */
-	dyda[ma  ].re =   yfit->im * omega;
-	dyda[ma  ].im = - yfit->re * omega;
+	dyda[ma  ].re =  yfit->im * omega;
+	dyda[ma  ].im = -yfit->re * omega;
 /*
 	printf("frq: %e, fit.re %e, fit.im %e\n", x, yfit->re, yfit->im);
 	for (i=1; i<=ma; i++)
@@ -182,8 +182,8 @@ ComplexDouble ComplexWigner (double x, double a[], int ma) {
 		sq = 1/sqrt((x-frq)*(x-frq) + gam*gam/4);
 
 		factor = amp*sq*scale;
-		y.re += factor * sin(alpha + phi - arctan);
-		y.im -= factor * cos(alpha + phi - arctan);
+		y.re -= factor * sin(alpha + phi - arctan);
+		y.im += factor * cos(alpha + phi - arctan);
 	}
 
 	if (glob->fcomp->numfcomp)
