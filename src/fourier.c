@@ -9,6 +9,7 @@
 #include "structs.h"
 #include "helpers.h"
 #include "export.h"
+#include "visualize.h"
 
 extern GlobalData *glob;
 extern GladeXML *gladexml;
@@ -184,7 +185,7 @@ DataVector* fourier_gen_dataset (DataVector *source, gdouble startfrq, gdouble e
 void fourier_update_main_graphs ()
 {
 	FFTWindow *fft = glob->fft;
-	DataVector *fftvec, *oldvec;
+	DataVector *fftvec = NULL, *oldvec;
 	gdouble startfrq, stopfrq;
 	GtkSpectVis *graph;
 	GdkColor color;
@@ -201,104 +202,122 @@ void fourier_update_main_graphs ()
 	/* FFT of data graph */
 	startfrq = fft->fmin >= 0    ? fft->fmin : glob->data->x[0];
 	stopfrq  = fft->fmax <  1e49 ? fft->fmax : glob->data->x[glob->data->len-1];
-	if (!gtk_spect_vis_get_data_by_uid (graph, glob->data->index))
+	if ((!glob->viewdifference) && (glob->data->index))
 	{
-		/* Graph needs to be added */
-		fftvec = fourier_gen_dataset (glob->data, startfrq, stopfrq);
-		if ((fftvec) && (glob->data->index))
+		if (!gtk_spect_vis_get_data_by_uid (graph, glob->data->index))
 		{
-			g_ptr_array_add (fft->data, fftvec);
+			/* Graph needs to be added */
+			fftvec = fourier_gen_dataset (glob->data, startfrq, stopfrq);
+			if ((fftvec) && (glob->data->index))
+			{
+				g_ptr_array_add (fft->data, fftvec);
 
-			color.red = 65535;
-			color.green = 0;
-			color.blue = 0;
-			fftvec->index = gtk_spect_vis_data_add (
-						graph,
-						fftvec->x,
-						fftvec->y,
-						fftvec->len,
-						color, 'l');
+				color.red = 65535;
+				color.green = 0;
+				color.blue = 0;
+				fftvec->index = gtk_spect_vis_data_add (
+							graph,
+							fftvec->x,
+							fftvec->y,
+							fftvec->len,
+							color, 'l');
 
-			g_return_if_fail (gtk_spect_vis_request_id (graph, fftvec->index, glob->data->index));
-		}
+				g_return_if_fail (gtk_spect_vis_request_id (graph, fftvec->index, glob->data->index));
+			}
 
-		/* Zoom from 0ns till 1000ns */
-		if (fftvec)
-			gtk_spect_vis_zoom_x_to (graph, 0, 1000e-9);
-	}
-	else
-	{
-		/* Graph needs to be updated */
-		oldvec = (DataVector *) g_ptr_array_index (fft->data, 0);
-		fftvec = fourier_gen_dataset (glob->data, startfrq, stopfrq);
-		g_free (oldvec->x);
-		g_free (oldvec->y);
-
-		if (fftvec)
-		{
-			oldvec->x = fftvec->x;
-			oldvec->y = fftvec->y;
-			oldvec->len = fftvec->len;
-			g_free (fftvec);
-			gtk_spect_vis_data_update (graph, oldvec->index, oldvec->x, oldvec->y, oldvec->len);
+			/* Zoom from 0ns till 1000ns */
+			if (fftvec)
+				gtk_spect_vis_zoom_x_to (graph, 0, 1000e-9);
 		}
 		else
 		{
-			oldvec->x = NULL;
-			oldvec->y = NULL;
-			gtk_spect_vis_data_remove (graph, glob->data->index);
-			oldvec->index = 0;
+			/* Graph needs to be updated */
+			oldvec = (DataVector *) g_ptr_array_index (fft->data, 0);
+			fftvec = fourier_gen_dataset (glob->data, startfrq, stopfrq);
+			g_free (oldvec->x);
+			g_free (oldvec->y);
+
+			if (fftvec)
+			{
+				oldvec->x = fftvec->x;
+				oldvec->y = fftvec->y;
+				oldvec->len = fftvec->len;
+				g_free (fftvec);
+				gtk_spect_vis_data_update (graph, oldvec->index, oldvec->x, oldvec->y, oldvec->len);
+			}
+			else
+			{
+				oldvec->x = NULL;
+				oldvec->y = NULL;
+				gtk_spect_vis_data_remove (graph, glob->data->index);
+				oldvec->index = 0;
+			}
 		}
 	}
 
 	/* FFT of theory graph */
-	startfrq = fft->fmin >= 0    ? fft->fmin : glob->theory->x[0];
-	stopfrq  = fft->fmax <  1e49 ? fft->fmax : glob->theory->x[glob->data->len-1];
-	if (!gtk_spect_vis_get_data_by_uid (graph, glob->theory->index))
+	if (glob->theory->index)
 	{
-		fftvec = fourier_gen_dataset (glob->theory, startfrq, stopfrq);
-		if ((fftvec) && (glob->theory->index))
+		startfrq = fft->fmin >= 0    ? fft->fmin : glob->theory->x[0];
+		stopfrq  = fft->fmax <  1e49 ? fft->fmax : glob->theory->x[glob->data->len-1];
+		if (!gtk_spect_vis_get_data_by_uid (graph, glob->theory->index))
 		{
-			g_ptr_array_add (fft->data, fftvec);
+			fftvec = fourier_gen_dataset (glob->theory, startfrq, stopfrq);
+			
+			if ((fftvec) && (glob->theory->index))
+			{
+				g_ptr_array_add (fft->data, fftvec);
 
-			color.red = 0;
-			color.green = 0;
-			color.blue = 65535;
-			fftvec->index = gtk_spect_vis_data_add (
-						graph,
-						fftvec->x,
-						fftvec->y,
-						fftvec->len,
-						color, 'l');
+				if (!glob->viewdifference)
+				{
+					color.red = 0;
+					color.green = 0;
+					color.blue = 65535;
+				}
+				else
+				{
+					/* Theory graph is actually the difference graph */
+					color.red = 65535;
+					color.green = 0;
+					color.blue = 65535;
+				}
+				
+				fftvec->index = gtk_spect_vis_data_add (
+							graph,
+							fftvec->x,
+							fftvec->y,
+							fftvec->len,
+							color, 'l');
 
-			g_return_if_fail (gtk_spect_vis_request_id (graph, fftvec->index, glob->theory->index));
-		}
+				g_return_if_fail (gtk_spect_vis_request_id (graph, fftvec->index, glob->theory->index));
+			}
 
-		/* Zoom from 0ns till 1000ns */
-		if (fftvec)
-			gtk_spect_vis_zoom_x_to (graph, 0, 1000e-9);
-	}
-	else
-	{
-		oldvec = (DataVector *) g_ptr_array_index (fft->data, 1);
-		fftvec = fourier_gen_dataset (glob->theory, startfrq, stopfrq);
-		g_free (oldvec->x);
-		g_free (oldvec->y);
-
-		if (fftvec)
-		{
-			oldvec->x = fftvec->x;
-			oldvec->y = fftvec->y;
-			oldvec->len = fftvec->len;
-			g_free (fftvec);
-			gtk_spect_vis_data_update (graph, oldvec->index, oldvec->x, oldvec->y, oldvec->len);
+			/* Zoom from 0ns till 1000ns */
+			if (fftvec)
+				gtk_spect_vis_zoom_x_to (graph, 0, 1000e-9);
 		}
 		else
 		{
-			oldvec->x = NULL;
-			oldvec->y = NULL;
-			gtk_spect_vis_data_remove (graph, glob->theory->index);
-			oldvec->index = 0;
+			oldvec = (DataVector *) g_ptr_array_index (fft->data, 1);
+			fftvec = fourier_gen_dataset (glob->theory, startfrq, stopfrq);
+			g_free (oldvec->x);
+			g_free (oldvec->y);
+
+			if (fftvec)
+			{
+				oldvec->x = fftvec->x;
+				oldvec->y = fftvec->y;
+				oldvec->len = fftvec->len;
+				g_free (fftvec);
+				gtk_spect_vis_data_update (graph, oldvec->index, oldvec->x, oldvec->y, oldvec->len);
+			}
+			else
+			{
+				oldvec->x = NULL;
+				oldvec->y = NULL;
+				gtk_spect_vis_data_remove (graph, glob->theory->index);
+				oldvec->index = 0;
+			}
 		}
 	}
 
@@ -428,6 +447,29 @@ void fourier_set_color (gint mainuid, GdkColor color)
 	graph = GTK_SPECTVIS (glade_xml_get_widget (glob->fft->xmlfft, "fft_spectvis"));
 	gtk_spect_vis_set_data_color (graph, mainuid, color);
 	gtk_spect_vis_redraw (graph);
+}
+
+void fourier_difference_changed (gboolean activate, gint olddataindex, gint oldtheoindex)
+{
+	GtkSpectVis *graph;
+
+	if (glob->fft == NULL)
+		return;
+	g_return_if_fail (glob->data);
+
+	graph = GTK_SPECTVIS (glade_xml_get_widget (glob->fft->xmlfft, "fft_spectvis"));
+
+	if (olddataindex)
+		gtk_spect_vis_data_remove (graph, olddataindex);
+
+	if (oldtheoindex)
+		gtk_spect_vis_data_remove (graph, oldtheoindex);
+
+	/* activate == TRUE: view difference has been activated */
+	if (activate)
+		/* If active == FLASE, the fourier graphs will be rebuild by
+		 * visualize_draw_data() which will be called by the callback. */
+		fourier_update_main_graphs ();
 }
 
 void fourier_open_win (gboolean window)

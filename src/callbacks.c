@@ -225,6 +225,8 @@ gboolean view_log_power (GtkMenuItem *menuitem, gpointer user_data)
 
 gboolean on_view_difference_activate (GtkMenuItem *menuitem, gpointer user_data)
 {
+	gint olddataindex, oldtheoindex;
+	
 	if (!glob->data)
 	{
 		dialog_message ("Please import some data first");
@@ -242,14 +244,19 @@ gboolean on_view_difference_activate (GtkMenuItem *menuitem, gpointer user_data)
 	}
 	
 	visualize_stop_background_calc ();
+	olddataindex = glob->data->index;
+	oldtheoindex = glob->theory->index;
+	
 	if (gtk_check_menu_item_get_active (GTK_CHECK_MENU_ITEM (menuitem)))
 	{
 		glob->viewdifference = TRUE;
 		visualize_difference_graph ();
+		fourier_difference_changed (TRUE, olddataindex, oldtheoindex);
 	}
 	else
 	{
 		glob->viewdifference = FALSE;
+		fourier_difference_changed (FALSE, olddataindex, oldtheoindex);
 		visualize_remove_difference_graph ();
 		visualize_draw_data ();
 		visualize_theory_graph ();

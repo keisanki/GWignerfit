@@ -161,7 +161,7 @@ void visualize_difference_graph ()
 	visualize_handle_viewport_changed (GTK_SPECTVIS (graph), "u");
 }
 
-static void visualize_calculate_difference (ComplexDouble *val, ComplexDouble *diff, guint pos)
+void visualize_calculate_difference (ComplexDouble *val, ComplexDouble *diff, guint pos)
 {
 	diff->abs = glob->data->y[pos].abs - val->abs;
 	diff->re  = glob->data->y[pos].re  - val->re;
@@ -203,7 +203,7 @@ gint visualize_handle_signal_marked (GtkSpectVis *spectvis, gdouble *xval, gdoub
 			{
 				visualize_stop_background_calc ();
 
-				respos = (gtk_spect_vis_get_data_by_uid (spectvis, glob->data->index))->xmin_arraypos;
+				respos = (gtk_spect_vis_get_data_by_uid (spectvis, glob->theory->index))->xmin_arraypos;
 				while ((*xval > glob->data->x[respos]) && (respos < glob->data->len))
 					respos++;
 				
