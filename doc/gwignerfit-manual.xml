@@ -3,7 +3,7 @@
   "http://www.oasis-open.org/docbook/xml/4.4/docbookx.dtd" [
 <!--"/usr/share/sgml/docbook/xml-dtd-4.4-1.0-26/docbookx.dtd" [ -->
 	<!ENTITY legal SYSTEM "legal.xml">
-	<!ENTITY appversion "2006-03-02">
+	<!ENTITY appversion "2006-04-28">
 	<!ENTITY manrevision "1.0">
 	<!ENTITY date "August 2005">
 	<!ENTITY app "<application>GWignerFit</application>">
@@ -1420,7 +1420,7 @@
 				<alt role="tex">
 					\[
 						S_{ab}(\nu) = s\,e^{i\,\alpha}\,e^{-2\pi i\,\tau\nu} f(\nu) \left(
-						\delta_{ab} - i \sum_\mu \frac{A_\mu\,e^{i\,\phi_\mu}}{\nu-\nu_\mu -
+						\delta_{ab} + i \sum_\mu \frac{A_\mu\,e^{i\,\phi_\mu}}{\nu-\nu_\mu -
 						i \frac{\Gamma_\mu}{2}} \right)
 					\]
 				</alt>
@@ -1433,8 +1433,13 @@
 			that spectra measured with a HP8510 VNA cannot be described by <xref
 			linkend="eqn-main" /> unless there is a negative sign in front of the
 			width expression. It seems that the VNA uses a different sign convention
-			to express phase differences than the "normal" scattering
-			formalism.
+			to express phase differences than the "normal" scattering formalism.
+			Additionally there is a <emphasis>plus sign</emphasis> in front of the
+			sum over all resonance terms. This should normally be a minus sign but is
+			chosen to be this way here so that reflection amplitudes have phases
+			<emphasis role="italic">&phiv;<subscript>&mu;</subscript></emphasis>
+			around zero. Without this plus sign they would all be around 180 degree
+			due to the minus sign in the denominator that has been explained above.
 		</para>
 			
 		<para><xref linkend="eqn-main" /> describes essentially the same thing as
@@ -2568,6 +2573,33 @@
 							view" and &app; will display the frequency difference between the
 							two points. Note: This function does <emphasis>not</emphasis>
 							work with the "spectra graph".
+						</para>
+					</listitem>
+				</varlistentry>
+			</variablelist>
+		</sect3>
+		<sect3 id="gwf-merge-view">
+			<title>The merge <guimenu>View</guimenu> menu</title>
+
+			<para>You can change the appearance of the spectra graph with the options
+				from this menu. The possible actions are:
+			</para>
+
+			<variablelist>
+				<varlistentry>
+					<term><guimenuitem>Normal scale</guimenuitem></term>
+					<listitem>
+						<para>Use this menuitem to view absolute values in the spectra
+							graph in a linear scale.
+						</para>
+					</listitem>
+				</varlistentry>
+				<varlistentry>
+					<term><guimenuitem>Log scale</guimenuitem></term>
+					<listitem>
+						<para>With this option set the ordinate of the spectra graph will
+							have a logarithmic scale thus displaying the power spectrum in
+							dB.
 						</para>
 					</listitem>
 				</varlistentry>
@@ -3758,6 +3790,16 @@
 					gwf file, &app; will normally show a confirmation dialog. You can
 					disable this behavior here. This will <emphasis>not</emphasis>
 					disable the confirmation dialog when you try to overwrite a section.
+				</para>
+			</listitem>
+		</varlistentry>
+		<varlistentry>
+			<term><guilabel>Confirm deletion of resonances</guilabel></term>
+			<listitem>
+				<para>Enable this to get a confirmation dialog each time you try to
+					delete a resonance from the resonance list. This can be useful if you
+					want to be protected from accidentally hitting the
+					<keycap>Delete</keycap> key.
 				</para>
 			</listitem>
 		</varlistentry>
