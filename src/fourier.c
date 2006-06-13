@@ -144,6 +144,30 @@ DataVector* fourier_gen_dataset (DataVector *source, gdouble startfrq, gdouble e
 		data[2*i+2] *= w;
 	}
 
+	if (glob->fft && glob->fft->xmlfft)
+	{
+		if (gtk_check_menu_item_get_active (GTK_CHECK_MENU_ITEM (
+					glade_xml_get_widget (glob->fft->xmlfft, "abs_of_data")
+					)))
+			/* Do the FFT of the absolute value of the data */
+			for (i=0; i<numpoints; i++)
+			{
+				data[2*i+1] = sqrt(data[2*i+1]*data[2*i+1] + data[2*i+2]*data[2*i+2]);
+				data[2*i+2] = 0.0;
+			}
+
+		if (gtk_check_menu_item_get_active (GTK_CHECK_MENU_ITEM (
+					glade_xml_get_widget (glob->fft->xmlfft, "abssquared_of_data")
+					)))
+			/* Do the FFT of the absolute square of the data */
+			for (i=0; i<numpoints; i++)
+			{
+				data[2*i+1] = data[2*i+1]*data[2*i+1] + data[2*i+2]*data[2*i+2];
+				data[2*i+1] /= fourier_window_data (i, numpoints);
+				data[2*i+2] = 0.0;
+			}
+	}
+
 	/* Pad with zeros */
 	for (i=2*numpoints; i<2*n-1; i++)
 		data[i] = 0;
@@ -702,6 +726,16 @@ static void fourier_export_data (DataVector *dataset, gchar *expln)
 	fprintf (datafile, "# FFT of '%s' %s\n", name, expln);
 	g_free (name);
 
+	if (gtk_check_menu_item_get_active (GTK_CHECK_MENU_ITEM (
+			glade_xml_get_widget (glob->fft->xmlfft, "abs_of_data")
+			)))
+		fprintf (datafile, "# The FFT has been applied to the absolute values!\n");
+
+	if (gtk_check_menu_item_get_active (GTK_CHECK_MENU_ITEM (
+			glade_xml_get_widget (glob->fft->xmlfft, "abssquared_of_data")
+			)))
+		fprintf (datafile, "# The FFT has been applied to the square of the absolute values!\n");
+
 	if (glob->fft->fmin >= 0.0)
 		fprintf (datafile, "# Source frequency range: %.9f - %.9f GHz\n", 
 			glob->fft->fmin/1e9, glob->fft->fmax/1e9);
@@ -745,6 +779,10 @@ void on_fourier_export_theo_data (GtkMenuItem *menuitem, gpointer user_data)
 	fourier_export_data (g_ptr_array_index (glob->fft->data, 1), "theory graph");
 }
 
+void on_fourier_analyze_change (GtkMenuItem *menuitem, gpointer user_data)
+{
+	fourier_update_main_graphs ();
+}
 void on_fft_measure_distance_activate (GtkMenuItem *menuitem, gpointer user_data)
 {
 	if (!glob->data) 

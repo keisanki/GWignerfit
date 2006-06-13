@@ -3,7 +3,7 @@
   "http://www.oasis-open.org/docbook/xml/4.4/docbookx.dtd" [
 <!--"/usr/share/sgml/docbook/xml-dtd-4.4-1.0-26/docbookx.dtd" [ -->
 	<!ENTITY legal SYSTEM "legal.xml">
-	<!ENTITY appversion "2006-04-28">
+	<!ENTITY appversion "2006-06-13">
 	<!ENTITY manrevision "1.0">
 	<!ENTITY date "August 2005">
 	<!ENTITY app "<application>GWignerFit</application>">
@@ -2864,10 +2864,23 @@
 		<sect3 id="gwf-fft-analyze-menu">
 			<title>The FFT <guimenu>Analyze</guimenu> menu</title>
 
-			<para>The <guimenu>Analyze</guimenu> menu contains only one entry
+			<para>The <guimenu>Analyze</guimenu> menu contains two groups of entries
 			right now:</para>
 
 			<variablelist>
+				<varlistentry>
+					<term><guimenuitem>Complex data</guimenuitem>, <guimenuitem>Absolute
+							of data</guimenuitem> and <guimenuitem>Absolute squared of data</guimenuitem></term>
+					<listitem>
+						<para>The standard mode of operation of &app; is to calculate the
+							complex FFT of the <guimenuitem>Complex data</guimenuitem>
+							information. However, in some cases it might be desired to take
+							the absolute value of even the square of the absolute value of
+							the datasets before applying the FFT. This can be done by
+							choosing the appropriate menu entry here.
+						</para>
+					</listitem>
+				</varlistentry>
 				<varlistentry>
 					<term><guimenuitem>Measure distance</guimenuitem></term>
 					<listitem>
