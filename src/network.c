@@ -25,9 +25,11 @@
 #include "processdata.h"
 #include "overlay.h"
 #include "fourier.h"
+#include "calibrate_vna.h"
 
 #define VNA_PORT    8510	/* Port of Ieee488Proxy */
-#define VNA_GBIP     "16"	/* GBIP address of network analyzer */
+#define VNA_GBIP     "16"	/* GBIP address of network analyzer as string */
+#define VNA_GBIP_INT  16 	/* GBIP address of network analyzer as integer */
 #define VNA_GREET_LEN 28	/* Length of greeting message */
 #define VNA_STAT_LEN  24	/* Length of status message */
 #define VNA_RARR_LEN  33	/* Length of rarray 'Bytes read' reply */
@@ -719,7 +721,7 @@ static gboolean vna_add_data_to_graph (DataVector *dvec)
 
 /************************ The measurement thread ***************************/
 
-static int vna_send_cmd (int fd, char *msg, int errmask);
+int vna_send_cmd (int fd, char *msg, int errmask);
 
 /* Exit the thread cleanly */
 static void vna_thread_exit (gchar *format, ...)
@@ -727,8 +729,22 @@ static void vna_thread_exit (gchar *format, ...)
 	va_list ap;
 	char *message = NULL;
 
+	if (glob->flag & FLAG_VNA_CAL)
+	{
+		/* An online calibration is running which has its
+		 * own exit function. */
+		va_start (ap, format);
+		message = g_strdup_vprintf (format, ap);
+		va_end (ap);
+
+		cal_vna_exit (message);
+		g_free (message);
+
+		return;
+	}
+
 #ifndef NO_ZLIB
-	if (glob->netwin->gzoutfh)
+	if (glob->netwin && glob->netwin->gzoutfh)
 		gzclose (glob->netwin->gzoutfh);
 #endif
 
@@ -740,15 +756,13 @@ static void vna_thread_exit (gchar *format, ...)
 	}
 	g_timeout_add (1, (GSourceFunc) vna_measurement_finished, message);
 
-	if (glob->netwin)
+	if ((glob->netwin) && (glob->netwin->sockfd > 0))
 	{
-		if (glob->netwin->sockfd > 0)
-			close (glob->netwin->sockfd);
+		close (glob->netwin->sockfd);
+		glob->netwin->sockfd = -1;
 	}
 
 	glob->flag &= ~FLAG_VNA_MEAS;
-	glob->netwin->sockfd = -1;
-
 	g_thread_exit (NULL);
 }
 
@@ -762,7 +776,10 @@ static void vna_update_netstat (gchar *format, ...)
 	message = g_strdup_vprintf (format, ap);
 	va_end (ap);
 
-	g_timeout_add (1, (GSourceFunc) vna_set_netstat, message);
+	if (glob->flag & FLAG_VNA_CAL)
+		g_timeout_add (1, (GSourceFunc) cal_vna_set_netstat, message);
+	else
+		g_timeout_add (1, (GSourceFunc) vna_set_netstat, message);
 }
 
 /* Sleep for some miliseconds */
@@ -784,7 +801,7 @@ static void vna_ms_sleep (glong ms)
 			ms = 0;
 		}
 
-		if (! (glob->flag & FLAG_VNA_MEAS))
+		if (! (glob->flag & (FLAG_VNA_MEAS | FLAG_VNA_CAL)) )
 		{
 			if (glob->netwin->sockfd)
 			{
@@ -825,9 +842,9 @@ static int vna_receiveall_full (int s, char *buf, int len, int failok)
 			if (FD_ISSET (s, &fdset))
 				break;
 
-			if (! (glob->flag & FLAG_VNA_MEAS))
+			if (! (glob->flag & (FLAG_VNA_MEAS | FLAG_VNA_CAL)) )
 			{
-				if (glob->netwin->sockfd)
+				if (glob->netwin && glob->netwin->sockfd)
 				{
 					if (glob->netwin->type == 1)
 						vna_send_cmd (glob->netwin->sockfd, 
@@ -844,7 +861,7 @@ static int vna_receiveall_full (int s, char *buf, int len, int failok)
 			if (!failok)
 			{
 				/* Fail with error message and VNA initialization */
-				if (glob->netwin->sockfd)
+				if (glob->netwin && glob->netwin->sockfd)
 				{
 					if (glob->netwin->type == 1)
 						vna_send_cmd (glob->netwin->sockfd, 
@@ -873,7 +890,7 @@ static int vna_receiveall_full (int s, char *buf, int len, int failok)
 
 	/*len = total;*/ /* return number actually received here */
 	DV(if ((buf[0] == '*') || (buf[0] == 'M') || (buf[0] == ' '))
-		printf ("received: %s", buf);
+		printf ("received (%d bytes): %.*s", len, len, buf);
 	else
 		printf ("received: [data not shown]\n");)
 
@@ -887,13 +904,13 @@ static int vna_receiveall (int s, char *buf, int len)
 }
 
 /* Send a whole buffer to the proxy */
-static int vna_sendall (int s, char *buf, int len)
+int vna_sendall (int s, char *buf, int len)
 {
 	int total = 0;       /* how many bytes we've sent */
 	int bytesleft = len; /* how many we have left to send */
 	int n = 0;
 
-	DV(printf("transmit: %s\n", buf);)
+	DV(printf("transmit (%d bytes): %.*s\n", len, len, buf);)
 	while (total < len)
 	{
 		n = send (s, buf+total, bytesleft, 0);
@@ -908,8 +925,8 @@ static int vna_sendall (int s, char *buf, int len)
 	return n==-1?-1:0; /* return -1 on failure, 0 on success */
 }
 
-/* Send (\0 terminated!) msg to the proxy and return the status message. */
-static int vna_send_cmd (int fd, char *msg, int errmask)
+/* Send (must be \0 terminated!) msg to the proxy and return the status message. */
+int vna_send_cmd (int fd, char *msg, int errmask)
 {
 	char reply[VNA_STAT_LEN+1];
 	int status = -1;
@@ -943,7 +960,7 @@ static int vna_send_cmd (int fd, char *msg, int errmask)
 }
 
 /* Connect to host and return the file descriptor */
-static int vna_connect (const gchar *host)
+int vna_connect (const gchar *host)
 {
 	int sockfd, errsv, res, valopt;
 	struct hostent *he;
@@ -981,7 +998,10 @@ static int vna_connect (const gchar *host)
 
 	/* I know, I return the socket, but this way vna_thread_exit can
 	 * close the socked by itself if I quit somewhere in this function. */
-	glob->netwin->sockfd = sockfd;
+	if (glob->netwin && (glob->flag & FLAG_VNA_MEAS))
+		glob->netwin->sockfd = sockfd;
+	else if (glob->calwin && (glob->flag & FLAG_VNA_CAL))
+		glob->calwin->sockfd = sockfd;
 
 	/* Set connections details */
 	proxy_addr.sin_family = AF_INET;
@@ -1048,41 +1068,48 @@ static int vna_connect (const gchar *host)
 }
 
 /* Execute an enter command */
-static void vna_enter (int sockfd, char *buf, int len, int addr, int errmask)
+void vna_enter (int sockfd, char *buf, int len, int addr, int errmask)
 {
-	int status;
 	char *cmd;
 	
 	cmd = g_strdup_printf ("* PROXYCMD: enter %i %i", len, addr);
 	vna_send_cmd (sockfd, cmd, errmask);
 	g_free (cmd);
 
-	status = vna_receiveall (sockfd, buf, len);
+	if (vna_receiveall (sockfd, buf, len))
+		vna_thread_exit ("Failed to receive %d bytes for enter().", len);
+}
 
-	if ((errmask > 0) && (status & errmask))
+/* Wait for network to be ready again */
+void vna_spoll_wait (int sockfd)
+{
+	char buf[30];
+	int statbyte = 0;
+
+	while (!(statbyte & 4))
 	{
-		if ((status & VNA_ETIMEOUT) && (errmask & VNA_ETIMEOUT))
-			vna_thread_exit ("Connection between proxy and network analyzer timed out.");
-
-		vna_thread_exit ("Network analyzer sent status: %d", status);
+		vna_send_cmd (sockfd, "* PROXYCMD: spoll "VNA_GBIP, VNA_ETIMEOUT);
+		if (vna_receiveall (sockfd, buf, 30))
+			vna_thread_exit ("Failed to receive 30 bytes for spoll().");
+		if ((sscanf (buf, "* PROXYMSG: poll result %d", &statbyte) != 1))
+			vna_thread_exit ("Could not parse spoll proxy reply: %s", buf);
+		usleep (10000);
 	}
 }
 
 /* Retrieve the measurement points */
-static ComplexDouble *vna_recv_data (int points)
+ComplexDouble *vna_recv_data (int sockfd, int points)
 {
 	ComplexDouble *data;
 	char read[VNA_RARR_LEN+1];
 	char buf[6408], *cmd;
-	int sockfd, nread, i;
+	int nread, i;
 
-	g_return_val_if_fail (glob->netwin, NULL);
-	g_return_val_if_fail (glob->netwin->sockfd > 0, NULL);
-
-	sockfd = glob->netwin->sockfd;
+	g_return_val_if_fail (glob->netwin || glob->calwin, NULL);
+	g_return_val_if_fail (sockfd > 0, NULL);
 
 	vna_send_cmd (sockfd, "MTA LISTEN "VNA_GBIP" DATA 'FORM5;OUTPDATA;'", VNA_ETIMEOUT);
-	vna_send_cmd (sockfd, "MLA TALK 16", VNA_ETIMEOUT);
+	vna_send_cmd (sockfd, "MLA TALK "VNA_GBIP, VNA_ETIMEOUT);
 
 	/* Read the header */
 	vna_send_cmd (sockfd, "* PROXYCMD: rarray 4", VNA_ETIMEOUT | VNA_ENOLISTE);
@@ -1091,6 +1118,7 @@ static ComplexDouble *vna_recv_data (int points)
 	sscanf (read, "* PROXYMSG: Bytes read %d", &nread);
 	g_return_val_if_fail (nread == 4, NULL);
 	vna_receiveall (sockfd, buf, 4);
+	/* Header is 0x23 0x41 0x08 0x19, 0x08 0x19 is 801*8 bytes */
 
 	/* Read the data (e.g. 801*4*2 bytes = 6408 bytes) */
 	cmd = g_strdup_printf ("* PROXYCMD: rarray %i", points*8);
@@ -1143,15 +1171,15 @@ static void vna_take_snapshot ()
 	vna_send_cmd (sockfd, "MTA LISTEN "VNA_GBIP" DATA 'FORM5;'", VNA_ETIMEOUT);
 	/* Get start frequency */
 	vna_send_cmd (sockfd, "MTA LISTEN "VNA_GBIP" DATA 'STAR; OUTPACTI;'", VNA_ETIMEOUT);
-	vna_enter (sockfd, enterbuf, 30, 16, VNA_ETIMEOUT); 
+	vna_enter (sockfd, enterbuf, 30, VNA_GBIP_INT, VNA_ETIMEOUT); 
 	sscanf (enterbuf, "%lf", &start);
 	/* Get stop frequency */
 	vna_send_cmd (sockfd, "MTA LISTEN "VNA_GBIP" DATA 'STOP; OUTPACTI;'", VNA_ETIMEOUT);
-	vna_enter (sockfd, enterbuf, 30, 16, VNA_ETIMEOUT); 
+	vna_enter (sockfd, enterbuf, 30, VNA_GBIP_INT, VNA_ETIMEOUT); 
 	sscanf (enterbuf, "%lf", &stop);
 	/* Get number of points */
 	vna_send_cmd (sockfd, "MTA LISTEN "VNA_GBIP" DATA 'POIN; OUTPACTI;'", VNA_ETIMEOUT);
-	vna_enter (sockfd, enterbuf, 30, 16, VNA_ETIMEOUT); 
+	vna_enter (sockfd, enterbuf, 30, VNA_GBIP_INT, VNA_ETIMEOUT); 
 	sscanf (enterbuf, "%f", &f_points);
 	points = (int) f_points;
 
@@ -1168,8 +1196,11 @@ static void vna_take_snapshot ()
 
 	/* Get data */
 	vna_update_netstat ("Reading datapoints from network analyzer...");
-	data = vna_recv_data (points);
+	data = vna_recv_data (sockfd, points);
 	g_return_if_fail (data);
+
+	/* Clear network analyzer display by sending an "entry off" */
+	vna_send_cmd (sockfd, "MTA LISTEN "VNA_GBIP" DATA 'ENTO;'", VNA_ETIMEOUT);
 
 	/* Go back to local mode */
 	vna_send_cmd (sockfd, "MTA LISTEN "VNA_GBIP" GTL", VNA_ETIMEOUT);
@@ -1370,7 +1401,7 @@ static void vna_sweep_frequency_range ()
 		vna_ms_sleep (vna_sweep_cal_sleep ());
 
 		/* Get data */
-		data = vna_recv_data (801);
+		data = vna_recv_data (sockfd, 801);
 		g_return_if_fail (data);
 		
 		/* Write new data to file */
@@ -1453,7 +1484,7 @@ static void vna_sweep_frequency_range ()
 
 
 	/* Go back to continuous and local mode */
-	vna_send_cmd (sockfd, "MTA LISTEN "VNA_GBIP" DATA 'RAMP;CONT;'", 0);
+	vna_send_cmd (sockfd, "MTA LISTEN "VNA_GBIP" DATA 'RAMP;CONT;ENTO;'", 0);
 	vna_send_cmd (sockfd, "MTA LISTEN "VNA_GBIP" GTL", VNA_ETIMEOUT);
 }
 
@@ -1464,6 +1495,14 @@ static void vna_start ()
 	GTimeVal curtime;
 
 	g_return_if_fail (glob->netwin);
+
+	if (glob->flag & FLAG_VNA_CAL)
+	{
+		/* An online calibration is running */
+		g_timeout_add (1, (GSourceFunc) dialog_message, 
+			"Only one connection to an Ieee488Proxy can be open at a time.");
+		g_thread_exit (NULL);
+	}
 
 	netwin = glob->netwin;
 	netwin->sockfd = -1;
@@ -1481,7 +1520,7 @@ static void vna_start ()
 
 	/* Give the Ieee488 card GPIB 21 */
 	if (vna_send_cmd (netwin->sockfd, "* PROXYCMD: initialize 21", VNA_ETIMEOUT))
-		vna_thread_exit ("Could not initialize Ieee488 Card\n");
+		vna_thread_exit ("Could not initialize Ieee488 Card.");
 
 	/* Set up time estimates */
 	g_get_current_time (&curtime);

@@ -20,6 +20,7 @@ void prefs_set_default ()
 	glob->prefs->iterations = 50;
 	glob->prefs->widthunit = 6;
 	glob->prefs->confirm_append = TRUE;
+	glob->prefs->confirm_resdel = TRUE;
 	glob->prefs->save_overlays = TRUE;
 	glob->prefs->datapoint_marks = TRUE;
 	glob->prefs->sortparam = FALSE;
@@ -57,6 +58,7 @@ void prefs_save (Preferences *prefs)
 	fprintf (fh, "iterations = %d\n", prefs->iterations);
 	fprintf (fh, "widthunit = %d\n", prefs->widthunit);
 	fprintf (fh, "confirm_append = %d\n", prefs->confirm_append);
+	fprintf (fh, "confirm_resdel = %d\n", prefs->confirm_resdel);
 	fprintf (fh, "save_overlays = %d\n", prefs->save_overlays);
 	fprintf (fh, "datapoint_marks = %d\n", prefs->datapoint_marks);
 	fprintf (fh, "sortparam = %d\n", prefs->sortparam);
@@ -131,6 +133,8 @@ void prefs_load (Preferences *prefs)
 			prefs->widthunit = val;
 		if (!g_ascii_strncasecmp (cmd, "confirm_append", 15))
 			prefs->confirm_append = val;
+		if (!g_ascii_strncasecmp (cmd, "confirm_resdel", 15))
+			prefs->confirm_resdel = val;
 		if (!g_ascii_strncasecmp (cmd, "save_overlays", 14))
 			prefs->save_overlays = val;
 		if (!g_ascii_strncasecmp (cmd, "datapoint_marks", 16))
@@ -187,6 +191,10 @@ void prefs_change_win ()
 		glob->prefs->confirm_append);
 
 	gtk_toggle_button_set_active (
+		GTK_TOGGLE_BUTTON (glade_xml_get_widget (xmldialog, "confirm_resdel_check")), 
+		glob->prefs->confirm_resdel);
+
+	gtk_toggle_button_set_active (
 		GTK_TOGGLE_BUTTON (glade_xml_get_widget (xmldialog, "save_overlays_check")), 
 		glob->prefs->save_overlays);
 
@@ -232,6 +240,12 @@ void prefs_change_win ()
 			glob->prefs->confirm_append = TRUE;
 		else
 			glob->prefs->confirm_append = FALSE;
+
+		if (gtk_toggle_button_get_active (
+			GTK_TOGGLE_BUTTON (glade_xml_get_widget (xmldialog, "confirm_resdel_check"))))
+			glob->prefs->confirm_resdel = TRUE;
+		else
+			glob->prefs->confirm_resdel = FALSE;
 
 		if (gtk_toggle_button_get_active (
 			GTK_TOGGLE_BUTTON (glade_xml_get_widget (xmldialog, "save_overlays_check"))))

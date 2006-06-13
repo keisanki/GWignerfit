@@ -698,6 +698,10 @@ void remove_selected_resonance ()
 		return;
 	}
 
+	if ((glob->prefs->confirm_resdel) &&
+	    (dialog_question ("Do you really want to delete the selected resonance?") != GTK_RESPONSE_YES))
+		return;
+
 	/* Get path of selected resonances */
 	model     = GTK_TREE_MODEL (glob->store);
 	pathlist  = gtk_tree_selection_get_selected_rows (selection, &model);

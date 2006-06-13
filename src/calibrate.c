@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdarg.h>
+#include <string.h>
 #include <math.h>
 
 #include <gtk/gtk.h>
@@ -10,6 +11,7 @@
 #include "helpers.h"
 #include "processdata.h"
 #include "overlay.h"
+#include "calibrate_vna.h"
 
 extern GlobalData *glob;
 extern GladeXML *gladexml;
@@ -118,13 +120,39 @@ void cal_data_type_toggled (GtkToggleButton *togglebutton, gpointer user_data)
 	glob->calwin->data_is_refl = state;
 }
 
+/* Callback when changeing the calibration method */
+void cal_method_toggled (GtkToggleButton *togglebutton, gpointer user_data) 
+{
+	GladeXML *xmlcal = glob->calwin->xmlcal;
+	gboolean state;
+
+	/* state == TRUE for offline calibration */
+	state = gtk_toggle_button_get_active (togglebutton);
+	gtk_widget_set_sensitive (glade_xml_get_widget (xmlcal, "cal_proxy_hbox" ), !state);
+
+	glob->calwin->offline = state;
+}
+
 /* Takes the filenames from the TextEntries and stores them in the
  * CalWin struct with proper error checking */
 static gboolean cal_check_entries ()
 {
 	CalWin *calwin = glob->calwin;
 	gchar *file;
-	
+
+	if (!calwin->offline)
+	{
+		calwin->proxyhost = g_strdup (gtk_entry_get_text (GTK_ENTRY 
+				(glade_xml_get_widget (calwin->xmlcal, "cal_proxy_entry"))));
+		if (!calwin->proxyhost[0])
+		{
+			g_free (calwin->proxyhost);
+			calwin->proxyhost = NULL;
+			dialog_message ("Please enter a Ieee488Proxy hostname.");
+			return FALSE;
+		}
+	}
+
 	if ((file = cal_get_valid_file ("cal_in_entry")))
 		calwin->in_file = file;
 	else
@@ -135,6 +163,13 @@ static gboolean cal_check_entries ()
 		
 	file = g_strdup (gtk_entry_get_text (GTK_ENTRY 
 			(glade_xml_get_widget (glob->calwin->xmlcal, "cal_out_entry"))));
+
+	if (!strlen (file))
+	{
+		dialog_message ("Please input a name for the output data file.");
+		return FALSE;
+	}
+	
 	if (!file_is_writeable (file))
 		return FALSE;
 	calwin->out_file = file;
@@ -469,7 +504,11 @@ static gboolean cal_do_calibration ()
 		gtk_widget_set_sensitive (
 			glade_xml_get_widget (calwin->xmlcal, "cal_progress_frame" ), 
 			TRUE);
-		out = cal_reflection (in, a, b, c);
+
+		if (calwin->offline)
+			out = cal_reflection (in, a, b, c);
+		else
+			out = cal_vna_calibrate (in, a, b, c, calwin->proxyhost);
 	}
 	else
 	{
@@ -510,7 +549,10 @@ static gboolean cal_do_calibration ()
 			return FALSE;
 		}
 
-		out = cal_transmission (in, a, b);
+		if (calwin->offline)
+			out = cal_transmission (in, a, b);
+		else
+			out = cal_vna_calibrate (in, a, b, NULL, calwin->proxyhost);
 	}
 
 	cal_update_progress (-1.0);
@@ -566,6 +608,9 @@ static gboolean cal_do_calibration ()
 	fclose (fh);
 	cal_update_progress (-1.0);
 
+	/* Free in, a, b, c */
+	free_memory;
+
 	/* Add calibrated graph to display */
 	if (!glob->data)
 		/* Add as main graph */
@@ -601,6 +646,8 @@ void cal_open_win ()
 		calwin->thru_file = NULL;
 		calwin->isol_file = NULL;
 		calwin->data_is_refl = TRUE;
+		calwin->offline = TRUE;
+		calwin->proxyhost = NULL;
 	}
 
 	calwin->xmlcal = glade_xml_new (GLADEFILE, "cal_dialog", NULL);
@@ -634,6 +681,22 @@ void cal_open_win ()
 	cal_data_type_toggled (
 		GTK_TOGGLE_BUTTON (glade_xml_get_widget (calwin->xmlcal, "cal_refl_radio")),
 		NULL);
+
+	if (!calwin->offline)
+	{
+		gtk_toggle_button_set_active (
+			GTK_TOGGLE_BUTTON (
+				glade_xml_get_widget (calwin->xmlcal, "cal_offline_radio")),
+			FALSE);
+		gtk_toggle_button_set_active (
+			GTK_TOGGLE_BUTTON (
+				glade_xml_get_widget (calwin->xmlcal, "cal_online_radio")),
+			TRUE);
+		gtk_widget_set_sensitive (
+			glade_xml_get_widget (calwin->xmlcal, "cal_proxy_hbox" ),
+			TRUE);
+	}
+	cal_set_text ("cal_proxy_entry", calwin->proxyhost);
 
 	/* Enable SelectFilname buttons */
 	g_signal_connect (
@@ -680,9 +743,11 @@ void cal_open_win ()
 		result = gtk_dialog_run (GTK_DIALOG (dialog));
 
 		if (result != GTK_RESPONSE_OK)
+			/* Calibration canceled */
 			break;
 
 		if (!cal_check_entries ())
+			/* Some entries are not valid */
 			continue;
 
 		if (cal_do_calibration ())

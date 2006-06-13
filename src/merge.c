@@ -1490,6 +1490,32 @@ gboolean merge_handle_button_press (GtkWidget *widget, GdkEventButton *event)
 
 	return FALSE;
 }
+
+/* View spectrum graph in normal or logarithmic scale */
+gboolean merge_scale_change (GtkMenuItem *menuitem, gpointer user_data)
+{
+	GtkCheckMenuItem *item;
+	GtkSpectVis *graph;
+
+	if ((!glob->merge) || (!glob->merge->xmlmerge))
+		return FALSE;
+
+	item = GTK_CHECK_MENU_ITEM (
+		glade_xml_get_widget (glob->merge->xmlmerge, "merge_normal_scale"));
+	
+	graph = GTK_SPECTVIS (
+		glade_xml_get_widget (glob->merge->xmlmerge, "merge_spect_graph"));
+
+	if (gtk_check_menu_item_get_active (item))
+		gtk_spect_vis_set_displaytype (graph, 'a');
+	else
+		gtk_spect_vis_set_displaytype (graph, 'l');
+	
+	gtk_spect_vis_zoom_y_all (graph);
+	gtk_spect_vis_redraw (graph);
+
+	return TRUE;
+}
 /********** Automatic merger *************************************************/
 
 /* Does the main automatic merge voodoo */

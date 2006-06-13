@@ -20,6 +20,7 @@
 #define FLAG_MRK_NOISE  (1 << 9)
 #define FLAG_CHANGES    (1 << 10)
 #define FLAG_VNA_MEAS   (1 << 11)
+#define FLAG_VNA_CAL    (1 << 12)
 
 #define FIT_EXIT_ERROR      0
 #define FIT_EXIT_NRERR      1
@@ -99,6 +100,7 @@ typedef struct
 	gint iterations;		/* Number of iterations for a whole fit */
 	gint widthunit;			/* The unit for the width column */
 	gboolean confirm_append;	/* Confirm appending of sections? */
+	gboolean confirm_resdel;	/* Confirm the deletion of resonances? */
 	gboolean save_overlays;		/* Include overlayed graphs in gwf files? */
 	gboolean datapoint_marks;	/* Mark the datapoints in the graph? */
 	gboolean sortparam;		/* Sort glob->param array by frequencies? */
@@ -174,6 +176,10 @@ typedef struct
 	gchar *thru_file;		/* Full filename for thru standard data */
 	gchar *isol_file;		/* Full filename for isolation standard data */
 	gboolean data_is_refl;		/* True if calibration for reflection data */
+	gboolean offline;		/* True for offline calibration method */
+	gchar *proxyhost;		/* Ieee488Proxy hostname */
+	gint sockfd;			/* Socket for network communication */
+	GThread *cal_GThread;		/* The handle of the calibration process */
 } CalWin;
 
 typedef struct

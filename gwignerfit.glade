@@ -19,6 +19,7 @@
   <property name="type_hint">GDK_WINDOW_TYPE_HINT_NORMAL</property>
   <property name="gravity">GDK_GRAVITY_NORTH_WEST</property>
   <property name="focus_on_map">True</property>
+  <property name="urgency_hint">False</property>
   <signal name="delete_event" handler="quit_application" last_modification_time="Sun, 26 Sep 2004 13:11:42 GMT"/>
   <signal name="focus_out_event" handler="on_mainwindow_focus_out_event" last_modification_time="Fri, 19 Nov 2004 08:35:49 GMT"/>
 
@@ -31,6 +32,8 @@
       <child>
 	<widget class="GtkMenuBar" id="menubar">
 	  <property name="visible">True</property>
+	  <property name="pack_direction">GTK_PACK_DIRECTION_LTR</property>
+	  <property name="child_pack_direction">GTK_PACK_DIRECTION_LTR</property>
 
 	  <child>
 	    <widget class="GtkMenuItem" id="menuitem4">
@@ -182,21 +185,22 @@
 			  </child>
 
 			  <child>
+			    <widget class="GtkMenuItem" id="import_resonance_list">
+			      <property name="visible">True</property>
+			      <property name="label" translatable="yes">_Resonance list...</property>
+			      <property name="use_underline">True</property>
+			      <signal name="activate" handler="on_import_resonance_list_activate" last_modification_time="Fri, 29 Jul 2005 13:09:54 GMT"/>
+			      <accelerator key="I" modifiers="GDK_CONTROL_MASK | GDK_SHIFT_MASK" signal="activate"/>
+			    </widget>
+			  </child>
+
+			  <child>
 			    <widget class="GtkMenuItem" id="import_measure">
 			      <property name="visible">True</property>
 			      <property name="label" translatable="yes">_Mesasure data...</property>
 			      <property name="use_underline">True</property>
 			      <signal name="activate" handler="on_import_measure_activate" last_modification_time="Sun, 26 Sep 2004 13:10:27 GMT"/>
 			      <accelerator key="G" modifiers="GDK_CONTROL_MASK" signal="activate"/>
-			    </widget>
-			  </child>
-
-			  <child>
-			    <widget class="GtkMenuItem" id="import_resonance_list">
-			      <property name="visible">True</property>
-			      <property name="label" translatable="yes">_Resonance list...</property>
-			      <property name="use_underline">True</property>
-			      <signal name="activate" handler="on_import_resonance_list_activate" last_modification_time="Fri, 29 Jul 2005 13:09:54 GMT"/>
 			    </widget>
 			  </child>
 			</widget>
@@ -1409,6 +1413,7 @@
   <property name="type_hint">GDK_WINDOW_TYPE_HINT_DIALOG</property>
   <property name="gravity">GDK_GRAVITY_NORTH_WEST</property>
   <property name="focus_on_map">True</property>
+  <property name="urgency_hint">False</property>
   <property name="has_separator">True</property>
   <signal name="delete_event" handler="gtk_widget_destroy" last_modification_time="Mon, 27 Sep 2004 08:44:02 GMT"/>
   <signal name="destroy_event" handler="gtk_widget_destroy" last_modification_time="Mon, 27 Sep 2004 08:44:10 GMT"/>
@@ -1589,6 +1594,7 @@ since September 2004</property>
   <property name="type_hint">GDK_WINDOW_TYPE_HINT_DIALOG</property>
   <property name="gravity">GDK_GRAVITY_NORTH_WEST</property>
   <property name="focus_on_map">True</property>
+  <property name="urgency_hint">False</property>
   <property name="has_separator">True</property>
 
   <child internal-child="vbox">
@@ -1891,6 +1897,7 @@ since September 2004</property>
   <property name="type_hint">GDK_WINDOW_TYPE_HINT_NORMAL</property>
   <property name="gravity">GDK_GRAVITY_NORTH_WEST</property>
   <property name="focus_on_map">True</property>
+  <property name="urgency_hint">False</property>
   <signal name="delete_event" handler="cancel_fit_in_progress" last_modification_time="Fri, 08 Oct 2004 10:28:33 GMT"/>
 
   <child>
@@ -2419,6 +2426,7 @@ since September 2004</property>
   <property name="type_hint">GDK_WINDOW_TYPE_HINT_DIALOG</property>
   <property name="gravity">GDK_GRAVITY_NORTH_WEST</property>
   <property name="focus_on_map">True</property>
+  <property name="urgency_hint">False</property>
   <property name="has_separator">True</property>
 
   <child internal-child="vbox">
@@ -2855,6 +2863,7 @@ Please check and decide what to do.</property>
   <property name="type_hint">GDK_WINDOW_TYPE_HINT_DIALOG</property>
   <property name="gravity">GDK_GRAVITY_NORTH_WEST</property>
   <property name="focus_on_map">True</property>
+  <property name="urgency_hint">False</property>
   <property name="has_separator">True</property>
 
   <child internal-child="vbox">
@@ -2994,6 +3003,7 @@ Please check and decide what to do.</property>
   <property name="type_hint">GDK_WINDOW_TYPE_HINT_DIALOG</property>
   <property name="gravity">GDK_GRAVITY_NORTH_WEST</property>
   <property name="focus_on_map">True</property>
+  <property name="urgency_hint">False</property>
   <property name="has_separator">True</property>
 
   <child internal-child="vbox">
@@ -3117,6 +3127,7 @@ Please check and decide what to do.</property>
   <property name="type_hint">GDK_WINDOW_TYPE_HINT_DIALOG</property>
   <property name="gravity">GDK_GRAVITY_NORTH_WEST</property>
   <property name="focus_on_map">True</property>
+  <property name="urgency_hint">False</property>
   <property name="has_separator">True</property>
 
   <child internal-child="vbox">
@@ -3227,6 +3238,7 @@ Please check and decide what to do.</property>
   <property name="type_hint">GDK_WINDOW_TYPE_HINT_NORMAL</property>
   <property name="gravity">GDK_GRAVITY_NORTH_WEST</property>
   <property name="focus_on_map">True</property>
+  <property name="urgency_hint">False</property>
   <signal name="delete_event" handler="overlay_close_window" last_modification_time="Thu, 06 Jan 2005 13:34:11 GMT"/>
   <signal name="destroy_event" handler="overlay_close_window" last_modification_time="Thu, 06 Jan 2005 13:34:39 GMT"/>
 
@@ -3442,6 +3454,7 @@ Please check and decide what to do.</property>
   <property name="type_hint">GDK_WINDOW_TYPE_HINT_DIALOG</property>
   <property name="gravity">GDK_GRAVITY_NORTH_WEST</property>
   <property name="focus_on_map">True</property>
+  <property name="urgency_hint">False</property>
   <property name="has_separator">True</property>
 
   <child internal-child="vbox">
@@ -3684,6 +3697,25 @@ Please check and decide what to do.</property>
 	  </child>
 
 	  <child>
+	    <widget class="GtkCheckButton" id="confirm_resdel_check">
+	      <property name="visible">True</property>
+	      <property name="can_focus">True</property>
+	      <property name="label" translatable="yes">Confirm deletion of resonances</property>
+	      <property name="use_underline">True</property>
+	      <property name="relief">GTK_RELIEF_NORMAL</property>
+	      <property name="focus_on_click">True</property>
+	      <property name="active">False</property>
+	      <property name="inconsistent">False</property>
+	      <property name="draw_indicator">True</property>
+	    </widget>
+	    <packing>
+	      <property name="padding">0</property>
+	      <property name="expand">False</property>
+	      <property name="fill">False</property>
+	    </packing>
+	  </child>
+
+	  <child>
 	    <widget class="GtkCheckButton" id="save_overlays_check">
 	      <property name="visible">True</property>
 	      <property name="can_focus">True</property>
@@ -3785,6 +3817,7 @@ Please check and decide what to do.</property>
   <property name="type_hint">GDK_WINDOW_TYPE_HINT_DIALOG</property>
   <property name="gravity">GDK_GRAVITY_NORTH_WEST</property>
   <property name="focus_on_map">True</property>
+  <property name="urgency_hint">False</property>
   <property name="has_separator">True</property>
 
   <child internal-child="vbox">
@@ -4032,6 +4065,7 @@ Please check and decide what to do.</property>
   <property name="type_hint">GDK_WINDOW_TYPE_HINT_NORMAL</property>
   <property name="gravity">GDK_GRAVITY_NORTH_WEST</property>
   <property name="focus_on_map">True</property>
+  <property name="urgency_hint">False</property>
   <signal name="delete_event" handler="on_fft_close_activate" last_modification_time="Fri, 18 Feb 2005 14:54:11 GMT"/>
 
   <child>
@@ -4043,6 +4077,8 @@ Please check and decide what to do.</property>
       <child>
 	<widget class="GtkMenuBar" id="fft_menubar">
 	  <property name="visible">True</property>
+	  <property name="pack_direction">GTK_PACK_DIRECTION_LTR</property>
+	  <property name="child_pack_direction">GTK_PACK_DIRECTION_LTR</property>
 
 	  <child>
 	    <widget class="GtkMenuItem" id="menuitem8">
@@ -4330,6 +4366,7 @@ Please check and decide what to do.</property>
   <property name="type_hint">GDK_WINDOW_TYPE_HINT_DIALOG</property>
   <property name="gravity">GDK_GRAVITY_NORTH_WEST</property>
   <property name="focus_on_map">True</property>
+  <property name="urgency_hint">False</property>
   <property name="has_separator">True</property>
 
   <child internal-child="vbox">
@@ -4957,6 +4994,7 @@ Please check and decide what to do.</property>
   <property name="type_hint">GDK_WINDOW_TYPE_HINT_NORMAL</property>
   <property name="gravity">GDK_GRAVITY_NORTH_WEST</property>
   <property name="focus_on_map">True</property>
+  <property name="urgency_hint">False</property>
   <signal name="delete_event" handler="on_spectral_close_activate" last_modification_time="Fri, 18 Feb 2005 14:54:11 GMT"/>
 
   <child>
@@ -4968,6 +5006,8 @@ Please check and decide what to do.</property>
       <child>
 	<widget class="GtkMenuBar" id="spectral_menubar">
 	  <property name="visible">True</property>
+	  <property name="pack_direction">GTK_PACK_DIRECTION_LTR</property>
+	  <property name="child_pack_direction">GTK_PACK_DIRECTION_LTR</property>
 
 	  <child>
 	    <widget class="GtkMenuItem" id="menuitem11">
@@ -5750,6 +5790,7 @@ Please check and decide what to do.</property>
   <property name="type_hint">GDK_WINDOW_TYPE_HINT_NORMAL</property>
   <property name="gravity">GDK_GRAVITY_NORTH_WEST</property>
   <property name="focus_on_map">True</property>
+  <property name="urgency_hint">False</property>
   <signal name="delete_event" handler="on_vna_close_activate" last_modification_time="Fri, 18 Feb 2005 14:54:11 GMT"/>
 
   <child>
@@ -6971,7 +7012,7 @@ Please check and decide what to do.</property>
 
 <widget class="GtkDialog" id="cal_dialog">
   <property name="width_request">500</property>
-  <property name="height_request">450</property>
+  <property name="height_request">520</property>
   <property name="visible">True</property>
   <property name="title" translatable="yes">Calibrate spectrum</property>
   <property name="type">GTK_WINDOW_TOPLEVEL</property>
@@ -6985,6 +7026,7 @@ Please check and decide what to do.</property>
   <property name="type_hint">GDK_WINDOW_TYPE_HINT_DIALOG</property>
   <property name="gravity">GDK_GRAVITY_NORTH_WEST</property>
   <property name="focus_on_map">True</property>
+  <property name="urgency_hint">False</property>
   <property name="has_separator">True</property>
 
   <child internal-child="vbox">
@@ -7034,7 +7076,7 @@ Please check and decide what to do.</property>
       </child>
 
       <child>
-	<widget class="GtkVBox" id="vbox20">
+	<widget class="GtkVBox" id="vbox28">
 	  <property name="border_width">3</property>
 	  <property name="visible">True</property>
 	  <property name="homogeneous">False</property>
@@ -7091,34 +7133,6 @@ Please check and decide what to do.</property>
 			  <property name="right_attach">1</property>
 			  <property name="top_attach">0</property>
 			  <property name="bottom_attach">1</property>
-			  <property name="x_options">fill</property>
-			  <property name="y_options"></property>
-			</packing>
-		      </child>
-
-		      <child>
-			<widget class="GtkLabel" id="label87">
-			  <property name="visible">True</property>
-			  <property name="label" translatable="yes">Data type: </property>
-			  <property name="use_underline">False</property>
-			  <property name="use_markup">False</property>
-			  <property name="justify">GTK_JUSTIFY_LEFT</property>
-			  <property name="wrap">False</property>
-			  <property name="selectable">False</property>
-			  <property name="xalign">0</property>
-			  <property name="yalign">0.5</property>
-			  <property name="xpad">0</property>
-			  <property name="ypad">0</property>
-			  <property name="ellipsize">PANGO_ELLIPSIZE_NONE</property>
-			  <property name="width_chars">-1</property>
-			  <property name="single_line_mode">False</property>
-			  <property name="angle">0</property>
-			</widget>
-			<packing>
-			  <property name="left_attach">0</property>
-			  <property name="right_attach">1</property>
-			  <property name="top_attach">2</property>
-			  <property name="bottom_attach">3</property>
 			  <property name="x_options">fill</property>
 			  <property name="y_options"></property>
 			</packing>
@@ -7424,6 +7438,34 @@ Please check and decide what to do.</property>
 			  <property name="y_options">fill</property>
 			</packing>
 		      </child>
+
+		      <child>
+			<widget class="GtkLabel" id="label87">
+			  <property name="visible">True</property>
+			  <property name="label" translatable="yes">Data type: </property>
+			  <property name="use_underline">False</property>
+			  <property name="use_markup">False</property>
+			  <property name="justify">GTK_JUSTIFY_LEFT</property>
+			  <property name="wrap">False</property>
+			  <property name="selectable">False</property>
+			  <property name="xalign">0</property>
+			  <property name="yalign">0.5</property>
+			  <property name="xpad">0</property>
+			  <property name="ypad">0</property>
+			  <property name="ellipsize">PANGO_ELLIPSIZE_NONE</property>
+			  <property name="width_chars">-1</property>
+			  <property name="single_line_mode">False</property>
+			  <property name="angle">0</property>
+			</widget>
+			<packing>
+			  <property name="left_attach">0</property>
+			  <property name="right_attach">1</property>
+			  <property name="top_attach">2</property>
+			  <property name="bottom_attach">4</property>
+			  <property name="x_options">fill</property>
+			  <property name="y_options"></property>
+			</packing>
+		      </child>
 		    </widget>
 		  </child>
 		</widget>
@@ -7454,7 +7496,7 @@ Please check and decide what to do.</property>
 	    </widget>
 	    <packing>
 	      <property name="padding">0</property>
-	      <property name="expand">False</property>
+	      <property name="expand">True</property>
 	      <property name="fill">True</property>
 	    </packing>
 	  </child>
@@ -8167,8 +8209,176 @@ Please check and decide what to do.</property>
 	    </widget>
 	    <packing>
 	      <property name="padding">0</property>
-	      <property name="expand">False</property>
-	      <property name="fill">False</property>
+	      <property name="expand">True</property>
+	      <property name="fill">True</property>
+	    </packing>
+	  </child>
+
+	  <child>
+	    <widget class="GtkFrame" id="frame11">
+	      <property name="visible">True</property>
+	      <property name="sensitive">False</property>
+	      <property name="label_xalign">0</property>
+	      <property name="label_yalign">0.5</property>
+	      <property name="shadow_type">GTK_SHADOW_NONE</property>
+
+	      <child>
+		<widget class="GtkAlignment" id="alignment34">
+		  <property name="visible">True</property>
+		  <property name="xalign">0.5</property>
+		  <property name="yalign">0.5</property>
+		  <property name="xscale">1</property>
+		  <property name="yscale">1</property>
+		  <property name="top_padding">0</property>
+		  <property name="bottom_padding">0</property>
+		  <property name="left_padding">12</property>
+		  <property name="right_padding">0</property>
+
+		  <child>
+		    <widget class="GtkTable" id="table14">
+		      <property name="visible">True</property>
+		      <property name="n_rows">2</property>
+		      <property name="n_columns">2</property>
+		      <property name="homogeneous">False</property>
+		      <property name="row_spacing">5</property>
+		      <property name="column_spacing">10</property>
+
+		      <child>
+			<widget class="GtkRadioButton" id="cal_offline_radio">
+			  <property name="visible">True</property>
+			  <property name="can_focus">True</property>
+			  <property name="label" translatable="yes">Offline</property>
+			  <property name="use_underline">True</property>
+			  <property name="relief">GTK_RELIEF_NORMAL</property>
+			  <property name="focus_on_click">True</property>
+			  <property name="active">True</property>
+			  <property name="inconsistent">False</property>
+			  <property name="draw_indicator">True</property>
+			  <signal name="toggled" handler="cal_method_toggled" last_modification_time="Wed, 15 Feb 2006 12:19:56 GMT"/>
+			</widget>
+			<packing>
+			  <property name="left_attach">0</property>
+			  <property name="right_attach">1</property>
+			  <property name="top_attach">0</property>
+			  <property name="bottom_attach">1</property>
+			  <property name="x_options">fill</property>
+			  <property name="y_options"></property>
+			</packing>
+		      </child>
+
+		      <child>
+			<widget class="GtkHBox" id="cal_proxy_hbox">
+			  <property name="visible">True</property>
+			  <property name="sensitive">False</property>
+			  <property name="homogeneous">False</property>
+			  <property name="spacing">0</property>
+
+			  <child>
+			    <widget class="GtkLabel" id="label124">
+			      <property name="visible">True</property>
+			      <property name="label" translatable="yes">Ieee488Proxy host: </property>
+			      <property name="use_underline">False</property>
+			      <property name="use_markup">False</property>
+			      <property name="justify">GTK_JUSTIFY_LEFT</property>
+			      <property name="wrap">False</property>
+			      <property name="selectable">False</property>
+			      <property name="xalign">0.5</property>
+			      <property name="yalign">0.5</property>
+			      <property name="xpad">0</property>
+			      <property name="ypad">0</property>
+			      <property name="ellipsize">PANGO_ELLIPSIZE_NONE</property>
+			      <property name="width_chars">-1</property>
+			      <property name="single_line_mode">False</property>
+			      <property name="angle">0</property>
+			    </widget>
+			    <packing>
+			      <property name="padding">0</property>
+			      <property name="expand">False</property>
+			      <property name="fill">False</property>
+			    </packing>
+			  </child>
+
+			  <child>
+			    <widget class="GtkEntry" id="cal_proxy_entry">
+			      <property name="visible">True</property>
+			      <property name="can_focus">True</property>
+			      <property name="editable">True</property>
+			      <property name="visibility">True</property>
+			      <property name="max_length">0</property>
+			      <property name="text" translatable="yes">chaopc2.ikp.physik.tu-darmstadt.de</property>
+			      <property name="has_frame">True</property>
+			      <property name="invisible_char">*</property>
+			      <property name="activates_default">False</property>
+			    </widget>
+			    <packing>
+			      <property name="padding">0</property>
+			      <property name="expand">True</property>
+			      <property name="fill">True</property>
+			    </packing>
+			  </child>
+			</widget>
+			<packing>
+			  <property name="left_attach">1</property>
+			  <property name="right_attach">2</property>
+			  <property name="top_attach">1</property>
+			  <property name="bottom_attach">2</property>
+			</packing>
+		      </child>
+
+		      <child>
+			<widget class="GtkRadioButton" id="cal_online_radio">
+			  <property name="visible">True</property>
+			  <property name="can_focus">True</property>
+			  <property name="label" translatable="yes">Online</property>
+			  <property name="use_underline">True</property>
+			  <property name="relief">GTK_RELIEF_NORMAL</property>
+			  <property name="focus_on_click">True</property>
+			  <property name="active">False</property>
+			  <property name="inconsistent">False</property>
+			  <property name="draw_indicator">True</property>
+			  <property name="group">cal_offline_radio</property>
+			</widget>
+			<packing>
+			  <property name="left_attach">0</property>
+			  <property name="right_attach">1</property>
+			  <property name="top_attach">1</property>
+			  <property name="bottom_attach">2</property>
+			  <property name="x_options">fill</property>
+			  <property name="y_options"></property>
+			</packing>
+		      </child>
+		    </widget>
+		  </child>
+		</widget>
+	      </child>
+
+	      <child>
+		<widget class="GtkLabel" id="label123">
+		  <property name="visible">True</property>
+		  <property name="label" translatable="yes">&lt;b&gt;Calibration method&lt;/b&gt;</property>
+		  <property name="use_underline">False</property>
+		  <property name="use_markup">True</property>
+		  <property name="justify">GTK_JUSTIFY_LEFT</property>
+		  <property name="wrap">False</property>
+		  <property name="selectable">False</property>
+		  <property name="xalign">0.5</property>
+		  <property name="yalign">0.5</property>
+		  <property name="xpad">0</property>
+		  <property name="ypad">0</property>
+		  <property name="ellipsize">PANGO_ELLIPSIZE_NONE</property>
+		  <property name="width_chars">-1</property>
+		  <property name="single_line_mode">False</property>
+		  <property name="angle">0</property>
+		</widget>
+		<packing>
+		  <property name="type">label_item</property>
+		</packing>
+	      </child>
+	    </widget>
+	    <packing>
+	      <property name="padding">0</property>
+	      <property name="expand">True</property>
+	      <property name="fill">True</property>
 	    </packing>
 	  </child>
 
@@ -8194,6 +8404,7 @@ Please check and decide what to do.</property>
 
 		  <child>
 		    <widget class="GtkProgressBar" id="cal_progress">
+		      <property name="height_request">40</property>
 		      <property name="visible">True</property>
 		      <property name="orientation">GTK_PROGRESS_LEFT_TO_RIGHT</property>
 		      <property name="fraction">0</property>
@@ -8236,7 +8447,7 @@ Please check and decide what to do.</property>
 	</widget>
 	<packing>
 	  <property name="padding">0</property>
-	  <property name="expand">True</property>
+	  <property name="expand">False</property>
 	  <property name="fill">True</property>
 	</packing>
       </child>
@@ -8260,6 +8471,7 @@ Please check and decide what to do.</property>
   <property name="type_hint">GDK_WINDOW_TYPE_HINT_NORMAL</property>
   <property name="gravity">GDK_GRAVITY_NORTH_WEST</property>
   <property name="focus_on_map">True</property>
+  <property name="urgency_hint">False</property>
   <signal name="delete_event" handler="fcomp_win_close" last_modification_time="Sun, 30 Oct 2005 10:23:43 GMT"/>
   <signal name="destroy_event" handler="fcomp_win_close" last_modification_time="Sun, 30 Oct 2005 10:24:06 GMT"/>
 
@@ -8528,6 +8740,7 @@ Please check and decide what to do.</property>
   <property name="type_hint">GDK_WINDOW_TYPE_HINT_NORMAL</property>
   <property name="gravity">GDK_GRAVITY_NORTH_WEST</property>
   <property name="focus_on_map">True</property>
+  <property name="urgency_hint">False</property>
   <signal name="delete_event" handler="on_merge_close_activate" last_modification_time="Fri, 18 Nov 2005 08:43:44 GMT"/>
   <signal name="destroy_event" handler="on_merge_close_activate" last_modification_time="Fri, 18 Nov 2005 08:44:02 GMT"/>
 
@@ -8538,8 +8751,10 @@ Please check and decide what to do.</property>
       <property name="spacing">0</property>
 
       <child>
-	<widget class="GtkMenuBar" id="menubar1">
+	<widget class="GtkMenuBar" id="merge_menubar">
 	  <property name="visible">True</property>
+	  <property name="pack_direction">GTK_PACK_DIRECTION_LTR</property>
+	  <property name="child_pack_direction">GTK_PACK_DIRECTION_LTR</property>
 
 	  <child>
 	    <widget class="GtkMenuItem" id="menuitem15">
@@ -8568,7 +8783,7 @@ Please check and decide what to do.</property>
 		      <accelerator key="O" modifiers="GDK_CONTROL_MASK" signal="activate"/>
 
 		      <child internal-child="image">
-			<widget class="GtkImage" id="image1103">
+			<widget class="GtkImage" id="image1204">
 			  <property name="visible">True</property>
 			  <property name="stock">gtk-open</property>
 			  <property name="icon_size">1</property>
@@ -8590,7 +8805,7 @@ Please check and decide what to do.</property>
 		      <accelerator key="S" modifiers="GDK_CONTROL_MASK" signal="activate"/>
 
 		      <child internal-child="image">
-			<widget class="GtkImage" id="image1104">
+			<widget class="GtkImage" id="image1205">
 			  <property name="visible">True</property>
 			  <property name="stock">gtk-save</property>
 			  <property name="icon_size">1</property>
@@ -8612,7 +8827,7 @@ Please check and decide what to do.</property>
 		      <accelerator key="V" modifiers="GDK_CONTROL_MASK" signal="activate"/>
 
 		      <child internal-child="image">
-			<widget class="GtkImage" id="image1105">
+			<widget class="GtkImage" id="image1206">
 			  <property name="visible">True</property>
 			  <property name="stock">gtk-save-as</property>
 			  <property name="icon_size">1</property>
@@ -8634,7 +8849,7 @@ Please check and decide what to do.</property>
 		      <accelerator key="I" modifiers="GDK_CONTROL_MASK" signal="activate"/>
 
 		      <child internal-child="image">
-			<widget class="GtkImage" id="image1106">
+			<widget class="GtkImage" id="image1207">
 			  <property name="visible">True</property>
 			  <property name="stock">gtk-add</property>
 			  <property name="icon_size">1</property>
@@ -8656,7 +8871,7 @@ Please check and decide what to do.</property>
 		      <accelerator key="Delete" modifiers="0" signal="activate"/>
 
 		      <child internal-child="image">
-			<widget class="GtkImage" id="image1107">
+			<widget class="GtkImage" id="image1208">
 			  <property name="visible">True</property>
 			  <property name="stock">gtk-remove</property>
 			  <property name="icon_size">1</property>
@@ -8678,7 +8893,7 @@ Please check and decide what to do.</property>
 		      <accelerator key="E" modifiers="GDK_CONTROL_MASK" signal="activate"/>
 
 		      <child internal-child="image">
-			<widget class="GtkImage" id="image1108">
+			<widget class="GtkImage" id="image1209">
 			  <property name="visible">True</property>
 			  <property name="stock">gtk-justify-fill</property>
 			  <property name="icon_size">1</property>
@@ -8706,7 +8921,7 @@ Please check and decide what to do.</property>
 		      <accelerator key="W" modifiers="GDK_CONTROL_MASK" signal="activate"/>
 
 		      <child internal-child="image">
-			<widget class="GtkImage" id="image1109">
+			<widget class="GtkImage" id="image1210">
 			  <property name="visible">True</property>
 			  <property name="stock">gtk-close</property>
 			  <property name="icon_size">1</property>
@@ -8741,7 +8956,7 @@ Please check and decide what to do.</property>
 		      <accelerator key="A" modifiers="GDK_CONTROL_MASK" signal="activate"/>
 
 		      <child internal-child="image">
-			<widget class="GtkImage" id="image1110">
+			<widget class="GtkImage" id="image1211">
 			  <property name="visible">True</property>
 			  <property name="stock">gtk-add</property>
 			  <property name="icon_size">1</property>
@@ -8763,7 +8978,7 @@ Please check and decide what to do.</property>
 		      <accelerator key="D" modifiers="GDK_CONTROL_MASK" signal="activate"/>
 
 		      <child internal-child="image">
-			<widget class="GtkImage" id="image1111">
+			<widget class="GtkImage" id="image1212">
 			  <property name="visible">True</property>
 			  <property name="stock">gtk-remove</property>
 			  <property name="icon_size">1</property>
@@ -8784,7 +8999,7 @@ Please check and decide what to do.</property>
 		      <signal name="activate" handler="on_merge_delete_all_links_activate" last_modification_time="Fri, 25 Nov 2005 13:21:56 GMT"/>
 
 		      <child internal-child="image">
-			<widget class="GtkImage" id="image1112">
+			<widget class="GtkImage" id="image1213">
 			  <property name="visible">True</property>
 			  <property name="stock">gtk-delete</property>
 			  <property name="icon_size">1</property>
@@ -8806,7 +9021,7 @@ Please check and decide what to do.</property>
 		      <accelerator key="J" modifiers="GDK_CONTROL_MASK" signal="activate"/>
 
 		      <child internal-child="image">
-			<widget class="GtkImage" id="image1113">
+			<widget class="GtkImage" id="image1214">
 			  <property name="visible">True</property>
 			  <property name="stock">gtk-execute</property>
 			  <property name="icon_size">1</property>
@@ -8841,7 +9056,7 @@ Please check and decide what to do.</property>
 		      <accelerator key="H" modifiers="GDK_CONTROL_MASK" signal="activate"/>
 
 		      <child internal-child="image">
-			<widget class="GtkImage" id="image1114">
+			<widget class="GtkImage" id="image1215">
 			  <property name="visible">True</property>
 			  <property name="stock">gtk-find</property>
 			  <property name="icon_size">1</property>
@@ -8863,7 +9078,7 @@ Please check and decide what to do.</property>
 		      <accelerator key="R" modifiers="GDK_CONTROL_MASK" signal="activate"/>
 
 		      <child internal-child="image">
-			<widget class="GtkImage" id="image1115">
+			<widget class="GtkImage" id="image1216">
 			  <property name="visible">True</property>
 			  <property name="stock">gtk-remove</property>
 			  <property name="icon_size">1</property>
@@ -8885,7 +9100,7 @@ Please check and decide what to do.</property>
 		      <accelerator key="M" modifiers="GDK_CONTROL_MASK" signal="activate"/>
 
 		      <child internal-child="image">
-			<widget class="GtkImage" id="image1116">
+			<widget class="GtkImage" id="image1217">
 			  <property name="visible">True</property>
 			  <property name="stock">gtk-dialog-info</property>
 			  <property name="icon_size">1</property>
@@ -8895,6 +9110,41 @@ Please check and decide what to do.</property>
 			  <property name="ypad">0</property>
 			</widget>
 		      </child>
+		    </widget>
+		  </child>
+		</widget>
+	      </child>
+	    </widget>
+	  </child>
+
+	  <child>
+	    <widget class="GtkMenuItem" id="merge_view">
+	      <property name="visible">True</property>
+	      <property name="label" translatable="yes">_View</property>
+	      <property name="use_underline">True</property>
+
+	      <child>
+		<widget class="GtkMenu" id="merge_view_menu">
+
+		  <child>
+		    <widget class="GtkRadioMenuItem" id="merge_normal_scale">
+		      <property name="visible">True</property>
+		      <property name="label" translatable="yes">_Normal scale</property>
+		      <property name="use_underline">True</property>
+		      <property name="active">True</property>
+		      <signal name="activate" handler="merge_scale_change" last_modification_time="Fri, 03 Mar 2006 08:10:50 GMT"/>
+		      <accelerator key="N" modifiers="0" signal="activate"/>
+		    </widget>
+		  </child>
+
+		  <child>
+		    <widget class="GtkRadioMenuItem" id="merge_log_scale">
+		      <property name="visible">True</property>
+		      <property name="label" translatable="yes">_Log scale</property>
+		      <property name="use_underline">True</property>
+		      <property name="active">False</property>
+		      <property name="group">merge_normal_scale</property>
+		      <accelerator key="L" modifiers="0" signal="activate"/>
 		    </widget>
 		  </child>
 		</widget>
@@ -9120,6 +9370,7 @@ Please check and decide what to do.</property>
   <property name="type_hint">GDK_WINDOW_TYPE_HINT_DIALOG</property>
   <property name="gravity">GDK_GRAVITY_NORTH_WEST</property>
   <property name="focus_on_map">True</property>
+  <property name="urgency_hint">False</property>
   <property name="has_separator">True</property>
   <signal name="delete_event" handler="on_comment_done" last_modification_time="Mon, 27 Sep 2004 08:44:02 GMT"/>
   <signal name="destroy_event" handler="on_comment_done" last_modification_time="Mon, 27 Sep 2004 08:44:10 GMT"/>
@@ -9213,6 +9464,7 @@ Please check and decide what to do.</property>
   <property name="type_hint">GDK_WINDOW_TYPE_HINT_NORMAL</property>
   <property name="gravity">GDK_GRAVITY_NORTH_WEST</property>
   <property name="focus_on_map">True</property>
+  <property name="urgency_hint">False</property>
   <signal name="destroy_event" handler="on_correl_close_activate" last_modification_time="Thu, 02 Feb 2006 15:30:07 GMT"/>
   <signal name="delete_event" handler="on_correl_close_activate" last_modification_time="Thu, 02 Feb 2006 15:29:55 GMT"/>
 
@@ -9225,6 +9477,8 @@ Please check and decide what to do.</property>
       <child>
 	<widget class="GtkMenuBar" id="menubar2">
 	  <property name="visible">True</property>
+	  <property name="pack_direction">GTK_PACK_DIRECTION_LTR</property>
+	  <property name="child_pack_direction">GTK_PACK_DIRECTION_LTR</property>
 
 	  <child>
 	    <widget class="GtkMenuItem" id="menuitem16">
