@@ -64,9 +64,10 @@ knoppix:
 	$(MAKE) PREFIX=/usr 386
 	$(MAKE) PREFIX=/usr INSTALLPREFIX=$(KNOPPIXSRC)/usr install
 	$(MAKE) clean
-	$(MAKE) -C doc html
+	$(MAKE) -C doc html pdf
 	$(INSTALL) -m 644 doc/gwignerfit-manual.html $(KNOPPIXSRC)/../../master/index.html
 	$(INSTALL) -m 644 doc/gwf-style.css $(KNOPPIXSRC)/../../master/gwf-style.css
+	$(INSTALL) -m 644 doc/gwignerfit-manual.pdf $(KNOPPIXSRC)/usr/share/doc/gwignerfit/gwignerfit-manual.pdf
 	cp -a doc/figures/*.png $(KNOPPIXSRC)/../../master/figures
 	chown -R root.root $(KNOPPIXSRC)/../../master/figures
 	chmod -R a+r $(KNOPPIXSRC)/../../master/figures
