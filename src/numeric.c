@@ -267,7 +267,9 @@ int ApplyMrqmin (
 	int pnum, 				/* number of parameters */
 	int maxiterations,			/* number of iterations */
 	void (*fitfunc)(double, double [], 	/* pointer to fitfunction */
-		ComplexDouble *, ComplexDouble [], int)
+		ComplexDouble *, ComplexDouble [], int),
+	ComplexDouble (*chi_funcs)(double, 	/* pointer to chi2 function */
+		double [], int)
 	) 
 {
 	int i, itst=0, k, ret, numfail=0;
@@ -294,7 +296,7 @@ int ApplyMrqmin (
 	for (i=1; i<=pnum; i++) a[i] = p[i];
 
 	alamda = -1;			/* indicate first run */
-	mrqmin (d,sig,n,a,ia,pnum,covar,alpha,&chisq,fitfunc,&alamda);
+	mrqmin (d,sig,n,a,ia,pnum,covar,alpha,&chisq,fitfunc,chi_funcs,&alamda);
 	k = 1;
 	do {
 /*
@@ -309,7 +311,7 @@ int ApplyMrqmin (
 
 		k++;
 		ochisq = chisq;
-		mrqmin (d,sig,n,a,ia,pnum,covar,alpha,&chisq,fitfunc,&alamda);
+		mrqmin (d,sig,n,a,ia,pnum,covar,alpha,&chisq,fitfunc,chi_funcs,&alamda);
 		for (i=1; i<=pnum; i++) p[i] = a[i];
 
 		if (chisq > ochisq) itst = 0;
@@ -353,7 +355,7 @@ int ApplyMrqmin (
 	} while (itst < maxiterations);
 
 	alamda = 0.0;		/* indicate last run */
-	mrqmin (d,sig,n,a,ia,pnum,covar,alpha,&chisq,fitfunc,&alamda);
+	mrqmin (d,sig,n,a,ia,pnum,covar,alpha,&chisq,fitfunc,chi_funcs,&alamda);
 	for (i=1; i<=pnum; i++) p[i] = a[i];
 /*
 	printf("\nError estimations:\n");
@@ -572,9 +574,10 @@ static gint start_fit (gpointer params)
 			numpoints,		/* number of datapoints */
 			fitwinparam->paramarray,/* parameter array */
 			ia,			/* what parameters are to fit */
-			TOTALNUMPARAM, 	/* number of parameters */
+			TOTALNUMPARAM, 		/* number of parameters */
 			glob->prefs->iterations,/* number of iterations */
-			&DeriveComplexWigner	/* pointer to fitfunction */
+			&DeriveComplexWigner,	/* pointer to fitfunction */
+			&ComplexWigner		/* use this for chi2 calculation */
 		);
 
 		/* Tidy SMP calculation up */

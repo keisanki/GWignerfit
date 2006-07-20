@@ -29,6 +29,7 @@ void covsrt(double **covar, int ma, int ia[], int mfit);
 /* d and sig start at 0 */
 void mrqmin(DataVector *d, double sig[], int ndata, double a[], int ia[],
 	int ma, double **covar, double **alpha, double *chisq,
-	void (*funcs)(double, double [], ComplexDouble *, ComplexDouble [], int), double *alamda);
+	void (*funcs)(double, double [], ComplexDouble *, ComplexDouble [], int),
+	ComplexDouble(*chi_funcs)(double, double [], int), double *alamda);
 
 #endif

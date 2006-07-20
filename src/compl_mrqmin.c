@@ -123,9 +123,33 @@ void covsrt(double **covar, int ma, int ia[], int mfit)
 }
 #undef SWAP
 
+void mrqmin_chisq (DataVector *d, double sig[], int ndata, double a[],
+	int ma, double *chisq, ComplexDouble (*chi_funcs)(double, double [], int))
+{
+	int i;
+	double sig2i;
+	ComplexDouble y, dy;
+
+	*chisq = 0.0;
+	for (i=0; i<ndata; i++)
+	{
+		y = (*chi_funcs)(d->x[i], a, ma);
+		sig2i = 1.0/(sig[i]*sig[i]);
+		dy.re = d->y[i].re - y.re;
+		dy.im = d->y[i].im - y.im;
+		
+		*chisq += cmulti_re (dy, cc (dy))*sig2i;
+	
+		/* get out of here if someone canceled the fit */
+		if ( !(glob->flag & FLAG_FIT_RUN) )
+			break;
+	}
+}
+
 void mrqmin(DataVector *d, double sig[], int ndata, double a[], int ia[],
 	int ma, double **covar, double **alpha, double *chisq,
-	void (*funcs)(double, double [], ComplexDouble *, ComplexDouble [], int), double *alamda)
+	void (*funcs)(double, double [], ComplexDouble *, ComplexDouble [], int),
+	ComplexDouble(*chi_funcs)(double, double [], int), double *alamda)
 {
 	register int j,k,l;
 	static int mfit;
@@ -160,7 +184,12 @@ void mrqmin(DataVector *d, double sig[], int ndata, double a[], int ia[],
 	}
 	for (j=0,l=1;l<=ma;l++)
 		if (ia[l]) atry[l]=a[l]+da[++j];
-	mrqcof(d,sig,ndata,atry,ia,ma,covar,da,chisq,funcs);
+
+	/* Call mrqcof only if the last iteration has been a success */
+	mrqmin_chisq(d,sig,ndata,atry,ma,chisq,chi_funcs);
+	if (*chisq < ochisq)
+		mrqcof(d,sig,ndata,atry,ia,ma,covar,da,chisq,funcs);
+
 	if (*chisq < ochisq) {
 		*alamda *= 0.1;
 		ochisq=(*chisq);
