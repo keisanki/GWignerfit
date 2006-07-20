@@ -1006,8 +1006,37 @@ void on_fourier_components_activate (GtkMenuItem *menuitem, gpointer user_data)
 
 void on_manual_activate (GtkMenuItem *menuitem, gpointer user_data)
 {
-	dialog_message ("Please refer to the provided user manual, which can be found at\n"
-			"/usr/local/share/doc/gwignerfit/gwignerfit-manual.html");
+	gboolean ret = FALSE;
+	gchar* argv[3];
+
+	argv[0] = g_strdup_printf ("sensible-browser");
+	argv[1] = g_strdup_printf ("/usr/local/share/doc/gwignerfit/gwignerfit-manual.html");
+	argv[2] = NULL;
+
+	/* Try to be a bit smarter to find the manual path */
+	if (g_str_has_suffix (ICONPATH, "/share/gwignerfit"))
+		argv[1] = g_strdup_printf("%s/../doc/gwignerfit/gwignerfit-manual.html", ICONPATH);
+
+	printf("%s\n", argv[1]);
+
+	ret = g_spawn_async (
+			NULL,			/* working directory */
+			argv,			/* argument vector */
+			NULL,			/* envp */
+			G_SPAWN_SEARCH_PATH,	/* flags */
+			NULL,			/* child_setup */
+			NULL,			/* data */
+			NULL,			/* child_pid */
+			NULL);			/* error */
+
+	g_free (argv[0]);
+	g_free (argv[1]);
+
+	if (ret)
+		dialog_message ("Please refer to the user manual which should be opened in your web browser now.");
+	else
+		dialog_message ("Please refer to the provided user manual, which can be found at\n"
+				"/usr/local/share/doc/gwignerfit/gwignerfit-manual.html.");
 }
 
 void on_merge_resonancelists_activate (GtkMenuItem *menuitem, gpointer user_data)
