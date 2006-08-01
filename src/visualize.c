@@ -807,6 +807,11 @@ void visualize_handle_viewport_changed (GtkSpectVis *spectvis, gchar *zoomtype)
 			if (glob->viewdifference)
 				visualize_calculate_difference (&theoryY[i], &theoryY[i], i);
 			flag = TRUE;
+
+			if ((*zoomtype == 'u') && (glob->data->len*glob->numres > 8010*10) && (i % (int)(glob->data->len*0.01) == 0))
+				/* A new theory is being calculated -> give some visual feedback */
+				status_progressbar_set ((gdouble)i/(gdouble)glob->data->len);
+
 			i++;
 		}
 
@@ -819,12 +824,19 @@ void visualize_handle_viewport_changed (GtkSpectVis *spectvis, gchar *zoomtype)
 			if (glob->viewdifference)
 				visualize_calculate_difference (&theoryY[i], &theoryY[i], i);
 			flag = TRUE;
+
+			if ((*zoomtype == 'u') && (glob->data->len*glob->numres > 8010*10) && (i % (int)(glob->data->len*0.01) == 0))
+				/* A new theory is being calculated -> give some visual feedback */
+				status_progressbar_set ((gdouble)i/(gdouble)glob->data->len);
 			i--;
 		}
 
 		g_free (p);
 		g_mutex_unlock (glob->threads->theorylock);
 	}
+
+	if (*zoomtype == 'u')
+		status_progressbar_set (-1.0);
 
 //	if ((*zoomtype != 'I') && (*zoomtype != 'O') && (*zoomtype != 'i') && (*zoomtype != 'o'))
 	if (flag)

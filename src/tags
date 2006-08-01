@@ -85,7 +85,7 @@ MERGE_NODE_R	merge_util.c	15;"	d	file:
 MIN_DATAPOINTS_VIEW	gtkspectvis.c	16;"	d	file:
 MIN_IMPULSES_VIEW	gtkspectvis.c	17;"	d	file:
 MrqminData	compl_mrqcof.c	/^} MrqminData;$/;"	t	file:
-NRANSI	compl_mrqmin.c	177;"	d	file:
+NRANSI	compl_mrqmin.c	206;"	d	file:
 NRANSI	compl_mrqmin.c	43;"	d	file:
 NR_END	compl_mrqmin.c	8;"	d	file:
 NR_END	nrutil.c	307;"	d	file:
@@ -470,6 +470,7 @@ mrqcof_cleanup	compl_mrqcof.c	/^void mrqcof_cleanup ()$/;"	f
 mrqcof_get_num_cpu	compl_mrqcof.c	/^int mrqcof_get_num_cpu ()$/;"	f
 mrqcof_prepare	compl_mrqcof.c	/^void mrqcof_prepare ()$/;"	f
 mrqmin	compl_mrqmin.c	/^void mrqmin(DataVector *d, double sig[], int ndata, double a[], int ia[],$/;"	f
+mrqmin_chisq	compl_mrqmin.c	/^void mrqmin_chisq (DataVector *d, double sig[], int ndata, double a[],$/;"	f
 n_drag_types	dnd.c	/^static gint n_drag_types = sizeof(drag_types) \/ sizeof(drag_types[0]);$/;"	v	file:
 ndata	compl_mrqcof.c	/^	int ndata;$/;"	m	file:
 network_gui_to_struct	network.c	/^static int network_gui_to_struct ()$/;"	f	file:
@@ -505,6 +506,7 @@ on_fft_measure_distance_activate	fourier.c	/^void on_fft_measure_distance_activa
 on_find_isolated_resonances_activate	callbacks.c	/^void on_find_isolated_resonances_activate (GtkMenuItem *menuitem, gpointer user_data)$/;"	f
 on_fit_activate	callbacks.c	/^void on_fit_activate (GtkMenuItem *menuitem, gpointer user_data)$/;"	f
 on_fit_this_resonance_activate	callbacks.c	/^void on_fit_this_resonance_activate (GtkMenuItem *menuitem, gpointer user_data)$/;"	f
+on_fourier_analyze_change	fourier.c	/^void on_fourier_analyze_change (GtkMenuItem *menuitem, gpointer user_data)$/;"	f
 on_fourier_components_activate	callbacks.c	/^void on_fourier_components_activate (GtkMenuItem *menuitem, gpointer user_data)$/;"	f
 on_fourier_export_meas_data	fourier.c	/^void on_fourier_export_meas_data (GtkMenuItem *menuitem, gpointer user_data)$/;"	f
 on_fourier_export_ps	fourier.c	/^gboolean on_fourier_export_ps (GtkMenuItem *menuitem, gpointer user_data)$/;"	f
@@ -659,6 +661,7 @@ spectral_weyl_val	spectral.c	/^static gdouble spectral_weyl_val (gdouble x)$/;"	
 spectral_widths_evol	spectral.c	/^static void spectral_widths_evol ()$/;"	f	file:
 spectral_widths_hist	spectral.c	/^static void spectral_widths_hist ()$/;"	f	file:
 start_fit	numeric.c	/^static gint start_fit (gpointer params)$/;"	f	file:
+status_progressbar_set	helpers.c	/^void status_progressbar_set (gdouble fraction)$/;"	f
 statusbar_message	helpers.c	/^void statusbar_message (gchar *format, ...)$/;"	f
 statusbar_message_remove	helpers.c	/^static gint statusbar_message_remove (gpointer data)$/;"	f	file:
 stddevbut	export.c	/^	GtkToggleButton *idbut, *frqbut, *widbut, *ampbut, *phasbut, *qualbut, *stddevbut;$/;"	m	file:

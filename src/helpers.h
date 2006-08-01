@@ -62,4 +62,6 @@ gchar* filename_make_relative (gchar *inname, gchar *inbase);
 
 gchar* filename_make_absolute (gchar *name, gchar *base);
 
+void status_progressbar_set (gdouble fraction);
+
 #endif
