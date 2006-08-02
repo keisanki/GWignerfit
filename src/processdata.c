@@ -6,6 +6,10 @@
 #include <gtk/gtk.h>
 #include <glade/glade.h>
 
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <unistd.h>
+
 #ifndef NO_ZLIB
 #include <zlib.h>
 #endif
@@ -266,6 +270,8 @@ DataVector *import_datafile (gchar *filename, gboolean interactive)
 	gdouble fmin, fmax;
 	gint numpoints;
 	gboolean data_is_fft = FALSE;
+	struct stat filestat;
+	guint filesize, filebytepos;
 	
 	ComplexDouble y;
 	gdouble f;
@@ -319,6 +325,13 @@ DataVector *import_datafile (gchar *filename, gboolean interactive)
 	}
 #endif
 
+	/* Estimate filesize */
+	stat (filename, &filestat);
+	filesize = (guint) filestat.st_size;
+	if (g_str_has_suffix (filename, ".gz"))
+		/* Estimate original size of uncompressed file */
+		filesize *= 5;
+
 	/* Check dataset and count number of points */
 	numpoints = 0;
 #ifdef NO_ZLIB
@@ -355,6 +368,19 @@ DataVector *import_datafile (gchar *filename, gboolean interactive)
 					data_is_fft = FALSE;
 			}
 			continue;
+		}
+
+		if (filesize > 3*1024*1025)
+		{
+			/* Show a progress indicator for files > 3 MB */
+#ifdef NO_ZLIB
+			filebytepos = ftell (datafile);
+#else
+			filebytepos = gztell (datafile);
+#endif
+			if (filebytepos % (filesize/100*2*1) < 100)
+				/* Progressbar from 0% to 50% in steps of 1% */
+				status_progressbar_set ((gdouble)filebytepos/(gdouble)filesize/2.0);
 		}
 
 		numpoints++;
@@ -444,6 +470,10 @@ DataVector *import_datafile (gchar *filename, gboolean interactive)
 				numpoints++;
 			}
 		}
+
+		if ((filesize > 3*1024*1025) && (numpoints % (data->len/100*2*1) == 0))
+			/* Progressbar from 50% to 100% in steps of 1% */
+			status_progressbar_set (0.5 + (gdouble)numpoints/(gdouble)data->len/2.0);
 	}
 
 #ifdef NO_ZLIB
@@ -475,6 +505,8 @@ DataVector *import_datafile (gchar *filename, gboolean interactive)
 
 		data = testvec;
 	}
+
+	status_progressbar_set (-1);
 
 	/* Check for uniqueness of dataset */
 	make_unique_dataset (data);
