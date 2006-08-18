@@ -1001,7 +1001,7 @@ gint read_resonancefile (gchar *selected_filename, const gchar *label)
 	{
 		glob->stddev = g_new0 (gdouble, stddev->len+4);
 
-		for (i=0; i <= stddev->len; i++)
+		for (i=0; i < stddev->len; i++)
 			glob->stddev[i+1] = g_array_index (stddev, gdouble, i);
 
 		glob->stddev[stddev->len+1] = gphaseerr;
