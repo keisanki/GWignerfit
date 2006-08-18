@@ -142,6 +142,7 @@ void merge_purge (gboolean free_only)
 	GPtrArray *curnodelist;
 	GtkSpectVisData *data;
 	GtkSpectVis *graph, *spectgraph;
+	DataVector *graphdata;
 	gint i, j, uid;
 	
 	if (!glob->merge)
@@ -181,8 +182,12 @@ void merge_purge (gboolean free_only)
 		data = gtk_spect_vis_get_data_by_uid (spectgraph, uid);
 		if (data)
 		{
-			g_free (data->X);
-			g_free (data->Y);
+			/* The data MUST be freed via free_datavector() as some
+			 * of the x data might be used by the main graph, too. */
+			graphdata = g_new0 (DataVector, 1);
+			graphdata->x = data->X;
+			graphdata->y = data->Y;
+			free_datavector (graphdata);
 		}
 	}
 	g_ptr_array_free (merge->nodelist, TRUE);

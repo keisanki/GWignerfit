@@ -887,6 +887,7 @@ gboolean merge_remove_spect_graph (gint uid)
 	GtkSpectVis *spectgraph;
 	MergeWin *merge;
 	GtkSpectVisData *data;
+	DataVector *graphdata;
 	
 	g_return_val_if_fail (uid, FALSE);
 	g_return_val_if_fail (glob->merge, FALSE);
@@ -898,8 +899,12 @@ gboolean merge_remove_spect_graph (gint uid)
 	if (!data)
 		return FALSE;
 
-	g_free (data->X);
-	g_free (data->Y);
+	/* The data MUST be freed via free_datavector() as some
+	 * of the x data might be used by the main graph, too. */
+	graphdata = g_new0 (DataVector, 1);
+	graphdata->x = data->X;
+	graphdata->y = data->Y;
+	free_datavector (graphdata);
 
 	gtk_spect_vis_data_remove (spectgraph, uid);
 	gtk_spect_vis_redraw (spectgraph);
