@@ -64,4 +64,6 @@ gchar* filename_make_absolute (gchar *name, gchar *base);
 
 void status_progressbar_set (gdouble fraction);
 
+int cfprintf (FILE *stream, const char *format, ...);
+
 #endif

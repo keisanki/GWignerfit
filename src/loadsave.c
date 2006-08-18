@@ -189,7 +189,10 @@ gboolean ls_save_file_exec (gchar *filename, gchar *section, gchar marker, gint 
 		/* File and section already exist */
 		datafile = fopen (filename, "r");
 		if (!datafile)
+		{
+			dialog_message ("Error: Could not open file %s for reading.", filename);
 			return FALSE;
+		}
 
 		old_file_before = g_string_new ("");
 
@@ -232,6 +235,7 @@ gboolean ls_save_file_exec (gchar *filename, gchar *section, gchar marker, gint 
 			/* We shouldn't be at the end of the file yet */
 			fclose (datafile);
 			g_string_free (old_file_before, TRUE);
+			dialog_message ("Error: Unexpected end of file %s.", filename);
 			return FALSE;
 		}
 
@@ -287,7 +291,9 @@ gboolean ls_save_file_exec (gchar *filename, gchar *section, gchar marker, gint 
 		fclose (datafile);
 		datafile = fopen (filename, "w");
 
-		fprintf (datafile, "%s", old_file_before->str);
+		if (fprintf (datafile, "%s", old_file_before->str) != old_file_before->len)
+			dialog_message ("Warning: Could not write the complete gwf file before the current section. "
+					"Check the file, data may have been lost!");
 		g_string_free (old_file_before, TRUE);
 	}
 	else if (exists == 1)
@@ -295,7 +301,10 @@ gboolean ls_save_file_exec (gchar *filename, gchar *section, gchar marker, gint 
 		/* The file exists, but the section does not */
 		datafile = fopen (filename, "a");
 		if (!datafile)
+		{
+			dialog_message ("Error: Could not open file %s for appending.", filename);
 			return FALSE;
+		}
 		newline = "\n\0\0";
 	}
 	else
@@ -303,22 +312,27 @@ gboolean ls_save_file_exec (gchar *filename, gchar *section, gchar marker, gint 
 		/* Nothing exists */
 		datafile = fopen (filename, "w");
 		if (!datafile)
+		{
+			dialog_message ("Error: Could not open file %s for writing.", filename);
 			return FALSE;
+		}
 		newline = "\n\0\0";
 
-		fprintf (datafile, "# This is a GWignerFit session file, version 1%s", newline);
+		cfprintf (datafile, "# This is a GWignerFit session file, version 1%s", newline);
 	}
 
 	/* Write content into section */
 	(* write_callback) (datafile, filename, section, newline);
 	
 	/* A newline before the next section */
-	fprintf (datafile, "%s", newline);
+	cfprintf (datafile, "%s", newline);
 
 	if (exists == 2)
 	{
 		/* Write the rest of the old file */
-		fprintf (datafile, "%s", old_file_after->str);
+		if (fprintf (datafile, "%s", old_file_after->str) != old_file_after->len)
+			dialog_message ("Warning: Could not write the complete gwf file after the current section. "
+					"Check the file, data may have been lost!");
 		g_string_free (old_file_after, TRUE);
 	}
 

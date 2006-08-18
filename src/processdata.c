@@ -1087,18 +1087,18 @@ void save_write_section (FILE *datafile, gchar *filename, gchar *section, gchar 
 	gint i, j;
 
 	/* print the section into the datafile */
-	fprintf (datafile, "=%s%s", section, newline);
+	cfprintf (datafile, "=%s%s", section, newline);
 
 	/* print comments */
 	if (glob->comment && strlen (glob->comment))
 	{
-		fprintf (datafile, "# ");
+		cfprintf (datafile, "# ");
 		j = 0;
 		for (i=0; i<strlen (glob->comment); i++)
 		{
 			if (j > 250)
 			{
-				fprintf (datafile, "%c%s# ", glob->comment[i], newline);
+				cfprintf (datafile, "%c%s# ", glob->comment[i], newline);
 				j = 0;
 				continue;
 			}
@@ -1112,19 +1112,19 @@ void save_write_section (FILE *datafile, gchar *filename, gchar *section, gchar 
 			{
 				j = 0;
 				if (i < strlen (glob->comment)-1)
-					fprintf (datafile, "%s# ", newline);
+					cfprintf (datafile, "%s# ", newline);
 				else
-					fprintf (datafile, "%s", newline);
+					cfprintf (datafile, "%s", newline);
 			}
 		}
 
 		if (j)
 			/* The last character has NOT been a '\n'. */
-			fprintf (datafile, "%s", newline);
+			cfprintf (datafile, "%s", newline);
 	}
 
 	text = get_timestamp ();
-	fprintf (datafile, "date\t%s%s", text, newline);
+	cfprintf (datafile, "date\t%s%s", text, newline);
 	g_free (text);
 	
 	if ((glob->data) && (glob->data->file))
@@ -1133,11 +1133,11 @@ void save_write_section (FILE *datafile, gchar *filename, gchar *section, gchar 
 		{
 			if (!(name = filename_make_relative (glob->data->file, filename)) )
 				name = g_strdup (glob->data->file);
-			fprintf (datafile, "file\t%s%s", name, newline);
+			cfprintf (datafile, "file\t%s%s", name, newline);
 			g_free (name);
 		}
 		else
-			fprintf (datafile, "file\t%s%s", glob->data->file, newline);
+			cfprintf (datafile, "file\t%s%s", glob->data->file, newline);
 	}
 
 	/* print the overlayed datafiles */
@@ -1148,7 +1148,7 @@ void save_write_section (FILE *datafile, gchar *filename, gchar *section, gchar 
 		overlayspos = overlays;
 		do {
 			overlay_get_color (&color, FALSE, GPOINTER_TO_UINT (overlayspos->data), NULL);
-			fprintf (datafile, "ovrlay\t#%02x%02x%02x",
+			cfprintf (datafile, "ovrlay\t#%02x%02x%02x",
 					(guint) (((gfloat) color.red)/65535.0*255.0),
 					(guint) (((gfloat) color.green)/65535.0*255.0),
 					(guint) (((gfloat) color.blue)/65535.0*255.0));
@@ -1159,33 +1159,33 @@ void save_write_section (FILE *datafile, gchar *filename, gchar *section, gchar 
 			{
 				if (!(name = filename_make_relative ((gchar *) overlayspos->data, filename)) )
 					name = g_strdup ((gchar *) overlayspos->data);
-				fprintf (datafile, " %s%s", name, newline);
+				cfprintf (datafile, " %s%s", name, newline);
 				g_free (name);
 			}
 			else
-				fprintf (datafile, " %s%s", (gchar *) overlayspos->data, newline);
+				cfprintf (datafile, " %s%s", (gchar *) overlayspos->data, newline);
 			
 		} while ((overlayspos = g_slist_next (overlayspos)));
 
 		g_slist_free (overlays);
 	}
 	
-	fprintf (datafile, "minfrq\t%11.9f%s", glob->gparam->min/1e9, newline);
-	fprintf (datafile, "maxfrq\t%11.9f%s", glob->gparam->max/1e9, newline);
+	cfprintf (datafile, "minfrq\t%11.9f%s", glob->gparam->min/1e9, newline);
+	cfprintf (datafile, "maxfrq\t%11.9f%s", glob->gparam->max/1e9, newline);
 	if (!glob->stddev)
 	{
 		/* Write the parameters without errors */
-		fprintf (datafile, "phase\t%f%s", NormalisePhase(glob->gparam->phase)/M_PI*180, newline);
+		cfprintf (datafile, "phase\t%f%s", NormalisePhase(glob->gparam->phase)/M_PI*180, newline);
 		
 		if ( glob->IsReflection) 
-			fprintf (datafile, "scale\t%f%s", glob->gparam->scale  , newline);
+			cfprintf (datafile, "scale\t%f%s", glob->gparam->scale  , newline);
 		
-		fprintf (datafile, "tau\t%f%s"  , glob->gparam->tau*1e9, newline);
+		cfprintf (datafile, "tau\t%f%s"  , glob->gparam->tau*1e9, newline);
 		
 		for (i=0; i<glob->numres; i++)
 		{
 			res = g_ptr_array_index (glob->param, i);
-			fprintf (datafile, "res\t%11.9f\t%9f\t%11f\t% 11.6f%s",
+			cfprintf (datafile, "res\t%11.9f\t%9f\t%11f\t% 11.6f%s",
 					res->frq/1e9, res->width/1e6, res->amp, 
 					NormalisePhase(res->phase)/M_PI*180, newline);
 		}
@@ -1194,7 +1194,7 @@ void save_write_section (FILE *datafile, gchar *filename, gchar *section, gchar 
 		for (i=0; i<glob->fcomp->numfcomp; i++)
 		{
 			fcomp = g_ptr_array_index (glob->fcomp->data, i);
-			fprintf (datafile, "fcomp\t%11.9f\t% 9.6f\t% 11.6f%s",
+			cfprintf (datafile, "fcomp\t%11.9f\t% 9.6f\t% 11.6f%s",
 					fcomp->amp, fcomp->tau*1e9, 
 					NormalisePhase(fcomp->phi)/M_PI*180,
 					newline);
@@ -1203,18 +1203,18 @@ void save_write_section (FILE *datafile, gchar *filename, gchar *section, gchar 
 	else
 	{
 		/* Include the parameter errors */
-		fprintf (datafile, "phase\t%f\t%f%s", 
+		cfprintf (datafile, "phase\t%f\t%f%s", 
 				NormalisePhase(glob->gparam->phase)/M_PI*180, 
 				glob->stddev[4*glob->numres+1]/M_PI*180,
 				newline);
 
 		if ( glob->IsReflection) 
-			fprintf (datafile, "scale\t%f\t%f%s", 
+			cfprintf (datafile, "scale\t%f\t%f%s", 
 				glob->gparam->scale,
 				glob->stddev[4*glob->numres+2],
 				newline);
 
-		fprintf (datafile, "tau\t%f\t%f%s", 
+		cfprintf (datafile, "tau\t%f\t%f%s", 
 			glob->gparam->tau*1e9, 
 			glob->stddev[4*glob->numres+3]*1e9,
 			newline);
@@ -1222,7 +1222,7 @@ void save_write_section (FILE *datafile, gchar *filename, gchar *section, gchar 
 		for (i=0; i<glob->numres; i++)
 		{
 			res = g_ptr_array_index(glob->param, i);
-			fprintf (datafile, "res\t%11.9f\t%9f\t%11f\t% 11.6f\t%12.10f\t%9.7f\t%11f\t% 11.6f%s",
+			cfprintf (datafile, "res\t%11.9f\t%9f\t%11f\t% 11.6f\t%12.10f\t%9.7f\t%11f\t% 11.6f%s",
 				res->frq/1e9, res->width/1e6, res->amp,
 				NormalisePhase(res->phase)/M_PI*180,
 				glob->stddev[4*i+3]/1e9,	/* frqerr */
@@ -1236,7 +1236,7 @@ void save_write_section (FILE *datafile, gchar *filename, gchar *section, gchar 
 		for (i=0; i<glob->fcomp->numfcomp; i++)
 		{
 			fcomp = g_ptr_array_index (glob->fcomp->data, i);
-			fprintf (datafile, "fcomp\t%11.9f\t% 9.6f\t% 11.6f%s",
+			cfprintf (datafile, "fcomp\t%11.9f\t% 9.6f\t% 11.6f%s",
 					fcomp->amp, fcomp->tau*1e9, 
 					NormalisePhase(fcomp->phi)/M_PI*180,
 					newline);

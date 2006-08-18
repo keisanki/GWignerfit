@@ -1349,3 +1349,20 @@ void status_progressbar_set (gdouble fraction)
 	/* Make sure the changes are displayed */
 	while (gtk_events_pending ()) gtk_main_iteration ();
 }
+
+/* A fprintf() version with error checking */
+int cfprintf (FILE *stream, const char *format, ...)
+{
+	va_list ap;
+	int stat;
+
+	va_start (ap, format);
+	stat = vfprintf (stream, format, ap);
+	va_end (ap);
+
+	if (stat < 0)
+		dialog_message ("Warning: Could not write all data. "
+				"Check the file, data may have been lost!");
+
+	return stat;
+}
