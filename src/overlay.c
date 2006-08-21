@@ -767,7 +767,7 @@ void overlay_swap_files (GtkWidget *widget, gpointer user_data)
 	}
 
 	/* Update theory _and_ fourier main graphs */
-	visualize_theory_graph ();
+	visualize_theory_graph ("u");
 
 	/* Delete the backup file */
 	delete_backup ();

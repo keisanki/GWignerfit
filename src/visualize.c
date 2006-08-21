@@ -88,7 +88,10 @@ void visualize_draw_data ()
 	fcomp_update_graph ();
 }
 
-void visualize_theory_graph ()
+/* Calculate and draw a (new) theory graph. The "reason" for calling this
+ * function is given by type which is just passed through to
+ * visualize_handle_viewport_changed(). */
+void visualize_theory_graph (gchar *type)
 {
 	GtkWidget *graph = glade_xml_get_widget (gladexml, "graph");
 	gint i;
@@ -113,7 +116,7 @@ void visualize_theory_graph ()
 		for (i=0; i<glob->theory->len; i++)
 			glob->theory->y[i].abs = -1001;
 
-	visualize_handle_viewport_changed (GTK_SPECTVIS (graph), "u");
+	visualize_handle_viewport_changed (GTK_SPECTVIS (graph), type);
 
 	fourier_update_main_graphs ();
 	fcomp_update_graph ();
@@ -253,7 +256,7 @@ gint visualize_handle_signal_marked (GtkSpectVis *spectvis, gdouble *xval, gdoub
 		if (res) 
 		{
 			add_resonance_to_list (res);
-			visualize_theory_graph ();
+			visualize_theory_graph ("u");
 			set_unsaved_changes ();
 			spectral_resonances_changed ();
 			statusbar_message ("Added a resonance at %f GHz", res->frq / 1e9);
@@ -277,7 +280,7 @@ gint visualize_handle_signal_marked (GtkSpectVis *spectvis, gdouble *xval, gdoub
 			statusbar_message ("Processing spectrum, this could take a while...");
 			while (gtk_events_pending ()) gtk_main_iteration ();
 			statusbar_message ("Added %d resonances ", find_isolated_resonances (*yval));
-			visualize_theory_graph ();
+			visualize_theory_graph ("u");
 			set_unsaved_changes ();
 		}
 		else 
@@ -808,7 +811,7 @@ void visualize_handle_viewport_changed (GtkSpectVis *spectvis, gchar *zoomtype)
 				visualize_calculate_difference (&theoryY[i], &theoryY[i], i);
 			flag = TRUE;
 
-			if ((*zoomtype == 'u') && (glob->data->len*glob->numres > 8010*10) && (i % (int)(glob->data->len*0.01) == 0))
+			if ((*zoomtype == 'n') && (glob->data->len*glob->numres > 8010*10) && (i % (int)(glob->data->len*0.01) == 0))
 				/* A new theory is being calculated -> give some visual feedback */
 				status_progressbar_set ((gdouble)i/(gdouble)glob->data->len);
 
@@ -825,7 +828,7 @@ void visualize_handle_viewport_changed (GtkSpectVis *spectvis, gchar *zoomtype)
 				visualize_calculate_difference (&theoryY[i], &theoryY[i], i);
 			flag = TRUE;
 
-			if ((*zoomtype == 'u') && (glob->data->len*glob->numres > 8010*10) && (i % (int)(glob->data->len*0.01) == 0))
+			if ((*zoomtype == 'n') && (glob->data->len*glob->numres > 8010*10) && (i % (int)(glob->data->len*0.01) == 0))
 				/* A new theory is being calculated -> give some visual feedback */
 				status_progressbar_set ((gdouble)i/(gdouble)glob->data->len);
 			i--;

@@ -562,7 +562,7 @@ void set_new_main_data (DataVector *newdata, gboolean called_from_open)
 	if (!called_from_open)
 	{
 		visualize_update_min_max (0);
-		visualize_theory_graph ();
+		visualize_theory_graph ("u");
 	}
 
 	disable_undo ();
@@ -971,7 +971,7 @@ gint read_resonancefile (gchar *selected_filename, const gchar *label)
 
 	statusbar_message ("Open: Calculating theory graph...");
 	while (gtk_events_pending ()) gtk_main_iteration ();
-	visualize_theory_graph ();
+	visualize_theory_graph ("n");
 
 	/* Add overlays */
 	if (ovrlaynum && glob->data)

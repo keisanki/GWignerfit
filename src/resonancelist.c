@@ -83,7 +83,7 @@ static gboolean cell_edited_callback (GtkCellRendererText *cell, const gchar *pa
 			break;
 	}
 	
-	visualize_theory_graph (0);
+	visualize_theory_graph ("u");
 	set_unsaved_changes ();
 
 	return FALSE;
@@ -722,7 +722,7 @@ void remove_selected_resonance ()
 	g_list_free (pathlist);
 	
 	visualize_update_res_bar (0);
-	visualize_theory_graph ();
+	visualize_theory_graph ("u");
 	set_unsaved_changes ();
 }
 

@@ -736,7 +736,7 @@ void undo_changes (gchar undo_redo)
 	show_global_parameters (glob->gparam);
 
 	visualize_update_res_bar (FALSE);
-	visualize_theory_graph ();
+	visualize_theory_graph ("u");
 	fcomp_update_list ();
 	spectral_resonances_changed ();
 
@@ -965,7 +965,7 @@ gboolean check_and_take_parameters (gdouble *p)
 	update_resonance_list (glob->param);
 	show_global_parameters (glob->gparam);
 	fcomp_update_list ();
-	visualize_theory_graph ();
+	visualize_theory_graph ("u");
 
 	return FALSE;
 }

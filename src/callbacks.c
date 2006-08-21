@@ -259,7 +259,7 @@ gboolean on_view_difference_activate (GtkMenuItem *menuitem, gpointer user_data)
 		fourier_difference_changed (FALSE, olddataindex, oldtheoindex);
 		visualize_remove_difference_graph ();
 		visualize_draw_data ();
-		visualize_theory_graph ();
+		visualize_theory_graph ("u");
 	}
 
 	return TRUE;
@@ -273,7 +273,7 @@ gboolean on_reflection_activate (GtkMenuItem *menuitem, gpointer user_data)
 	gtk_widget_set_sensitive (glade_xml_get_widget (gladexml, "scale_check"), TRUE);
 	gtk_widget_set_sensitive (glade_xml_get_widget (gladexml, "label7"), TRUE);
 
-	visualize_theory_graph ();
+	visualize_theory_graph ("u");
 
 	return FALSE;
 }
@@ -292,7 +292,7 @@ gboolean on_transmission_activate (GtkMenuItem *menuitem, gpointer user_data)
 	);
 
 	visualize_draw_data ();
-	visualize_theory_graph ();
+	visualize_theory_graph ("u");
 
 	return FALSE;
 }
@@ -348,7 +348,7 @@ gboolean on_phaseentry_changed (GtkWidget *entry, GdkEventKey *event, gpointer u
 	if (sscanf(gtk_entry_get_text(GTK_ENTRY (entry)), "%lf", &value) != 1) return FALSE;
 
 	glob->gparam->phase = value / 180*M_PI;
-	visualize_theory_graph ();
+	visualize_theory_graph ("u");
 	set_unsaved_changes ();
 
 	snprintf (text, 20, "%f", value);
@@ -368,7 +368,7 @@ gboolean on_scaleentry_changed (GtkWidget *entry, GdkEventKey *event, gpointer u
 	if (sscanf(gtk_entry_get_text(GTK_ENTRY (entry)), "%lf", &value) != 1) return FALSE;
 
 	glob->gparam->scale = value;
-	visualize_theory_graph ();
+	visualize_theory_graph ("u");
 	set_unsaved_changes ();
 
 	snprintf (text, 20, "%f", value);
@@ -388,7 +388,7 @@ gboolean on_tauentry_changed (GtkWidget *entry, GdkEventKey *event, gpointer use
 	if (sscanf(gtk_entry_get_text(GTK_ENTRY (entry)), "%lf", &value) != 1) return FALSE;
 
 	glob->gparam->tau = value * 1e-9;
-	visualize_theory_graph ();
+	visualize_theory_graph ("u");
 	set_unsaved_changes ();
 
 	snprintf (text, 20, "%f", value);
@@ -424,7 +424,7 @@ gboolean on_minfrqentry_changed (GtkWidget *entry, GdkEventKey *event, gpointer 
 		/* Update theory, as the FFT or fcomp graphs may
 		 * depend on the frequency window. */
 		visualize_update_min_max (0);
-		visualize_theory_graph ();
+		visualize_theory_graph ("u");
 	}
 	else
 		/* Update with redraw */
@@ -465,7 +465,7 @@ gboolean on_maxfrqentry_changed (GtkWidget *entry, GdkEventKey *event, gpointer 
 		/* Update theory, as the FFT or fcomp graphs may
 		 * depend on the frequency window. */
 		visualize_update_min_max (0);
-		visualize_theory_graph ();
+		visualize_theory_graph ("u");
 	}
 	else
 		/* Update with redraw */
@@ -750,7 +750,7 @@ void on_clear_resonancelist_activate (GtkMenuItem *menuitem, gpointer user_data)
 		show_global_parameters (glob->gparam);
 		
 		visualize_update_res_bar (0);
-		visualize_theory_graph ();
+		visualize_theory_graph ("u");
 		set_unsaved_changes ();
 
 		statusbar_message ("Cleared all resonances in the list");
@@ -788,7 +788,7 @@ void on_estimate_global_parameters_activate (GtkMenuItem *menuitem, gpointer use
 	calculate_global_paramters (glob->data, glob->gparam);
 	show_global_parameters (glob->gparam);
 
-	visualize_theory_graph ();
+	visualize_theory_graph ("u");
 	set_unsaved_changes ();
 	
 	statusbar_message ("Global resonance parameters recalculated");

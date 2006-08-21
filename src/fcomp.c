@@ -59,7 +59,7 @@ static gboolean fcomp_cell_edited_callback (GtkCellRendererText *cell, const gch
 			break;
 	}
 
-	visualize_theory_graph ();
+	visualize_theory_graph ("u");
 	fcomp_update_graph ();
 	set_unsaved_changes ();
 
@@ -383,7 +383,7 @@ void fcomp_remove_selected ()
 	g_list_free (pathlist);
 
 	/* Redraw */
-	visualize_theory_graph ();
+	visualize_theory_graph ("u");
 	fcomp_update_graph ();
 	set_unsaved_changes ();
 }
@@ -492,7 +492,7 @@ gint fcomp_handle_signal_marked (GtkSpectVis *spectvis, gdouble *xval, gdouble *
 
 		fcomp_add_component (newcomp, 0);
 		fcomp_update_graph ();
-		visualize_theory_graph ();
+		visualize_theory_graph ("u");
 	}
 	else
 	{

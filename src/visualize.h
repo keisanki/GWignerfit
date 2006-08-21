@@ -7,7 +7,7 @@ GtkWidget *NewGtkSpectvis (gchar *widget_name, gchar *string1, gchar *string2, g
 
 void visualize_newgraph ();
 void visualize_draw_data ();
-void visualize_theory_graph ();
+void visualize_theory_graph (gchar *type);
 void visualize_difference_graph ();
 gint visualize_handle_signal_marked (GtkSpectVis *spectvis, gdouble *xval, gdouble *yval);
 void visualize_update_res_bar (gboolean redraw);
