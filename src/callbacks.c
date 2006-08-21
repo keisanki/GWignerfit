@@ -1017,8 +1017,6 @@ void on_manual_activate (GtkMenuItem *menuitem, gpointer user_data)
 	if (g_str_has_suffix (ICONPATH, "/share/gwignerfit"))
 		argv[1] = g_strdup_printf("%s/../doc/gwignerfit/gwignerfit-manual.html", ICONPATH);
 
-	printf("%s\n", argv[1]);
-
 	ret = g_spawn_async (
 			NULL,			/* working directory */
 			argv,			/* argument vector */
