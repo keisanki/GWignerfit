@@ -145,10 +145,11 @@ VNA_RECV_TOUT	network.c	37;"	d	file:
 VNA_STAT_LEN	network.c	34;"	d	file:
 WID_COL	export.c	/^	FRQ_COL, WID_COL, AMP_COL, PHAS_COL,$/;"	e	enum:__anon5	file:
 WID_COL	resonancelist.c	/^	FRQ_COL, WID_COL, AMP_COL, PHAS_COL,$/;"	e	enum:__anon1	file:
-__USE_XOPEN	helpers.c	10;"	d	file:
+__USE_XOPEN	helpers.c	13;"	d	file:
 a	calibrate_vna.c	/^	DataVector *a;$/;"	m	struct:__anon8	file:
 a	compl_mrqcof.c	/^	double *a;$/;"	m	struct:__anon2	file:
 add_resonance_to_list	resonancelist.c	/^void add_resonance_to_list (Resonance *res)$/;"	f
+adjustpriority	helpers.c	/^int adjustpriority ()$/;"	f
 alpha	compl_mrqcof.c	/^	double **alpha;$/;"	m	struct:__anon2	file:
 ampbut	export.c	/^	GtkToggleButton *idbut, *frqbut, *widbut, *ampbut, *phasbut, *qualbut, *stddevbut;$/;"	m	struct:__anon6	file:
 b	calibrate_vna.c	/^	DataVector *b;$/;"	m	struct:__anon8	file:

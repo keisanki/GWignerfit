@@ -6,7 +6,10 @@
 #include <unistd.h>
 #include <stdlib.h>
 #include <math.h>
+#include <errno.h>
 #include <sys/time.h>
+#include <sys/types.h>
+#include <sys/resource.h>
 #define __USE_XOPEN
 #include <time.h>
 
@@ -1365,4 +1368,19 @@ int cfprintf (FILE *stream, const char *format, ...)
 				"Check the file, data may have been lost!");
 
 	return stat;
+}
+
+/* Set the nice level of GWignerFit according to the preferences. */
+int adjustpriority ()
+{
+	if (glob->prefs->priority > getpriority (PRIO_PROCESS, getpid ()))
+	{
+		/* Set the nice level only if it is too low currently. */
+		if (setpriority (PRIO_PROCESS, getpid (), glob->prefs->priority) == -1) {
+			dialog_message ("Could not change priority: %s", g_strerror (errno));
+			return 1;
+		}
+	}
+
+	return 0;
 }

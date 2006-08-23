@@ -169,6 +169,9 @@ gint main (gint argc, char *argv[])
 	prefs_set_default ();
 	prefs_load (glob->prefs);
 
+	/* Now that the prefs are loaded: adjust the priority */
+	adjustpriority ();
+
 	/* Initialize the thread system */
 	glob->threads = g_new (ThreadStuff, 1);
 	glob->threads->theorylock = g_mutex_new ();

@@ -3548,7 +3548,7 @@ Please check and decide what to do.</property>
 	    <widget class="GtkTable" id="table4">
 	      <property name="border_width">3</property>
 	      <property name="visible">True</property>
-	      <property name="n_rows">2</property>
+	      <property name="n_rows">3</property>
 	      <property name="n_columns">2</property>
 	      <property name="homogeneous">False</property>
 	      <property name="row_spacing">10</property>
@@ -3583,6 +3583,28 @@ Please check and decide what to do.</property>
 	      </child>
 
 	      <child>
+		<widget class="GtkSpinButton" id="iterations_spinner">
+		  <property name="visible">True</property>
+		  <property name="can_focus">True</property>
+		  <property name="climb_rate">1</property>
+		  <property name="digits">0</property>
+		  <property name="numeric">True</property>
+		  <property name="update_policy">GTK_UPDATE_IF_VALID</property>
+		  <property name="snap_to_ticks">False</property>
+		  <property name="wrap">False</property>
+		  <property name="adjustment">50 1 100 1 10 10</property>
+		</widget>
+		<packing>
+		  <property name="left_attach">1</property>
+		  <property name="right_attach">2</property>
+		  <property name="top_attach">0</property>
+		  <property name="bottom_attach">1</property>
+		  <property name="x_options">fill</property>
+		  <property name="y_options"></property>
+		</packing>
+	      </child>
+
+	      <child>
 		<widget class="GtkLabel" id="label38">
 		  <property name="visible">True</property>
 		  <property name="label" translatable="yes">Unit for width column: </property>
@@ -3603,8 +3625,8 @@ Please check and decide what to do.</property>
 		<packing>
 		  <property name="left_attach">0</property>
 		  <property name="right_attach">1</property>
-		  <property name="top_attach">1</property>
-		  <property name="bottom_attach">2</property>
+		  <property name="top_attach">2</property>
+		  <property name="bottom_attach">3</property>
 		  <property name="x_options">fill</property>
 		  <property name="y_options"></property>
 		</packing>
@@ -3658,30 +3680,58 @@ Please check and decide what to do.</property>
 		<packing>
 		  <property name="left_attach">1</property>
 		  <property name="right_attach">2</property>
-		  <property name="top_attach">1</property>
-		  <property name="bottom_attach">2</property>
+		  <property name="top_attach">2</property>
+		  <property name="bottom_attach">3</property>
 		  <property name="x_options">fill</property>
 		  <property name="y_options">fill</property>
 		</packing>
 	      </child>
 
 	      <child>
-		<widget class="GtkSpinButton" id="iterations_spinner">
+		<widget class="GtkLabel" id="label125">
+		  <property name="visible">True</property>
+		  <property name="label" translatable="yes">Process nice priority:</property>
+		  <property name="use_underline">False</property>
+		  <property name="use_markup">False</property>
+		  <property name="justify">GTK_JUSTIFY_LEFT</property>
+		  <property name="wrap">False</property>
+		  <property name="selectable">False</property>
+		  <property name="xalign">0</property>
+		  <property name="yalign">0.5</property>
+		  <property name="xpad">0</property>
+		  <property name="ypad">0</property>
+		  <property name="ellipsize">PANGO_ELLIPSIZE_NONE</property>
+		  <property name="width_chars">-1</property>
+		  <property name="single_line_mode">False</property>
+		  <property name="angle">0</property>
+		</widget>
+		<packing>
+		  <property name="left_attach">0</property>
+		  <property name="right_attach">1</property>
+		  <property name="top_attach">1</property>
+		  <property name="bottom_attach">2</property>
+		  <property name="x_options">fill</property>
+		  <property name="y_options"></property>
+		</packing>
+	      </child>
+
+	      <child>
+		<widget class="GtkSpinButton" id="priority_spinner">
 		  <property name="visible">True</property>
 		  <property name="can_focus">True</property>
 		  <property name="climb_rate">1</property>
 		  <property name="digits">0</property>
-		  <property name="numeric">False</property>
+		  <property name="numeric">True</property>
 		  <property name="update_policy">GTK_UPDATE_IF_VALID</property>
 		  <property name="snap_to_ticks">False</property>
 		  <property name="wrap">False</property>
-		  <property name="adjustment">50 1 100 1 10 10</property>
+		  <property name="adjustment">5 0 20 1 5 5</property>
 		</widget>
 		<packing>
 		  <property name="left_attach">1</property>
 		  <property name="right_attach">2</property>
-		  <property name="top_attach">0</property>
-		  <property name="bottom_attach">1</property>
+		  <property name="top_attach">1</property>
+		  <property name="bottom_attach">2</property>
 		  <property name="x_options">fill</property>
 		  <property name="y_options"></property>
 		</packing>

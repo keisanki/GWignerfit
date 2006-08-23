@@ -107,6 +107,7 @@ typedef struct
 	gboolean fit_converge_detect;	/* Stop fit automatically if converged? */
 	gboolean relative_paths;	/* Save relative paths in gwf files? */
 	gint res_export;		/* Bitmask of parameters for resonance export */
+	gint priority;			/* The nice level GWignerFit should run with */
 	gdouble cal_tauO;		/* Open calibration standard: signal delay */
 	gdouble cal_tauS;		/* Short calibration standard: signal delay */
 	gdouble cal_C0;			/* Open calibration signal: capacity C0 value */

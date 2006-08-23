@@ -66,4 +66,6 @@ void status_progressbar_set (gdouble fraction);
 
 int cfprintf (FILE *stream, const char *format, ...);
 
+int adjustpriority ();
+
 #endif

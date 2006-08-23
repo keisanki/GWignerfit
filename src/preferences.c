@@ -27,6 +27,7 @@ void prefs_set_default ()
 	glob->prefs->fit_converge_detect = TRUE;
 	glob->prefs->relative_paths = FALSE;
 	glob->prefs->res_export = -1;
+	glob->prefs->priority = 5;
 	glob->prefs->cal_tauO = 20.837e-12;
 	glob->prefs->cal_tauS = 22.548e-12;
 	glob->prefs->cal_C0 = 29.72e-15;
@@ -65,6 +66,7 @@ void prefs_save (Preferences *prefs)
 	fprintf (fh, "fit_converge_detect = %d\n", prefs->fit_converge_detect);
 	fprintf (fh, "relative_paths = %d\n", prefs->relative_paths);
 	fprintf (fh, "res_export = %d\n", prefs->res_export);
+	fprintf (fh, "priority = %d\n", prefs->priority);
 	fprintf (fh, "cal_tauO = %e\n", prefs->cal_tauO);
 	fprintf (fh, "cal_tauS = %e\n", prefs->cal_tauS);
 	fprintf (fh, "cal_C0 = %e\n", prefs->cal_C0);
@@ -147,6 +149,8 @@ void prefs_load (Preferences *prefs)
 			prefs->relative_paths = val;
 		if (!g_ascii_strncasecmp (cmd, "res_export", 11))
 			prefs->res_export = val;
+		if (!g_ascii_strncasecmp (cmd, "priority", 9))
+			prefs->priority = val;
 	}
 	fclose (fh);
 }
@@ -158,7 +162,7 @@ void prefs_change_win ()
 	GladeXML *xmldialog;
 	GtkWidget *dialog;
 	guint pos;
-	gint result;
+	gint result, newpriority;
 
 	xmldialog = glade_xml_new (GLADEFILE, "prefs_dialog", NULL);
 	
@@ -172,6 +176,10 @@ void prefs_change_win ()
 	gtk_spin_button_set_value (
 		GTK_SPIN_BUTTON (glade_xml_get_widget (xmldialog, "iterations_spinner")), 
 		glob->prefs->iterations);
+
+	gtk_spin_button_set_value (
+		GTK_SPIN_BUTTON (glade_xml_get_widget (xmldialog, "priority_spinner")), 
+		glob->prefs->priority);
 
 	if (glob->prefs->widthunit == 6)
 		gtk_toggle_button_set_active (
@@ -214,8 +222,17 @@ void prefs_change_win ()
 
 	if (result == GTK_RESPONSE_OK)
 	{
-		glob->prefs->iterations =  gtk_spin_button_get_value (
+		glob->prefs->iterations = gtk_spin_button_get_value (
 			GTK_SPIN_BUTTON (glade_xml_get_widget (xmldialog, "iterations_spinner")));
+
+		newpriority = gtk_spin_button_get_value (
+			GTK_SPIN_BUTTON (glade_xml_get_widget (xmldialog, "priority_spinner")));
+		if (newpriority < glob->prefs->priority)
+			dialog_message ("You have lowered the nice priority value from %d to %d. "
+					"This change will only take effect after GWignerFit has been restartet.",
+					glob->prefs->priority, newpriority);
+		glob->prefs->priority = newpriority;
+		adjustpriority ();
 
 		if (gtk_toggle_button_get_active (
 			GTK_TOGGLE_BUTTON (glade_xml_get_widget (xmldialog, "mhz_radio"))))
