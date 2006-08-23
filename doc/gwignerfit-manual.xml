@@ -3782,7 +3782,7 @@
 				<para>You can influence the priority of the &app; process with this
 					value. This is useful if you are doing a lengthy fit and you do not
 					wish to consume all available system resources. The <guilabel>nice
-					priority</guilabel> can take values between 0 and 20, where 20 is
+					priority</guilabel> can take values between 0 and 19, where 19 is
 				  "very nice to the system" (i.e. low priority) and 0 is "not so nice
 					to the system" (i.e. high priority). &app; can apply an increased
 					nice priority at once. Lowering its value for an already running

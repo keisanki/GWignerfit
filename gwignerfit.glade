@@ -3725,7 +3725,7 @@ Please check and decide what to do.</property>
 		  <property name="update_policy">GTK_UPDATE_IF_VALID</property>
 		  <property name="snap_to_ticks">False</property>
 		  <property name="wrap">False</property>
-		  <property name="adjustment">5 0 20 1 5 5</property>
+		  <property name="adjustment">5 0 19 1 5 5</property>
 		</widget>
 		<packing>
 		  <property name="left_attach">1</property>
