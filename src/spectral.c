@@ -1880,7 +1880,9 @@ gboolean on_spectral_export_data (GtkMenuItem *menuitem, gpointer user_data)
 			fprintf (file, "# L\t\tDelta^3\r\n");
 			break;
 		case SPECTRAL_LENGTH:
-			fprintf (file, "length spectrum\r\n#\r\n");
+			fprintf (file, "length spectrum\r\n");
+			fprintf (file, "# Weyl coefficients: A=%g cm², C=%g cm, const=%g\r\n#\r\n",
+					glob->spectral->area, glob->spectral->perim, glob->spectral->offset);
 			fprintf (file, "# x [m]\t\t Amplitude\tPhase [rad]\r\n");
 			break;
 		case SPECTRAL_WIDTHS:
