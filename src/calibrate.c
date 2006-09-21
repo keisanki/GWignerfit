@@ -341,8 +341,6 @@ static DataVector* cal_reflection (DataVector *in, DataVector *opn, DataVector *
 	guint i;
 
 	out = new_datavector (in->len);
-	g_free (out->x);
-	out->x = in->x;
 
 	for (i=0; i<in->len; i++)
 	{
@@ -381,6 +379,9 @@ static DataVector* cal_reflection (DataVector *in, DataVector *opn, DataVector *
 				  );
 
 		out->y[i].abs = sqrt (out->y[i].re*out->y[i].re + out->y[i].im*out->y[i].im);
+
+		/* Need to copy in->x[i] as in->x will be freed later */
+		out->x[i] = in->x[i];
 
 		if (i % (in->len / 100) == 0)
 			cal_update_progress ((gfloat)i / (gfloat)in->len);

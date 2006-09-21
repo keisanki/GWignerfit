@@ -755,6 +755,7 @@ static void vna_thread_exit (gchar *format, ...)
 		va_end (ap);
 	}
 	g_timeout_add (1, (GSourceFunc) vna_measurement_finished, message);
+	gdk_beep ();
 
 	if ((glob->netwin) && (glob->netwin->sockfd > 0))
 	{
