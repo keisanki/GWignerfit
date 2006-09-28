@@ -949,10 +949,10 @@ gboolean on_merge_export_activate (GtkWidget *button)
 	}
 	while (gtk_tree_model_iter_next (model, &iter));
 	
-	fprintf (outfile, "#\r\n# ID\t   f [Hz]\r\n");
+	fprintf (outfile, "#\r\n# ID\t   f [GHz]\r\n");
 
 	for (i=0; i<reslist->len; i++)
-		fprintf (outfile, "%4d\t%13.1f\r\n", i+1, g_array_index (reslist, gdouble, i));
+		fprintf (outfile, "%4d\t%12.9f\r\n", i+1, g_array_index (reslist, gdouble, i)/1e9);
 
 	fclose (outfile);
 
