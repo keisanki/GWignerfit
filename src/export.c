@@ -157,13 +157,13 @@ static void export_fill_textview (GtkWidget *textview, gboolean addid, gboolean 
 				export_text_to_view (textview, "\t");
 			if (show_stddev && glob->stddev)
 				if (glob->stddev[4*(id-1)+3] > 0)
-					export_text_to_view (textview, "% 12.9f\t % 11.9f", 
+					export_text_to_view (textview, "% 13.9f\t % 11.9f", 
 						frq, glob->stddev[4*(id-1)+3]/1e9);
 				else
-					export_text_to_view (textview, "% 12.9f\t %s", 
+					export_text_to_view (textview, "% 13.9f\t %s", 
 						frq, "     ---    ");
 			else
-				export_text_to_view (textview, "% 12.9f", frq);
+				export_text_to_view (textview, "% 13.9f", frq);
 			added = TRUE;
 		}
 		if (addwid)
