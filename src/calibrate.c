@@ -347,9 +347,9 @@ static DataVector* cal_reflection (DataVector *in, DataVector *opn, DataVector *
 		alphaO = 2*M_PI*in->x[i] * glob->prefs->cal_tauO;
 		alphaS = 2*M_PI*in->x[i] * glob->prefs->cal_tauS;
 		C =   glob->prefs->cal_C0
-		    + glob->prefs->cal_C1 + 165.78e-27 * in->x[i] 
-		    + glob->prefs->cal_C2 + -3.54e-36 * in->x[i]*in->x[i]
-		    + glob->prefs->cal_C3 + 0.07e-45 * in->x[i]*in->x[i]*in->x[i];
+		    + glob->prefs->cal_C1 * in->x[i] 
+		    + glob->prefs->cal_C2 * in->x[i]*in->x[i]
+		    + glob->prefs->cal_C3 * in->x[i]*in->x[i]*in->x[i];
 		gammaO = 2*atan (2*M_PI*in->x[i]*C*50);
 		
 		edf = load->y[i];
