@@ -14,6 +14,7 @@
 #define VNA_ENOLISTE   2	/* Proxy status: Receive when PC was not a listener */
 #define VNA_EQUOTEDS   4	/* Proxy status: A quoted string in LISTEN or TALK */
 #define VNA_ETIMEOUT   8	/* Proxy status: Timeout */
+#define VNA_EUNKNOWN  16	/* Proxy status: Unknown command */
 #define VNA_ESUCCEOI  32	/* Proxy status: Seccess, transfer ended with EOI */
 
 void network_open_win ();
@@ -29,5 +30,7 @@ void vna_enter (int sockfd, char *buf, int len, int addr, int errmask);
 void vna_spoll_wait (int sockfd);
 
 ComplexDouble *vna_recv_data (int sockfd, int points);
+
+int vna_receiveall (int s, char *buf, int len);
 
 #endif

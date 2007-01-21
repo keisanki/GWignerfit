@@ -40,9 +40,10 @@
 #define VNA_ENOLISTE   2	/* Proxy status: Receive when PC was not a listener */
 #define VNA_EQUOTEDS   4	/* Proxy status: A quoted string in LISTEN or TALK */
 #define VNA_ETIMEOUT   8	/* Proxy status: Timeout */
+#define VNA_EUNKNOWN  16	/* Proxy status: Unknown command */
 #define VNA_ESUCCEOI  32	/* Proxy status: Seccess, transfer ended with EOI */
 
-#define DV(x)  			/* For debuggins set DV(x) x */
+#define DV(x) x			/* For debuggins set DV(x) x */
 
 extern GlobalData *glob;	/* Global variables */
 extern GladeXML *gladexml;
@@ -869,6 +870,10 @@ static int vna_receiveall_full (int s, char *buf, int len, int failok)
 							"MTA LISTEN "VNA_GBIP" DATA 'RAMP;CONT;'", 0);
 					vna_send_cmd (glob->netwin->sockfd, "MTA LISTEN "VNA_GBIP" GTL", 0);
 				}
+				DV(if (len < 128)
+					printf ("received (%d bytes): %.*s", len, len, buf);
+				else
+					printf ("received (%d bytes): [data not shown]\n", len);)
 				vna_thread_exit ("Connection to proxy host timed out "
 						"(received only %i of %i expected bytes).", total, len);
 			}
@@ -890,16 +895,16 @@ static int vna_receiveall_full (int s, char *buf, int len, int failok)
 	}
 
 	/*len = total;*/ /* return number actually received here */
-	DV(if ((buf[0] == '*') || (buf[0] == 'M') || (buf[0] == ' '))
+	DV(if (len < 128)
 		printf ("received (%d bytes): %.*s", len, len, buf);
 	else
-		printf ("received: [data not shown]\n");)
+		printf ("received (%d bytes): [data not shown]\n", len);)
 
 	return n==-1?-1:0; /* return -1 on failure, 0 on success */
 }
 
 /* Convenience wrapper for vna_receiveall_full() _with_ timeout */
-static int vna_receiveall (int s, char *buf, int len)
+int vna_receiveall (int s, char *buf, int len)
 {
 	return vna_receiveall_full (s, buf, len, 0);
 }
@@ -911,7 +916,11 @@ int vna_sendall (int s, char *buf, int len)
 	int bytesleft = len; /* how many we have left to send */
 	int n = 0;
 
-	DV(printf("transmit (%d bytes): %.*s\n", len, len, buf);)
+	DV(if (len < 128)
+		printf("transmit (%d bytes): %.*s\n", len, len, buf);
+	else
+		printf("transmit (%d bytes): [data not shown]\n", len);)
+
 	while (total < len)
 	{
 		n = send (s, buf+total, bytesleft, 0);
@@ -1084,15 +1093,16 @@ void vna_enter (int sockfd, char *buf, int len, int addr, int errmask)
 /* Wait for network to be ready again */
 void vna_spoll_wait (int sockfd)
 {
-	char buf[30];
+	char buf[31];
 	int statbyte = 0;
 
 	while (!(statbyte & 4))
 	{
+		buf[0] = '\0';
 		vna_send_cmd (sockfd, "* PROXYCMD: spoll "VNA_GBIP, VNA_ETIMEOUT);
-		if (vna_receiveall (sockfd, buf, 30))
-			vna_thread_exit ("Failed to receive 30 bytes for spoll().");
-		if ((sscanf (buf, "* PROXYMSG: poll result %d", &statbyte) != 1))
+		if (vna_receiveall (sockfd, buf, 31))
+			vna_thread_exit ("Failed to receive 31 bytes for spoll().");
+		if ((sscanf (buf, "* PROXYMSG: spoll result %d", &statbyte) != 1))
 			vna_thread_exit ("Could not parse spoll proxy reply: %s", buf);
 		usleep (10000);
 	}
@@ -1111,6 +1121,8 @@ ComplexDouble *vna_recv_data (int sockfd, int points)
 
 	vna_send_cmd (sockfd, "MTA LISTEN "VNA_GBIP" DATA 'FORM5;OUTPDATA;'", VNA_ETIMEOUT);
 	vna_send_cmd (sockfd, "MLA TALK "VNA_GBIP, VNA_ETIMEOUT);
+	fsync (sockfd);
+	usleep (1e6);
 
 	/* Read the header */
 	vna_send_cmd (sockfd, "* PROXYCMD: rarray 4", VNA_ETIMEOUT | VNA_ENOLISTE);

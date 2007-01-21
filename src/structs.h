@@ -176,6 +176,7 @@ typedef struct
 	gchar *load_file;		/* Full filename for load standard data */
 	gchar *thru_file;		/* Full filename for thru standard data */
 	gchar *isol_file;		/* Full filename for isolation standard data */
+	gchar *full_filenames[18];	/* Full filenames for full 2-port calibration */
 	gboolean data_is_refl;		/* True if calibration for reflection data */
 	gboolean offline;		/* True for offline calibration method */
 	gchar *proxyhost;		/* Ieee488Proxy hostname */

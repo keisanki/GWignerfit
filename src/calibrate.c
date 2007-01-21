@@ -92,12 +92,25 @@ static gboolean cal_choose_file (GtkButton *button, gpointer user_data)
 	return TRUE;
 }
 
-/* Callback when changeing the calibration type */
-void cal_data_type_toggled (GtkToggleButton *togglebutton, gpointer user_data) 
+/* Callback when changeing the calibration type notebook */
+void cal_caltype_changed (GtkNotebook *notebook, gpointer user_data) 
 {
-	GladeXML *xmlcal = glob->calwin->xmlcal;
-	gboolean state;
+	//GladeXML *xmlcal = glob->calwin->xmlcal;
+	//gboolean state;
 
+	switch (gtk_notebook_get_current_page (notebook))
+	{
+		case 0:
+			glob->calwin->data_is_refl = FALSE;
+			break;
+		case 1:
+			glob->calwin->data_is_refl = TRUE;
+			break;
+		case 2:
+			break;
+	}
+
+#if 0
 	/* state == TRUE for reflection */
 	state = gtk_toggle_button_get_active (togglebutton);
 	
@@ -118,6 +131,7 @@ void cal_data_type_toggled (GtkToggleButton *togglebutton, gpointer user_data)
 	gtk_widget_set_sensitive (glade_xml_get_widget (xmlcal, "cal_isol_but"   ), !state);
 
 	glob->calwin->data_is_refl = state;
+#endif
 }
 
 /* Callback when changeing the calibration method */
@@ -153,7 +167,7 @@ static gboolean cal_check_entries ()
 		}
 	}
 
-	if ((file = cal_get_valid_file ("cal_in_entry")))
+	if ((calwin->data_is_refl && (file = cal_get_valid_file ("cal_in_entry"))) || (file = cal_get_valid_file ("cal_trans_in_entry")))
 		calwin->in_file = file;
 	else
 	{
@@ -161,8 +175,12 @@ static gboolean cal_check_entries ()
 		return FALSE;
 	}
 		
-	file = g_strdup (gtk_entry_get_text (GTK_ENTRY 
-			(glade_xml_get_widget (glob->calwin->xmlcal, "cal_out_entry"))));
+	if (calwin->data_is_refl)
+		file = g_strdup (gtk_entry_get_text (GTK_ENTRY 
+				(glade_xml_get_widget (glob->calwin->xmlcal, "cal_out_entry"))));
+	else
+		file = g_strdup (gtk_entry_get_text (GTK_ENTRY 
+				(glade_xml_get_widget (glob->calwin->xmlcal, "cal_trans_out_entry"))));
 
 	if (!strlen (file))
 	{
@@ -398,8 +416,6 @@ static DataVector* cal_transmission (DataVector *in, DataVector *thru, DataVecto
 	guint i;
 
 	out = new_datavector (in->len);
-	g_free (out->x);
-	out->x = in->x;
 
 	for (i=0; i<in->len; i++)
 	{
@@ -416,6 +432,9 @@ static DataVector* cal_transmission (DataVector *in, DataVector *thru, DataVecto
 
 		out->y[i] = c_div (numerator, denominator);
 		out->y[i].abs = sqrt (out->y[i].re*out->y[i].re + out->y[i].im*out->y[i].im);
+
+		/* Need to copy in->x[i] as in->x will be freed later */
+		out->x[i] = in->x[i];
 
 		if (i % (in->len / 100) == 0)
 			cal_update_progress ((gfloat)i / (gfloat)in->len);
@@ -572,6 +591,7 @@ static gboolean cal_do_calibration ()
 	{
 		dialog_message ("Error: Could not open output file.");
 		free_memory;
+		free_datavector (out);
 		return FALSE;
 	}
 	text = g_strdup_printf ("Writing output file ...");
@@ -656,32 +676,37 @@ void cal_open_win ()
 	/* Set remembered or default filenames */
 	if ((glob->data) && (!calwin->in_file))
 	{
-		cal_set_text ("cal_in_entry", glob->data->file);
+		if (glob->IsReflection)
+			cal_set_text ("cal_in_entry", glob->data->file);
+		else
+			cal_set_text ("cal_trans_in_entry", glob->data->file);
 		calwin->data_is_refl = glob->IsReflection;
 	}
 
-	cal_set_text ("cal_in_entry", calwin->in_file);
-	cal_set_text ("cal_out_entry", calwin->out_file);
+	if (calwin->data_is_refl)
+	{
+		cal_set_text ("cal_in_entry", calwin->in_file);
+		cal_set_text ("cal_out_entry", calwin->out_file);
+	}
+	else
+	{
+		cal_set_text ("cal_trans_in_entry", calwin->in_file);
+		cal_set_text ("cal_trans_out_entry", calwin->out_file);
+		gtk_notebook_set_current_page (
+				GTK_NOTEBOOK (
+				glade_xml_get_widget (calwin->xmlcal, "calibrate_notebook")),
+			1);
+	}
 	cal_set_text ("cal_open_entry", calwin->open_file);
 	cal_set_text ("cal_short_entry", calwin->short_file);
 	cal_set_text ("cal_load_entry", calwin->load_file);
 	cal_set_text ("cal_thru_entry", calwin->thru_file);
 	cal_set_text ("cal_isol_entry", calwin->isol_file);
-
-	if (!calwin->data_is_refl)
-	{
-		gtk_toggle_button_set_active (
-			GTK_TOGGLE_BUTTON (
-				glade_xml_get_widget (calwin->xmlcal, "cal_refl_radio")),
-			FALSE);
-		gtk_toggle_button_set_active (
-			GTK_TOGGLE_BUTTON (
-				glade_xml_get_widget (calwin->xmlcal, "cal_trans_radio")),
-			TRUE);
-	}
+/*
 	cal_data_type_toggled (
 		GTK_TOGGLE_BUTTON (glade_xml_get_widget (calwin->xmlcal, "cal_refl_radio")),
 		NULL);
+*/
 
 	if (!calwin->offline)
 	{
@@ -710,6 +735,16 @@ void cal_open_win ()
 		"clicked",
 		(GCallback) cal_choose_file, 
 		glade_xml_get_widget (calwin->xmlcal, "cal_out_entry"));
+	g_signal_connect (
+		G_OBJECT (glade_xml_get_widget (calwin->xmlcal, "cal_trans_in_but")), 
+		"clicked",
+		(GCallback) cal_choose_file, 
+		glade_xml_get_widget (calwin->xmlcal, "cal_trans_in_entry"));
+	g_signal_connect (
+		G_OBJECT (glade_xml_get_widget (calwin->xmlcal, "cal_trans_out_but")), 
+		"clicked",
+		(GCallback) cal_choose_file, 
+		glade_xml_get_widget (calwin->xmlcal, "cal_trans_out_entry"));
 	g_signal_connect (
 		G_OBJECT (glade_xml_get_widget (calwin->xmlcal, "cal_open_but")), 
 		"clicked",
