@@ -3,6 +3,8 @@
 
 DataVector* cal_vna_calibrate (DataVector *in, DataVector *opn, DataVector *shrt, DataVector *load, gchar *host);
 
+gboolean cal_vna_full_calibrate (DataVector **indata, DataVector **outdata, gchar *host);
+
 void cal_vna_exit (gchar *format, ...);
 
 gboolean cal_vna_set_netstat (gpointer data);

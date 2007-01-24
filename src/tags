@@ -168,7 +168,7 @@ cal_check_fullcal_entries	calibrate.c	/^static gboolean cal_check_fullcal_entrie
 cal_choose_file	calibrate.c	/^static gboolean cal_choose_file (GtkButton *button, gpointer user_data)$/;"	f	file:
 cal_connect_select_but	calibrate.c	/^static void cal_connect_select_but (CalWin *calwin)$/;"	f	file:
 cal_do_calibration	calibrate.c	/^static gboolean cal_do_calibration ()$/;"	f	file:
-cal_do_full_calibration	calibrate.c	/^static gboolean cal_do_full_calibration ()$/;"	f	file:
+cal_do_full_calibration	calibrate.c	/^static gboolean cal_do_full_calibration (CalWin *calwin)$/;"	f	file:
 cal_get_valid_file	calibrate.c	/^static gchar* cal_get_valid_file (gchar *entry)$/;"	f	file:
 cal_method_toggled	calibrate.c	/^void cal_method_toggled (GtkToggleButton *togglebutton, gpointer user_data) $/;"	f
 cal_open_win	calibrate.c	/^void cal_open_win ()$/;"	f
@@ -180,11 +180,13 @@ cal_update_progress	calibrate.c	/^void cal_update_progress (gfloat fraction)$/;"
 cal_vna_calibrate	calibrate_vna.c	/^DataVector* cal_vna_calibrate (DataVector *in, DataVector *a, DataVector *b, DataVector *c, gchar *host)$/;"	f
 cal_vna_command	calibrate_vna.c	/^void cal_vna_command (int sockfd, gchar *cmd)$/;"	f
 cal_vna_exit	calibrate_vna.c	/^void cal_vna_exit (gchar *format, ...)$/;"	f
-cal_vna_push_data	calibrate_vna.c	/^static void cal_vna_push_data (ComplexDouble *data, gint len, gchar *type, gint sockfd)$/;"	f	file:
+cal_vna_full	calibrate_vna.c	/^static void cal_vna_full (CalVnaThreadInfo *threadinfo, gint sockfd)$/;"	f	file:
+cal_vna_full_calibrate	calibrate_vna.c	/^gboolean cal_vna_full_calibrate (DataVector **indata, DataVector **outdata, gchar *host)$/;"	f
+cal_vna_push_data	calibrate_vna.c	/^static void cal_vna_push_data (ComplexDouble *data, gint len, gchar *type, gint mem, gint sockfd)$/;"	f	file:
 cal_vna_reflection	calibrate_vna.c	/^static void cal_vna_reflection (CalVnaThreadInfo *threadinfo, gint sockfd)$/;"	f	file:
 cal_vna_set_netstat	calibrate_vna.c	/^gboolean cal_vna_set_netstat (gpointer data)$/;"	f
 cal_vna_start	calibrate_vna.c	/^static void cal_vna_start (gpointer data)$/;"	f	file:
-cal_vna_transmit_data_block	calibrate_vna.c	/^static void cal_vna_transmit_data_block (ComplexDouble *data, gint len, gint sockfd)$/;"	f	file:
+cal_vna_transmit_data_block	calibrate_vna.c	/^static void cal_vna_transmit_data_block (ComplexDouble *data, gint len, gint mem, gint sockfd)$/;"	f	file:
 cal_vna_update_progress	calibrate_vna.c	/^static void cal_vna_update_progress (gfloat fraction)$/;"	f	file:
 calculate_global_paramters	processdata.c	/^void calculate_global_paramters (DataVector *d, GlobalParam *gparam)$/;"	f
 calculate_q_func	resonancelist.c	/^void calculate_q_func (GtkTreeViewColumn *col, GtkCellRenderer *renderer, $/;"	f
@@ -305,13 +307,15 @@ free_lvector	nrutil.c	/^void free_lvector(unsigned long *v, long nl, long nh)$/;
 free_lvector	nrutil.c	/^void free_lvector(v,nl,nh)$/;"	f
 free_matrix	nrutil.c	/^void free_matrix(float **m, long nrl, long nrh, long ncl, long nch)$/;"	f
 free_matrix	nrutil.c	/^void free_matrix(m,nrl,nrh,ncl,nch)$/;"	f
-free_memory	calibrate.c	356;"	d	file:
-free_memory	calibrate.c	556;"	d	file:
+free_memory	calibrate.c	498;"	d	file:
+free_memory	calibrate.c	699;"	d	file:
 free_submatrix	nrutil.c	/^void free_submatrix(b,nrl,nrh,ncl,nch)$/;"	f
 free_submatrix	nrutil.c	/^void free_submatrix(double **b, long nrl, long nrh, long ncl, long nch)$/;"	f
 free_vector	nrutil.c	/^void free_vector(float *v, long nl, long nh)$/;"	f
 free_vector	nrutil.c	/^void free_vector(v,nl,nh)$/;"	f
 frqbut	export.c	/^	GtkToggleButton *idbut, *frqbut, *widbut, *ampbut, *phasbut, *qualbut, *stddevbut;$/;"	m	struct:__anon6	file:
+fullin	calibrate_vna.c	/^	DataVector **fullin;$/;"	m	struct:__anon8	file:
+fullout	calibrate_vna.c	/^	DataVector **fullout;$/;"	m	struct:__anon8	file:
 funcs	compl_mrqcof.c	/^	void (*funcs)(double, double [], ComplexDouble *, ComplexDouble [], int);$/;"	m	struct:__anon2	file:
 g_marshal_value_peek_pointer	gtkspectvis.c	20;"	d	file:
 gaussj	compl_mrqmin.c	/^void gaussj(double **a, int n, double **b, int m, int cancelcheck)$/;"	f

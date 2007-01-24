@@ -180,10 +180,13 @@ static gboolean cal_check_fullcal_entries (CalWin *calwin)
 	i = 0;
 	while (outnames[i])
 	{
-		entryname = g_strconcat ("cal_", innames[i], "_entry", NULL);
+		entryname = g_strconcat ("cal_", outnames[i], "_entry", NULL);
 		file = g_strdup (gtk_entry_get_text (GTK_ENTRY 
 				(glade_xml_get_widget (glob->calwin->xmlcal, entryname))));
 		g_free (entryname);
+
+		if (!file_is_writeable (file))
+			return FALSE;
 
 		if (!strlen(file))
 		{
@@ -344,8 +347,147 @@ void cal_update_progress (gfloat fraction)
 /* For full 2-port calibration: Takes the filenames out of the CalWin struct
  * and reads those files with proper error checking. Calls the actual
  * calibration routines afterwards. */
-static gboolean cal_do_full_calibration ()
+static gboolean cal_do_full_calibration (CalWin *calwin)
 {
+	DataVector **data, **outdata;
+	gchar *text;
+	gint i, j;
+	FILE *fh;
+
+	data = g_new0 (DataVector*, 14);
+
+	/* Read and check input files */
+	for (i=0; i<14; i++)
+	{
+		data[i] = import_datafile (calwin->full_filenames[i], TRUE);
+
+		if (!data[i])
+		{
+			for (j=0; j<i; j++) free_datavector (data[j]);
+			g_free (data);
+			cal_update_progress (-1.0);
+			return FALSE;
+		}
+
+		/* Check lengths */
+		if (data[i]->len != data[0]->len)
+		{
+			for (j=0; j<i; j++) free_datavector (data[j]);
+			g_free (data);
+			cal_update_progress (-1.0);
+			dialog_message ("Error: Data sets do not have the same lengths.");
+			return FALSE;
+		}
+
+		/* Check frequencies */
+		if (i > 0)
+		{
+			j = 0;
+			while ((j<data[0]->len) && (data[i]->x[j] == data[0]->x[j]))
+				j++;
+
+			if (j != data[0]->len)
+			{
+				for (j=0; j<i; j++) free_datavector (data[j]);
+				g_free (data);
+				cal_update_progress (-1.0);
+				dialog_message ("Error: Data sets do not have the same frequencies.");
+				return FALSE;
+			}
+		}
+
+		cal_update_progress ((gfloat)(i+1)/14.0);
+		while (gtk_events_pending ()) gtk_main_iteration ();
+	}
+
+	cal_update_progress (0.0);
+	while (gtk_events_pending ()) gtk_main_iteration ();
+
+	outdata = g_new0 (DataVector*, 4);
+	for (i=0; i<4; i++)
+		outdata[i] = new_datavector (data[0]->len);
+	cal_vna_full_calibrate (data, outdata, calwin->proxyhost);
+
+	/* Free calibration input data */
+	for (j=0; j<14; j++) free_datavector (data[j]);
+	g_free (data);
+
+	if (!outdata[0]->file)
+	{
+		for (j=0; j<4; j++) free_datavector (outdata[j]);
+		g_free (outdata);
+		return FALSE;
+	}
+
+	/* Give the proper filenames */
+	outdata[0]->file = g_strdup (calwin->full_filenames[14]);
+	outdata[1]->file = g_strdup (calwin->full_filenames[15]);
+	outdata[2]->file = g_strdup (calwin->full_filenames[16]);
+	outdata[3]->file = g_strdup (calwin->full_filenames[17]);
+
+	/* Write output data */
+	text = g_strdup_printf ("Writing output file ...");
+	gtk_progress_bar_set_text (
+		GTK_PROGRESS_BAR (glade_xml_get_widget (calwin->xmlcal, "cal_progress")),
+		text);
+	g_free (text);
+	while (gtk_events_pending ()) gtk_main_iteration ();
+
+	for (j=0; j<4; j++)
+	{
+		fh = fopen (outdata[j]->file, "w");
+		if (!fh)
+		{
+			dialog_message ("Error: Could not open output file.");
+			for (j=0; j<4; j++) free_datavector (outdata[j]);
+			g_free (outdata);
+			return FALSE;
+		}
+
+		fprintf (fh, "# Spectrum calibrated by GWignerFit\r\n#\r\n");
+		fprintf (fh, "# Calibration type: online full two-port calibration\r\n");
+		switch (j)
+		{
+			case 0:
+				fprintf (fh, "# S-matrix element: S11\r\n");
+				break;
+			case 1:
+				fprintf (fh, "# S-matrix element: S12\r\n");
+				break;
+			case 2:
+				fprintf (fh, "# S-matrix element: S21\r\n");
+				break;
+			case 3:
+				fprintf (fh, "# S-matrix element: S22\r\n");
+				break;
+		}
+		fprintf (fh, "# Uncalibrated input files:\r\n");
+		fprintf (fh, "# S11: %s\r\n", calwin->full_filenames[14]);
+		fprintf (fh, "# S12: %s\r\n", calwin->full_filenames[15]);
+		fprintf (fh, "# S21: %s\r\n", calwin->full_filenames[16]);
+		fprintf (fh, "# S22: %s\r\n", calwin->full_filenames[17]);
+
+		fprintf (fh, "# Calibration standard files:\r\n");
+		for (i=0; i<14; i++)
+			fprintf (fh, "# %2d: %s\r\n", i, calwin->full_filenames[i]);
+
+		fprintf (fh, DATAHDR);
+		for (i=0; i<outdata[j]->len; i++)
+			fprintf (fh, DATAFRMT, outdata[j]->x[i], outdata[j]->y[i].re, outdata[j]->y[i].im);
+		fclose (fh);
+	}
+	cal_update_progress (-1.0);
+
+	/* Add calibrated graph to display */
+	if (!glob->data)
+		/* Add as main graph */
+		set_new_main_data (outdata[0], FALSE);
+	else
+		/* Add as overlay */
+		overlay_add_data (outdata[0]);
+	overlay_add_data (outdata[1]);
+	overlay_add_data (outdata[2]);
+	overlay_add_data (outdata[3]);
 
 	return TRUE;
 }
@@ -371,7 +513,7 @@ static gboolean cal_do_calibration ()
 
 	if (calwin->calib_type == 2)
 		/* Do bells and whistles for full 2-port cal somewhere else */
-		return cal_check_fullcal_entries (calwin);
+		return cal_do_full_calibration (calwin);
 
 	in = out = a = b = c = NULL;
 
@@ -414,7 +556,7 @@ static gboolean cal_do_calibration ()
 		if ((in->len != a->len) || (in->len != b->len) || (in->len != c->len))
 		{
 			free_memory;
-			dialog_message ("Error: Datasets do not have the same lengths.");
+			dialog_message ("Error: Data sets do not have the same lengths.");
 			return FALSE;
 		}
 
@@ -428,7 +570,7 @@ static gboolean cal_do_calibration ()
 		if (i != in->len)
 		{
 			free_memory;
-			dialog_message ("Error: Datasets do not have the same lengths.");
+			dialog_message ("Error: Data sets do not have the same lengths.");
 			return FALSE;
 		}
 
@@ -464,7 +606,7 @@ static gboolean cal_do_calibration ()
 		if ((in->len != a->len) || ((b) && (in->len != b->len)))
 		{
 			free_memory;
-			dialog_message ("Error: Datasets do not have the same lengths.");
+			dialog_message ("Error: Data sets do not have the same lengths.");
 			return FALSE;
 		}
 
@@ -476,7 +618,7 @@ static gboolean cal_do_calibration ()
 		if (i != in->len)
 		{
 			free_memory;
-			dialog_message ("Error: Datasets do not have the same frequencies.");
+			dialog_message ("Error: Data sets do not have the same frequencies.");
 			return FALSE;
 		}
 
@@ -512,6 +654,7 @@ static gboolean cal_do_calibration ()
 	g_free (text);
 	while (gtk_events_pending ()) gtk_main_iteration ();
 
+	// FIXME: Proper header for online calibrated files
 	if (calwin->calib_type == 0)
 	{
 		fprintf (fh, "# Reflection spectrum calibrated by GWignerFit\r\n#\r\n");
