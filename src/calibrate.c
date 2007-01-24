@@ -151,8 +151,8 @@ static gboolean cal_check_fullcal_entries (CalWin *calwin)
 	gint i;
 	gchar *file, *entryname;
 	gchar *innames[] = {"full_s11in", "full_s12in", "full_s21in", "full_s22in",
-			    "full_s11short", "full_s11open", "full_s11load",
-			    "full_s22short", "full_s22open", "full_s22load",
+			    "full_s11open", "full_s11short", "full_s11load",
+			    "full_s22open", "full_s22short", "full_s22load",
 			    "full_s11thru", "full_s12thru", "full_s21thru", "full_s22thru",
 			    NULL};
 	gchar *outnames[] = {"full_s11out", "full_s12out", "full_s21out", "full_s22out", NULL};
@@ -461,15 +461,15 @@ static gboolean cal_do_full_calibration (CalWin *calwin)
 				fprintf (fh, "# S-matrix element: S22\r\n");
 				break;
 		}
-		fprintf (fh, "# Uncalibrated input files:\r\n");
-		fprintf (fh, "# S11: %s\r\n", calwin->full_filenames[14]);
-		fprintf (fh, "# S12: %s\r\n", calwin->full_filenames[15]);
-		fprintf (fh, "# S21: %s\r\n", calwin->full_filenames[16]);
-		fprintf (fh, "# S22: %s\r\n", calwin->full_filenames[17]);
+		fprintf (fh, "#\r\n# Uncalibrated input files:\r\n");
+		fprintf (fh, "#   S11: %s\r\n", calwin->full_filenames[14]);
+		fprintf (fh, "#   S12: %s\r\n", calwin->full_filenames[15]);
+		fprintf (fh, "#   S21: %s\r\n", calwin->full_filenames[16]);
+		fprintf (fh, "#   S22: %s\r\n", calwin->full_filenames[17]);
 
 		fprintf (fh, "# Calibration standard files:\r\n");
 		for (i=0; i<14; i++)
-			fprintf (fh, "# %2d: %s\r\n", i, calwin->full_filenames[i]);
+			fprintf (fh, "  # %2d: %s\r\n", i+1, calwin->full_filenames[i]);
 
 		fprintf (fh, DATAHDR);
 		for (i=0; i<outdata[j]->len; i++)
@@ -511,12 +511,6 @@ static gboolean cal_do_calibration ()
 	g_return_val_if_fail (glob->calwin, FALSE);
 	calwin = glob->calwin;
 
-	if (calwin->calib_type == 2)
-		/* Do bells and whistles for full 2-port cal somewhere else */
-		return cal_do_full_calibration (calwin);
-
-	in = out = a = b = c = NULL;
-
 	/* Enable and set progress bar */
 	text = g_strdup_printf ("Reading datafiles ...");
 	gtk_progress_bar_set_text (
@@ -527,6 +521,12 @@ static gboolean cal_do_calibration ()
 		glade_xml_get_widget (calwin->xmlcal, "cal_progress_frame" ), 
 		TRUE);
 	while (gtk_events_pending ()) gtk_main_iteration ();
+
+	if (calwin->calib_type == 2)
+		/* Do bells and whistles for full 2-port cal somewhere else */
+		return cal_do_full_calibration (calwin);
+
+	in = out = a = b = c = NULL;
 
 	/* Read main datafile */
 	if (!(in = import_datafile (calwin->in_file, TRUE)))
@@ -654,28 +654,41 @@ static gboolean cal_do_calibration ()
 	g_free (text);
 	while (gtk_events_pending ()) gtk_main_iteration ();
 
-	// FIXME: Proper header for online calibrated files
-	if (calwin->calib_type == 0)
+	if (calwin->offline)
+	{
+		if (calwin->calib_type == 0)
+		{
+			fprintf (fh, "# Reflection spectrum calibrated by GWignerFit\r\n#\r\n");
+			fprintf (fh, "# Calibration type        : offline calibration\r\n");
+			fprintf (fh, "# Uncalibrated input file : %s\r\n", in->file);
+			fprintf (fh, "# Open standard data file : %s\r\n", a->file);
+			fprintf (fh, "# Short standard data file: %s\r\n", b->file);
+			fprintf (fh, "# Load standard data file : %s\r\n", c->file);
+			fprintf (fh, "#\r\n# Calibration standard characteristics:\r\n");
+			fprintf (fh, "# Open standard time delay : %e sec\r\n", glob->prefs->cal_tauO);
+			fprintf (fh, "# Short standard time delay: %e sec\r\n", glob->prefs->cal_tauS);
+			fprintf (fh, "# Open standard capacity coefficients:\r\n");
+			fprintf (fh, "#   C0 = %e, C1 = %e, C2 = %e, C3 = %e\r\n",
+					glob->prefs->cal_C0, glob->prefs->cal_C1, 
+					glob->prefs->cal_C2, glob->prefs->cal_C3);
+		}
+		else
+		{
+			fprintf (fh, "# Transmission spectrum calibrated by GWignerFit\r\n#\r\n");
+			fprintf (fh, "# Calibration type        : offline calibration\r\n");
+			fprintf (fh, "# Uncalibrated input file : %s\r\n", in->file);
+			fprintf (fh, "# Thru data file          : %s\r\n", a->file);
+			fprintf (fh, "# Isolation data file     : %s\r\n", b ? b->file : "(omitted)");
+		}
+	}
+	else
 	{
 		fprintf (fh, "# Reflection spectrum calibrated by GWignerFit\r\n#\r\n");
+		fprintf (fh, "# Calibration type        : online one-port calibration\r\n");
 		fprintf (fh, "# Uncalibrated input file : %s\r\n", in->file);
 		fprintf (fh, "# Open standard data file : %s\r\n", a->file);
 		fprintf (fh, "# Short standard data file: %s\r\n", b->file);
 		fprintf (fh, "# Load standard data file : %s\r\n", c->file);
-		fprintf (fh, "#\r\n# Calibration standard characteristics:\r\n");
-		fprintf (fh, "# Open standard time delay : %e sec\r\n", glob->prefs->cal_tauO);
-		fprintf (fh, "# Short standard time delay: %e sec\r\n", glob->prefs->cal_tauS);
-		fprintf (fh, "# Open standard capacity coefficients:\r\n");
-		fprintf (fh, "#   C0 = %e, C1 = %e, C2 = %e, C3 = %e\r\n",
-				glob->prefs->cal_C0, glob->prefs->cal_C1, 
-				glob->prefs->cal_C2, glob->prefs->cal_C3);
-	}
-	else
-	{
-		fprintf (fh, "# Transmission spectrum calibrated by GWignerFit\r\n#\r\n");
-		fprintf (fh, "# Uncalibrated input file : %s\r\n", in->file);
-		fprintf (fh, "# Thru data file          : %s\r\n", a->file);
-		fprintf (fh, "# Isolation data file     : %s\r\n", b ? b->file : "(omitted)");
 	}
 	fprintf (fh, DATAHDR);
 	for (i=0; i<out->len; i++)
@@ -705,8 +718,8 @@ static void cal_connect_select_but (CalWin *calwin)
 	gchar *butname, *entryname;
 	gchar *names[] = {"in", "out", "trans_in", "trans_out", "open", "short", "load", "thru", "isol", 
 	                  "full_s11in", "full_s12in", "full_s21in", "full_s22in",
-			  "full_s11short", "full_s11open", "full_s11load",
-			  "full_s22short", "full_s22open", "full_s22load",
+			  "full_s11open", "full_s11short", "full_s11load",
+			  "full_s22open", "full_s22short", "full_s22load",
 	                  "full_s11thru", "full_s12thru", "full_s21thru", "full_s22thru",
 	                  "full_s11out", "full_s12out", "full_s21out", "full_s22out",
 	                  NULL};
@@ -736,8 +749,8 @@ static void cal_set_full_texts (CalWin *calwin)
 	gint i;
 	gchar *entryname;
 	gchar *names[] = {"full_s11in", "full_s12in", "full_s21in", "full_s22in",
-			  "full_s11short", "full_s11open", "full_s11load",
-			  "full_s22short", "full_s22open", "full_s22load",
+			  "full_s11open", "full_s11short", "full_s11load",
+			  "full_s22open", "full_s22short", "full_s22load",
 	                  "full_s11thru", "full_s12thru", "full_s21thru", "full_s22thru",
 	                  "full_s11out", "full_s12out", "full_s21out", "full_s22out",
 	                  NULL};
