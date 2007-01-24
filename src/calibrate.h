@@ -3,6 +3,6 @@
 
 void cal_open_win ();
 
-ComplexDouble c_div (ComplexDouble a, ComplexDouble b);
+void cal_update_progress (gfloat fraction);
 
 #endif

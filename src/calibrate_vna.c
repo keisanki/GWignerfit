@@ -234,8 +234,8 @@ static void cal_vna_push_data (ComplexDouble *data, gint len, gchar *type, gint 
 	{
 		g_snprintf (cmdstr, 80, "MTA LISTEN "VNA_GBIP" DATA 'CLASS%s;' END", type);
 		vna_send_cmd (sockfd, cmdstr, VNA_ETIMEOUT|VNA_ESYNTAXE);
-		usleep (1e6);
-//		vna_spoll_wait (sockfd);
+		usleep (5e5);
+		vna_spoll_wait (sockfd);
 	}
 
 	/* Transmit data */
@@ -286,7 +286,7 @@ static void cal_vna_reflection (CalVnaThreadInfo *threadinfo, gint sockfd)
 				(threadinfo->a->x[datapos]+(threadinfo->a->x[1]-threadinfo->a->x[0])*(points_in_win-1))/1e9));
 
 		cal_vna_update_progress (
-				(threadinfo->a->x[datapos]-threadinfo->a->x[0])/(threadinfo->a->x[threadinfo->a->len]-threadinfo->a->x[0])
+				(threadinfo->a->x[datapos]-threadinfo->a->x[0])/(threadinfo->a->x[threadinfo->a->len-1]-threadinfo->a->x[0])
 			);
 
 		/* Set frequency window and prepare for data aquisition */
@@ -307,14 +307,14 @@ static void cal_vna_reflection (CalVnaThreadInfo *threadinfo, gint sockfd)
 
 		/* Create and recall calset */
 		vna_send_cmd (sockfd, "MTA LISTEN "VNA_GBIP" DATA 'DONE;SAV1;CALS1;'", VNA_ETIMEOUT);
-		usleep (11e6);
+		vna_spoll_wait (sockfd);
 		vna_send_cmd (sockfd, "MTA LISTEN "VNA_GBIP" DATA 'FRER;WAIT;'", VNA_ETIMEOUT);
 		usleep (2e6);
 
 		/* Transmit measurement data to be calibrated */
 		vna_send_cmd (sockfd, "MTA LISTEN "VNA_GBIP" DATA 'HOLD;'", VNA_ETIMEOUT);
 		cal_vna_push_data (threadinfo->in->y + datapos, points_in_win, NULL, sockfd);
-		usleep (1e6);
+		//usleep (1e6);
 
 		/* Give the vna some time and do useless stuff */
 		vna_send_cmd (sockfd, "MTA LISTEN "VNA_GBIP" DATA 'AUTO;WAIT;' END", VNA_ETIMEOUT);

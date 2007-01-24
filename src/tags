@@ -157,22 +157,26 @@ b	calibrate_vna.c	/^	DataVector *b;$/;"	m	struct:__anon8	file:
 beta	compl_mrqcof.c	/^	double *beta;$/;"	m	struct:__anon2	file:
 bubbleSort	helpers.c	/^void bubbleSort (gdouble *array, int length)$/;"	f
 c	calibrate_vna.c	/^	DataVector *c;$/;"	m	struct:__anon8	file:
-c_add	calibrate.c	/^ComplexDouble c_add (ComplexDouble a, ComplexDouble b)$/;"	f
-c_div	calibrate.c	/^ComplexDouble c_div (ComplexDouble a, ComplexDouble b)$/;"	f
-c_exp	calibrate.c	/^ComplexDouble c_exp (gdouble a)$/;"	f
-c_mul	calibrate.c	/^ComplexDouble c_mul (ComplexDouble a, ComplexDouble b)$/;"	f
-c_sub	calibrate.c	/^ComplexDouble c_sub (ComplexDouble a, ComplexDouble b)$/;"	f
+c_add	calibrate_offline.c	/^ComplexDouble c_add (ComplexDouble a, ComplexDouble b)$/;"	f
+c_div	calibrate_offline.c	/^ComplexDouble c_div (ComplexDouble a, ComplexDouble b)$/;"	f
+c_exp	calibrate_offline.c	/^ComplexDouble c_exp (gdouble a)$/;"	f
+c_mul	calibrate_offline.c	/^ComplexDouble c_mul (ComplexDouble a, ComplexDouble b)$/;"	f
+c_sub	calibrate_offline.c	/^ComplexDouble c_sub (ComplexDouble a, ComplexDouble b)$/;"	f
 cal_caltype_changed	calibrate.c	/^void cal_caltype_changed (GtkNotebook *notebook, gpointer user_data) $/;"	f
 cal_check_entries	calibrate.c	/^static gboolean cal_check_entries ()$/;"	f	file:
+cal_check_fullcal_entries	calibrate.c	/^static gboolean cal_check_fullcal_entries (CalWin *calwin)$/;"	f	file:
 cal_choose_file	calibrate.c	/^static gboolean cal_choose_file (GtkButton *button, gpointer user_data)$/;"	f	file:
+cal_connect_select_but	calibrate.c	/^static void cal_connect_select_but (CalWin *calwin)$/;"	f	file:
 cal_do_calibration	calibrate.c	/^static gboolean cal_do_calibration ()$/;"	f	file:
+cal_do_full_calibration	calibrate.c	/^static gboolean cal_do_full_calibration ()$/;"	f	file:
 cal_get_valid_file	calibrate.c	/^static gchar* cal_get_valid_file (gchar *entry)$/;"	f	file:
 cal_method_toggled	calibrate.c	/^void cal_method_toggled (GtkToggleButton *togglebutton, gpointer user_data) $/;"	f
 cal_open_win	calibrate.c	/^void cal_open_win ()$/;"	f
-cal_reflection	calibrate.c	/^static DataVector* cal_reflection (DataVector *in, DataVector *opn, DataVector *shrt, DataVector *load)$/;"	f	file:
+cal_reflection	calibrate_offline.c	/^DataVector* cal_reflection (DataVector *in, DataVector *opn, DataVector *shrt, DataVector *load)$/;"	f
+cal_set_full_texts	calibrate.c	/^static void cal_set_full_texts (CalWin *calwin)$/;"	f	file:
 cal_set_text	calibrate.c	/^static void cal_set_text (gchar *entry, gchar *text)$/;"	f	file:
-cal_transmission	calibrate.c	/^static DataVector* cal_transmission (DataVector *in, DataVector *thru, DataVector *isol)$/;"	f	file:
-cal_update_progress	calibrate.c	/^static void cal_update_progress (gfloat fraction)$/;"	f	file:
+cal_transmission	calibrate_offline.c	/^DataVector* cal_transmission (DataVector *in, DataVector *thru, DataVector *isol)$/;"	f
+cal_update_progress	calibrate.c	/^void cal_update_progress (gfloat fraction)$/;"	f
 cal_vna_calibrate	calibrate_vna.c	/^DataVector* cal_vna_calibrate (DataVector *in, DataVector *a, DataVector *b, DataVector *c, gchar *host)$/;"	f
 cal_vna_command	calibrate_vna.c	/^void cal_vna_command (int sockfd, gchar *cmd)$/;"	f
 cal_vna_exit	calibrate_vna.c	/^void cal_vna_exit (gchar *format, ...)$/;"	f
@@ -301,8 +305,8 @@ free_lvector	nrutil.c	/^void free_lvector(unsigned long *v, long nl, long nh)$/;
 free_lvector	nrutil.c	/^void free_lvector(v,nl,nh)$/;"	f
 free_matrix	nrutil.c	/^void free_matrix(float **m, long nrl, long nrh, long ncl, long nch)$/;"	f
 free_matrix	nrutil.c	/^void free_matrix(m,nrl,nrh,ncl,nch)$/;"	f
-free_memory	calibrate.c	449;"	d	file:
-free_memory	calibrate.c	645;"	d	file:
+free_memory	calibrate.c	356;"	d	file:
+free_memory	calibrate.c	556;"	d	file:
 free_submatrix	nrutil.c	/^void free_submatrix(b,nrl,nrh,ncl,nch)$/;"	f
 free_submatrix	nrutil.c	/^void free_submatrix(double **b, long nrl, long nrh, long ncl, long nch)$/;"	f
 free_vector	nrutil.c	/^void free_vector(float *v, long nl, long nh)$/;"	f

@@ -43,7 +43,7 @@
 #define VNA_EUNKNOWN  16	/* Proxy status: Unknown command */
 #define VNA_ESUCCEOI  32	/* Proxy status: Seccess, transfer ended with EOI */
 
-#define DV(x) x			/* For debuggins set DV(x) x */
+#define DV(x)  			/* For debuggins set DV(x) x */
 
 extern GlobalData *glob;	/* Global variables */
 extern GladeXML *gladexml;
@@ -1104,7 +1104,7 @@ void vna_spoll_wait (int sockfd)
 			vna_thread_exit ("Failed to receive 31 bytes for spoll().");
 		if ((sscanf (buf, "* PROXYMSG: spoll result %d", &statbyte) != 1))
 			vna_thread_exit ("Could not parse spoll proxy reply: %s", buf);
-		usleep (10000);
+		usleep (2.5e5);
 	}
 }
 

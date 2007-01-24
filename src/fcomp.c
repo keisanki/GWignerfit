@@ -12,7 +12,7 @@
 #include "gtkspectvis.h"
 #include "fourier.h"
 #include "visualize.h"
-#include "calibrate.h"
+#include "calibrate_offline.h"
 #include "numeric.h"
 
 extern GlobalData *glob;

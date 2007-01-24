@@ -177,7 +177,7 @@ typedef struct
 	gchar *thru_file;		/* Full filename for thru standard data */
 	gchar *isol_file;		/* Full filename for isolation standard data */
 	gchar *full_filenames[18];	/* Full filenames for full 2-port calibration */
-	gboolean data_is_refl;		/* True if calibration for reflection data */
+	gint calib_type;		/* 0: reflection, 1: transmission, 2: full 2-port */
 	gboolean offline;		/* True for offline calibration method */
 	gchar *proxyhost;		/* Ieee488Proxy hostname */
 	gint sockfd;			/* Socket for network communication */

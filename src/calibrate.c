@@ -2,7 +2,6 @@
 #include <stdlib.h>
 #include <stdarg.h>
 #include <string.h>
-#include <math.h>
 
 #include <gtk/gtk.h>
 #include <glade/glade.h>
@@ -11,6 +10,7 @@
 #include "helpers.h"
 #include "processdata.h"
 #include "overlay.h"
+#include "calibrate_offline.h"
 #include "calibrate_vna.h"
 
 extern GlobalData *glob;
@@ -71,7 +71,14 @@ static gboolean cal_choose_file (GtkButton *button, gpointer user_data)
 	gchar *filename, *defaultname, check;
 
 	check = 1;
-	if (button == GTK_BUTTON (glade_xml_get_widget (glob->calwin->xmlcal, "cal_out_but")))
+	if (
+		(button == GTK_BUTTON (glade_xml_get_widget (glob->calwin->xmlcal, "cal_out_but"))) ||
+		(button == GTK_BUTTON (glade_xml_get_widget (glob->calwin->xmlcal, "cal_trans_out_but"))) ||
+		(button == GTK_BUTTON (glade_xml_get_widget (glob->calwin->xmlcal, "cal_full_s11out_but"))) ||
+		(button == GTK_BUTTON (glade_xml_get_widget (glob->calwin->xmlcal, "cal_full_s12out_but"))) ||
+		(button == GTK_BUTTON (glade_xml_get_widget (glob->calwin->xmlcal, "cal_full_s21out_but"))) ||
+		(button == GTK_BUTTON (glade_xml_get_widget (glob->calwin->xmlcal, "cal_full_s22out_but")))
+	   )
 		check = 2;
 
 	defaultname = get_defaultname (NULL);
@@ -95,43 +102,33 @@ static gboolean cal_choose_file (GtkButton *button, gpointer user_data)
 /* Callback when changeing the calibration type notebook */
 void cal_caltype_changed (GtkNotebook *notebook, gpointer user_data) 
 {
-	//GladeXML *xmlcal = glob->calwin->xmlcal;
-	//gboolean state;
+	GladeXML *xmlcal = glob->calwin->xmlcal;
 
-	switch (gtk_notebook_get_current_page (notebook))
+	glob->calwin->calib_type = gtk_notebook_get_current_page (notebook);
+
+	switch (glob->calwin->calib_type)
 	{
 		case 0:
-			glob->calwin->data_is_refl = FALSE;
+			gtk_widget_set_sensitive (glade_xml_get_widget (xmlcal, "cal_offline_radio" ), TRUE);
+			gtk_widget_set_sensitive (glade_xml_get_widget (xmlcal, "cal_online_radio" ), TRUE);
+			gtk_widget_set_sensitive (glade_xml_get_widget (xmlcal, "cal_proxy_label" ), TRUE);
+			gtk_widget_set_sensitive (glade_xml_get_widget (xmlcal, "cal_proxy_entry" ), TRUE);
 			break;
 		case 1:
-			glob->calwin->data_is_refl = TRUE;
+			gtk_widget_set_sensitive (glade_xml_get_widget (xmlcal, "cal_offline_radio" ), TRUE);
+			gtk_widget_set_sensitive (glade_xml_get_widget (xmlcal, "cal_online_radio" ), FALSE);
+			gtk_widget_set_sensitive (glade_xml_get_widget (xmlcal, "cal_proxy_label" ), FALSE);
+			gtk_widget_set_sensitive (glade_xml_get_widget (xmlcal, "cal_proxy_entry" ), FALSE);
+			gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (glade_xml_get_widget (xmlcal, "cal_offline_radio")), TRUE);
 			break;
 		case 2:
+			gtk_widget_set_sensitive (glade_xml_get_widget (xmlcal, "cal_offline_radio" ), FALSE);
+			gtk_widget_set_sensitive (glade_xml_get_widget (xmlcal, "cal_online_radio" ), TRUE);
+			gtk_widget_set_sensitive (glade_xml_get_widget (xmlcal, "cal_proxy_label" ), TRUE);
+			gtk_widget_set_sensitive (glade_xml_get_widget (xmlcal, "cal_proxy_entry" ), TRUE);
+			gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (glade_xml_get_widget (xmlcal, "cal_online_radio")), TRUE);
 			break;
 	}
-
-#if 0
-	/* state == TRUE for reflection */
-	state = gtk_toggle_button_get_active (togglebutton);
-	
-	gtk_widget_set_sensitive (glade_xml_get_widget (xmlcal, "cal_open_label" ),  state);
-	gtk_widget_set_sensitive (glade_xml_get_widget (xmlcal, "cal_short_label"),  state);
-	gtk_widget_set_sensitive (glade_xml_get_widget (xmlcal, "cal_load_label" ),  state);
-	gtk_widget_set_sensitive (glade_xml_get_widget (xmlcal, "cal_thru_label" ), !state);
-	gtk_widget_set_sensitive (glade_xml_get_widget (xmlcal, "cal_isol_label" ), !state);
-	gtk_widget_set_sensitive (glade_xml_get_widget (xmlcal, "cal_open_entry" ),  state);
-	gtk_widget_set_sensitive (glade_xml_get_widget (xmlcal, "cal_short_entry"),  state);
-	gtk_widget_set_sensitive (glade_xml_get_widget (xmlcal, "cal_load_entry" ),  state);
-	gtk_widget_set_sensitive (glade_xml_get_widget (xmlcal, "cal_thru_entry" ), !state);
-	gtk_widget_set_sensitive (glade_xml_get_widget (xmlcal, "cal_isol_entry" ), !state);
-	gtk_widget_set_sensitive (glade_xml_get_widget (xmlcal, "cal_open_but"   ),  state);
-	gtk_widget_set_sensitive (glade_xml_get_widget (xmlcal, "cal_short_but"  ),  state);
-	gtk_widget_set_sensitive (glade_xml_get_widget (xmlcal, "cal_load_but"   ),  state);
-	gtk_widget_set_sensitive (glade_xml_get_widget (xmlcal, "cal_thru_but"   ), !state);
-	gtk_widget_set_sensitive (glade_xml_get_widget (xmlcal, "cal_isol_but"   ), !state);
-
-	glob->calwin->data_is_refl = state;
-#endif
 }
 
 /* Callback when changeing the calibration method */
@@ -147,8 +144,63 @@ void cal_method_toggled (GtkToggleButton *togglebutton, gpointer user_data)
 	glob->calwin->offline = state;
 }
 
-/* Takes the filenames from the TextEntries and stores them in the
- * CalWin struct with proper error checking */
+/* For "full 2-port" calibrations: Takes the filenames from the TextEntries and
+ * stores them in the CalWin struct with proper error checking */
+static gboolean cal_check_fullcal_entries (CalWin *calwin)
+{
+	gint i;
+	gchar *file, *entryname;
+	gchar *innames[] = {"full_s11in", "full_s12in", "full_s21in", "full_s22in",
+			    "full_s11short", "full_s11open", "full_s11load",
+			    "full_s22short", "full_s22open", "full_s22load",
+			    "full_s11thru", "full_s12thru", "full_s21thru", "full_s22thru",
+			    NULL};
+	gchar *outnames[] = {"full_s11out", "full_s12out", "full_s21out", "full_s22out", NULL};
+
+	/* Check input files */
+	i = 0;
+	while (innames[i])
+	{
+		entryname = g_strconcat ("cal_", innames[i], "_entry", NULL);
+		file = cal_get_valid_file (entryname);
+		g_free (entryname);
+
+		if (!file)
+		{
+			dialog_message ("Could not open file with \"%s\" data.", innames[i]);
+			return FALSE;
+		}
+
+		calwin->full_filenames[i] = file;
+
+		i++;
+	}
+
+	/* Check output files */
+	i = 0;
+	while (outnames[i])
+	{
+		entryname = g_strconcat ("cal_", innames[i], "_entry", NULL);
+		file = g_strdup (gtk_entry_get_text (GTK_ENTRY 
+				(glade_xml_get_widget (glob->calwin->xmlcal, entryname))));
+		g_free (entryname);
+
+		if (!strlen(file))
+		{
+			dialog_message ("Please input a name for the output \"%s\" data file.", outnames[i]);
+			return FALSE;
+		}
+
+		calwin->full_filenames[i+14] = file;
+
+		i++;
+	}
+
+	return TRUE;
+}
+
+/* For "simple" calibrations: Takes the filenames from the TextEntries and
+ * stores them in the CalWin struct with proper error checking */
 static gboolean cal_check_entries ()
 {
 	CalWin *calwin = glob->calwin;
@@ -167,7 +219,12 @@ static gboolean cal_check_entries ()
 		}
 	}
 
-	if ((calwin->data_is_refl && (file = cal_get_valid_file ("cal_in_entry"))) || (file = cal_get_valid_file ("cal_trans_in_entry")))
+	if (calwin->calib_type == 2)
+		/* Do bells and whistles for full 2-port cal somewhere else */
+		return cal_check_fullcal_entries (calwin);
+
+	if (   ((calwin->calib_type == 0 ) && (file = cal_get_valid_file ("cal_in_entry"))) 
+	    || (file = cal_get_valid_file ("cal_trans_in_entry")))
 		calwin->in_file = file;
 	else
 	{
@@ -175,7 +232,7 @@ static gboolean cal_check_entries ()
 		return FALSE;
 	}
 		
-	if (calwin->data_is_refl)
+	if (calwin->calib_type == 0)
 		file = g_strdup (gtk_entry_get_text (GTK_ENTRY 
 				(glade_xml_get_widget (glob->calwin->xmlcal, "cal_out_entry"))));
 	else
@@ -192,7 +249,7 @@ static gboolean cal_check_entries ()
 		return FALSE;
 	calwin->out_file = file;
 
-	if (calwin->data_is_refl)
+	if (calwin->calib_type == 0)
 	{
 		if ((file = cal_get_valid_file ("cal_open_entry")))
 			calwin->open_file = file;
@@ -249,7 +306,7 @@ static gboolean cal_check_entries ()
 }
 
 /* Sets the ProgressBar to fraction and runs the main loop */
-static void cal_update_progress (gfloat fraction)
+void cal_update_progress (gfloat fraction)
 {
 	gchar *text;
 	
@@ -284,163 +341,13 @@ static void cal_update_progress (gfloat fraction)
 	while (gtk_events_pending ()) gtk_main_iteration ();
 }
 
-/* Adds two complex numbers (a+b) */
-ComplexDouble c_add (ComplexDouble a, ComplexDouble b)
+/* For full 2-port calibration: Takes the filenames out of the CalWin struct
+ * and reads those files with proper error checking. Calls the actual
+ * calibration routines afterwards. */
+static gboolean cal_do_full_calibration ()
 {
-	ComplexDouble c;
 
-	c.re = a.re + b.re;
-	c.im = a.im + b.im;
-	c.abs = 0.0;
-
-	return c;
-}
-
-/* Substracts two complex numbers (a-b) */
-ComplexDouble c_sub (ComplexDouble a, ComplexDouble b)
-{
-	ComplexDouble c;
-
-	c.re = a.re - b.re;
-	c.im = a.im - b.im;
-	c.abs = 0.0;
-
-	return c;
-}
-
-/* Multiplies two complex numbers (a*b)*/
-ComplexDouble c_mul (ComplexDouble a, ComplexDouble b)
-{
-	ComplexDouble c;
-
-	c.re = a.re*b.re - a.im*b.im;
-	c.im = a.re*b.im + b.re*a.im;
-	c.abs = 0.0;
-
-	return c;
-}
-
-/* Divides two complex numbers (a/b) */
-ComplexDouble c_div (ComplexDouble a, ComplexDouble b)
-{
-	ComplexDouble c, num;
-	gdouble denom;
-
-	denom = b.re*b.re + b.im*b.im;
-
-	b.im *= -1;
-	num = c_mul (a, b);
-	
-	c.re = num.re / denom;
-	c.im = num.im / denom;
-	c.abs = 0.0;
-
-	return c;
-}
-
-/* Calculates exp(i*a) for a real a */
-ComplexDouble c_exp (gdouble a)
-{
-	ComplexDouble c;
-
-	c.re = cos (a);
-	c.im = sin (a);
-	c.abs = 0.0;
-
-	return c;
-}
-
-/* Calibrate a reflection spectrum with the given data */
-static DataVector* cal_reflection (DataVector *in, DataVector *opn, DataVector *shrt, DataVector *load)
-{
-	DataVector *out;
-	ComplexDouble edf, esf, erf;
-	gdouble alphaO, gammaO, alphaS, C;
-	guint i;
-
-	out = new_datavector (in->len);
-
-	for (i=0; i<in->len; i++)
-	{
-		alphaO = 2*M_PI*in->x[i] * glob->prefs->cal_tauO;
-		alphaS = 2*M_PI*in->x[i] * glob->prefs->cal_tauS;
-		C =   glob->prefs->cal_C0
-		    + glob->prefs->cal_C1 * in->x[i] 
-		    + glob->prefs->cal_C2 * in->x[i]*in->x[i]
-		    + glob->prefs->cal_C3 * in->x[i]*in->x[i]*in->x[i];
-		gammaO = 2*atan (2*M_PI*in->x[i]*C*50);
-		
-		edf = load->y[i];
-
-		esf = c_mul (c_sub (opn->y[i], load->y[i]), 
-		             c_exp (alphaO+gammaO));
-		esf = c_add (esf, 
-		             c_mul (c_sub (shrt->y[i], load->y[i]), 
-		                    c_exp (alphaS)));
-		esf.re *= -1.0;
-		esf.im *= -1.0;
-		esf = c_div (esf, c_sub (shrt->y[i], opn->y[i]));
-		
-		erf = c_mul (c_sub (opn->y[i], load->y[i]),
-		             c_sub (shrt->y[i], load->y[i]));
-		erf = c_mul (erf,
-		             c_add (c_exp (alphaO+gammaO), c_exp (alphaS)));
-		erf = c_div (erf,
-		             c_sub (shrt->y[i], opn->y[i]));
-
-		out->y[i] = c_div (c_sub (in->y[i], edf),
-		                   c_add (erf,
-		                          c_mul (esf,
-		                                 c_sub (in->y[i], edf)
-						)
-					 )
-				  );
-
-		out->y[i].abs = sqrt (out->y[i].re*out->y[i].re + out->y[i].im*out->y[i].im);
-
-		/* Need to copy in->x[i] as in->x will be freed later */
-		out->x[i] = in->x[i];
-
-		if (i % (in->len / 100) == 0)
-			cal_update_progress ((gfloat)i / (gfloat)in->len);
-	}
-
-	return out;
-}
-
-/* Calibrate a transmission spectrum with the given data */
-static DataVector* cal_transmission (DataVector *in, DataVector *thru, DataVector *isol)
-{
-	DataVector *out;
-	ComplexDouble numerator, denominator;
-	guint i;
-
-	out = new_datavector (in->len);
-
-	for (i=0; i<in->len; i++)
-	{
-		if (isol)
-		{
-			numerator   = c_sub (in->y[i], isol->y[i]);
-			denominator = c_sub (thru->y[i], isol->y[i]);
-		}
-		else
-		{
-			numerator   = in->y[i];
-			denominator = thru->y[i];
-		}
-
-		out->y[i] = c_div (numerator, denominator);
-		out->y[i].abs = sqrt (out->y[i].re*out->y[i].re + out->y[i].im*out->y[i].im);
-
-		/* Need to copy in->x[i] as in->x will be freed later */
-		out->x[i] = in->x[i];
-
-		if (i % (in->len / 100) == 0)
-			cal_update_progress ((gfloat)i / (gfloat)in->len);
-	}
-
-	return out;
+	return TRUE;
 }
 
 /* Takes the filenames out of the CalWin struct and reads those
@@ -462,6 +369,10 @@ static gboolean cal_do_calibration ()
 	g_return_val_if_fail (glob->calwin, FALSE);
 	calwin = glob->calwin;
 
+	if (calwin->calib_type == 2)
+		/* Do bells and whistles for full 2-port cal somewhere else */
+		return cal_check_fullcal_entries (calwin);
+
 	in = out = a = b = c = NULL;
 
 	/* Enable and set progress bar */
@@ -479,7 +390,7 @@ static gboolean cal_do_calibration ()
 	if (!(in = import_datafile (calwin->in_file, TRUE)))
 		return FALSE;
 
-	if (calwin->data_is_refl)
+	if (calwin->calib_type == 0)
 	{
 		/* Calibrate reflection data */
 
@@ -601,7 +512,7 @@ static gboolean cal_do_calibration ()
 	g_free (text);
 	while (gtk_events_pending ()) gtk_main_iteration ();
 
-	if (calwin->data_is_refl)
+	if (calwin->calib_type == 0)
 	{
 		fprintf (fh, "# Reflection spectrum calibrated by GWignerFit\r\n#\r\n");
 		fprintf (fh, "# Uncalibrated input file : %s\r\n", in->file);
@@ -644,12 +555,66 @@ static gboolean cal_do_calibration ()
 }
 #undef free_memory
 
+/* Enable SelectFilname buttons */
+static void cal_connect_select_but (CalWin *calwin)
+{
+	gint i;
+	gchar *butname, *entryname;
+	gchar *names[] = {"in", "out", "trans_in", "trans_out", "open", "short", "load", "thru", "isol", 
+	                  "full_s11in", "full_s12in", "full_s21in", "full_s22in",
+			  "full_s11short", "full_s11open", "full_s11load",
+			  "full_s22short", "full_s22open", "full_s22load",
+	                  "full_s11thru", "full_s12thru", "full_s21thru", "full_s22thru",
+	                  "full_s11out", "full_s12out", "full_s21out", "full_s22out",
+	                  NULL};
+
+	i = 0;
+	while (names[i])
+	{
+		butname   = g_strconcat ("cal_", names[i], "_but",   NULL);
+		entryname = g_strconcat ("cal_", names[i], "_entry", NULL);
+
+		g_signal_connect (
+			G_OBJECT (glade_xml_get_widget (calwin->xmlcal, butname)), 
+			"clicked",
+			(GCallback) cal_choose_file, 
+			glade_xml_get_widget (calwin->xmlcal, entryname));
+
+		g_free (butname);
+		g_free (entryname);
+
+		i++;
+	}
+}
+
+/* Restore entries for full 2-port calibrations */
+static void cal_set_full_texts (CalWin *calwin)
+{
+	gint i;
+	gchar *entryname;
+	gchar *names[] = {"full_s11in", "full_s12in", "full_s21in", "full_s22in",
+			  "full_s11short", "full_s11open", "full_s11load",
+			  "full_s22short", "full_s22open", "full_s22load",
+	                  "full_s11thru", "full_s12thru", "full_s21thru", "full_s22thru",
+	                  "full_s11out", "full_s12out", "full_s21out", "full_s22out",
+	                  NULL};
+
+	i = 0;
+	while (names[i])
+	{
+		entryname = g_strconcat ("cal_", names[i], "_entry", NULL);
+		cal_set_text (entryname, calwin->full_filenames[i]);
+		g_free (entryname);
+		i++;
+	}
+}
+
 /* Opens the calibration GUI dialog. */
 void cal_open_win ()
 {
 	CalWin *calwin;
 	GtkWidget *dialog;
-	gint result;
+	gint i, result;
 
 	/* Prepare the structure */
 	if (glob->calwin)
@@ -666,9 +631,12 @@ void cal_open_win ()
 		calwin->load_file = NULL;
 		calwin->thru_file = NULL;
 		calwin->isol_file = NULL;
-		calwin->data_is_refl = TRUE;
+		calwin->calib_type = 0;
 		calwin->offline = TRUE;
 		calwin->proxyhost = NULL;
+
+		for (i=0; i<18; i++)
+			calwin->full_filenames[i] = NULL;
 	}
 
 	calwin->xmlcal = glade_xml_new (GLADEFILE, "cal_dialog", NULL);
@@ -680,33 +648,33 @@ void cal_open_win ()
 			cal_set_text ("cal_in_entry", glob->data->file);
 		else
 			cal_set_text ("cal_trans_in_entry", glob->data->file);
-		calwin->data_is_refl = glob->IsReflection;
+		calwin->calib_type = glob->IsReflection ? 0 : 1;
 	}
 
-	if (calwin->data_is_refl)
+	gtk_notebook_set_current_page (
+		GTK_NOTEBOOK (glade_xml_get_widget (calwin->xmlcal, "calibrate_notebook")),
+		calwin->calib_type);
+
+	switch (calwin->calib_type)
 	{
-		cal_set_text ("cal_in_entry", calwin->in_file);
-		cal_set_text ("cal_out_entry", calwin->out_file);
+		case 0:	/* simple reflection */
+			cal_set_text ("cal_in_entry", calwin->in_file);
+			cal_set_text ("cal_out_entry", calwin->out_file);
+			break;
+		case 1:	/* simple transmission */
+			cal_set_text ("cal_trans_in_entry", calwin->in_file);
+			cal_set_text ("cal_trans_out_entry", calwin->out_file);
+			break;
+		case 2:	/* full 2-port */
+			break;
 	}
-	else
-	{
-		cal_set_text ("cal_trans_in_entry", calwin->in_file);
-		cal_set_text ("cal_trans_out_entry", calwin->out_file);
-		gtk_notebook_set_current_page (
-				GTK_NOTEBOOK (
-				glade_xml_get_widget (calwin->xmlcal, "calibrate_notebook")),
-			1);
-	}
+
 	cal_set_text ("cal_open_entry", calwin->open_file);
 	cal_set_text ("cal_short_entry", calwin->short_file);
 	cal_set_text ("cal_load_entry", calwin->load_file);
 	cal_set_text ("cal_thru_entry", calwin->thru_file);
 	cal_set_text ("cal_isol_entry", calwin->isol_file);
-/*
-	cal_data_type_toggled (
-		GTK_TOGGLE_BUTTON (glade_xml_get_widget (calwin->xmlcal, "cal_refl_radio")),
-		NULL);
-*/
+	cal_set_full_texts (calwin);
 
 	if (!calwin->offline)
 	{
@@ -725,51 +693,7 @@ void cal_open_win ()
 	cal_set_text ("cal_proxy_entry", calwin->proxyhost);
 
 	/* Enable SelectFilname buttons */
-	g_signal_connect (
-		G_OBJECT (glade_xml_get_widget (calwin->xmlcal, "cal_in_but")), 
-		"clicked",
-		(GCallback) cal_choose_file, 
-		glade_xml_get_widget (calwin->xmlcal, "cal_in_entry"));
-	g_signal_connect (
-		G_OBJECT (glade_xml_get_widget (calwin->xmlcal, "cal_out_but")), 
-		"clicked",
-		(GCallback) cal_choose_file, 
-		glade_xml_get_widget (calwin->xmlcal, "cal_out_entry"));
-	g_signal_connect (
-		G_OBJECT (glade_xml_get_widget (calwin->xmlcal, "cal_trans_in_but")), 
-		"clicked",
-		(GCallback) cal_choose_file, 
-		glade_xml_get_widget (calwin->xmlcal, "cal_trans_in_entry"));
-	g_signal_connect (
-		G_OBJECT (glade_xml_get_widget (calwin->xmlcal, "cal_trans_out_but")), 
-		"clicked",
-		(GCallback) cal_choose_file, 
-		glade_xml_get_widget (calwin->xmlcal, "cal_trans_out_entry"));
-	g_signal_connect (
-		G_OBJECT (glade_xml_get_widget (calwin->xmlcal, "cal_open_but")), 
-		"clicked",
-		(GCallback) cal_choose_file, 
-		glade_xml_get_widget (calwin->xmlcal, "cal_open_entry"));
-	g_signal_connect (
-		G_OBJECT (glade_xml_get_widget (calwin->xmlcal, "cal_short_but")), 
-		"clicked",
-		(GCallback) cal_choose_file, 
-		glade_xml_get_widget (calwin->xmlcal, "cal_short_entry"));
-	g_signal_connect (
-		G_OBJECT (glade_xml_get_widget (calwin->xmlcal, "cal_load_but")), 
-		"clicked",
-		(GCallback) cal_choose_file, 
-		glade_xml_get_widget (calwin->xmlcal, "cal_load_entry"));
-	g_signal_connect (
-		G_OBJECT (glade_xml_get_widget (calwin->xmlcal, "cal_thru_but")), 
-		"clicked",
-		(GCallback) cal_choose_file, 
-		glade_xml_get_widget (calwin->xmlcal, "cal_thru_entry"));
-	g_signal_connect (
-		G_OBJECT (glade_xml_get_widget (calwin->xmlcal, "cal_isol_but")), 
-		"clicked",
-		(GCallback) cal_choose_file, 
-		glade_xml_get_widget (calwin->xmlcal, "cal_isol_entry"));
+	cal_connect_select_but (calwin);
 
 	dialog = glade_xml_get_widget (calwin->xmlcal, "cal_dialog");
 	glade_xml_signal_autoconnect (calwin->xmlcal);
