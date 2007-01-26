@@ -309,6 +309,18 @@ static int network_gui_to_struct ()
 	entry = GTK_ENTRY (glade_xml_get_widget (netwin->xmlnet, "vna_s_entry"));
 	text = gtk_entry_get_text (entry);
 	snprintf (netwin->param, 4, "%s", text);
+
+	if ((strlen (netwin->param) == 1) && (!g_strrstr (netwin->file, "%%")))
+	{
+		dialog_message ("Output filename does not contain wild-card \"%%%%\".");
+		return 1;
+	}
+
+	if ((strlen (netwin->param) == 1) && netwin->compress)
+	{
+		dialog_message ("Compression must not be enabled for full S-matrix measurements.");
+		return 1;
+	}
 	
 	entry = GTK_ENTRY (glade_xml_get_widget (netwin->xmlnet, "vna_avg_entry"));
 	text = gtk_entry_get_text (entry);
@@ -372,6 +384,7 @@ void network_open_win ()
 		items = g_list_append (items, "S21");
 		items = g_list_append (items, "S11");
 		items = g_list_append (items, "S22");
+		items = g_list_append (items, "S");
 		gtk_combo_set_popdown_strings (
 			GTK_COMBO (glade_xml_get_widget (xmlnet, "vna_s_combo")),
 			items);
@@ -429,7 +442,8 @@ void network_open_win ()
 /* The user clicked the start button */
 void on_vna_start_activate (GtkMenuItem *menuitem, gpointer user_data)
 {
-	gchar *filename, *tmpname;
+	gchar *filename, *tmpname, *pos;
+	gint i, j;
 
 	g_return_if_fail (glob->netwin);
 	g_return_if_fail (glob->netwin->xmlnet);
@@ -453,10 +467,35 @@ void on_vna_start_activate (GtkMenuItem *menuitem, gpointer user_data)
 		filename = tmpname;
 
 	/* Check file */
-	if (!file_is_writeable (filename))
+	if (strlen (glob->netwin->param) != 1)
 	{
-		g_free (filename);
-		return;
+		if (!file_is_writeable (filename))
+		{
+			g_free (filename);
+			return;
+		}
+	}
+	else
+	{
+		/* Full S-matrix measurement */
+		pos = g_strrstr (filename, "%%");
+		g_return_if_fail (pos);
+
+		for (i=0; i<2; i++)
+			for (j=0; j<2; j++)
+			{
+				pos[0] = 49+i;
+				pos[1] = 49+j;
+
+				if (!file_is_writeable (filename))
+				{
+					g_free (filename);
+					return;
+				}
+			}
+
+		pos[0] = '%';
+		pos[1] = '%';
 	}
 
 	g_free (glob->netwin->fullname);
@@ -1298,14 +1337,49 @@ static glong vna_sweep_cal_sleep ()
 		delta += 2000;
 	}
 
+	if (strlen (glob->netwin->param) == 1)
+		delta *= (glob->netwin->swpmode == 1) ? 4 : 1.5;
+
 	return delta;
+}
+
+static gboolean vna_write_header (gchar *fullname, gchar *sparam, NetworkWin *netwin)
+{
+	int h, m, s;
+	struct timeval tv;
+	struct tm* ptm;
+	char time_string[22];
+	FILE *outfh;
+
+	gettimeofday (&tv, NULL);
+	ptm = localtime (&tv.tv_sec);
+	strftime (time_string, sizeof (time_string), "%Y-%m-%d %H:%M:%S", ptm);
+	vna_sec_to_hhmmss (netwin->estim_t, &h, &m, &s);
+
+	if (!(outfh = fopen (glob->netwin->fullname, "w")))
+		return FALSE;
+
+	fprintf (outfh, "# Date of measurement: %s (estimated duration %02d:%02d:%02d)\r\n", 
+			time_string, h, m, s);
+	fprintf (outfh, "# Measurement type   : Frequency sweep\r\n");
+	fprintf (outfh, "# Frequency range    : %.3f - %.3f GHz (%.3f kHz resolution)\r\n",
+			netwin->start/1e9, netwin->stop/1e9, netwin->resol/1e3);
+	fprintf (outfh, "# Stimulus settings  : %s, %dx averaging, %s mode\r\n",
+			sparam, netwin->avg,
+			netwin->swpmode == 1 ? "ramp" : "step");
+	if (netwin->comment)
+		fprintf (outfh, "# Comment            : %s\r\n", netwin->comment);
+	fprintf (outfh, DATAHDR);
+	fclose (outfh);
+
+	return TRUE;
 }
 
 /* Measure a whole frequency range by dividing it into windows */
 static void vna_sweep_frequency_range ()
 {
 	NetworkWin *netwin;
-	int sockfd, i, j, winleft, windone, h, m, s;
+	int sockfd, i, j, winleft, windone, h, m, s, Si, Sj;
 	char cmdstr[81];
 	GTimeVal starttime, curtime, difftime;
 	struct timeval tv;
@@ -1314,6 +1388,7 @@ static void vna_sweep_frequency_range ()
 	gdouble fstart, fstop;
 	ComplexDouble *data;
 	DataVector *dvec;
+	gchar *pos, sparam[4];
 	FILE *outfh;
 #ifndef NO_ZLIB
 	gzFile *gzoutfh = NULL;
@@ -1330,9 +1405,13 @@ static void vna_sweep_frequency_range ()
 
 	vna_send_cmd (sockfd, "MTA LISTEN "VNA_GBIP" DATA 'PRES;'", VNA_ETIMEOUT|VNA_ESYNTAXE);
 	vna_ms_sleep (5000);
+	vna_send_cmd (sockfd, "MTA LISTEN "VNA_GBIP" DATA 'POIN801;'", VNA_ETIMEOUT|VNA_ESYNTAXE);
 
 	vna_send_cmd (sockfd, "MTA LISTEN "VNA_GBIP" LLO", VNA_ETIMEOUT);
-	g_snprintf (cmdstr, 80, "MTA LISTEN "VNA_GBIP" DATA 'POIN801;%s;'", netwin->param);
+	if (strlen (netwin->param) == 1)
+		g_snprintf (cmdstr, 80, "MTA LISTEN "VNA_GBIP" DATA 'FOUPSPLI;WAIT;'");
+	else
+		g_snprintf (cmdstr, 80, "MTA LISTEN "VNA_GBIP" DATA '%s;'", netwin->param);
 	vna_send_cmd (sockfd, cmdstr, VNA_ETIMEOUT|VNA_ESYNTAXE);
 	vna_ms_sleep (2000);
 
@@ -1352,23 +1431,42 @@ static void vna_sweep_frequency_range ()
 	vna_sec_to_hhmmss (netwin->estim_t, &h, &m, &s);
 	if (!glob->netwin->compress)
 	{
-		if (!(outfh = fopen (glob->netwin->fullname, "w")))
+		if (strlen (netwin->param) == 1)
 		{
-			vna_send_cmd (sockfd, "MTA LISTEN "VNA_GBIP" GTL", VNA_ETIMEOUT);
-			vna_thread_exit ("Could not open output file for writing.");
+			/* Full S-matrix measurement */
+			pos = g_strrstr (glob->netwin->fullname, "%%");
+			g_return_if_fail (pos);
+
+			for (Si=0; Si<2; Si++)
+				for (Sj=0; Sj<2; Sj++)
+				{
+					pos[0] = 49+Si;
+					pos[1] = 49+Sj;
+
+					sparam[0] = 'S';
+					sparam[1] = pos[0];
+					sparam[2] = pos[1];
+					sparam[3] = '\0';
+
+					if (!vna_write_header (glob->netwin->fullname, sparam, netwin))
+					{
+						vna_send_cmd (sockfd, "MTA LISTEN "VNA_GBIP" GTL", VNA_ETIMEOUT);
+						vna_thread_exit ("Could not open output file for writing.");
+					}
+				}
+
+			pos[0] = '%';
+			pos[1] = '%';
 		}
-		fprintf (outfh, "# Date of measurement: %s (estimated duration %02d:%02d:%02d)\r\n", 
-				time_string, h, m, s);
-		fprintf (outfh, "# Measurement type   : Frequency sweep\r\n");
-		fprintf (outfh, "# Frequency range    : %.3f - %.3f GHz (%.3f kHz resolution)\r\n",
-				netwin->start/1e9, netwin->stop/1e9, netwin->resol/1e3);
-		fprintf (outfh, "# Stimulus settings  : %s, %dx averaging, %s mode\r\n",
-				netwin->param, netwin->avg,
-				netwin->swpmode == 1 ? "ramp" : "step");
-		if (netwin->comment)
-			fprintf (outfh, "# Comment            : %s\r\n", netwin->comment);
-		fprintf (outfh, DATAHDR);
-		fclose (outfh);
+		else
+		{
+			/* Single S-matrix measurement */
+			if (!vna_write_header (glob->netwin->fullname, glob->netwin->param, netwin))
+			{
+				vna_send_cmd (sockfd, "MTA LISTEN "VNA_GBIP" GTL", VNA_ETIMEOUT);
+				vna_thread_exit ("Could not open output file for writing.");
+			}
+		}
 	}
 	else
 	{
@@ -1412,27 +1510,72 @@ static void vna_sweep_frequency_range ()
 		vna_send_cmd (sockfd, cmdstr, VNA_ETIMEOUT|VNA_ESYNTAXE);
 
 		vna_ms_sleep (vna_sweep_cal_sleep ());
-
-		/* Get data */
-		data = vna_recv_data (sockfd, 801);
-		g_return_if_fail (data);
 		
-		/* Write new data to file */
 		if (!glob->netwin->compress)
 		{
-			if (!(outfh = fopen (glob->netwin->fullname, "a")))
+			if (strlen (netwin->param) == 1)
 			{
-				vna_send_cmd (sockfd, "MTA LISTEN "VNA_GBIP" GTL", VNA_ETIMEOUT);
-				vna_thread_exit ("Could not open output file for writing.");
+				/* Full S-matrix measurement */
+
+				/* Get position of wildcard */
+				pos = g_strrstr (glob->netwin->fullname, "%%");
+				g_return_if_fail (pos);
+
+				for (Si=0; Si<2; Si++)
+					for (Sj=0; Sj<2; Sj++)
+					{
+						/* Get data */
+						g_snprintf (cmdstr, 80, "MTA LISTEN "VNA_GBIP" DATA 'S%d%d;'", Si+1, Sj+1);
+						vna_send_cmd (sockfd, cmdstr, VNA_ETIMEOUT|VNA_ESYNTAXE);
+						vna_send_cmd (sockfd, "MTA LISTEN "VNA_GBIP" DATA 'AUTO;'", VNA_ETIMEOUT);
+						data = vna_recv_data (sockfd, 801);
+						g_return_if_fail (data);
+
+						/* Write new data to file */
+						pos[0] = 49+Si;
+						pos[1] = 49+Sj;
+
+						if (!(outfh = fopen (glob->netwin->fullname, "a")))
+						{
+							vna_send_cmd (sockfd, "MTA LISTEN "VNA_GBIP" GTL", VNA_ETIMEOUT);
+							vna_thread_exit ("Could not open output file for writing.");
+						}
+						for (i=0; (i<801) && (fstart+(gdouble)i*netwin->resol <= netwin->stop); i++)
+							fprintf (outfh, DATAFRMT,
+									fstart+(gdouble)i*netwin->resol, data[i].re, data[i].im);
+						fclose (outfh);
+					}
+
+				pos[0] = '%';
+				pos[1] = '%';
 			}
-			for (i=0; (i<801) && (fstart+(gdouble)i*netwin->resol <= netwin->stop); i++)
-				fprintf (outfh, DATAFRMT,
-						fstart+(gdouble)i*netwin->resol, data[i].re, data[i].im);
-			fclose (outfh);
+			else
+			{
+				/* Single S-matrix measurement */
+
+				/* Get data */
+				data = vna_recv_data (sockfd, 801);
+				g_return_if_fail (data);
+
+				/* Write new data to file */
+				if (!(outfh = fopen (glob->netwin->fullname, "a")))
+				{
+					vna_send_cmd (sockfd, "MTA LISTEN "VNA_GBIP" GTL", VNA_ETIMEOUT);
+					vna_thread_exit ("Could not open output file for writing.");
+				}
+				for (i=0; (i<801) && (fstart+(gdouble)i*netwin->resol <= netwin->stop); i++)
+					fprintf (outfh, DATAFRMT,
+							fstart+(gdouble)i*netwin->resol, data[i].re, data[i].im);
+				fclose (outfh);
+			}
 		}
 		else
 		{
 #ifndef NO_ZLIB
+			/* Get data */
+			data = vna_recv_data (sockfd, 801);
+			g_return_if_fail (data);
+
 			/* There ain't no append for gzopen... */
 			for (i=0; (i<801) && (fstart+(gdouble)i*netwin->resol <= netwin->stop); i++)
 				gzprintf (gzoutfh, DATAFRMT,
