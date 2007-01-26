@@ -469,7 +469,7 @@ static gboolean cal_do_full_calibration (CalWin *calwin)
 
 		fprintf (fh, "# Calibration standard files:\r\n");
 		for (i=0; i<14; i++)
-			fprintf (fh, "  # %2d: %s\r\n", i+1, calwin->full_filenames[i]);
+			fprintf (fh, "#  %2d: %s\r\n", i+1, calwin->full_filenames[i]);
 
 		fprintf (fh, DATAHDR);
 		for (i=0; i<outdata[j]->len; i++)

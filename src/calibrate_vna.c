@@ -448,13 +448,13 @@ static void cal_vna_full (CalVnaThreadInfo *threadinfo, gint sockfd)
 		cal_vna_command (sockfd, "S11;");
 		cal_vna_push_data (threadinfo->fullin[0]->y + datapos, points_in_win, NULL, 1, sockfd);
 		cal_vna_command (sockfd, "S12;");
-		cal_vna_push_data (threadinfo->fullin[1]->y + datapos, points_in_win, NULL, 2, sockfd);
+		cal_vna_push_data (threadinfo->fullin[1]->y + datapos, points_in_win, NULL, 3, sockfd);
 		cal_vna_command (sockfd, "S21;");
-		cal_vna_push_data (threadinfo->fullin[2]->y + datapos, points_in_win, NULL, 3, sockfd);
+		cal_vna_push_data (threadinfo->fullin[2]->y + datapos, points_in_win, NULL, 2, sockfd);
 		cal_vna_command (sockfd, "S22;");
 		cal_vna_push_data (threadinfo->fullin[3]->y + datapos, points_in_win, NULL, 4, sockfd);
 
-		/* Give the vna some time and do useless stuff */
+		/* Turn on calibration */
 		vna_send_cmd (sockfd, "MTA LISTEN "VNA_GBIP" DATA 'CORRON;CALS1;WAIT;' END", VNA_ETIMEOUT);
 		usleep (4e6);
 
@@ -522,8 +522,11 @@ static void cal_vna_start (gpointer data)
 	vna_send_cmd (sockfd, "MTA LISTEN "VNA_GBIP" DATA 'PRES;'", VNA_ETIMEOUT|VNA_ESYNTAXE);
 	usleep (8e6);
 	vna_send_cmd (sockfd, "MTA LISTEN "VNA_GBIP" LLO", VNA_ETIMEOUT);
-	vna_send_cmd (sockfd, "MTA LISTEN "VNA_GBIP" DATA 'CORROFF;CONT;LOGM;RAMP;'", VNA_ETIMEOUT|VNA_ESYNTAXE);
+	vna_send_cmd (sockfd, "MTA LISTEN "VNA_GBIP" DATA 'CORROFF;CONT;LOGM;'", VNA_ETIMEOUT|VNA_ESYNTAXE);
 	vna_send_cmd (sockfd, "MTA LISTEN "VNA_GBIP" DATA 'POIN801;AVEROFF;WAIT;'", VNA_ETIMEOUT|VNA_ESYNTAXE);
+
+	/* The VNA calibration depends on the measured stimulus type, strange. */
+	vna_send_cmd (sockfd, "MTA LISTEN "VNA_GBIP" DATA 'STEP;'", VNA_ETIMEOUT);
 
 	if (threadinfo->fullin)
 	{
