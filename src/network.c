@@ -1129,13 +1129,13 @@ void vna_enter (int sockfd, char *buf, int len, int addr, int errmask)
 		vna_thread_exit ("Failed to receive %d bytes for enter().", len);
 }
 
-/* Wait for network to be ready again */
-void vna_spoll_wait (int sockfd)
+/* Wait for network to report the given status bitmask */
+void vna_spoll_wait (int sockfd, int status)
 {
 	char buf[31];
 	int statbyte = 0;
 
-	while (!(statbyte & 4))
+	while (!(statbyte & status))
 	{
 		buf[0] = '\0';
 		vna_send_cmd (sockfd, "* PROXYCMD: spoll "VNA_GBIP, VNA_ETIMEOUT);
@@ -1143,7 +1143,7 @@ void vna_spoll_wait (int sockfd)
 			vna_thread_exit ("Failed to receive 31 bytes for spoll().");
 		if ((sscanf (buf, "* PROXYMSG: spoll result %d", &statbyte) != 1))
 			vna_thread_exit ("Could not parse spoll proxy reply: %s", buf);
-		usleep (2.5e5);
+		usleep (5e5);
 	}
 }
 
@@ -1509,7 +1509,9 @@ static void vna_sweep_frequency_range ()
 				netwin->swpmode==1 ? netwin->avg+1 : 1);
 		vna_send_cmd (sockfd, cmdstr, VNA_ETIMEOUT|VNA_ESYNTAXE);
 
-		vna_ms_sleep (vna_sweep_cal_sleep ());
+//		vna_ms_sleep (vna_sweep_cal_sleep ());
+		vna_send_cmd (sockfd, "DCL", VNA_ETIMEOUT|VNA_ESYNTAXE);
+		vna_spoll_wait (sockfd, 16);
 		
 		if (!glob->netwin->compress)
 		{

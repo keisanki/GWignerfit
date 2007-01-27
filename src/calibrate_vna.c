@@ -270,7 +270,7 @@ static void cal_vna_push_data (ComplexDouble *data, gint len, gchar *type, gint 
 		g_snprintf (cmdstr, 80, "MTA LISTEN "VNA_GBIP" DATA '%s;' END", type);
 		vna_send_cmd (sockfd, cmdstr, VNA_ETIMEOUT|VNA_ESYNTAXE);
 		usleep (5e5);
-		vna_spoll_wait (sockfd);
+		vna_spoll_wait (sockfd, 4);
 	}
 
 	/* Transmit data */
@@ -343,7 +343,7 @@ static void cal_vna_reflection (CalVnaThreadInfo *threadinfo, gint sockfd)
 		/* Create and recall calset */
 		vna_send_cmd (sockfd, "MTA LISTEN "VNA_GBIP" DATA 'DONE;SAV1;CALS1;'", VNA_ETIMEOUT);
 		usleep (5e6);
-		vna_spoll_wait (sockfd);
+		vna_spoll_wait (sockfd, 4);
 		vna_send_cmd (sockfd, "MTA LISTEN "VNA_GBIP" DATA 'FRER;WAIT;'", VNA_ETIMEOUT);
 		usleep (2e6);
 
@@ -437,7 +437,7 @@ static void cal_vna_full (CalVnaThreadInfo *threadinfo, gint sockfd)
 		/* Create and recall calset */
 		vna_send_cmd (sockfd, "MTA LISTEN "VNA_GBIP" DATA 'DONE;SAV2;CALS1;'", VNA_ETIMEOUT);
 		usleep (5e6);
-		vna_spoll_wait (sockfd);
+		vna_spoll_wait (sockfd, 4);
 		cal_vna_command (sockfd, "CORROFF;");
 		cal_vna_set_netstat (g_strdup_printf ("Calibrating %.3f - %.3f GHz (data input)...", startfrq, stopfrq));
 		vna_send_cmd (sockfd, "MTA LISTEN "VNA_GBIP" DATA 'FOUPSPLI;FRER;WAIT;'", VNA_ETIMEOUT);

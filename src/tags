@@ -308,7 +308,7 @@ free_lvector	nrutil.c	/^void free_lvector(v,nl,nh)$/;"	f
 free_matrix	nrutil.c	/^void free_matrix(float **m, long nrl, long nrh, long ncl, long nch)$/;"	f
 free_matrix	nrutil.c	/^void free_matrix(m,nrl,nrh,ncl,nch)$/;"	f
 free_memory	calibrate.c	498;"	d	file:
-free_memory	calibrate.c	699;"	d	file:
+free_memory	calibrate.c	712;"	d	file:
 free_submatrix	nrutil.c	/^void free_submatrix(b,nrl,nrh,ncl,nch)$/;"	f
 free_submatrix	nrutil.c	/^void free_submatrix(double **b, long nrl, long nrh, long ncl, long nch)$/;"	f
 free_vector	nrutil.c	/^void free_vector(float *v, long nl, long nh)$/;"	f
@@ -722,12 +722,13 @@ vna_send_cmd	network.c	/^int vna_send_cmd (int fd, char *msg, int errmask)$/;"	f
 vna_sendall	network.c	/^int vna_sendall (int s, char *buf, int len)$/;"	f
 vna_set_netstat	network.c	/^static gboolean vna_set_netstat (gpointer data)$/;"	f	file:
 vna_show_time_estimates	network.c	/^static gboolean vna_show_time_estimates ()$/;"	f	file:
-vna_spoll_wait	network.c	/^void vna_spoll_wait (int sockfd)$/;"	f
+vna_spoll_wait	network.c	/^void vna_spoll_wait (int sockfd, int status)$/;"	f
 vna_start	network.c	/^static void vna_start ()$/;"	f	file:
 vna_sweep_cal_sleep	network.c	/^static glong vna_sweep_cal_sleep ()$/;"	f	file:
 vna_sweep_frequency_range	network.c	/^static void vna_sweep_frequency_range ()$/;"	f	file:
 vna_take_snapshot	network.c	/^static void vna_take_snapshot ()$/;"	f	file:
 vna_thread_exit	network.c	/^static void vna_thread_exit (gchar *format, ...)$/;"	f	file:
 vna_update_netstat	network.c	/^static void vna_update_netstat (gchar *format, ...)$/;"	f	file:
+vna_write_header	network.c	/^static gboolean vna_write_header (gchar *fullname, gchar *sparam, NetworkWin *netwin)$/;"	f	file:
 what_to_fit	resonancelist.c	/^void what_to_fit (gint *ia)$/;"	f
 widbut	export.c	/^	GtkToggleButton *idbut, *frqbut, *widbut, *ampbut, *phasbut, *qualbut, *stddevbut;$/;"	m	struct:__anon6	file:

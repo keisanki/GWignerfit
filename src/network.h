@@ -27,7 +27,7 @@ int vna_send_cmd (int fd, char *msg, int errmask);
 
 void vna_enter (int sockfd, char *buf, int len, int addr, int errmask);
 
-void vna_spoll_wait (int sockfd);
+void vna_spoll_wait (int sockfd, int status);
 
 ComplexDouble *vna_recv_data (int sockfd, int points);
 
