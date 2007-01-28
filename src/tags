@@ -729,6 +729,6 @@ vna_sweep_frequency_range	network.c	/^static void vna_sweep_frequency_range ()$/
 vna_take_snapshot	network.c	/^static void vna_take_snapshot ()$/;"	f	file:
 vna_thread_exit	network.c	/^static void vna_thread_exit (gchar *format, ...)$/;"	f	file:
 vna_update_netstat	network.c	/^static void vna_update_netstat (gchar *format, ...)$/;"	f	file:
-vna_write_header	network.c	/^static gboolean vna_write_header (gchar *fullname, gchar *sparam, NetworkWin *netwin)$/;"	f	file:
+vna_write_header	network.c	/^static gboolean vna_write_header (gint pos, gchar *sparam, NetworkWin *netwin)$/;"	f	file:
 what_to_fit	resonancelist.c	/^void what_to_fit (gint *ia)$/;"	f
 widbut	export.c	/^	GtkToggleButton *idbut, *frqbut, *widbut, *ampbut, *phasbut, *qualbut, *stddevbut;$/;"	m	struct:__anon6	file:

@@ -145,7 +145,7 @@ typedef struct
 	gchar *host;			/* Ieee488Proxy hostname */
 	gchar *path;			/* Path for output file */
 	gchar *file;			/* Filename for output file */
-	gchar *fullname;		/* The full name of the output file */
+	gchar *fullname[4];		/* The full name of the output file(s) */
 	gchar *comment;			/* An optional comment for the datafile header */
 	gboolean compress;		/* Compress the output file? */
 	gchar type;			/* 1=sweep mode; 2=snapshot mode */
@@ -162,7 +162,7 @@ typedef struct
 	ComplexDouble *ydata;		/* The measured data */
 	guint index;			/* The graph index of the measured data */
 #ifndef NO_ZLIB
-	gzFile *gzoutfh;		/* Filehandle for the compressed data file */
+	gzFile *gzoutfh[4];		/* Filehandle for the compressed data file */
 #endif
 } NetworkWin;
 

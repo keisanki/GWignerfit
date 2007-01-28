@@ -242,7 +242,6 @@ gint main (gint argc, char *argv[])
 		g_free (glob->netwin->host);
 		g_free (glob->netwin->path);
 		g_free (glob->netwin->file);
-		g_free (glob->netwin->fullname);
 		g_free (glob->netwin);
 	}
 

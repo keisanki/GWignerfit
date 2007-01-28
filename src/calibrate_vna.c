@@ -523,10 +523,7 @@ static void cal_vna_start (gpointer data)
 	usleep (8e6);
 	vna_send_cmd (sockfd, "MTA LISTEN "VNA_GBIP" LLO", VNA_ETIMEOUT);
 	vna_send_cmd (sockfd, "MTA LISTEN "VNA_GBIP" DATA 'CORROFF;CONT;LOGM;'", VNA_ETIMEOUT|VNA_ESYNTAXE);
-	vna_send_cmd (sockfd, "MTA LISTEN "VNA_GBIP" DATA 'POIN801;AVEROFF;WAIT;'", VNA_ETIMEOUT|VNA_ESYNTAXE);
-
-	/* The VNA calibration depends on the measured stimulus type, strange. */
-	vna_send_cmd (sockfd, "MTA LISTEN "VNA_GBIP" DATA 'STEP;'", VNA_ETIMEOUT);
+	vna_send_cmd (sockfd, "MTA LISTEN "VNA_GBIP" DATA 'POIN801;AVEROFF;RAMP;WAIT;'", VNA_ETIMEOUT|VNA_ESYNTAXE);
 
 	if (threadinfo->fullin)
 	{
