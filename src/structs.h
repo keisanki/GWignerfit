@@ -159,8 +159,8 @@ typedef struct
 	glong start_t;			/* The time at which the measurement started in sec */
 	glong estim_t;			/* Estimated time for measurement in sec */
 	gint sockfd;			/* Socket for network communication */
-	ComplexDouble *ydata;		/* The measured data */
-	guint index;			/* The graph index of the measured data */
+	ComplexDouble *ydata[4];	/* The measured data */
+	guint index[4];			/* The graph index of the measured data */
 #ifndef NO_ZLIB
 	gzFile *gzoutfh[4];		/* Filehandle for the compressed data file */
 #endif

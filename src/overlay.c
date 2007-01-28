@@ -671,6 +671,7 @@ void overlay_swap_files (GtkWidget *widget, gpointer user_data)
 	ComplexDouble *tmpdvec;
 	GtkTreeIter iter;
 	guint num, uid = 0, tmplen;
+	gint i;
 	gchar *basename, *tmpname;
 	gdouble *tmpdouble;
 	GdkColor color;
@@ -728,10 +729,19 @@ void overlay_swap_files (GtkWidget *widget, gpointer user_data)
 		glob->data->len);
 
 	/* Exchange the uids for a running measurement */
-	if ((glob->netwin) && (glob->netwin->index == overlaydata->index))
-		glob->netwin->index = glob->data->index;
-	else if ((glob->netwin) && (glob->netwin->index == glob->data->index))
-		glob->netwin->index = overlaydata->index;
+	for (i=0; i<4; i++)
+	{
+		if ((glob->netwin) && (glob->netwin->index[i] == overlaydata->index))
+		{
+			glob->netwin->index[i] = glob->data->index;
+			break;
+		}
+		else if ((glob->netwin) && (glob->netwin->index[i] == glob->data->index))
+		{
+			glob->netwin->index[i] = overlaydata->index;
+			break;
+		}
+	}
 	
 	tmpdouble = overlaydata->x;
 	overlaydata->x = glob->data->x;

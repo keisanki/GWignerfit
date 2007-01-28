@@ -43,12 +43,18 @@
 #define VNA_EUNKNOWN  16	/* Proxy status: Unknown command */
 #define VNA_ESUCCEOI  32	/* Proxy status: Seccess, transfer ended with EOI */
 
-#define DV(x) x			/* For debuggins set DV(x) x */
+#define DV(x)  			/* For debuggins set DV(x) x */
 
 extern GlobalData *glob;	/* Global variables */
 extern GladeXML *gladexml;
 
 static void vna_start ();	/* Forward declaration */
+
+typedef struct
+{
+	DataVector *dvec;	/* Measured data for graph update */
+	gint pos;		/* S-matrix position */
+} NetworkGraphUpdateData;
 
 /************************ The main thread **********************************/
 
@@ -705,65 +711,68 @@ static gboolean vna_show_time_estimates ()
 }
 
 /* Display the currently measured data */
-static gboolean vna_add_data_to_graph (DataVector *dvec)
+static gboolean vna_add_data_to_graph (NetworkGraphUpdateData *data)
 {
 	GtkSpectVis *spectvis = GTK_SPECTVIS (glade_xml_get_widget (gladexml, "graph"));
 	GtkSpectVisData *curdata;
 	guint pos;
 
-	g_return_val_if_fail (dvec, FALSE);
+	g_return_val_if_fail (data, FALSE);
+	g_return_val_if_fail (data->dvec, FALSE);
 
-	if (!glob->netwin->index)
+	if (!glob->netwin->index[data->pos])
 	{
 		/* First call -> add to graph */
 		/* dvec must be large enough to hold the whole measurement */
 
-		make_unique_dataset (dvec);
+		make_unique_dataset (data->dvec);
 		if (!glob->data)
 		{
 			/* Add as main graph */
-			set_new_main_data (dvec, FALSE);
+			set_new_main_data (data->dvec, FALSE);
 		}
 		else
 		{
 			/* Add as overlay */
-			overlay_add_data (dvec);
+			overlay_add_data (data->dvec);
 		}
-		glob->netwin->ydata = dvec->y;
-		glob->netwin->index = dvec->index;
+		glob->netwin->ydata[data->pos] = data->dvec->y;
+		glob->netwin->index[data->pos] = data->dvec->index;
 	}
 	else
 	{
 		/* Subsequent call -> update graph */
 		/* dvec contains just the new data */
-		curdata = gtk_spect_vis_get_data_by_uid (spectvis, glob->netwin->index);
-		if ((curdata) && (curdata->Y == glob->netwin->ydata))
+		curdata = gtk_spect_vis_get_data_by_uid (spectvis, glob->netwin->index[data->pos]);
+		if ((curdata) && (curdata->Y == glob->netwin->ydata[data->pos]))
 		{
 			/* OK, the graph seems to be still there. */
 			pos = 0;
-			while ((pos < curdata->len) && (curdata->X[pos] < dvec->x[0]))
+			while ((pos < curdata->len) && (curdata->X[pos] < data->dvec->x[0]))
 				pos++;
 
-			memcpy (curdata->Y+pos, dvec->y, 
-					(pos+dvec->len < curdata->len ? dvec->len : curdata->len-pos)
+			memcpy (curdata->Y+pos, data->dvec->y, 
+					(pos+data->dvec->len < curdata->len ? data->dvec->len : curdata->len-pos)
 					* sizeof(ComplexDouble));
 			/* The above memcpy() is short for:
-			for (i=pos; (i-pos<dvec->len) && (i<curdata->len); i++)
-				curdata->Y[i] = dvec->y[i-pos];
+			for (i=pos; (i-pos<data->dvec->len) && (i<curdata->len); i++)
+				curdata->Y[i] = data->dvec->y[i-pos];
 			*/
 			
 			gtk_spect_vis_redraw (spectvis);
 
-			if ((glob->data) && (glob->netwin->index == glob->data->index))
+			if ((glob->data) && (glob->netwin->index[data->pos] == glob->data->index))
 				fourier_update_main_graphs ();
 			else
 			{
-				fourier_update_overlay_graphs (-(glob->netwin->index), FALSE);
-				fourier_update_overlay_graphs (glob->netwin->index, TRUE);
+				fourier_update_overlay_graphs (-glob->netwin->index[data->pos], FALSE);
+				fourier_update_overlay_graphs ( glob->netwin->index[data->pos], TRUE);
 			}
 		}
-		free_datavector (dvec);
+		free_datavector (data->dvec);
 	}
+
+	g_free (data);
 	
 	return FALSE;
 }
@@ -793,11 +802,12 @@ static void vna_thread_exit (gchar *format, ...)
 		return;
 	}
 
-	for (i=0; i<4 ; i++)
-	{
-		g_free (glob->netwin->fullname[i]);
-		glob->netwin->fullname[i] = NULL;
-	}
+	if (glob->netwin)
+		for (i=0; i<4 ; i++)
+		{
+			g_free (glob->netwin->fullname[i]);
+			glob->netwin->fullname[i] = NULL;
+		}
 
 #ifndef NO_ZLIB
 	if (glob->netwin && glob->netwin->gzoutfh[0])
@@ -1230,6 +1240,7 @@ static void vna_take_snapshot ()
 	struct timeval tv;
 	struct tm* ptm;
 	char time_string[22];
+	NetworkGraphUpdateData *graphupdate;
 
 	g_return_if_fail (glob->netwin);
 	g_return_if_fail (glob->netwin->sockfd > 0);
@@ -1327,7 +1338,11 @@ static void vna_take_snapshot ()
 	dvec->file = g_strdup (glob->netwin->fullname[0]);
 	dvec->index = 0;
 
-	g_timeout_add (1, (GSourceFunc) vna_add_data_to_graph, dvec);
+	graphupdate = g_new (NetworkGraphUpdateData, 1);
+	graphupdate->dvec = dvec;
+	graphupdate->pos = 0;
+
+	g_timeout_add (1, (GSourceFunc) vna_add_data_to_graph, graphupdate);
 }
 
 /* Calculate the ms to wait for a window to be measured */
@@ -1434,6 +1449,7 @@ static void vna_sweep_frequency_range ()
 	ComplexDouble *data = NULL;
 	DataVector *dvec;
 	gchar *sparam[] = {"S11", "S12", "S21", "S22"};
+	NetworkGraphUpdateData *graphupdate;
 	FILE *outfh;
 
 	g_return_if_fail (glob->netwin);
@@ -1550,39 +1566,45 @@ static void vna_sweep_frequency_range ()
 							fstart+(gdouble)i*netwin->resol, data[i].re, data[i].im);
 #endif
 			}
+			/* Now: i == number of datapoints written */
 
+			/* Update main graph, vna_add_data_to_graph frees data */
+			if (netwin->start == fstart)
+			{
+				/* First window, initialize graph */
+				dvec = new_datavector ( (guint) ((netwin->stop - netwin->start)/netwin->resol) + 1 );
+				dvec->file = g_strdup (glob->netwin->fullname[Si]);
+				for (j=0; j<i; j++)
+				{
+					dvec->x[j] = netwin->start + (gdouble)j * netwin->resol;
+					dvec->y[j] = data[j];
+				}
+				g_free (data);
+				for (j=i; j<dvec->len; j++)
+				{
+					/* Initialize the rest of the vector */
+					dvec->x[j] = netwin->start + (gdouble)j * netwin->resol;
+					dvec->y[j].re = dvec->y[j].im = dvec->y[j].abs = 0.0;
+				}
+			}
+			else
+			{
+				dvec = g_new0 (DataVector, i);
+				dvec->len = i;
+				dvec->x = g_new (gdouble, 1);
+				dvec->x[0] = fstart;
+				dvec->y = data; /* data may be longer than dvec but this doesn't matter */
+			}
+
+			graphupdate = g_new (NetworkGraphUpdateData, 1);
+			graphupdate->dvec = dvec;
+			graphupdate->pos = Si;
+
+			g_timeout_add (1, (GSourceFunc) vna_add_data_to_graph, graphupdate);
+
+			/* Next S-parameter */
 			Si++;
 		}
-		/* Now: i == number of datapoints written */
-
-		/* Update main graph, vna_add_data_to_graph frees data */
-		if (netwin->start == fstart)
-		{
-			/* First window, initialize graph */
-			dvec = new_datavector ( (guint) ((netwin->stop - netwin->start)/netwin->resol) + 1 );
-			dvec->file = g_strdup (glob->netwin->fullname[Si-1]);
-			for (j=0; j<i; j++)
-			{
-				dvec->x[j] = netwin->start + (gdouble)j * netwin->resol;
-				dvec->y[j] = data[j];
-			}
-			g_free (data);
-			for (j=i; j<dvec->len; j++)
-			{
-				/* Initialize the rest of the vector */
-				dvec->x[j] = netwin->start + (gdouble)j * netwin->resol;
-				dvec->y[j].re = dvec->y[j].im = dvec->y[j].abs = 0.0;
-			}
-		}
-		else
-		{
-			dvec = g_new0 (DataVector, i);
-			dvec->len = i;
-			dvec->x = g_new (gdouble, 1);
-			dvec->x[0] = fstart;
-			dvec->y = data; /* data may be longer than dvec but this doesn't matter */
-		}
-		g_timeout_add (1, (GSourceFunc) vna_add_data_to_graph, dvec);
 
 		if (winleft)
 		{
@@ -1596,6 +1618,19 @@ static void vna_sweep_frequency_range ()
 			netwin->estim_t = curtime.tv_sec - netwin->start_t
 				+ (glong)( (float)difftime.tv_sec  * ((float)winleft/(float)windone))
 				+ (glong)(((float)difftime.tv_usec * ((float)winleft/(float)windone))/1e6);
+		}
+
+		/* Has anyone canceled the measurement? */
+		if (! (glob->flag & FLAG_VNA_MEAS) )
+		{
+			if (glob->netwin->sockfd)
+			{
+				if (glob->netwin->type == 1)
+					vna_send_cmd (glob->netwin->sockfd, 
+						"MTA LISTEN "VNA_GBIP" DATA 'RAMP;CONT;'", 0);
+				vna_send_cmd (glob->netwin->sockfd, "MTA LISTEN "VNA_GBIP" GTL", 0);
+			}
+			vna_thread_exit (NULL);
 		}
 
 		/* Finished with this window, start next one */
@@ -1624,6 +1659,7 @@ static void vna_start ()
 {
 	NetworkWin *netwin;
 	GTimeVal curtime;
+	gint i;
 
 	g_return_if_fail (glob->netwin);
 
@@ -1637,16 +1673,22 @@ static void vna_start ()
 
 	netwin = glob->netwin;
 	netwin->sockfd = -1;
-	netwin->index = 0;
-	netwin->ydata = NULL;
+
+	for (i=0; i<4; i++)
+	{
+		netwin->index[i] = 0;
+		netwin->ydata[i] = NULL;
+#ifndef NO_ZLIB
+
+		glob->netwin->gzoutfh[0] = NULL;
+		glob->netwin->gzoutfh[1] = NULL;
+		glob->netwin->gzoutfh[2] = NULL;
+		glob->netwin->gzoutfh[3] = NULL;
+#endif
+	}
 
 	glob->flag |= FLAG_VNA_MEAS;
-#ifndef NO_ZLIB
-	glob->netwin->gzoutfh[0] = NULL;
-	glob->netwin->gzoutfh[1] = NULL;
-	glob->netwin->gzoutfh[2] = NULL;
-	glob->netwin->gzoutfh[3] = NULL;
-#endif
+
 	/* Connect to Ieee488Proxy */
 	netwin->sockfd = (gint) vna_connect (netwin->host);
 	if (netwin->sockfd < 0)
