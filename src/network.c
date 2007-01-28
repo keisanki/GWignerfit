@@ -1424,14 +1424,14 @@ static gboolean vna_write_header (gint pos, gchar *sparam, NetworkWin *netwin)
 static void vna_sweep_frequency_range ()
 {
 	NetworkWin *netwin;
-	int sockfd, i, j, winleft, windone, h, m, s, Si;
+	int sockfd, i = 0, j, winleft, windone, h, m, s, Si;
 	char cmdstr[81];
 	GTimeVal starttime, curtime, difftime;
 	struct timeval tv;
 	struct tm* ptm;
 	char time_string[22];
 	gdouble fstart, fstop;
-	ComplexDouble *data;
+	ComplexDouble *data = NULL;
 	DataVector *dvec;
 	gchar *sparam[] = {"S11", "S12", "S21", "S22"};
 	FILE *outfh;
