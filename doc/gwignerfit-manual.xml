@@ -3,7 +3,7 @@
   "http://www.oasis-open.org/docbook/xml/4.4/docbookx.dtd" [
 <!--"/usr/share/sgml/docbook/xml-dtd-4.4-1.0-26/docbookx.dtd" [ -->
 	<!ENTITY legal SYSTEM "legal.xml">
-	<!ENTITY appversion "2006-08-23">
+	<!ENTITY appversion "2007-01-28">
 	<!ENTITY manrevision "1.0">
 	<!ENTITY date "August 2005">
 	<!ENTITY app "<application>GWignerFit</application>">
@@ -29,6 +29,7 @@
 		<year>2004</year>
 		<year>2005</year>
 		<year>2006</year>
+		<year>2007</year>
 		<holder>Florian Sch&auml;fer</holder>
 	</copyright>
 	<publisher>
@@ -2169,11 +2170,13 @@
 		<title>Spectrum calibration</title>
 		<para>Doing calibrated measurements with the HP8510C network analyzer is an
 			altogether unpleasant task. To make the process simpler &app; can perform
-			an off-line calibration of reflection and transmission data. The
+			an "offline" calibration of reflection and transmission data. The
 			mathematics involved with the calibration are described in the PhD thesis
 			by <ulink url="http://archiv.ub.uni-marburg.de/diss/z2002/0043/">
 			<citetitle>Michael Barth (Marburg, 2001)</citetitle></ulink>, appendix
-			A.2.</para>
+			A.2. Furthermore, &app; can do "online" calibrations (simple reflection
+			and full two-port), too, by feeding the spectra data back to the network
+			analyzer.</para>
 
 		<para>For the calibration &app; needs additional data which is obtained
 			by measurements of certain standards. This data has to be available for
@@ -2185,7 +2188,13 @@
 			coming from and leading to the network analyzer are connected directly
 			with each other) and an optional <emphasis>isolation</emphasis>
 			measurement which means that both ports have to be isolated to determine
-			the crosstalk.</para>
+			the crosstalk. For the online full two-port calibration ten standard
+			measurements are required: open, close and load reflection information
+			for both ports and the full S-matrix of the thru.</para>
+
+		<para><emphasis>
+				Warning: The following information is a bit outdated!
+		</emphasis></para>
 
 		<figure id="check-cal-win">
 			<title>Calibration dialog</title>
@@ -2198,7 +2207,8 @@
 							fileref="figures/gwf_calib.png" format="PNG"/>
 					</imageobject>
 					<textobject>
-						<phrase>Shows the calibration dialog.</phrase>
+						<phrase>Shows the calibration dialog for the full two-port
+							calibration.</phrase>
 					</textobject>
 				</mediaobject>
 			</screenshot>
@@ -3626,12 +3636,16 @@
 						mandatory, the name should have the suffix
 						<filename>.dat</filename>. You can use the <guibutton>Select
 						file</guibutton> button to select a path and/or filename through a
-						file chooser dialog. The created datafile can be compressed to save
-						disk space. This is enabled through the <guilabel>Compress output
-						file</guilabel> checkbox. Compressed files will get an additional
-						suffix, <filename>.gz</filename>, which you must not append to the
-						filename yourself. See <xref linkend="gwf-import" /> for more
-						information on compressed datafiles.
+						file chooser dialog. If you want to measure all four S-matrix
+						elements in one run you have to include the two characters "%%"
+						somewhere in the filename, &app; will later replace this wild-card
+						by the appropriate S-matrix element number, i.e. 11, 12, 21 or 22.
+						The created datafile(s) can be compressed to save disk space. This
+						is enabled through the <guilabel>Compress output file</guilabel>
+						checkbox. Compressed files will get an additional suffix,
+						<filename>.gz</filename>, which you must not append to the filename
+						yourself. See <xref linkend="gwf-import" /> for more information on
+						compressed datafiles.
 					</para>
 					<para>The generated datafile will contain a header with the most
 						important information of the measurement parameters (like date of
@@ -3684,14 +3698,18 @@
 						will sweep this range with the given
 						<guilabel>Resolution</guilabel>. Furthermore, the
 						<guilabel>S-Parameter</guilabel> that the VNA should measure can be
-						chosen. The given <guilabel>Averaging</guilabel> value increases the
-						signal-to-noise ratio but a measurement will take longer, too.
-						Finally, there is the <guilabel>Stimulus</guilabel> entry. It can
-						either be "ramp mode" or "step mode", this refers to the two major
-						frequency generation methods of the VNA. Please refer the manual of
-						your VNA for further information on those modes. A rule of thumb
-						may be that the ramp mode allows for quicker measurements whereas
-						the step mode measures with a higher frequency precision.
+						chosen. Setting this <guilabel>S-Parameter</guilabel> to just "S"
+						means that &app; should measure all four S-matrix elements in one
+						run, see above what the output filename has too look like for such
+						a measurement type. The given <guilabel>Averaging</guilabel> value
+						increases the signal-to-noise ratio but a measurement will take
+						longer, too. Finally, there is the <guilabel>Stimulus</guilabel>
+						entry. It can either be "ramp mode" or "step mode", this refers to
+						the two major frequency generation methods of the VNA. Please refer
+						the manual of your VNA for further information on those modes. A
+						rule of thumb may be that the ramp mode allows for quicker
+						measurements whereas the step mode measures with a higher frequency
+						precision.
 					</para>
 				</listitem>
 			</varlistentry>
