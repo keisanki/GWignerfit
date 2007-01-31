@@ -182,6 +182,8 @@ typedef struct
 	gchar *proxyhost;		/* Ieee488Proxy hostname */
 	gint sockfd;			/* Socket for network communication */
 	GThread *cal_GThread;		/* The handle of the calibration process */
+	GTimeVal start_t;		/* The time at which the calibration started in sec */
+	glong estim_t;			/* Estimated time for calibration in sec */
 } CalWin;
 
 typedef struct

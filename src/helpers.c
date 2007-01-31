@@ -1384,3 +1384,11 @@ int adjustpriority ()
 
 	return 0;
 }
+
+/* Converts seconds into hours, minutes and seconds */
+void sec_to_hhmmss (glong sec, gint *h, gint *m, gint *s)
+{
+	*h = (gint) (sec / 3600);
+	*m = (gint) ((sec - *h * 3600) / 60);
+	*s = (gint) (sec - *h * 3600 - *m * 60);
+}

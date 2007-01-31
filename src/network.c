@@ -469,7 +469,7 @@ void on_vna_start_activate (GtkMenuItem *menuitem, gpointer user_data)
 	else
 		filename = tmpname;
 
-	for (i=0; i<4 ; i++)
+	for (i=0; i<4; i++)
 	{
 		g_free (glob->netwin->fullname[i]);
 		glob->netwin->fullname[i] = NULL;
@@ -648,14 +648,6 @@ static gboolean vna_set_netstat (gpointer data)
 	return FALSE;
 }
 
-/* Converts seconds into hours, minutes and seconds */
-static void vna_sec_to_hhmmss (glong sec, gint *h, gint *m, gint *s)
-{
-	*h = (gint) (sec / 3600);
-	*m = (gint) ((sec - *h * 3600) / 60);
-	*s = (gint) (sec - *h * 3600 - *m * 60);
-}
-
 /* Update time estimates and progress bar */
 static gboolean vna_show_time_estimates ()
 {
@@ -673,13 +665,13 @@ static gboolean vna_show_time_estimates ()
 
 	g_get_current_time (&curtime);
 	
-	vna_sec_to_hhmmss (curtime.tv_sec - glob->netwin->start_t, &h1, &m1, &s1);
-	vna_sec_to_hhmmss (glob->netwin->estim_t, &h2, &m2, &s2);
+	sec_to_hhmmss (curtime.tv_sec - glob->netwin->start_t, &h1, &m1, &s1);
+	sec_to_hhmmss (glob->netwin->estim_t, &h2, &m2, &s2);
 
 	timeleft = glob->netwin->estim_t - (curtime.tv_sec - glob->netwin->start_t);
 	if (timeleft < 0)
 		timeleft = 0;
-	vna_sec_to_hhmmss (timeleft, &h3, &m3, &s3);
+	sec_to_hhmmss (timeleft, &h3, &m3, &s3);
 
 	text = g_strdup_printf ("%02d:%02d:%02d of %02d:%02d:%02d (%02d:%02d:%02d left)",
 		h1, m1, s1, h2, m2, s2, h3, m3, s3);
@@ -1394,7 +1386,7 @@ static gboolean vna_write_header (gint pos, gchar *sparam, NetworkWin *netwin)
 	gettimeofday (&tv, NULL);
 	ptm = localtime (&tv.tv_sec);
 	strftime (time_string, sizeof (time_string), "%Y-%m-%d %H:%M:%S", ptm);
-	vna_sec_to_hhmmss (netwin->estim_t, &h, &m, &s);
+	sec_to_hhmmss (netwin->estim_t, &h, &m, &s);
 
 	if (!glob->netwin->compress)
 	{
@@ -1486,7 +1478,7 @@ static void vna_sweep_frequency_range ()
 	gettimeofday (&tv, NULL);
 	ptm = localtime (&tv.tv_sec);
 	strftime (time_string, sizeof (time_string), "%Y-%m-%d %H:%M:%S", ptm);
-	vna_sec_to_hhmmss (netwin->estim_t, &h, &m, &s);
+	sec_to_hhmmss (netwin->estim_t, &h, &m, &s);
 
 	if (strlen (netwin->param) == 1)
 	{
@@ -1568,7 +1560,7 @@ static void vna_sweep_frequency_range ()
 			}
 			/* Now: i == number of datapoints written */
 
-			/* Update main graph, vna_add_data_to_graph frees data */
+			/* Display measured data */
 			if (netwin->start == fstart)
 			{
 				/* First window, initialize graph */
@@ -1589,16 +1581,17 @@ static void vna_sweep_frequency_range ()
 			}
 			else
 			{
-				dvec = g_new0 (DataVector, i);
-				dvec->len = i;
-				dvec->x = g_new (gdouble, 1);
+				dvec       = g_new0 (DataVector, i);
+				dvec->len  = i;
+				dvec->x    = g_new (gdouble, 1);
 				dvec->x[0] = fstart;
-				dvec->y = data; /* data may be longer than dvec but this doesn't matter */
+				dvec->y    = data; /* data may be longer than dvec but this doesn't matter */
 			}
 
-			graphupdate = g_new (NetworkGraphUpdateData, 1);
+			/* Update main graph, vna_add_data_to_graph frees data */
+			graphupdate       = g_new (NetworkGraphUpdateData, 1);
 			graphupdate->dvec = dvec;
-			graphupdate->pos = Si;
+			graphupdate->pos  = Si;
 
 			g_timeout_add (1, (GSourceFunc) vna_add_data_to_graph, graphupdate);
 

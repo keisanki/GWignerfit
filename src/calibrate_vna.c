@@ -3,10 +3,12 @@
 #include <stdarg.h>
 #include <unistd.h>
 #include <string.h>
+#include <math.h>
 
 #include <gtk/gtk.h>
 #include <glade/glade.h>
 
+#include "calibrate.h"
 #include "structs.h"
 #include "helpers.h"
 #include "network.h"
@@ -168,7 +170,6 @@ void cal_vna_exit (gchar *format, ...)
 		va_end (ap);
 	}
 
-printf ("Errormessage: %s\n", message);
 	g_timeout_add (1, (GSourceFunc) vna_cal_measurement_finished, message);
 
 	if (glob->calwin && (glob->calwin->sockfd > 0))
@@ -303,11 +304,19 @@ static void cal_vna_reflection (CalVnaThreadInfo *threadinfo, gint sockfd)
 	guint datapos, points_in_win, i;
 	ComplexDouble *data;
 	gchar cmdstr[81];
+	int winleft, windone;
 
 	vna_send_cmd (sockfd, "MTA LISTEN "VNA_GBIP" DATA 'S11;'", VNA_ETIMEOUT);
 	usleep (2e6);
 	vna_send_cmd (sockfd, "MTA LISTEN "VNA_GBIP" DATA 'DELC;CALS1;WAIT;'", VNA_ETIMEOUT);
 	usleep (2e6);
+
+	/* Set up time estimates */
+	g_get_current_time (&glob->calwin->start_t);
+	windone = 0;
+	winleft = (int) ceil (threadinfo->a->len/801.0);
+	glob->calwin->estim_t = (glong) (winleft * 33);
+	g_timeout_add (500, (GSourceFunc) cal_show_time_estimates, NULL);
 
 	datapos = 0;
 	while (datapos < threadinfo->a->len)
@@ -369,6 +378,9 @@ static void cal_vna_reflection (CalVnaThreadInfo *threadinfo, gint sockfd)
 		vna_send_cmd (sockfd, "MTA LISTEN "VNA_GBIP" DATA 'CLES;FRER;CONT;CORROFF;'", VNA_ETIMEOUT);
 		usleep (2e6);
 
+		/* Update ETA */
+		cal_update_time_estimates (&windone, &winleft);
+
 		datapos += 801;
 	}
 }
@@ -380,9 +392,18 @@ static void cal_vna_full (CalVnaThreadInfo *threadinfo, gint sockfd)
 	ComplexDouble *data;
 	gchar cmdstr[81];
 	gfloat startfrq, stopfrq;
+	int winleft, windone;
+	FILE *fh;
 
 	vna_send_cmd (sockfd, "MTA LISTEN "VNA_GBIP" DATA 'DELC;CALS1;WAIT;ENTO;'", VNA_ETIMEOUT);
 	usleep (2e6);
+
+	/* Set up time estimates */
+	g_get_current_time (&glob->calwin->start_t);
+	windone = 0;
+	winleft = (int) ceil (threadinfo->fullin[0]->len/801.0);
+	glob->calwin->estim_t = (glong) (winleft * 97);
+	g_timeout_add (500, (GSourceFunc) cal_show_time_estimates, NULL);
 
 	datapos = 0;
 	while (datapos < threadinfo->fullin[0]->len)
@@ -394,11 +415,6 @@ static void cal_vna_full (CalVnaThreadInfo *threadinfo, gint sockfd)
 		startfrq = threadinfo->fullin[0]->x[datapos]/1e9;
 		stopfrq  = (threadinfo->fullin[0]->x[datapos]+(threadinfo->fullin[0]->x[1]-threadinfo->fullin[0]->x[0])*(points_in_win-1))/1e9;
 		cal_vna_set_netstat (g_strdup_printf ("Calibrating %.3f - %.3f GHz (init)...", startfrq, stopfrq));
-
-		cal_vna_update_progress (
-				(threadinfo->fullin[0]->x[datapos]-threadinfo->fullin[0]->x[0])/
-				(threadinfo->fullin[0]->x[threadinfo->fullin[0]->len-1]-threadinfo->fullin[0]->x[0])
-			);
 
 		/* Set frequency window and prepare for data aquisition */
 		vna_send_cmd (sockfd, "MTA LISTEN "VNA_GBIP" DATA 'CLES;'", VNA_ETIMEOUT);
@@ -486,10 +502,24 @@ static void cal_vna_full (CalVnaThreadInfo *threadinfo, gint sockfd)
 				threadinfo->fullout[j]->y[datapos + i] = data[i];
 			}
 			g_free (data);
+
+			fh = fopen (threadinfo->fullout[j]->file, "a");
+			if (!fh)
+				cal_vna_exit ("Could not open file '%s'.", threadinfo->fullout[j]->file);
+			g_return_if_fail (fh);
+			for (i=0; i<points_in_win; i++)
+				fprintf (fh, DATAFRMT, 
+						threadinfo->fullout[j]->x[datapos + i], 
+						threadinfo->fullout[j]->y[datapos + i].re, 
+						threadinfo->fullout[j]->y[datapos + i].im);
+			fclose (fh);
 		}
 
 		vna_send_cmd (sockfd, "MTA LISTEN "VNA_GBIP" DATA 'CLES;FRER;CONT;CORROFF;'", VNA_ETIMEOUT);
 		usleep (2e6);
+
+		/* Update ETA */
+		cal_update_time_estimates (&windone, &winleft);
 
 		datapos += 801;
 	}
@@ -506,11 +536,8 @@ static void cal_vna_start (gpointer data)
 	/* Open connection */
 	sockfd = (gint) vna_connect (threadinfo->host);
 	if (sockfd < 0)
-	{
-		glob->flag &= ~FLAG_VNA_CAL;
 		cal_vna_exit ("Could not connect to Ieee488Proxy host %s", threadinfo->host);
-		return;
-	}
+
 	glob->calwin->sockfd = sockfd;
 
 	/* Give the Ieee488 card GPIB 21 */
@@ -530,7 +557,7 @@ static void cal_vna_start (gpointer data)
 		/* Full 2-port calibration */
 		cal_vna_full (threadinfo, sockfd);
 
-		threadinfo->fullout[0]->file = (gchar *) 1; /* Mark a successful calibration run */
+		threadinfo->out->file = (gchar *) 1; /* Mark a successful calibration run */
 	}
 	else
 	{

@@ -68,4 +68,6 @@ int cfprintf (FILE *stream, const char *format, ...);
 
 int adjustpriority ();
 
+void sec_to_hhmmss (glong sec, gint *h, gint *m, gint *s);
+
 #endif

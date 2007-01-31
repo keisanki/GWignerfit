@@ -13,7 +13,7 @@ COLOR_GUE	spectral.c	34;"	d	file:
 COLOR_POISSON	spectral.c	31;"	d	file:
 COORD_BORDER_DIST	gtkspectvis.c	15;"	d	file:
 Cadd	spectral_numeric.c	/^static fcomplex Cadd(fcomplex a, fcomplex b)$/;"	f	file:
-CalVnaThreadInfo	calibrate_vna.c	/^} CalVnaThreadInfo;$/;"	t	typeref:struct:__anon8	file:
+CalVnaThreadInfo	calibrate_vna.c	/^} CalVnaThreadInfo;$/;"	t	typeref:struct:__anon9	file:
 Cdiv	spectral_numeric.c	/^static fcomplex Cdiv(fcomplex a, fcomplex b)$/;"	f	file:
 CheckAmplitudes	numeric.c	/^void CheckAmplitudes (gdouble p[], gint numres, gint numfcomp)$/;"	f
 Cmul	spectral_numeric.c	/^static fcomplex Cmul(fcomplex a, fcomplex b)$/;"	f	file:
@@ -30,14 +30,14 @@ EULER	spectral_numeric.c	133;"	d	file:
 EULER	spectral_numeric.c	63;"	d	file:
 ExportTextviewData	export.c	/^} ExportTextviewData;$/;"	t	typeref:struct:__anon6	file:
 FCOMPLEX	spectral_numeric.c	/^typedef struct FCOMPLEX {float r,i;} fcomplex;$/;"	s	file:
-FCOMP_AMP_COL	fcomp.c	/^	FCOMP_TAU_COL, FCOMP_AMP_COL, FCOMP_PHI_COL,$/;"	e	enum:__anon7	file:
-FCOMP_FIT_AMP_COL	fcomp.c	/^	FCOMP_FIT_TAU_COL, FCOMP_FIT_AMP_COL, FCOMP_FIT_PHI_COL,$/;"	e	enum:__anon7	file:
-FCOMP_FIT_PHI_COL	fcomp.c	/^	FCOMP_FIT_TAU_COL, FCOMP_FIT_AMP_COL, FCOMP_FIT_PHI_COL,$/;"	e	enum:__anon7	file:
-FCOMP_FIT_TAU_COL	fcomp.c	/^	FCOMP_FIT_TAU_COL, FCOMP_FIT_AMP_COL, FCOMP_FIT_PHI_COL,$/;"	e	enum:__anon7	file:
-FCOMP_ID_COL	fcomp.c	/^	FCOMP_ID_COL = 0,$/;"	e	enum:__anon7	file:
-FCOMP_N_COLUMNS	fcomp.c	/^	FCOMP_N_COLUMNS$/;"	e	enum:__anon7	file:
-FCOMP_PHI_COL	fcomp.c	/^	FCOMP_TAU_COL, FCOMP_AMP_COL, FCOMP_PHI_COL,$/;"	e	enum:__anon7	file:
-FCOMP_TAU_COL	fcomp.c	/^	FCOMP_TAU_COL, FCOMP_AMP_COL, FCOMP_PHI_COL,$/;"	e	enum:__anon7	file:
+FCOMP_AMP_COL	fcomp.c	/^	FCOMP_TAU_COL, FCOMP_AMP_COL, FCOMP_PHI_COL,$/;"	e	enum:__anon8	file:
+FCOMP_FIT_AMP_COL	fcomp.c	/^	FCOMP_FIT_TAU_COL, FCOMP_FIT_AMP_COL, FCOMP_FIT_PHI_COL,$/;"	e	enum:__anon8	file:
+FCOMP_FIT_PHI_COL	fcomp.c	/^	FCOMP_FIT_TAU_COL, FCOMP_FIT_AMP_COL, FCOMP_FIT_PHI_COL,$/;"	e	enum:__anon8	file:
+FCOMP_FIT_TAU_COL	fcomp.c	/^	FCOMP_FIT_TAU_COL, FCOMP_FIT_AMP_COL, FCOMP_FIT_PHI_COL,$/;"	e	enum:__anon8	file:
+FCOMP_ID_COL	fcomp.c	/^	FCOMP_ID_COL = 0,$/;"	e	enum:__anon8	file:
+FCOMP_N_COLUMNS	fcomp.c	/^	FCOMP_N_COLUMNS$/;"	e	enum:__anon8	file:
+FCOMP_PHI_COL	fcomp.c	/^	FCOMP_TAU_COL, FCOMP_AMP_COL, FCOMP_PHI_COL,$/;"	e	enum:__anon8	file:
+FCOMP_TAU_COL	fcomp.c	/^	FCOMP_TAU_COL, FCOMP_AMP_COL, FCOMP_PHI_COL,$/;"	e	enum:__anon8	file:
 FIT_AMP_COL	export.c	/^	FIT_FRQ_COL, FIT_WID_COL, FIT_AMP_COL, FIT_PHAS_COL,$/;"	e	enum:__anon5	file:
 FIT_AMP_COL	resonancelist.c	/^	FIT_FRQ_COL, FIT_WID_COL, FIT_AMP_COL, FIT_PHAS_COL,$/;"	e	enum:__anon1	file:
 FIT_FRQ_COL	export.c	/^	FIT_FRQ_COL, FIT_WID_COL, FIT_AMP_COL, FIT_PHAS_COL,$/;"	e	enum:__anon5	file:
@@ -93,6 +93,7 @@ NR_END	nrutil.c	8;"	d	file:
 N_COLUMNS	export.c	/^	N_COLUMNS$/;"	e	enum:__anon5	file:
 N_COLUMNS	overlay.c	/^	N_COLUMNS$/;"	e	enum:__anon4	file:
 N_COLUMNS	resonancelist.c	/^	N_COLUMNS$/;"	e	enum:__anon1	file:
+NetworkGraphUpdateData	network.c	/^} NetworkGraphUpdateData;$/;"	t	typeref:struct:__anon7	file:
 NewSpectVis	visualize.c	/^GtkWidget *NewSpectVis (gchar *widget_name, gchar *string1, gchar *string2, gint int1, gint int2)$/;"	f
 NormalisePhase	processdata.c	/^double NormalisePhase (double p)$/;"	f
 ONE	spectral_numeric.c	139;"	d	file:
@@ -147,16 +148,16 @@ VNA_STAT_LEN	network.c	34;"	d	file:
 WID_COL	export.c	/^	FRQ_COL, WID_COL, AMP_COL, PHAS_COL,$/;"	e	enum:__anon5	file:
 WID_COL	resonancelist.c	/^	FRQ_COL, WID_COL, AMP_COL, PHAS_COL,$/;"	e	enum:__anon1	file:
 __USE_XOPEN	helpers.c	13;"	d	file:
-a	calibrate_vna.c	/^	DataVector *a;$/;"	m	struct:__anon8	file:
+a	calibrate_vna.c	/^	DataVector *a;$/;"	m	struct:__anon9	file:
 a	compl_mrqcof.c	/^	double *a;$/;"	m	struct:__anon2	file:
 add_resonance_to_list	resonancelist.c	/^void add_resonance_to_list (Resonance *res)$/;"	f
 adjustpriority	helpers.c	/^int adjustpriority ()$/;"	f
 alpha	compl_mrqcof.c	/^	double **alpha;$/;"	m	struct:__anon2	file:
 ampbut	export.c	/^	GtkToggleButton *idbut, *frqbut, *widbut, *ampbut, *phasbut, *qualbut, *stddevbut;$/;"	m	struct:__anon6	file:
-b	calibrate_vna.c	/^	DataVector *b;$/;"	m	struct:__anon8	file:
+b	calibrate_vna.c	/^	DataVector *b;$/;"	m	struct:__anon9	file:
 beta	compl_mrqcof.c	/^	double *beta;$/;"	m	struct:__anon2	file:
 bubbleSort	helpers.c	/^void bubbleSort (gdouble *array, int length)$/;"	f
-c	calibrate_vna.c	/^	DataVector *c;$/;"	m	struct:__anon8	file:
+c	calibrate_vna.c	/^	DataVector *c;$/;"	m	struct:__anon9	file:
 c_add	calibrate_offline.c	/^ComplexDouble c_add (ComplexDouble a, ComplexDouble b)$/;"	f
 c_div	calibrate_offline.c	/^ComplexDouble c_div (ComplexDouble a, ComplexDouble b)$/;"	f
 c_exp	calibrate_offline.c	/^ComplexDouble c_exp (gdouble a)$/;"	f
@@ -169,14 +170,17 @@ cal_choose_file	calibrate.c	/^static gboolean cal_choose_file (GtkButton *button
 cal_connect_select_but	calibrate.c	/^static void cal_connect_select_but (CalWin *calwin)$/;"	f	file:
 cal_do_calibration	calibrate.c	/^static gboolean cal_do_calibration ()$/;"	f	file:
 cal_do_full_calibration	calibrate.c	/^static gboolean cal_do_full_calibration (CalWin *calwin)$/;"	f	file:
+cal_fill_full_filenames	calibrate.c	/^static void cal_fill_full_filenames (gchar *filename)$/;"	f	file:
 cal_get_valid_file	calibrate.c	/^static gchar* cal_get_valid_file (gchar *entry)$/;"	f	file:
 cal_method_toggled	calibrate.c	/^void cal_method_toggled (GtkToggleButton *togglebutton, gpointer user_data) $/;"	f
 cal_open_win	calibrate.c	/^void cal_open_win ()$/;"	f
 cal_reflection	calibrate_offline.c	/^DataVector* cal_reflection (DataVector *in, DataVector *opn, DataVector *shrt, DataVector *load)$/;"	f
 cal_set_full_texts	calibrate.c	/^static void cal_set_full_texts (CalWin *calwin)$/;"	f	file:
 cal_set_text	calibrate.c	/^static void cal_set_text (gchar *entry, gchar *text)$/;"	f	file:
+cal_show_time_estimates	calibrate.c	/^gboolean cal_show_time_estimates ()$/;"	f
 cal_transmission	calibrate_offline.c	/^DataVector* cal_transmission (DataVector *in, DataVector *thru, DataVector *isol)$/;"	f
 cal_update_progress	calibrate.c	/^void cal_update_progress (gfloat fraction)$/;"	f
+cal_update_time_estimates	calibrate.c	/^void cal_update_time_estimates (int *windone, int *winleft)$/;"	f
 cal_vna_calibrate	calibrate_vna.c	/^DataVector* cal_vna_calibrate (DataVector *in, DataVector *a, DataVector *b, DataVector *c, gchar *host)$/;"	f
 cal_vna_command	calibrate_vna.c	/^void cal_vna_command (int sockfd, gchar *cmd)$/;"	f
 cal_vna_exit	calibrate_vna.c	/^void cal_vna_exit (gchar *format, ...)$/;"	f
@@ -232,6 +236,7 @@ dnd_drag_data_received_handler	dnd.c	/^static void dnd_drag_data_received_handle
 dnd_handle_file	dnd.c	/^static void dnd_handle_file (gchar *filename)$/;"	f	file:
 dnd_init	dnd.c	/^void dnd_init(GtkWidget *widget)$/;"	f
 drag_types	dnd.c	/^static GtkTargetEntry drag_types[] =$/;"	v	file:
+dvec	network.c	/^	DataVector *dvec;	\/* Measured data for graph update *\/$/;"	m	struct:__anon7	file:
 dvector	nrutil.c	/^double *dvector(long nl, long nh)$/;"	f
 dvector	nrutil.c	/^double *dvector(nl,nh)$/;"	f
 export_change_exported_data	export.c	/^static void export_change_exported_data (GtkToggleButton *togglebutton, gpointer data)$/;"	f	file:
@@ -307,15 +312,15 @@ free_lvector	nrutil.c	/^void free_lvector(unsigned long *v, long nl, long nh)$/;
 free_lvector	nrutil.c	/^void free_lvector(v,nl,nh)$/;"	f
 free_matrix	nrutil.c	/^void free_matrix(float **m, long nrl, long nrh, long ncl, long nch)$/;"	f
 free_matrix	nrutil.c	/^void free_matrix(m,nrl,nrh,ncl,nch)$/;"	f
-free_memory	calibrate.c	498;"	d	file:
-free_memory	calibrate.c	712;"	d	file:
+free_memory	calibrate.c	606;"	d	file:
+free_memory	calibrate.c	820;"	d	file:
 free_submatrix	nrutil.c	/^void free_submatrix(b,nrl,nrh,ncl,nch)$/;"	f
 free_submatrix	nrutil.c	/^void free_submatrix(double **b, long nrl, long nrh, long ncl, long nch)$/;"	f
 free_vector	nrutil.c	/^void free_vector(float *v, long nl, long nh)$/;"	f
 free_vector	nrutil.c	/^void free_vector(v,nl,nh)$/;"	f
 frqbut	export.c	/^	GtkToggleButton *idbut, *frqbut, *widbut, *ampbut, *phasbut, *qualbut, *stddevbut;$/;"	m	struct:__anon6	file:
-fullin	calibrate_vna.c	/^	DataVector **fullin;$/;"	m	struct:__anon8	file:
-fullout	calibrate_vna.c	/^	DataVector **fullout;$/;"	m	struct:__anon8	file:
+fullin	calibrate_vna.c	/^	DataVector **fullin;$/;"	m	struct:__anon9	file:
+fullout	calibrate_vna.c	/^	DataVector **fullout;$/;"	m	struct:__anon9	file:
 funcs	compl_mrqcof.c	/^	void (*funcs)(double, double [], ComplexDouble *, ComplexDouble [], int);$/;"	m	struct:__anon2	file:
 g_marshal_value_peek_pointer	gtkspectvis.c	20;"	d	file:
 gaussj	compl_mrqmin.c	/^void gaussj(double **a, int n, double **b, int m, int cancelcheck)$/;"	f
@@ -398,7 +403,7 @@ gtk_spect_vis_zoom_x_all	gtkspectvis.c	/^gtk_spect_vis_zoom_x_all (GtkSpectVis *
 gtk_spect_vis_zoom_x_to	gtkspectvis.c	/^gtk_spect_vis_zoom_x_to (GtkSpectVis *spectvis, gdouble min, gdouble max)$/;"	f
 gtk_spect_vis_zoom_y	gtkspectvis.c	/^gtk_spect_vis_zoom_y (GtkSpectVis *spectvis, gdouble center, gdouble factor)$/;"	f
 gtk_spect_vis_zoom_y_all	gtkspectvis.c	/^gtk_spect_vis_zoom_y_all (GtkSpectVis *spectvis)$/;"	f
-host	calibrate_vna.c	/^	gchar *host;$/;"	m	struct:__anon8	file:
+host	calibrate_vna.c	/^	gchar *host;$/;"	m	struct:__anon9	file:
 i	spectral_numeric.c	/^typedef struct FCOMPLEX {float r,i;} fcomplex;$/;"	m	struct:FCOMPLEX	file:
 ia	compl_mrqcof.c	/^	int *ia;$/;"	m	struct:__anon2	file:
 idbut	export.c	/^	GtkToggleButton *idbut, *frqbut, *widbut, *ampbut, *phasbut, *qualbut, *stddevbut;$/;"	m	struct:__anon6	file:
@@ -409,7 +414,7 @@ import_datafile	processdata.c	/^DataVector *import_datafile (gchar *filename, gb
 import_get_unit	resonancelist.c	/^static gdouble import_get_unit (gchar *string)$/;"	f	file:
 import_resonance_list	resonancelist.c	/^gboolean import_resonance_list (gchar *filename)$/;"	f
 import_resonance_list_parse	resonancelist.c	/^gboolean import_resonance_list_parse (gchar *filename, gchar ***in_header, gdouble ***in_rows)$/;"	f
-in	calibrate_vna.c	/^	DataVector *in;$/;"	m	struct:__anon8	file:
+in	calibrate_vna.c	/^	DataVector *in;$/;"	m	struct:__anon9	file:
 is_datafile	processdata.c	/^gboolean is_datafile (gchar *filename)$/;"	f
 ivector	nrutil.c	/^int *ivector(long nl, long nh)$/;"	f
 ivector	nrutil.c	/^int *ivector(nl,nh)$/;"	f
@@ -591,7 +596,7 @@ on_vna_select_activate	network.c	/^void on_vna_select_activate (GtkButton *butto
 on_vna_start_activate	network.c	/^void on_vna_start_activate (GtkMenuItem *menuitem, gpointer user_data)$/;"	f
 on_vna_sweep_mode_change	network.c	/^void on_vna_sweep_mode_change (GtkToggleButton *toggle, gpointer user_data)$/;"	f
 on_zoom_selection_activate	callbacks.c	/^void on_zoom_selection_activate (GtkMenuItem *menuitem, gpointer user_data)$/;"	f
-out	calibrate_vna.c	/^	DataVector *out;$/;"	m	struct:__anon8	file:
+out	calibrate_vna.c	/^	DataVector *out;$/;"	m	struct:__anon9	file:
 overlay_add_data	overlay.c	/^gboolean overlay_add_data (DataVector *overlaydata)$/;"	f
 overlay_add_to_list	overlay.c	/^static void overlay_add_to_list (gchar *filename, guint uid, GdkColor color)$/;"	f	file:
 overlay_close_window	overlay.c	/^gboolean overlay_close_window (GtkWidget *button)$/;"	f
@@ -614,6 +619,7 @@ param_compare	helpers.c	/^gint param_compare (gconstpointer a_in, gconstpointer 
 parent_class	gtkspectvis.c	/^static GtkWidgetClass *parent_class = NULL;$/;"	v	file:
 parse_commandline	gwignerfit.c	/^void parse_commandline (gint argc, char *argv[])$/;"	f
 phasbut	export.c	/^	GtkToggleButton *idbut, *frqbut, *widbut, *ampbut, *phasbut, *qualbut, *stddevbut;$/;"	m	struct:__anon6	file:
+pos	network.c	/^	gint pos;		\/* S-matrix position *\/$/;"	m	struct:__anon7	file:
 postscript_export_dialog	export.c	/^gboolean postscript_export_dialog ($/;"	f
 prefs_change_win	preferences.c	/^void prefs_change_win ()$/;"	f
 prefs_load	preferences.c	/^void prefs_load (Preferences *prefs)$/;"	f
@@ -633,6 +639,7 @@ reslist_update_widthunit	resonancelist.c	/^void reslist_update_widthunit ()$/;"	
 resonance_check_all	resonancelist.c	/^void resonance_check_all (gboolean type)$/;"	f
 resonance_toggle_row	resonancelist.c	/^void resonance_toggle_row ()$/;"	f
 save_write_section	processdata.c	/^void save_write_section (FILE *datafile, gchar *filename, gchar *section, gchar *newline)$/;"	f
+sec_to_hhmmss	helpers.c	/^void sec_to_hhmmss (glong sec, gint *h, gint *m, gint *s)$/;"	f
 select_res_by_id	resonancelist.c	/^gboolean select_res_by_id (gint id)$/;"	f
 set_busy_cursor	helpers.c	/^void set_busy_cursor (gboolean busy)$/;"	f
 set_icons	gwignerfit.c	/^void set_icons ()$/;"	f
@@ -708,7 +715,7 @@ visualize_theory_graph	visualize.c	/^void visualize_theory_graph (gchar *type)$/
 visualize_update_min_max	visualize.c	/^void visualize_update_min_max (gboolean redraw)$/;"	f
 visualize_update_res_bar	visualize.c	/^void visualize_update_res_bar (gboolean redraw)$/;"	f
 visualize_zoom_to_frequency_range	visualize.c	/^void visualize_zoom_to_frequency_range (gdouble min, gdouble max)$/;"	f
-vna_add_data_to_graph	network.c	/^static gboolean vna_add_data_to_graph (DataVector *dvec)$/;"	f	file:
+vna_add_data_to_graph	network.c	/^static gboolean vna_add_data_to_graph (NetworkGraphUpdateData *data)$/;"	f	file:
 vna_cal_measurement_finished	calibrate_vna.c	/^static gboolean vna_cal_measurement_finished (gpointer data)$/;"	f	file:
 vna_connect	network.c	/^int vna_connect (const gchar *host)$/;"	f
 vna_enter	network.c	/^void vna_enter (int sockfd, char *buf, int len, int addr, int errmask)$/;"	f
@@ -717,7 +724,6 @@ vna_ms_sleep	network.c	/^static void vna_ms_sleep (glong ms)$/;"	f	file:
 vna_receiveall	network.c	/^int vna_receiveall (int s, char *buf, int len)$/;"	f
 vna_receiveall_full	network.c	/^static int vna_receiveall_full (int s, char *buf, int len, int failok)$/;"	f	file:
 vna_recv_data	network.c	/^ComplexDouble *vna_recv_data (int sockfd, int points)$/;"	f
-vna_sec_to_hhmmss	network.c	/^static void vna_sec_to_hhmmss (glong sec, gint *h, gint *m, gint *s)$/;"	f	file:
 vna_send_cmd	network.c	/^int vna_send_cmd (int fd, char *msg, int errmask)$/;"	f
 vna_sendall	network.c	/^int vna_sendall (int s, char *buf, int len)$/;"	f
 vna_set_netstat	network.c	/^static gboolean vna_set_netstat (gpointer data)$/;"	f	file:

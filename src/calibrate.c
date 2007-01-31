@@ -65,6 +65,40 @@ static gchar* cal_get_valid_file (gchar *entry)
 	return text;
 }
 
+/* Try to guess filenames for full 2-port calibration */
+static void cal_fill_full_filenames (gchar *filename)
+{
+	gchar *pos, *prefix, *suffix, *newname;
+	gchar *entries[] = {"cal_full_s11short_entry", "cal_full_s11load_entry", 
+		            "cal_full_s22open_entry", "cal_full_s22short_entry", "cal_full_s22load_entry",
+			    "cal_full_s11thru_entry", "cal_full_s12thru_entry", "cal_full_s21thru_entry", "cal_full_s22thru_entry"};
+	gchar *innames[] = {"short_S11", "load_S11", "open_S22", "short_S22", "load_S22",
+		            "thru_S11", "thru_S12", "thru_S21", "thru_S22"};
+	gint i;
+
+	g_return_if_fail (filename);
+	g_return_if_fail (glob->calwin);
+	g_return_if_fail (glob->calwin->xmlcal);
+
+	if (!(pos = g_strrstr (filename, "open_S11")))
+		return;
+
+	pos[0] = '\0';
+	prefix = g_strdup (filename);
+	suffix = g_strdup (pos+8);
+	pos[0] = 'o';
+
+	for (i=0; i<9; i++)
+	{
+		newname = g_strdup_printf ("%s%s%s", prefix, innames[i], suffix);
+		gtk_entry_set_text (GTK_ENTRY (glade_xml_get_widget (glob->calwin->xmlcal, entries[i])), newname);
+		g_free (newname);
+	}
+
+	g_free (prefix);
+	g_free (suffix);
+}
+
 /* Callback for Select buttons */
 static gboolean cal_choose_file (GtkButton *button, gpointer user_data)
 {
@@ -95,6 +129,10 @@ static gboolean cal_choose_file (GtkButton *button, gpointer user_data)
 	gtk_editable_set_position (
 		GTK_EDITABLE (user_data),
 		-1);
+
+	/* Try to guess filenames for full 2-port calibration */
+	if (button == GTK_BUTTON (glade_xml_get_widget (glob->calwin->xmlcal, "cal_full_s11open_but")))
+		cal_fill_full_filenames (filename);
 
 	return TRUE;
 }
@@ -344,13 +382,86 @@ void cal_update_progress (gfloat fraction)
 	while (gtk_events_pending ()) gtk_main_iteration ();
 }
 
+/* Update time estimates and progress bar */
+gboolean cal_show_time_estimates ()
+{
+	gchar *text;
+	GTimeVal curtime;
+	gint h1, m1, s1;
+	gint h2, m2, s2;
+	gint h3, m3, s3;
+	glong timeleft;
+	GtkProgressBar *pbar;
+	gdouble fraction;
+
+	if ((!glob->calwin) || (!glob->calwin->xmlcal))
+		return FALSE;
+
+	g_get_current_time (&curtime);
+	
+	sec_to_hhmmss (curtime.tv_sec - glob->calwin->start_t.tv_sec, &h1, &m1, &s1);
+	sec_to_hhmmss (glob->calwin->estim_t, &h2, &m2, &s2);
+
+	timeleft = glob->calwin->estim_t - (curtime.tv_sec - glob->calwin->start_t.tv_sec);
+	if (timeleft < 0)
+		timeleft = 0;
+	sec_to_hhmmss (timeleft, &h3, &m3, &s3);
+
+	text = g_strdup_printf ("%02d:%02d:%02d of %02d:%02d:%02d (%02d:%02d:%02d left)",
+		h1, m1, s1, h2, m2, s2, h3, m3, s3);
+	gtk_label_set_text (
+		GTK_LABEL (glade_xml_get_widget (glob->calwin->xmlcal, "cal_timeest_label")),
+		text);
+	g_free (text);
+
+	if (glob->calwin->estim_t > 0)
+	{
+		pbar = GTK_PROGRESS_BAR (glade_xml_get_widget (glob->calwin->xmlcal, "cal_progress"));
+
+		fraction = 1.0 - (gdouble) timeleft / (gdouble) glob->calwin->estim_t;
+		if (fraction > gtk_progress_bar_get_fraction (pbar))
+		{
+			/* Only update progress bar if there is real progress */
+			gtk_progress_bar_set_fraction (pbar, fraction);
+			//text = g_strdup_printf ("%.0f %%", fraction * 100.0);
+			//gtk_progress_bar_set_text (pbar, text);
+			//g_free (text);
+		}
+	}
+
+	if (! (glob->flag & FLAG_VNA_CAL))
+		return FALSE;
+
+	/* This timeout will not be deleted. */
+	return TRUE;
+}
+
+/* Recalculate ETA based on the current and start time */
+void cal_update_time_estimates (int *windone, int *winleft)
+{
+	GTimeVal curtime, difftime;
+
+	if (*winleft)
+	{
+		/* Recalcualte ETA (only if we aren't finished yet) */
+		g_get_current_time (&curtime);
+		difftime.tv_sec  = curtime.tv_sec  -  glob->calwin->start_t.tv_sec;
+		difftime.tv_usec = curtime.tv_usec -  glob->calwin->start_t.tv_usec;
+		(*windone)++;	/* Frequency windows already measured */
+		(*winleft)--;	/* Those left to be measured */
+
+		glob->calwin->estim_t = curtime.tv_sec - glob->calwin->start_t.tv_sec
+			+ (glong)( (float)difftime.tv_sec  * ((float)*winleft/(float)*windone))
+			+ (glong)(((float)difftime.tv_usec * ((float)*winleft/(float)*windone))/1e6);
+	}
+}
+
 /* For full 2-port calibration: Takes the filenames out of the CalWin struct
  * and reads those files with proper error checking. Calls the actual
  * calibration routines afterwards. */
 static gboolean cal_do_full_calibration (CalWin *calwin)
 {
 	DataVector **data, **outdata;
-	gchar *text;
 	gint i, j;
 	FILE *fh;
 
@@ -403,39 +514,18 @@ static gboolean cal_do_full_calibration (CalWin *calwin)
 	cal_update_progress (0.0);
 	while (gtk_events_pending ()) gtk_main_iteration ();
 
+	/* Reserve memory for calibrated data */
 	outdata = g_new0 (DataVector*, 4);
 	for (i=0; i<4; i++)
-		outdata[i] = new_datavector (data[0]->len);
-	cal_vna_full_calibrate (data, outdata, calwin->proxyhost);
-
-	/* Free calibration input data */
-	for (j=0; j<14; j++) free_datavector (data[j]);
-	g_free (data);
-
-	if (!outdata[0]->file)
 	{
-		for (j=0; j<4; j++) free_datavector (outdata[j]);
-		g_free (outdata);
-		return FALSE;
+		outdata[i] = new_datavector (data[0]->len);
+		outdata[i]->file = g_strdup (calwin->full_filenames[i+14]);
 	}
 
-	/* Give the proper filenames */
-	outdata[0]->file = g_strdup (calwin->full_filenames[14]);
-	outdata[1]->file = g_strdup (calwin->full_filenames[15]);
-	outdata[2]->file = g_strdup (calwin->full_filenames[16]);
-	outdata[3]->file = g_strdup (calwin->full_filenames[17]);
-
-	/* Write output data */
-	text = g_strdup_printf ("Writing output file ...");
-	gtk_progress_bar_set_text (
-		GTK_PROGRESS_BAR (glade_xml_get_widget (calwin->xmlcal, "cal_progress")),
-		text);
-	g_free (text);
-	while (gtk_events_pending ()) gtk_main_iteration ();
-
+	/* Write output data headers */
 	for (j=0; j<4; j++)
 	{
-		fh = fopen (outdata[j]->file, "w");
+		fh = fopen (calwin->full_filenames[j+14], "w");
 		if (!fh)
 		{
 			dialog_message ("Error: Could not open output file.");
@@ -462,23 +552,41 @@ static gboolean cal_do_full_calibration (CalWin *calwin)
 				break;
 		}
 		fprintf (fh, "#\r\n# Uncalibrated input files:\r\n");
-		fprintf (fh, "#   S11: %s\r\n", calwin->full_filenames[14]);
-		fprintf (fh, "#   S12: %s\r\n", calwin->full_filenames[15]);
-		fprintf (fh, "#   S21: %s\r\n", calwin->full_filenames[16]);
-		fprintf (fh, "#   S22: %s\r\n", calwin->full_filenames[17]);
+		fprintf (fh, "#   S11: %s\r\n", calwin->full_filenames[0]);
+		fprintf (fh, "#   S12: %s\r\n", calwin->full_filenames[1]);
+		fprintf (fh, "#   S21: %s\r\n", calwin->full_filenames[2]);
+		fprintf (fh, "#   S22: %s\r\n", calwin->full_filenames[3]);
 
 		fprintf (fh, "# Calibration standard files:\r\n");
-		for (i=0; i<14; i++)
-			fprintf (fh, "#  %2d: %s\r\n", i+1, calwin->full_filenames[i]);
-
-		fprintf (fh, DATAHDR);
-		for (i=0; i<outdata[j]->len; i++)
-			fprintf (fh, DATAFRMT, outdata[j]->x[i], outdata[j]->y[i].re, outdata[j]->y[i].im);
+		for (i=4; i<14; i++)
+			fprintf (fh, "#  %2d: %s\r\n", i-3, calwin->full_filenames[i]);
 		fclose (fh);
 	}
+	
+	/* Do the calibration */
+	cal_vna_full_calibrate (data, outdata, calwin->proxyhost);
+
+	/* Free calibration input data */
+	for (j=0; j<14; j++) free_datavector (data[j]);
+	g_free (data);
+
+	/* Free output data if calibration did not finish */
+	if (!outdata[0]->file)
+	{
+		for (j=0; j<4; j++) free_datavector (outdata[j]);
+		g_free (outdata);
+		return FALSE;
+	}
+
+	/* Give the proper filenames */
+	outdata[0]->file = g_strdup (calwin->full_filenames[14]);
+	outdata[1]->file = g_strdup (calwin->full_filenames[15]);
+	outdata[2]->file = g_strdup (calwin->full_filenames[16]);
+	outdata[3]->file = g_strdup (calwin->full_filenames[17]);
+
 	cal_update_progress (-1.0);
 
-	/* Add calibrated graph to display */
+	/* Add calibrated graphs to display */
 	if (!glob->data)
 		/* Add as main graph */
 		set_new_main_data (outdata[0], FALSE);
