@@ -252,6 +252,7 @@ static void cal_vna_transmit_data_block (ComplexDouble *data, gint len, gint mem
 	usleep (1e6);
 
 	vna_sendall (sockfd, buf, 8*len);
+	usleep (1e6);
 	/* Get status message */
 	vna_receiveall (sockfd, cmdstr, VNA_STAT_LEN);
 	if (sscanf (reply, "* PROXYMSG: Status %d", &status) != 1)

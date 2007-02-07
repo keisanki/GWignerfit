@@ -43,7 +43,7 @@
 #define VNA_EUNKNOWN  16	/* Proxy status: Unknown command */
 #define VNA_ESUCCEOI  32	/* Proxy status: Seccess, transfer ended with EOI */
 
-#define DV(x) x			/* For debuggins set DV(x) x */
+#define DV(x)  			/* For debuggins set DV(x) x */
 
 extern GlobalData *glob;	/* Global variables */
 extern GladeXML *gladexml;
@@ -1029,7 +1029,8 @@ int vna_send_cmd (int fd, char *msg, int errmask)
 	int status = -1;
 	int recv_tries = 0;
 	
-	vna_sendall (fd, msg, strlen (msg));
+	/* strlen (msg)+1: Transmit tailing \0, too. */
+	vna_sendall (fd, msg, strlen (msg)+1);
 
 	/* Get Proxy status reply */
 	while ((vna_receiveall_full (fd, reply, VNA_STAT_LEN, 1) == -1) &&
