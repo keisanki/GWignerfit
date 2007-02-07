@@ -2174,9 +2174,9 @@
 			mathematics involved with the calibration are described in the PhD thesis
 			by <ulink url="http://archiv.ub.uni-marburg.de/diss/z2002/0043/">
 			<citetitle>Michael Barth (Marburg, 2001)</citetitle></ulink>, appendix
-			A.2. Furthermore, &app; can do "online" calibrations (simple reflection
-			and full two-port), too, by feeding the spectra data back to the network
-			analyzer.</para>
+			A.2. Furthermore, &app; can do "online" calibrations (simple reflection,
+			full two-port and thru-reflection-line), too, by feeding the spectra data
+			back to the network analyzer.</para>
 
 		<para>For the calibration &app; needs additional data which is obtained
 			by measurements of certain standards. This data has to be available for
@@ -2188,9 +2188,18 @@
 			coming from and leading to the network analyzer are connected directly
 			with each other) and an optional <emphasis>isolation</emphasis>
 			measurement which means that both ports have to be isolated to determine
-			the crosstalk. For the online full two-port calibration ten standard
-			measurements are required: open, close and load reflection information
-			for both ports and the full S-matrix of the thru.</para>
+			the crosstalk.</para> 
+		
+		<para>The full two-port and thru-reflection-line (TRL) calibration methods,
+			which are only available in "online" mode, are a bit more involved. The
+			full two-port variant requires ten standard measurements: open, close and
+			load reflection information for both ports and the full S-matrix of the
+			thru. For a TRL calibration even more information has to be provided: You
+			need a thru measurement and a reflection measurement (short or open
+			standard) for each port. Additionally, a <emphasis>line</emphasis>, which
+			is a transmission line with a finite length between the coaxial calbes,
+			is needed. For the HP 85056A 2.4&nbsp;mm calibration kit this is one of
+			the short adapter pieces.</para>
 
 		<para><emphasis>
 				Warning: The following information is a bit outdated!
@@ -2219,21 +2228,44 @@
 				<guimenu>Spectrum</guimenu>
 				<guimenuitem>Calibrate spectrum...</guimenuitem>
 			</menuchoice>.
-			This dialog is shown in <xref linkend="check-cal-win" />.
-			In this window all the required datafiles must be specified, only the
-			isolation data for transmission calibration is optional. Pressing one of
-			the <guibutton>Select</guibutton> buttons will give you a file selector for
-			the corresponding datafile. The calibrated dataset will be saved into the
-			file given with the <guilabel>Output data file</guilabel> entry. To start
-			the calibration press the <guibutton>OK</guibutton> button. The
-			progressbar informs you about the progress of the calibration. The
-			calibrated data will be displayed in the main graph window after the
-			calibration has finished, either as a new main dataset or as an overlay
-			depending on the number of graphs already being displayed.</para>
+			This dialog is shown in <xref linkend="check-cal-win" />. It is divided
+			into three parts to select the <guilabel>Calibration type</guilabel> and
+			the <guilabel>Calibration method</guilabel> and to show the calibration
+			<guilabel>Progress</guilabel>.</para>
 
-		<para>The calibration algorithm needs some knowledge of the standards being
-			used. Currently only the HP 85056A 2.4&nbsp;mm calibration kit is
-			supported by &app;.</para>
+		<para>The <guilabel>Calibration type</guilabel> part consists of three
+			notebooks for the three different calibration schemes. You can choose
+			between a <guilabel>Reflection</guilabel>, a
+			<guilabel>Transmission</guilabel> and a <guilabel>Full 2-port</guilabel>
+			calibration. For each type all the required datafiles must be specified,
+			only the isolation data for transmission calibration is optional. You can
+			either enter the filenames directly or use the
+			<guibutton>Select</guibutton> buttons. Those will give you a file
+			selector for the corresponding datafile. The calibrated dataset will be
+			saved into the file given with the <guilabel>Output data file</guilabel>
+			entry. The full 2-port calibration is a bit more complicated as it
+			requires the full S-matrix as raw data input and outputs all four
+			S-parameters, too. Additionally, ten standard measurements are required.
+			Therefore, this notebook is itself subdivided into four additional
+			ones (see <xref linkend="check-cal-win" />).</para>
+
+		<para>The <guilabel>Calibration method</guilabel> is either
+			<guilabel>Offline</guilabel> or <guilabel>Online</guilabel>. Reflection
+			calibrations can be done in both modes, transmission calibrations can
+			only be done offline and full 2-port calibrations are only available via
+			the online method. For online calibrations the host of the
+			<application>Ieee488Proxy</application> has to be entered, see <xref
+			linkend="gwf-hard-software" /> for more information on how to connect
+			&app; to a network analyzer. To start the calibration press the
+			<guibutton>OK</guibutton> button. The progressbar informs you about the
+			progress of the calibration. The calibrated data will be displayed in the
+			main graph window after the calibration has finished, either as a new
+			main dataset or as an overlay depending on the number of graphs already
+			being displayed.</para>
+
+		<para>The offline reflection calibration algorithm needs some knowledge of
+			the standards being used. Currently only the HP 85056A 2.4&nbsp;mm
+			calibration kit is supported by &app;.</para>
 	</sect2>
 </sect1>
 
@@ -3546,7 +3578,7 @@
 		&app;'s measurement dialog.
 	</para>
 
-	<sect2>
+	<sect2 id="gwf-hard-software">
 		<title>Required hard- and software</title>
 		<para>&app; is designed to communicate with a HP8510C vectorial network
 			analyzer (VNA). The VNA understands a special set of commands that allow

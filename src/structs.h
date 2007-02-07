@@ -145,24 +145,24 @@ typedef struct
 	gchar *host;			/* Ieee488Proxy hostname */
 	gchar *path;			/* Path for output file */
 	gchar *file;			/* Filename for output file */
-	gchar *fullname[4];		/* The full name of the output file(s) */
+	gchar *fullname[6];		/* The full name of the output file(s) */
 	gchar *comment;			/* An optional comment for the datafile header */
 	gboolean compress;		/* Compress the output file? */
 	gchar type;			/* 1=sweep mode; 2=snapshot mode */
 	gdouble start;			/* Start frequency for sweep in Hz */
 	gdouble stop;			/* Stop frequency for sweep in Hz */
 	gdouble resol;			/* Resolution of sweep in Hz */
-	gchar param[4];			/* S-Parameter to measure in sweep mode */
+	gchar param[6];			/* S-Parameter to measure in sweep mode */
 	gint avg;			/* Averaging factor for sweep */
 	gchar swpmode;			/* 1=ramp mode; 2=step mode */
 	GThread *vna_GThread;		/* The handle of the measurement process */
 	glong start_t;			/* The time at which the measurement started in sec */
 	glong estim_t;			/* Estimated time for measurement in sec */
 	gint sockfd;			/* Socket for network communication */
-	ComplexDouble *ydata[4];	/* The measured data */
-	guint index[4];			/* The graph index of the measured data */
+	ComplexDouble *ydata[6];	/* The measured data */
+	guint index[6];			/* The graph index of the measured data */
 #ifndef NO_ZLIB
-	gzFile *gzoutfh[4];		/* Filehandle for the compressed data file */
+	gzFile *gzoutfh[6];		/* Filehandle for the compressed data file */
 #endif
 } NetworkWin;
 
@@ -176,8 +176,8 @@ typedef struct
 	gchar *load_file;		/* Full filename for load standard data */
 	gchar *thru_file;		/* Full filename for thru standard data */
 	gchar *isol_file;		/* Full filename for isolation standard data */
-	gchar *full_filenames[18];	/* Full filenames for full 2-port calibration */
-	gint calib_type;		/* 0: reflection, 1: transmission, 2: full 2-port */
+	gchar *full_filenames[40];	/* Full filenames for full 2-port and TRL calibration */
+	gint calib_type;		/* 0: reflection, 1: transmission, 2: full 2-port, 3: TRL */
 	gboolean offline;		/* True for offline calibration method */
 	gchar *proxyhost;		/* Ieee488Proxy hostname */
 	gint sockfd;			/* Socket for network communication */

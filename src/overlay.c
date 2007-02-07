@@ -729,7 +729,7 @@ void overlay_swap_files (GtkWidget *widget, gpointer user_data)
 		glob->data->len);
 
 	/* Exchange the uids for a running measurement */
-	for (i=0; i<4; i++)
+	for (i=0; i<6; i++)
 	{
 		if ((glob->netwin) && (glob->netwin->index[i] == overlaydata->index))
 		{

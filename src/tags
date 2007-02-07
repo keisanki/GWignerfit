@@ -181,16 +181,17 @@ cal_show_time_estimates	calibrate.c	/^gboolean cal_show_time_estimates ()$/;"	f
 cal_transmission	calibrate_offline.c	/^DataVector* cal_transmission (DataVector *in, DataVector *thru, DataVector *isol)$/;"	f
 cal_update_progress	calibrate.c	/^void cal_update_progress (gfloat fraction)$/;"	f
 cal_update_time_estimates	calibrate.c	/^void cal_update_time_estimates (int *windone, int *winleft)$/;"	f
-cal_vna_calibrate	calibrate_vna.c	/^DataVector* cal_vna_calibrate (DataVector *in, DataVector *a, DataVector *b, DataVector *c, gchar *host)$/;"	f
+cal_vna_calibrate	calibrate_vna.c	/^DataVector* cal_vna_calibrate (DataVector *in, DataVector *a, DataVector *b, DataVector *c, gchar *host, gint type)$/;"	f
 cal_vna_command	calibrate_vna.c	/^void cal_vna_command (int sockfd, gchar *cmd)$/;"	f
 cal_vna_exit	calibrate_vna.c	/^void cal_vna_exit (gchar *format, ...)$/;"	f
 cal_vna_full	calibrate_vna.c	/^static void cal_vna_full (CalVnaThreadInfo *threadinfo, gint sockfd)$/;"	f	file:
-cal_vna_full_calibrate	calibrate_vna.c	/^gboolean cal_vna_full_calibrate (DataVector **indata, DataVector **outdata, gchar *host)$/;"	f
+cal_vna_full_calibrate	calibrate_vna.c	/^gboolean cal_vna_full_calibrate (DataVector **indata, DataVector **outdata, gchar *host, gint type)$/;"	f
 cal_vna_push_data	calibrate_vna.c	/^static void cal_vna_push_data (ComplexDouble *data, gint len, gchar *type, gint mem, gint sockfd)$/;"	f	file:
 cal_vna_reflection	calibrate_vna.c	/^static void cal_vna_reflection (CalVnaThreadInfo *threadinfo, gint sockfd)$/;"	f	file:
 cal_vna_set_netstat	calibrate_vna.c	/^gboolean cal_vna_set_netstat (gpointer data)$/;"	f
 cal_vna_start	calibrate_vna.c	/^static void cal_vna_start (gpointer data)$/;"	f	file:
 cal_vna_transmit_data_block	calibrate_vna.c	/^static void cal_vna_transmit_data_block (ComplexDouble *data, gint len, gint mem, gint sockfd)$/;"	f	file:
+cal_vna_trl	calibrate_vna.c	/^static void cal_vna_trl (CalVnaThreadInfo *threadinfo, gint sockfd)$/;"	f	file:
 cal_vna_update_progress	calibrate_vna.c	/^static void cal_vna_update_progress (gfloat fraction)$/;"	f	file:
 calculate_global_paramters	processdata.c	/^void calculate_global_paramters (DataVector *d, GlobalParam *gparam)$/;"	f
 calculate_q_func	resonancelist.c	/^void calculate_q_func (GtkTreeViewColumn *col, GtkCellRenderer *renderer, $/;"	f
@@ -312,8 +313,8 @@ free_lvector	nrutil.c	/^void free_lvector(unsigned long *v, long nl, long nh)$/;
 free_lvector	nrutil.c	/^void free_lvector(v,nl,nh)$/;"	f
 free_matrix	nrutil.c	/^void free_matrix(float **m, long nrl, long nrh, long ncl, long nch)$/;"	f
 free_matrix	nrutil.c	/^void free_matrix(m,nrl,nrh,ncl,nch)$/;"	f
-free_memory	calibrate.c	606;"	d	file:
-free_memory	calibrate.c	820;"	d	file:
+free_memory	calibrate.c	627;"	d	file:
+free_memory	calibrate.c	841;"	d	file:
 free_submatrix	nrutil.c	/^void free_submatrix(b,nrl,nrh,ncl,nch)$/;"	f
 free_submatrix	nrutil.c	/^void free_submatrix(double **b, long nrl, long nrh, long ncl, long nch)$/;"	f
 free_vector	nrutil.c	/^void free_vector(float *v, long nl, long nh)$/;"	f
@@ -689,6 +690,7 @@ submatrix	nrutil.c	/^float **submatrix(a,oldrl,oldrh,oldcl,oldch,newrl,newcl)$/;
 take_current_values	callbacks.c	/^void take_current_values (GtkMenuItem *menuitem, gpointer user_data)$/;"	f
 textview	export.c	/^	GtkWidget *textview;$/;"	m	struct:__anon6	file:
 trapzd	spectral_numeric.c	/^float trapzd(float (*func)(float,float), float param, float a, float b, int n)$/;"	f
+type	calibrate_vna.c	/^	gint type;$/;"	m	struct:__anon9	file:
 uncheck_res_out_of_frq_win	resonancelist.c	/^void uncheck_res_out_of_frq_win (gdouble min, gdouble max)$/;"	f
 undo_changes	helpers.c	/^void undo_changes (gchar undo_redo)$/;"	f
 unset_unsaved_changes	helpers.c	/^void unset_unsaved_changes ()$/;"	f

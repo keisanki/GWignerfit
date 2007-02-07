@@ -99,6 +99,43 @@ static void cal_fill_full_filenames (gchar *filename)
 	g_free (suffix);
 }
 
+/* Try to guess filenames for TRL calibration */
+static void cal_fill_trl_filenames (gchar *filename)
+{
+	gchar *pos, *prefix, *suffix, *newname;
+	gchar *entries[] = {"cal_trl_s11thru_entry", "cal_trl_s12thru_entry", "cal_trl_s21thru_entry", "cal_trl_s22thru_entry", 
+		            "cal_trl_a1thru_entry" , "cal_trl_a2thru_entry",
+		            "cal_trl_s11refl_entry", "cal_trl_s22refl_entry",
+			    "cal_trl_s11line_entry", "cal_trl_s12line_entry", "cal_trl_s21line_entry", "cal_trl_s22line_entry", 
+			    "cal_trl_a1line_entry", "cal_trl_a2line_entry"};
+	gchar *innames[] = {"thru_S11", "thru_S12", "thru_S21", "thru_S22", "thru_Sa1", "thru_Sa2",
+		            "refl_S11", "refl_S22",
+			    "line_S11", "line_S12", "line_S21", "line_S22", "line_Sa1", "line_Sa2"};
+	gint i;
+
+	g_return_if_fail (filename);
+	g_return_if_fail (glob->calwin);
+	g_return_if_fail (glob->calwin->xmlcal);
+
+	if (!(pos = g_strrstr (filename, "thru_S11")))
+		return;
+
+	pos[0] = '\0';
+	prefix = g_strdup (filename);
+	suffix = g_strdup (pos+8);
+	pos[0] = 'o';
+
+	for (i=0; i<14; i++)
+	{
+		newname = g_strdup_printf ("%s%s%s", prefix, innames[i], suffix);
+		gtk_entry_set_text (GTK_ENTRY (glade_xml_get_widget (glob->calwin->xmlcal, entries[i])), newname);
+		g_free (newname);
+	}
+
+	g_free (prefix);
+	g_free (suffix);
+}
+
 /* Callback for Select buttons */
 static gboolean cal_choose_file (GtkButton *button, gpointer user_data)
 {
@@ -134,6 +171,10 @@ static gboolean cal_choose_file (GtkButton *button, gpointer user_data)
 	if (button == GTK_BUTTON (glade_xml_get_widget (glob->calwin->xmlcal, "cal_full_s11open_but")))
 		cal_fill_full_filenames (filename);
 
+	/* Try to guess filenames for trl calibration */
+	if (button == GTK_BUTTON (glade_xml_get_widget (glob->calwin->xmlcal, "cal_trl_s11thru_but")))
+		cal_fill_trl_filenames (filename);
+
 	return TRUE;
 }
 
@@ -159,7 +200,7 @@ void cal_caltype_changed (GtkNotebook *notebook, gpointer user_data)
 			gtk_widget_set_sensitive (glade_xml_get_widget (xmlcal, "cal_proxy_entry" ), FALSE);
 			gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (glade_xml_get_widget (xmlcal, "cal_offline_radio")), TRUE);
 			break;
-		case 2:
+		case 2: case 3:
 			gtk_widget_set_sensitive (glade_xml_get_widget (xmlcal, "cal_offline_radio" ), FALSE);
 			gtk_widget_set_sensitive (glade_xml_get_widget (xmlcal, "cal_online_radio" ), TRUE);
 			gtk_widget_set_sensitive (glade_xml_get_widget (xmlcal, "cal_proxy_label" ), TRUE);
@@ -182,8 +223,8 @@ void cal_method_toggled (GtkToggleButton *togglebutton, gpointer user_data)
 	glob->calwin->offline = state;
 }
 
-/* For "full 2-port" calibrations: Takes the filenames from the TextEntries and
- * stores them in the CalWin struct with proper error checking */
+/* For "full 2-port" and "TRL" cal: Takes the filenames from the TextEntries
+ * and stores them in the CalWin struct with proper error checking. */
 static gboolean cal_check_fullcal_entries (CalWin *calwin)
 {
 	gint i;
@@ -192,12 +233,18 @@ static gboolean cal_check_fullcal_entries (CalWin *calwin)
 			    "full_s11open", "full_s11short", "full_s11load",
 			    "full_s22open", "full_s22short", "full_s22load",
 			    "full_s11thru", "full_s12thru", "full_s21thru", "full_s22thru",
+			    "trl_s11in", "trl_s12in", "trl_s21in", "trl_s22in",
+			    "trl_s11thru", "trl_s12thru", "trl_s21thru", "trl_s22thru", "trl_a1thru", "trl_a2thru",
+			    "trl_s11refl", "trl_s22refl",
+			    "trl_s11line", "trl_s12line", "trl_s21line", "trl_s22line", "trl_a1line", "trl_a2line",
 			    NULL};
-	gchar *outnames[] = {"full_s11out", "full_s12out", "full_s21out", "full_s22out", NULL};
+	gchar *outnames[] = {"full_s11out", "full_s12out", "full_s21out", "full_s22out",
+			    "trl_s11out", "trl_s12out", "trl_s21out", "trl_s22out",
+			    NULL};
 
 	/* Check input files */
-	i = 0;
-	while (innames[i])
+	i = calwin->calib_type == 2 ? 0 : 14;
+	while (innames[i] && (i < (calwin->calib_type == 2 ? 14 : 32)))
 	{
 		entryname = g_strconcat ("cal_", innames[i], "_entry", NULL);
 		file = cal_get_valid_file (entryname);
@@ -215,7 +262,7 @@ static gboolean cal_check_fullcal_entries (CalWin *calwin)
 	}
 
 	/* Check output files */
-	i = 0;
+	i = calwin->calib_type == 2 ? 0 : 4;
 	while (outnames[i])
 	{
 		entryname = g_strconcat ("cal_", outnames[i], "_entry", NULL);
@@ -232,7 +279,8 @@ static gboolean cal_check_fullcal_entries (CalWin *calwin)
 			return FALSE;
 		}
 
-		calwin->full_filenames[i+14] = file;
+		/* Output filenames come last */
+		calwin->full_filenames[i+32] = file;
 
 		i++;
 	}
@@ -260,8 +308,8 @@ static gboolean cal_check_entries ()
 		}
 	}
 
-	if (calwin->calib_type == 2)
-		/* Do bells and whistles for full 2-port cal somewhere else */
+	if (calwin->calib_type >= 2)
+		/* Do bells and whistles for full 2-port and TRL cal somewhere else */
 		return cal_check_fullcal_entries (calwin);
 
 	if (   ((calwin->calib_type == 0 ) && (file = cal_get_valid_file ("cal_in_entry"))) 
@@ -456,21 +504,31 @@ void cal_update_time_estimates (int *windone, int *winleft)
 	}
 }
 
-/* For full 2-port calibration: Takes the filenames out of the CalWin struct
- * and reads those files with proper error checking. Calls the actual
+/* For full 2-port and TRL calibration: Takes the filenames out of the CalWin
+ * struct and reads those files with proper error checking. Calls the actual
  * calibration routines afterwards. */
 static gboolean cal_do_full_calibration (CalWin *calwin)
 {
 	DataVector **data, **outdata;
-	gint i, j;
+	gint i, j, inlength = 14, inoffset = 0, outoffset = 0;
 	FILE *fh;
 
-	data = g_new0 (DataVector*, 14);
+	if (calwin->calib_type == 3)
+	{
+		/* We will do a TRL calibration -> the relevant data is
+		 * at another position in the full_filenames array */
+		inlength  = 18;
+		inoffset  = 14;
+		outoffset = 4;
+	}
+
+	/* Will hold the actual input spectrum data */
+	data = g_new0 (DataVector*, inlength);
 
 	/* Read and check input files */
-	for (i=0; i<14; i++)
+	for (i=0; i<inlength; i++)
 	{
-		data[i] = import_datafile (calwin->full_filenames[i], TRUE);
+		data[i] = import_datafile (calwin->full_filenames[i+inoffset], TRUE);
 
 		if (!data[i])
 		{
@@ -507,7 +565,7 @@ static gboolean cal_do_full_calibration (CalWin *calwin)
 			}
 		}
 
-		cal_update_progress ((gfloat)(i+1)/14.0);
+		cal_update_progress ((gfloat)(i+1)/(gfloat) inlength);
 		while (gtk_events_pending ()) gtk_main_iteration ();
 	}
 
@@ -519,13 +577,13 @@ static gboolean cal_do_full_calibration (CalWin *calwin)
 	for (i=0; i<4; i++)
 	{
 		outdata[i] = new_datavector (data[0]->len);
-		outdata[i]->file = g_strdup (calwin->full_filenames[i+14]);
+		outdata[i]->file = g_strdup (calwin->full_filenames[i+32+outoffset]);
 	}
 
 	/* Write output data headers */
 	for (j=0; j<4; j++)
 	{
-		fh = fopen (calwin->full_filenames[j+14], "w");
+		fh = fopen (calwin->full_filenames[j+32+outoffset], "w");
 		if (!fh)
 		{
 			dialog_message ("Error: Could not open output file.");
@@ -535,7 +593,10 @@ static gboolean cal_do_full_calibration (CalWin *calwin)
 		}
 
 		fprintf (fh, "# Spectrum calibrated by GWignerFit\r\n#\r\n");
-		fprintf (fh, "# Calibration type: online full two-port calibration\r\n");
+		if (calwin->calib_type == 2)
+			fprintf (fh, "# Calibration type: online full two-port calibration\r\n");
+		else
+			fprintf (fh, "# Calibration type: online TRL calibration\r\n");
 		switch (j)
 		{
 			case 0:
@@ -552,22 +613,24 @@ static gboolean cal_do_full_calibration (CalWin *calwin)
 				break;
 		}
 		fprintf (fh, "#\r\n# Uncalibrated input files:\r\n");
-		fprintf (fh, "#   S11: %s\r\n", calwin->full_filenames[0]);
-		fprintf (fh, "#   S12: %s\r\n", calwin->full_filenames[1]);
-		fprintf (fh, "#   S21: %s\r\n", calwin->full_filenames[2]);
-		fprintf (fh, "#   S22: %s\r\n", calwin->full_filenames[3]);
+		fprintf (fh, "#   S11: %s\r\n", calwin->full_filenames[0+inoffset]);
+		fprintf (fh, "#   S12: %s\r\n", calwin->full_filenames[1+inoffset]);
+		fprintf (fh, "#   S21: %s\r\n", calwin->full_filenames[2+inoffset]);
+		fprintf (fh, "#   S22: %s\r\n", calwin->full_filenames[3+inoffset]);
 
 		fprintf (fh, "# Calibration standard files:\r\n");
-		for (i=4; i<14; i++)
-			fprintf (fh, "#  %2d: %s\r\n", i-3, calwin->full_filenames[i]);
+		for (i=4; i<inlength; i++)
+			fprintf (fh, "#    %2d: %s\r\n", i-3, calwin->full_filenames[i+inoffset]);
+		fprintf (fh, DATAHDR);
 		fclose (fh);
 	}
 	
 	/* Do the calibration */
-	cal_vna_full_calibrate (data, outdata, calwin->proxyhost);
+	cal_vna_full_calibrate (data, outdata, calwin->proxyhost, calwin->calib_type);
 
 	/* Free calibration input data */
-	for (j=0; j<14; j++) free_datavector (data[j]);
+	for (j=0; j<14; j++) 
+		free_datavector (data[j]);
 	g_free (data);
 
 	/* Free output data if calibration did not finish */
@@ -579,10 +642,10 @@ static gboolean cal_do_full_calibration (CalWin *calwin)
 	}
 
 	/* Give the proper filenames */
-	outdata[0]->file = g_strdup (calwin->full_filenames[14]);
-	outdata[1]->file = g_strdup (calwin->full_filenames[15]);
-	outdata[2]->file = g_strdup (calwin->full_filenames[16]);
-	outdata[3]->file = g_strdup (calwin->full_filenames[17]);
+	outdata[0]->file = g_strdup (calwin->full_filenames[32+outoffset]);
+	outdata[1]->file = g_strdup (calwin->full_filenames[33+outoffset]);
+	outdata[2]->file = g_strdup (calwin->full_filenames[34+outoffset]);
+	outdata[3]->file = g_strdup (calwin->full_filenames[35+outoffset]);
 
 	cal_update_progress (-1.0);
 
@@ -630,8 +693,8 @@ static gboolean cal_do_calibration ()
 		TRUE);
 	while (gtk_events_pending ()) gtk_main_iteration ();
 
-	if (calwin->calib_type == 2)
-		/* Do bells and whistles for full 2-port cal somewhere else */
+	if (calwin->calib_type >= 2)
+		/* Do bells and whistles for full 2-port and TRL cal somewhere else */
 		return cal_do_full_calibration (calwin);
 
 	in = out = a = b = c = NULL;
@@ -689,7 +752,7 @@ static gboolean cal_do_calibration ()
 		if (calwin->offline)
 			out = cal_reflection (in, a, b, c);
 		else
-			out = cal_vna_calibrate (in, a, b, c, calwin->proxyhost);
+			out = cal_vna_calibrate (in, a, b, c, calwin->proxyhost, calwin->calib_type);
 	}
 	else
 	{
@@ -733,7 +796,7 @@ static gboolean cal_do_calibration ()
 		if (calwin->offline)
 			out = cal_transmission (in, a, b);
 		else
-			out = cal_vna_calibrate (in, a, b, NULL, calwin->proxyhost);
+			out = cal_vna_calibrate (in, a, b, NULL, calwin->proxyhost, calwin->calib_type);
 	}
 
 	cal_update_progress (-1.0);
@@ -830,6 +893,11 @@ static void cal_connect_select_but (CalWin *calwin)
 			  "full_s22open", "full_s22short", "full_s22load",
 	                  "full_s11thru", "full_s12thru", "full_s21thru", "full_s22thru",
 	                  "full_s11out", "full_s12out", "full_s21out", "full_s22out",
+	                  "trl_s11in", "trl_s12in", "trl_s21in", "trl_s22in",
+	                  "trl_s11out", "trl_s12out", "trl_s21out", "trl_s22out",
+			  "trl_s11thru", "trl_s12thru", "trl_s21thru", "trl_s22thru", "trl_a1thru", "trl_a2thru",
+			  "trl_s11refl", "trl_s22refl",
+			  "trl_s11line", "trl_s12line", "trl_s21line", "trl_s22line", "trl_a1line", "trl_a2line",
 	                  NULL};
 
 	i = 0;
@@ -851,7 +919,7 @@ static void cal_connect_select_but (CalWin *calwin)
 	}
 }
 
-/* Restore entries for full 2-port calibrations */
+/* Restore entries for full 2-port and TRL calibrations */
 static void cal_set_full_texts (CalWin *calwin)
 {
 	gint i;
@@ -860,7 +928,12 @@ static void cal_set_full_texts (CalWin *calwin)
 			  "full_s11open", "full_s11short", "full_s11load",
 			  "full_s22open", "full_s22short", "full_s22load",
 	                  "full_s11thru", "full_s12thru", "full_s21thru", "full_s22thru",
+			  "trl_s11in", "trl_s12in", "trl_s21in", "trl_s22in",
+			  "trl_s11thru", "trl_s12thru", "trl_s21thru", "trl_s22thru", "trl_a1thru", "trl_a2thru",
+			  "trl_s11refl", "trl_s22refl",
+			  "trl_s11line", "trl_s12line", "trl_s21line", "trl_s22line", "trl_a1line", "trl_a2line",
 	                  "full_s11out", "full_s12out", "full_s21out", "full_s22out",
+			  "trl_s11out", "trl_s12out", "trl_s21out", "trl_s22out",
 	                  NULL};
 
 	i = 0;
@@ -899,7 +972,7 @@ void cal_open_win ()
 		calwin->offline = TRUE;
 		calwin->proxyhost = NULL;
 
-		for (i=0; i<18; i++)
+		for (i=0; i<40; i++)
 			calwin->full_filenames[i] = NULL;
 	}
 
@@ -930,6 +1003,8 @@ void cal_open_win ()
 			cal_set_text ("cal_trans_out_entry", calwin->out_file);
 			break;
 		case 2:	/* full 2-port */
+			break;
+		case 3:	/* TRL */
 			break;
 	}
 
