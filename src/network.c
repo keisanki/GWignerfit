@@ -1213,8 +1213,6 @@ ComplexDouble *vna_recv_data (int sockfd, int points)
 
 	vna_send_cmd (sockfd, "MTA LISTEN "VNA_GBIP" DATA 'FORM5;OUTPDATA;'", VNA_ETIMEOUT);
 	vna_send_cmd (sockfd, "MLA TALK "VNA_GBIP, VNA_ETIMEOUT);
-	fsync (sockfd);
-	usleep (1e6);
 
 	/* Read the header */
 	vna_send_cmd (sockfd, "* PROXYCMD: rarray 4", VNA_ETIMEOUT | VNA_ENOLISTE);
@@ -1399,7 +1397,7 @@ static glong vna_sweep_cal_sleep ()
 		delta *= (glob->netwin->swpmode == 1) ? 5 : 1.5;
 
 	if (!strcmp (glob->netwin->param, "TRL") == 1)
-		delta *= (glob->netwin->swpmode == 1) ? 8 : 2.5;
+		delta *= (glob->netwin->swpmode == 1) ? 7 : 2.0;
 
 	return delta;
 }

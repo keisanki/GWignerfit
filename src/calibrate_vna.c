@@ -249,7 +249,6 @@ static void cal_vna_transmit_data_block (ComplexDouble *data, gint len, gint mem
 
 	g_snprintf (cmdstr, 80, "* PROXYCMD: tarray %d 1", 8*len);
 	vna_send_cmd (sockfd, cmdstr, VNA_ETIMEOUT);
-	usleep (1e6);
 
 	vna_sendall (sockfd, buf, 8*len);
 	usleep (1e6);
@@ -274,7 +273,6 @@ static void cal_vna_push_data (ComplexDouble *data, gint len, gchar *type, gint 
 	{
 		g_snprintf (cmdstr, 80, "MTA LISTEN "VNA_GBIP" DATA '%s;' END", type);
 		vna_send_cmd (sockfd, cmdstr, VNA_ETIMEOUT|VNA_ESYNTAXE);
-		usleep (5e5);
 		vna_spoll_wait (sockfd, 4);
 	}
 
@@ -289,7 +287,6 @@ static void cal_vna_push_data (ComplexDouble *data, gint len, gchar *type, gint 
 		cal_vna_transmit_data_block (finaldata, 801, mem, sockfd);
 		g_free (finaldata);
 	}
-	usleep (5e5);
 	
 	/* Finish transmission */
 	vna_send_cmd (sockfd, "MTA LISTEN "VNA_GBIP" EOI 10", VNA_ETIMEOUT|VNA_ESYNTAXE);
@@ -297,7 +294,6 @@ static void cal_vna_push_data (ComplexDouble *data, gint len, gchar *type, gint 
 	if (type)
 		vna_send_cmd (sockfd, "MTA LISTEN "VNA_GBIP" DATA 'SIMS;'", VNA_ETIMEOUT|VNA_ESYNTAXE);
 
-	usleep (5e5);
 	vna_send_cmd (sockfd, "MTA LISTEN "VNA_GBIP" DATA 'WAIT;' END", VNA_ETIMEOUT|VNA_ESYNTAXE);
 }
 

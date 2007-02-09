@@ -87,7 +87,7 @@
       3
       (if (string=? (gi nd) (normalize "appendix"))
         0
-        1)))
+        2)))
 
 ;;Do you want a TOC for the element part?
 (define %generate-part-toc% 

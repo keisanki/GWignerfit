@@ -2197,13 +2197,9 @@
 			thru. For a TRL calibration even more information has to be provided: You
 			need a thru measurement and a reflection measurement (short or open
 			standard) for each port. Additionally, a <emphasis>line</emphasis>, which
-			is a transmission line with a finite length between the coaxial calbes,
-			is needed. For the HP 85056A 2.4&nbsp;mm calibration kit this is one of
-			the short adapter pieces.</para>
-
-		<para><emphasis>
-				Warning: The following information is a bit outdated!
-		</emphasis></para>
+			is a transmission line with a finite length between the coaxial cables,
+			is needed. For the HP 85056A 2.4&nbsp;mm calibration kit this is just one
+			of the short adapter pieces.</para>
 
 		<figure id="check-cal-win">
 			<title>Calibration dialog</title>
@@ -2217,7 +2213,7 @@
 					</imageobject>
 					<textobject>
 						<phrase>Shows the calibration dialog for the full two-port
-							calibration.</phrase>
+							calibration. (Warning, the picture isn't updated yet!)</phrase>
 					</textobject>
 				</mediaobject>
 			</screenshot>
@@ -2236,24 +2232,30 @@
 		<para>The <guilabel>Calibration type</guilabel> part consists of three
 			notebooks for the three different calibration schemes. You can choose
 			between a <guilabel>Reflection</guilabel>, a
-			<guilabel>Transmission</guilabel> and a <guilabel>Full 2-port</guilabel>
-			calibration. For each type all the required datafiles must be specified,
-			only the isolation data for transmission calibration is optional. You can
-			either enter the filenames directly or use the
-			<guibutton>Select</guibutton> buttons. Those will give you a file
+			<guilabel>Transmission</guilabel>, a <guilabel>Full 2-port</guilabel> and
+			a <guilabel>TRL</guilabel> calibration. For each type all the required
+			datafiles must be specified, only the isolation data for transmission
+			calibration is optional. You can either enter the filenames directly or
+			use the <guibutton>Select</guibutton> buttons. Those will give you a file
 			selector for the corresponding datafile. The calibrated dataset will be
 			saved into the file given with the <guilabel>Output data file</guilabel>
 			entry. The full 2-port calibration is a bit more complicated as it
 			requires the full S-matrix as raw data input and outputs all four
 			S-parameters, too. Additionally, ten standard measurements are required.
-			Therefore, this notebook is itself subdivided into four additional
-			ones (see <xref linkend="check-cal-win" />).</para>
+			Therefore, this notebook is itself subdivided into four additional ones
+			(see <xref linkend="check-cal-win" />). The same applies to the TRL
+			calibration, the data input is spread over five notebooks. However, the
+			thru and line standards require &mdash; besides the full S-matrix &mdash;
+			two datasets which are called <emphasis>a1</emphasis> and
+			<emphasis>a2</emphasis> by &app;. Those are special measurements of
+			absolute power values the VNA requires for an online calibration. See
+			<xref linkend="gwignerfit-vna" /> on how to measure them.</para>
 
 		<para>The <guilabel>Calibration method</guilabel> is either
 			<guilabel>Offline</guilabel> or <guilabel>Online</guilabel>. Reflection
 			calibrations can be done in both modes, transmission calibrations can
-			only be done offline and full 2-port calibrations are only available via
-			the online method. For online calibrations the host of the
+			only be done offline and full 2-port as well as TRL calibrations are only
+			available via the online method. For online calibrations the host of the
 			<application>Ieee488Proxy</application> has to be entered, see <xref
 			linkend="gwf-hard-software" /> for more information on how to connect
 			&app; to a network analyzer. To start the calibration press the
@@ -2806,8 +2808,8 @@
 			<keycap>T</keycap>
 		</keycombo>.
 		A new window will appear with the Fourier transformed graphs of the main
-		dataset, the theoretical curve and &ndash; in case the are overlayed
-		datasets &ndash; of the overlays as well. You can see an example of this in
+		dataset, the theoretical curve and &mdash; in case the are overlayed
+		datasets &mdash; of the overlays as well. You can see an example of this in
 		<xref linkend="fft-win" />.
 		If you choose
 		<menuchoice>
@@ -3731,17 +3733,23 @@
 						<guilabel>Resolution</guilabel>. Furthermore, the
 						<guilabel>S-Parameter</guilabel> that the VNA should measure can be
 						chosen. Setting this <guilabel>S-Parameter</guilabel> to just "S"
-						means that &app; should measure all four S-matrix elements in one
-						run, see above what the output filename has too look like for such
-						a measurement type. The given <guilabel>Averaging</guilabel> value
-						increases the signal-to-noise ratio but a measurement will take
-						longer, too. Finally, there is the <guilabel>Stimulus</guilabel>
-						entry. It can either be "ramp mode" or "step mode", this refers to
-						the two major frequency generation methods of the VNA. Please refer
-						the manual of your VNA for further information on those modes. A
-						rule of thumb may be that the ramp mode allows for quicker
-						measurements whereas the step mode measures with a higher frequency
-						precision.
+						means that &app; measures all four S-matrix elements in one
+						run (see above for what the output filename has too look like for
+						such a measurement type). The "TRL" option is an extension of the
+						complete S-matrix measurement suited to measure the TRL thru and
+						line standards (see <xref linkend="gwf-calibrate" />). It will
+						measure, in addition to the four S-parameters, two user-defined
+						parameters and save the resulting spectra as additional files with
+						<emphasis>a1</emphasis> and <emphasis>a2</emphasis> instead of the
+						wild-card characters. The given <guilabel>Averaging</guilabel>
+						value increases the signal-to-noise ratio but a measurement will
+						take longer, too. Finally, there is the
+						<guilabel>Stimulus</guilabel> entry. It can either be "ramp mode"
+						or "step mode", this refers to the two major frequency generation
+						methods of the VNA. Please refer the manual of your VNA for further
+						information on those modes. A rule of thumb may be that the ramp
+						mode allows for quicker measurements whereas the step mode measures
+						with a higher frequency precision.
 					</para>
 				</listitem>
 			</varlistentry>
