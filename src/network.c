@@ -1463,6 +1463,7 @@ static void vna_sweep_frequency_range ()
 {
 	NetworkWin *netwin;
 	int sockfd, i = 0, j, winleft, windone, h, m, s, Si;
+	gint startpointoffset;
 	char cmdstr[81];
 	GTimeVal starttime, curtime, difftime;
 	struct timeval tv;
@@ -1556,7 +1557,22 @@ static void vna_sweep_frequency_range ()
 	winleft = (int) ceil((netwin->stop - netwin->start)/(801.0*netwin->resol));
 	for (fstart=netwin->start; fstart<=netwin->stop; fstart+=netwin->resol*801.0)
 	{
-		fstop = fstart + netwin->resol * 801.0;
+		fstop = fstart + netwin->resol * 800.0;
+
+		if (fstop > 50e9)
+		{
+			/* Right align measurement window */
+			while (fstop > 50e9)
+				fstop -= netwin->resol;
+
+			/* startpointoffset: position in data array where new data will start */
+			startpointoffset = (gint) ((fstart - (fstop - netwin->resol * 800.0))/netwin->resol);
+
+			fstart = fstop - netwin->resol * 800.0;
+		}
+		else
+			startpointoffset = 0;
+
 		vna_update_netstat ("Measuring %6.3f - %6.3f GHz...", fstart/1e9, fstop/1e9);
 
 		g_snprintf (cmdstr, 80, "MTA LISTEN "VNA_GBIP" DATA 'STAR %.1lf HZ;STOP %.1lf HZ;'", 
@@ -1607,7 +1623,16 @@ static void vna_sweep_frequency_range ()
 			}
 			vna_send_cmd (sockfd, "MTA LISTEN "VNA_GBIP" DATA 'AUTO;'", VNA_ETIMEOUT);
 			data = vna_recv_data (sockfd, 801);
-			g_return_if_fail (data);
+			g_return_if_fail(data);
+
+			if (startpointoffset)
+			{
+				/* Shuffle right aligned data back to the left */
+				for (i=0; i<801-startpointoffset; i++)
+					data[i]=data[i+startpointoffset];
+				fstart += (gdouble)startpointoffset * netwin->resol;
+printf("moved start %f\n", fstart);
+			}
 
 			if (Si == 5)
 				/* TRL measurement done -> back to four parameter split */

@@ -541,7 +541,7 @@ static void cal_vna_trl (CalVnaThreadInfo *threadinfo, gint sockfd)
 	g_get_current_time (&glob->calwin->start_t);
 	windone = 0;
 	winleft = (int) ceil (threadinfo->fullin[0]->len/801.0);
-	glob->calwin->estim_t = (glong) (winleft * 95);
+	glob->calwin->estim_t = (glong) (winleft * 65);
 	g_timeout_add (500, (GSourceFunc) cal_show_time_estimates, NULL);
 
 	datapos = 0;
