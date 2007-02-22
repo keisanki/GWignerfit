@@ -1582,6 +1582,10 @@ static void vna_sweep_frequency_range ()
 				netwin->swpmode==1 ? netwin->avg+1 : 1);
 		vna_send_cmd (sockfd, cmdstr, VNA_ETIMEOUT|VNA_ESYNTAXE);
 
+		if (startpointoffset)
+			/* Restore original start frequency */
+			fstart += (gdouble)startpointoffset * netwin->resol;
+
 		/* Wait for this part of the measurement to finish */
 		vna_send_cmd (sockfd, "DCL", VNA_ETIMEOUT|VNA_ESYNTAXE);
 		vna_spoll_wait (sockfd, 16);
@@ -1630,8 +1634,6 @@ static void vna_sweep_frequency_range ()
 				/* Shuffle right aligned data back to the left */
 				for (i=0; i<801-startpointoffset; i++)
 					data[i]=data[i+startpointoffset];
-				fstart += (gdouble)startpointoffset * netwin->resol;
-printf("moved start %f\n", fstart);
 			}
 
 			if (Si == 5)
