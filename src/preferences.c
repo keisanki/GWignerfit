@@ -7,6 +7,7 @@
 #include "callbacks.h"
 #include "resonancelist.h"
 #include "gtkspectvis.h"
+#include "visualize.h"
 
 GlobalData *glob;
 GladeXML *gladexml;
@@ -26,6 +27,7 @@ void prefs_set_default ()
 	glob->prefs->sortparam = FALSE;
 	glob->prefs->fit_converge_detect = TRUE;
 	glob->prefs->relative_paths = FALSE;
+	glob->prefs->angles_in_deg = FALSE;
 	glob->prefs->res_export = -1;
 	glob->prefs->priority = 5;
 	glob->prefs->cal_tauO = 20.837e-12;
@@ -65,6 +67,7 @@ void prefs_save (Preferences *prefs)
 	fprintf (fh, "sortparam = %d\n", prefs->sortparam);
 	fprintf (fh, "fit_converge_detect = %d\n", prefs->fit_converge_detect);
 	fprintf (fh, "relative_paths = %d\n", prefs->relative_paths);
+	fprintf (fh, "angles_in_deg = %d\n", prefs->angles_in_deg);
 	fprintf (fh, "res_export = %d\n", prefs->res_export);
 	fprintf (fh, "priority = %d\n", prefs->priority);
 	fprintf (fh, "cal_tauO = %e\n", prefs->cal_tauO);
@@ -147,6 +150,8 @@ void prefs_load (Preferences *prefs)
 			prefs->fit_converge_detect = val;
 		if (!g_ascii_strncasecmp (cmd, "relative_paths", 15))
 			prefs->relative_paths = val;
+		if (!g_ascii_strncasecmp (cmd, "angles_in_deg", 14))
+			prefs->angles_in_deg = val;
 		if (!g_ascii_strncasecmp (cmd, "res_export", 11))
 			prefs->res_export = val;
 		if (!g_ascii_strncasecmp (cmd, "priority", 9))
@@ -218,6 +223,15 @@ void prefs_change_win ()
 		GTK_TOGGLE_BUTTON (glade_xml_get_widget (xmldialog, "prefs_relative_check")), 
 		glob->prefs->relative_paths);
 
+	if (glob->prefs->angles_in_deg)
+		gtk_toggle_button_set_active (
+			GTK_TOGGLE_BUTTON (glade_xml_get_widget (xmldialog, "deg_radio")), 
+			TRUE);
+	else
+		gtk_toggle_button_set_active (
+			GTK_TOGGLE_BUTTON (glade_xml_get_widget (xmldialog, "khz_radio")), 
+			TRUE);
+
 	result = gtk_dialog_run (GTK_DIALOG (dialog));
 
 	if (result == GTK_RESPONSE_OK)
@@ -245,6 +259,12 @@ void prefs_change_win ()
 			glob->prefs->widthunit = 3;
 		}
 		reslist_update_widthunit ();
+
+		if (gtk_toggle_button_get_active (
+			GTK_TOGGLE_BUTTON (glade_xml_get_widget (xmldialog, "deg_radio"))))
+				glob->prefs->angles_in_deg = TRUE;
+		else
+			glob->prefs->angles_in_deg = FALSE;
 
 		if (gtk_toggle_button_get_active (
 			GTK_TOGGLE_BUTTON (glade_xml_get_widget (xmldialog, "fit_convergence_check"))))

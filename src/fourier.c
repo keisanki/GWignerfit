@@ -576,6 +576,7 @@ gboolean fourier_view_absolute_part (GtkMenuItem *menuitem, gpointer user_data)
 			);
 	
 	gtk_spect_vis_set_displaytype (graph, 'a');
+	gtk_spect_vis_set_axisscale (GTK_SPECTVIS (graph), 0, 1);
 	gtk_spect_vis_zoom_y_all (graph);
 	gtk_spect_vis_redraw (graph);
 
@@ -589,6 +590,7 @@ gboolean fourier_view_real_part (GtkMenuItem *menuitem, gpointer user_data)
 			);
 	
 	gtk_spect_vis_set_displaytype (graph, 'r');
+	gtk_spect_vis_set_axisscale (GTK_SPECTVIS (graph), 0, 1);
 	gtk_spect_vis_zoom_y_all (graph);
 	gtk_spect_vis_redraw (graph);
 
@@ -602,6 +604,7 @@ gboolean fourier_view_imaginary_part (GtkMenuItem *menuitem, gpointer user_data)
 			);
 	
 	gtk_spect_vis_set_displaytype (graph, 'i');
+	gtk_spect_vis_set_axisscale (GTK_SPECTVIS (graph), 0, 1);
 	gtk_spect_vis_zoom_y_all (graph);
 	gtk_spect_vis_redraw (graph);
 
@@ -615,6 +618,8 @@ gboolean fourier_view_phase_part (GtkMenuItem *menuitem, gpointer user_data)
 			);
 	
 	gtk_spect_vis_set_displaytype (graph, 'p');
+	gtk_spect_vis_set_axisscale (GTK_SPECTVIS (graph), 0, 
+		glob->prefs->angles_in_deg ? M_PI/180.0 : 1);
 	gtk_spect_vis_zoom_y_all (graph);
 	gtk_spect_vis_redraw (graph);
 
@@ -628,6 +633,7 @@ gboolean fourier_view_log_power (GtkMenuItem *menuitem, gpointer user_data)
 			);
 	
 	gtk_spect_vis_set_displaytype (graph, 'l');
+	gtk_spect_vis_set_axisscale (GTK_SPECTVIS (graph), 0, 1);
 	gtk_spect_vis_zoom_y_all (graph);
 	gtk_spect_vis_redraw (graph);
 
@@ -638,7 +644,7 @@ gboolean fourier_abscissa_in_ns (GtkMenuItem *menuitem, gpointer user_data)
 {
 	GtkSpectVis *graph = GTK_SPECTVIS (glade_xml_get_widget (glob->fft->xmlfft, "fft_spectvis"));
 
-	gtk_spect_vis_set_axisscale (graph, 1e-9, 1);
+	gtk_spect_vis_set_axisscale (graph, 1e-9, 0);
 	gtk_spect_vis_redraw (graph);
 
 	return TRUE;
@@ -648,7 +654,7 @@ gboolean fourier_abscissa_in_meter (GtkMenuItem *menuitem, gpointer user_data)
 {
 	GtkSpectVis *graph = GTK_SPECTVIS (glade_xml_get_widget (glob->fft->xmlfft, "fft_spectvis"));
 
-	gtk_spect_vis_set_axisscale (graph, 1.0/C0, 1);
+	gtk_spect_vis_set_axisscale (graph, 1.0/C0, 0);
 	gtk_spect_vis_redraw (graph);
 
 	return TRUE;

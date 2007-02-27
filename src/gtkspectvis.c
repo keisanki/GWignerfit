@@ -942,7 +942,7 @@ gtk_spect_vis_draw_coordinates (GtkWidget *widget, gboolean drawit)
 		maxval += stepsize;
 	if (abs(maxval)*(maxval<0?10:1) < abs(ticpos)*(ticpos<0?10:1))
 		maxval = ticpos;
-	g_snprintf (valstring, 19, format, maxval);
+	g_snprintf (valstring, 19, format, maxval / spectvis->yAxisScale);
 	layout = gtk_widget_create_pango_layout (widget, valstring);
 	pango_layout_get_pixel_size (layout, &xsize, &ysize);
 	xextraspace = xsize + 0;

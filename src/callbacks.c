@@ -173,6 +173,7 @@ gboolean view_absolute_part (GtkMenuItem *menuitem, gpointer user_data)
 	GtkWidget *graph = glade_xml_get_widget (gladexml, "graph");
 	
 	gtk_spect_vis_set_displaytype (GTK_SPECTVIS (graph), 'a');
+	gtk_spect_vis_set_axisscale (GTK_SPECTVIS (graph), 0, 1);
 	gtk_spect_vis_zoom_y_all (GTK_SPECTVIS (graph));
 	gtk_spect_vis_redraw (GTK_SPECTVIS (graph));
 
@@ -184,6 +185,7 @@ gboolean view_real_part (GtkMenuItem *menuitem, gpointer user_data)
 	GtkWidget *graph = glade_xml_get_widget (gladexml, "graph");
 	
 	gtk_spect_vis_set_displaytype (GTK_SPECTVIS (graph), 'r');
+	gtk_spect_vis_set_axisscale (GTK_SPECTVIS (graph), 0, 1);
 	gtk_spect_vis_zoom_y_all (GTK_SPECTVIS (graph));
 	gtk_spect_vis_redraw (GTK_SPECTVIS (graph));
 
@@ -195,6 +197,7 @@ gboolean view_imaginary_part (GtkMenuItem *menuitem, gpointer user_data)
 	GtkWidget *graph = glade_xml_get_widget (gladexml, "graph");
 	
 	gtk_spect_vis_set_displaytype (GTK_SPECTVIS (graph), 'i');
+	gtk_spect_vis_set_axisscale (GTK_SPECTVIS (graph), 0, 1);
 	gtk_spect_vis_zoom_y_all (GTK_SPECTVIS (graph));
 	gtk_spect_vis_redraw (GTK_SPECTVIS (graph));
 
@@ -206,6 +209,8 @@ gboolean view_phase_part (GtkMenuItem *menuitem, gpointer user_data)
 	GtkWidget *graph = glade_xml_get_widget (gladexml, "graph");
 	
 	gtk_spect_vis_set_displaytype (GTK_SPECTVIS (graph), 'p');
+	gtk_spect_vis_set_axisscale (GTK_SPECTVIS (graph), 0, 
+		glob->prefs->angles_in_deg ? M_PI/180.0 : 1);
 	gtk_spect_vis_zoom_y_all (GTK_SPECTVIS (graph));
 	gtk_spect_vis_redraw (GTK_SPECTVIS (graph));
 
@@ -217,6 +222,7 @@ gboolean view_log_power (GtkMenuItem *menuitem, gpointer user_data)
 	GtkWidget *graph = glade_xml_get_widget (gladexml, "graph");
 	
 	gtk_spect_vis_set_displaytype (GTK_SPECTVIS (graph), 'l');
+	gtk_spect_vis_set_axisscale (GTK_SPECTVIS (graph), 0, 1);
 	gtk_spect_vis_zoom_y_all (GTK_SPECTVIS (graph));
 	gtk_spect_vis_redraw (GTK_SPECTVIS (graph));
 

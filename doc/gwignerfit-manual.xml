@@ -3859,6 +3859,15 @@
 			</listitem>
 		</varlistentry>
 		<varlistentry>
+			<term><guilabel>Angle units</guilabel></term>
+			<listitem>
+				<para>Here you can choose, whether the ordinate of phase graphs should
+					display radians (<guilabel>rad</guilabel>, the default) or degrees
+					(<guilabel>deg</guilabel>).
+				</para>
+			</listitem>
+		</varlistentry>
+		<varlistentry>
 			<term><guilabel>Detect convergence of fit</guilabel></term>
 			<listitem>
 				<para>Enable this option if &app; should automatically stop a running

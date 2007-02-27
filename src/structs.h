@@ -106,6 +106,7 @@ typedef struct
 	gboolean sortparam;		/* Sort glob->param array by frequencies? */
 	gboolean fit_converge_detect;	/* Stop fit automatically if converged? */
 	gboolean relative_paths;	/* Save relative paths in gwf files? */
+	gboolean angles_in_deg;		/* True if angles should be given in degrees */
 	gint res_export;		/* Bitmask of parameters for resonance export */
 	gint priority;			/* The nice level GWignerFit should run with */
 	gdouble cal_tauO;		/* Open calibration standard: signal delay */
