@@ -170,7 +170,7 @@ static void network_struct_to_gui ()
 		g_free (text);
 	}
 
-	if (netwin->param[0] == 'S')
+	if (netwin->param[0] != '\0')
 	{
 		entry = GTK_ENTRY (glade_xml_get_widget (netwin->xmlnet, "vna_s_entry"));
 		gtk_entry_set_text (entry, netwin->param);
