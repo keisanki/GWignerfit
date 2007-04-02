@@ -3,7 +3,7 @@
   "http://www.oasis-open.org/docbook/xml/4.4/docbookx.dtd" [
 <!--"/usr/share/sgml/docbook/xml-dtd-4.4-1.0-26/docbookx.dtd" [ -->
 	<!ENTITY legal SYSTEM "legal.xml">
-	<!ENTITY appversion "2007-01-28">
+	<!ENTITY appversion "2007-04-02">
 	<!ENTITY manrevision "1.0">
 	<!ENTITY date "August 2005">
 	<!ENTITY app "<application>GWignerFit</application>">
@@ -2213,7 +2213,7 @@
 					</imageobject>
 					<textobject>
 						<phrase>Shows the calibration dialog for the full two-port
-							calibration. (Warning, the picture isn't updated yet!)</phrase>
+							calibration.</phrase>
 					</textobject>
 				</mediaobject>
 			</screenshot>
