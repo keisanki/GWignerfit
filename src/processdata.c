@@ -25,6 +25,7 @@
 #include "fcomp.h"
 #include "loadsave.h"
 #include "callbacks.h"
+#include "calibrate_offline.h"
 
 extern GlobalData *glob;
 extern GladeXML *gladexml;
@@ -189,7 +190,7 @@ gboolean is_datafile (gchar *filename)
 			continue;
 #endif
 
-		if ((dataline[0] == '#') || (dataline[0] == '\r') || (dataline[0] == '\n'))
+		if ((dataline[0] == '#') || (dataline[0] == '!') || (dataline[0] == '\r') || (dataline[0] == '\n'))
 			continue;
 
 		if (sscanf (dataline, "%lf %lf %lf", &a, &b, &c) != 3) 
@@ -257,6 +258,76 @@ gboolean make_unique_dataset (DataVector *data)
 	return FALSE;
 }
 
+/* Adjust the read S1P data into GWignerFit's standard form */
+void adjust_snp_data (DataVector *data, gchar *options)
+{
+	gdouble frqmultiply = 1/1e9;
+	gchar format = 1;
+	gchar *snpoptions;
+	gdouble re, im, tmp;
+	ComplexDouble R;
+	guint i;
+
+	snpoptions = g_ascii_strup (options, strlen (options));
+
+	/* Determine units of frequency */
+	if (g_strrstr (snpoptions, " MHZ "))
+		frqmultiply = 1/1e6;
+	if (g_strrstr (snpoptions, " KHZ "))
+		frqmultiply = 1/1e3;
+	if (g_strrstr (snpoptions, " HZ "))
+		frqmultiply = 1.0;
+
+	/* Determine format of complex data */
+	if (g_strrstr (snpoptions, " DB "))
+		format = 2;
+	if (g_strrstr (snpoptions, " MA "))
+		format = 3;
+
+	/* Adjust what we have learned so far */
+	for (i=0; i<data->len; i++)
+	{
+		data->x[i] *= frqmultiply;
+
+		if (format != 1)
+		{
+			if (format == 2)
+				tmp = pow (10, data->y[i].re / 20.0);
+			else if (format == 3)
+				tmp = data->y[i].re;
+			re = tmp * cos (data->y[i].im / 180 * M_PI);
+			im = tmp * sin (data->y[i].im / 180 * M_PI);
+			data->y[i].re  = re;
+			data->y[i].im  = im;
+			data->y[i].abs = tmp;
+		}
+	}
+
+	/* Determine system impedance */
+	R.re  = 50;
+	R.im  = 0;
+	R.abs = 50;
+	if (g_strrstr (snpoptions, " R "))
+		sscanf (g_strrstr (snpoptions, " R "), " R %lf ", &R.re);
+
+	/* Performe conversion Impedance -> Scattering parameter */
+	if (g_strrstr (snpoptions, " Z "))
+		for (i=0; i<data->len; i++)
+		{
+			/* R (Z+R) / (Z-R) */
+			data->y[i] = c_mul (R, c_div (c_add (data->y[i], R), c_sub (data->y[i], R)));
+			data->y[i].abs = sqrt (data->y[i].re*data->y[i].re+data->y[i].im*data->y[i].im);
+		}
+
+	if (g_strrstr (snpoptions, " Y ") || g_strrstr (snpoptions, " H ") || g_strrstr (snpoptions, " G "))
+	{
+		dialog_message ("Error: Encounterd unknown data format in SNP data file.");
+	}
+
+	g_free (snpoptions);
+}
+
+/* Tries very hard to retrieve spectrum data from a given filename */
 DataVector *import_datafile (gchar *filename, gboolean interactive)
 {
 	gchar dataline[200], *basename;
@@ -275,6 +346,9 @@ DataVector *import_datafile (gchar *filename, gboolean interactive)
 	
 	ComplexDouble y;
 	gdouble f;
+
+	gboolean snp = FALSE;
+	gchar *snpoptions = NULL;
 
 	if (!filename)
 		return NULL;
@@ -302,7 +376,7 @@ DataVector *import_datafile (gchar *filename, gboolean interactive)
 	else if (datafile == NULL)
 	{
 		/* Perhaps the user (un)compressed the file */
-		if (g_str_has_suffix (filename, ".dat"))
+		if (g_str_has_suffix (filename, ".dat") || g_str_has_suffix (filename, ".s1p"))
 			/* Try with suffix .gz */
 			tmpname = g_strdup_printf ("%s.gz", filename);
 		else if (g_str_has_suffix (filename, ".gz"))
@@ -324,6 +398,11 @@ DataVector *import_datafile (gchar *filename, gboolean interactive)
 		filename = tmpname;
 	}
 #endif
+	if (g_str_has_suffix (filename, ".s1p") || g_str_has_suffix (filename, ".s1p.gz"))
+	{
+		/* This should an S1P or S2P file */
+		snp = TRUE;
+	}
 
 	/* Estimate filesize */
 	stat (filename, &filestat);
@@ -344,7 +423,7 @@ DataVector *import_datafile (gchar *filename, gboolean interactive)
 			continue;
 #endif
 
-		if ((dataline[0] == '\r') || (dataline[0] == '\n'))
+		if ((dataline[0] == '\r') || (dataline[0] == '\n') || (dataline[0] == '!'))
 			continue;
 
 		if (dataline[0] == '#')
@@ -447,7 +526,15 @@ DataVector *import_datafile (gchar *filename, gboolean interactive)
 			continue;
 #endif
 
-		if ((dataline[0] == '#') || (dataline[0] == '\r') || (dataline[0] == '\n'))
+		if ((dataline[0] == '#') && (snp))
+		{
+			/* Remember options of s1p or s2p data file */
+			g_free (snpoptions);
+			snpoptions = g_strdup_printf ("%s ", dataline);
+			continue;
+		}
+
+		if ((dataline[0] == '#') || (dataline[0] == '!') || (dataline[0] == '\r') || (dataline[0] == '\n'))
 			/* Ignore comments and empty lines. */
 			continue;
 
@@ -505,6 +592,12 @@ DataVector *import_datafile (gchar *filename, gboolean interactive)
 
 		data = testvec;
 	}
+
+	if (snp && !data_is_fft)
+	{
+		adjust_snp_data (data, snpoptions);
+	}
+	g_free (snpoptions);
 
 	status_progressbar_set (-1);
 
