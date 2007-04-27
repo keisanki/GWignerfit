@@ -292,8 +292,10 @@ void adjust_snp_data (DataVector *data, gchar *options)
 		if (format != 1)
 		{
 			if (format == 2)
+				/* dB and phase representation */
 				tmp = pow (10, data->y[i].re / 20.0);
-			else if (format == 3)
+			else
+				/* amplitude and phase representation */
 				tmp = data->y[i].re;
 			re = tmp * cos (data->y[i].im / 180 * M_PI);
 			im = tmp * sin (data->y[i].im / 180 * M_PI);
