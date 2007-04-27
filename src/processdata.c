@@ -1137,6 +1137,12 @@ gboolean load_gwf_resonance_file (gchar *filename)
 
 	on_comment_done (NULL, (gpointer) 1);
 
+	/* Resonances may be added, so enable the theory graph */
+	gtk_check_menu_item_set_active (
+		GTK_CHECK_MENU_ITEM (glade_xml_get_widget (gladexml, "view_theory")),
+		TRUE
+	);
+
 	if (read_resonancefile (filename, section) >= 0)
 	{
 		glob->section = section;

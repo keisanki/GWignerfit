@@ -121,6 +121,7 @@ typedef struct
 {
 	GladeXML *xmlfft;		/* Glade XML structure for fft_window */
 	GPtrArray *data;		/* The fourier transformed data sets */
+	DataVector *theory;		/* The fourier transformed theory data set */
 	gint windowing;			/* Which windowing method to use */
 	gdouble fmin;			/* Original start frequency of FFT in Hz */
 	gdouble fmax;			/* Original stop frequency of FFT in Hz */
@@ -254,6 +255,7 @@ typedef struct
 	Preferences *prefs;		/* Global preferences */
 	gint IsReflection;		/* Is 1 if spectrum is a reflection one */
 	gboolean viewdifference;	/* TRUE if view difference is active */
+	gboolean viewtheory;		/* TRUE if theory graph is to be displayed */
 	guint flag;			/* Contains general flags, see FLAG_ */
 	GPtrArray *param;		/* The current resonances parameterset */
 	void *oldparam;			/* The old parameter set for undo */

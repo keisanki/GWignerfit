@@ -206,7 +206,7 @@ gint visualize_handle_signal_marked (GtkSpectVis *spectvis, gdouble *xval, gdoub
 			{
 				visualize_stop_background_calc ();
 
-				respos = (gtk_spect_vis_get_data_by_uid (spectvis, glob->theory->index))->xmin_arraypos;
+				respos = (gtk_spect_vis_get_data_by_uid (spectvis, glob->data->index))->xmin_arraypos;
 				while ((*xval > glob->data->x[respos]) && (respos < glob->data->len))
 					respos++;
 				
@@ -256,7 +256,14 @@ gint visualize_handle_signal_marked (GtkSpectVis *spectvis, gdouble *xval, gdoub
 		if (res) 
 		{
 			add_resonance_to_list (res);
-			visualize_theory_graph ("u");
+			if (glob->theory->index)
+				visualize_theory_graph ("u");
+			else
+				/* Make sure the theory graph is shown */
+				gtk_check_menu_item_set_active (
+					GTK_CHECK_MENU_ITEM (glade_xml_get_widget (gladexml, "view_theory")),
+					TRUE
+				);
 			set_unsaved_changes ();
 			spectral_resonances_changed ();
 			statusbar_message ("Added a resonance at %f GHz", res->frq / 1e9);
@@ -280,7 +287,14 @@ gint visualize_handle_signal_marked (GtkSpectVis *spectvis, gdouble *xval, gdoub
 			statusbar_message ("Processing spectrum, this could take a while...");
 			while (gtk_events_pending ()) gtk_main_iteration ();
 			statusbar_message ("Added %d resonances ", find_isolated_resonances (*yval));
-			visualize_theory_graph ("u");
+			if (glob->theory->index)
+				visualize_theory_graph ("u");
+			else
+				/* Make sure the theory graph is shown */
+				gtk_check_menu_item_set_active (
+					GTK_CHECK_MENU_ITEM (glade_xml_get_widget (gladexml, "view_theory")),
+					TRUE
+				);
 			set_unsaved_changes ();
 		}
 		else 
@@ -772,7 +786,7 @@ void visualize_handle_viewport_changed (GtkSpectVis *spectvis, gchar *zoomtype)
 		g_mutex_unlock (glob->threads->theorylock);
 	}
 
-	if (!glob->theory->index) {
+	if ((!glob->theory->index) && (glob->viewtheory)) {
 		color.red   = 0;
 		color.green = 0;
 		color.blue  = 65535;
@@ -785,8 +799,16 @@ void visualize_handle_viewport_changed (GtkSpectVis *spectvis, gchar *zoomtype)
 			color, 'l');
 	}
 
-	xmina = (gtk_spect_vis_get_data_by_uid (spectvis, glob->theory->index))->xmin_arraypos;
-	xmaxa = (gtk_spect_vis_get_data_by_uid (spectvis, glob->theory->index))->xmax_arraypos;
+	if (glob->theory->index)
+	{
+		xmina = (gtk_spect_vis_get_data_by_uid (spectvis, glob->theory->index))->xmin_arraypos;
+		xmaxa = (gtk_spect_vis_get_data_by_uid (spectvis, glob->theory->index))->xmax_arraypos;
+	}
+	else
+	{
+		xmina = 1;
+		xmaxa = glob->theory->len-1;
+	}
 
 	if ((*zoomtype != 'i') && (*zoomtype != 'I') && (*zoomtype != 'O'))
 	{
@@ -839,15 +861,23 @@ void visualize_handle_viewport_changed (GtkSpectVis *spectvis, gchar *zoomtype)
 	}
 
 	if (*zoomtype == 'u')
+	{
 		status_progressbar_set (-1.0);
 
+		if (!glob->theory->index)
+		{
+			gtk_spect_vis_zoom_y_all (GTK_SPECTVIS (graph));
+			gtk_spect_vis_redraw (GTK_SPECTVIS (graph));
+		}
+	}
+
 //	if ((*zoomtype != 'I') && (*zoomtype != 'O') && (*zoomtype != 'i') && (*zoomtype != 'o'))
-	if (flag)
+	if (flag && glob->theory->index)
 		gtk_spect_vis_zoom_y_all (GTK_SPECTVIS (graph));
 
 	gtk_spect_vis_redraw (GTK_SPECTVIS (graph));
 	
-	if (flag)
+	if (flag && glob->theory->index)
 	/* Start calculation only if there had been values to be calculated
 	 * in the current viewport */
 	{
@@ -889,8 +919,8 @@ void visualize_zoom_to_frequency_range (gdouble min, gdouble max)
 
 	gtk_spect_vis_zoom_x_to (spectvis, min - (max-min)*0.02, max + (max-min)*0.02);
 
-	xmina = (gtk_spect_vis_get_data_by_uid (spectvis, glob->theory->index))->xmin_arraypos;
-	xmaxa = (gtk_spect_vis_get_data_by_uid (spectvis, glob->theory->index))->xmax_arraypos;
+	xmina = (gtk_spect_vis_get_data_by_uid (spectvis, glob->data->index))->xmin_arraypos;
+	xmaxa = (gtk_spect_vis_get_data_by_uid (spectvis, glob->data->index))->xmax_arraypos;
 
 	/* Recalculate the theory values where necessary */
 	theoryY = glob->theory->y;
@@ -917,7 +947,7 @@ void visualize_zoom_to_frequency_range (gdouble min, gdouble max)
 	gtk_spect_vis_zoom_y_all (spectvis);
 	gtk_spect_vis_redraw (spectvis);
 
-	if (flag)
+	if (flag && glob->theory->index)
 	/* Start calculation only if one has been running before */
 	{
 		g_mutex_lock (glob->threads->flaglock);

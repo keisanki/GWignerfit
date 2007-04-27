@@ -141,6 +141,7 @@ gint main (gint argc, char *argv[])
 	glob->path = NULL;
 	glob->flag = 0;
 	glob->viewdifference = FALSE;
+	glob->viewtheory = FALSE;
 	glob->param = g_ptr_array_new ();
 	glob->oldparam = NULL;
 	glob->gparam = g_new0 (GlobalParam, 1);

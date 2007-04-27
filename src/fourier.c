@@ -290,7 +290,7 @@ void fourier_update_main_graphs ()
 			
 			if ((fftvec) && (glob->theory->index))
 			{
-				g_ptr_array_add (fft->data, fftvec);
+				fft->theory = fftvec;
 
 				if (!glob->viewdifference)
 				{
@@ -322,7 +322,7 @@ void fourier_update_main_graphs ()
 		}
 		else
 		{
-			oldvec = (DataVector *) g_ptr_array_index (fft->data, 1);
+			oldvec = fft->theory;
 			fftvec = fourier_gen_dataset (glob->theory, startfrq, stopfrq);
 			g_free (oldvec->x);
 			g_free (oldvec->y);
@@ -343,6 +343,12 @@ void fourier_update_main_graphs ()
 				oldvec->index = 0;
 			}
 		}
+	}
+	else if (fft->theory)
+	{
+		gtk_spect_vis_data_remove (graph, fft->theory->index);
+		free_datavector (fft->theory);
+		fft->theory = NULL;
 	}
 
 	if (fftvec)
@@ -529,6 +535,7 @@ void fourier_open_win (gboolean window)
 		gtk_spect_vis_set_axisscale (graph, 1e-9, 1);
 
 		fft->data = g_ptr_array_new ();
+		fft->theory = NULL;
 		fft->windowing = 1;
 
 		fourier_update_main_graphs ();

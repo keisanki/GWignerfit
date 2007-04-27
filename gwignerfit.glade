@@ -756,6 +756,23 @@
 		  </child>
 
 		  <child>
+		    <widget class="GtkSeparatorMenuItem" id="separator12">
+		      <property name="visible">True</property>
+		    </widget>
+		  </child>
+
+		  <child>
+		    <widget class="GtkCheckMenuItem" id="view_theory">
+		      <property name="visible">True</property>
+		      <property name="label" translatable="yes">View _theory</property>
+		      <property name="use_underline">True</property>
+		      <property name="active">False</property>
+		      <signal name="activate" handler="on_view_theory_activate" last_modification_time="Tue, 05 Oct 2004 08:11:18 GMT"/>
+		      <accelerator key="t" modifiers="0" signal="activate"/>
+		    </widget>
+		  </child>
+
+		  <child>
 		    <widget class="GtkCheckMenuItem" id="view_difference">
 		      <property name="visible">True</property>
 		      <property name="label" translatable="yes">View _difference</property>

@@ -117,6 +117,11 @@ void on_new_activate (GtkMenuItem *menuitem, gpointer user_data)
 	g_free (glob->spectral);
 	glob->spectral = NULL;
 
+	gtk_check_menu_item_set_active (
+		GTK_CHECK_MENU_ITEM (glade_xml_get_widget (gladexml, "view_theory")),
+		FALSE
+	);
+
 	free_datavector (glob->data);
 	glob->data = NULL;
 	free_datavector (glob->theory);
@@ -267,6 +272,30 @@ gboolean on_view_difference_activate (GtkMenuItem *menuitem, gpointer user_data)
 		visualize_draw_data ();
 		visualize_theory_graph ("u");
 	}
+
+	return TRUE;
+}
+
+gboolean on_view_theory_activate (GtkMenuItem *menuitem, gpointer user_data)
+{
+	GtkWidget *graph = glade_xml_get_widget (gladexml, "graph");
+
+	if (!glob->theory)
+		return TRUE;
+
+	if (gtk_check_menu_item_get_active (GTK_CHECK_MENU_ITEM (menuitem)))
+	{
+		glob->viewtheory = TRUE;
+	}
+	else
+	{
+		glob->viewtheory = FALSE;
+
+		gtk_spect_vis_data_remove (GTK_SPECTVIS (graph), glob->theory->index);
+		glob->theory->index = 0;
+	}
+
+	visualize_theory_graph ("u");
 
 	return TRUE;
 }
