@@ -329,6 +329,37 @@ void adjust_snp_data (DataVector *data, gchar *options)
 	g_free (snpoptions);
 }
 
+gint s2p_sparam_choose ()
+{
+	GladeXML *xml;
+	gint result, retval;
+
+	xml = glade_xml_new (GLADEFILE, "sparam_dialog", NULL);
+
+	/* This should somehow be adjustable in the glade file, too. Somehow... */
+	gtk_toggle_button_set_active (
+		GTK_TOGGLE_BUTTON (glade_xml_get_widget (xml, "sparam_s12_radio")), 
+		TRUE);
+
+	result = gtk_dialog_run (GTK_DIALOG (glade_xml_get_widget (xml, "sparam_dialog")));
+	if (result == GTK_RESPONSE_OK)
+	{
+		if (gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (glade_xml_get_widget (xml, "sparam_s11_radio"))))
+			retval = 1;
+		if (gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (glade_xml_get_widget (xml, "sparam_s12_radio"))))
+			retval = 2;
+		if (gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (glade_xml_get_widget (xml, "sparam_s21_radio"))))
+			retval = 3;
+		if (gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (glade_xml_get_widget (xml, "sparam_s22_radio"))))
+			retval = 4;
+	}
+	else
+		retval = 0;
+
+	gtk_widget_destroy (glade_xml_get_widget (xml, "sparam_dialog"));
+	return retval;
+}
+
 /* Tries very hard to retrieve spectrum data from a given filename */
 DataVector *import_datafile (gchar *filename, gboolean interactive)
 {
@@ -345,12 +376,14 @@ DataVector *import_datafile (gchar *filename, gboolean interactive)
 	gboolean data_is_fft = FALSE;
 	struct stat filestat;
 	guint filesize, filebytepos;
+	gint scanresult;
 	
 	ComplexDouble y;
-	gdouble f;
+	gdouble f, dummy;
 
-	gboolean snp = FALSE;
+	gint snp = 0;
 	gchar *snpoptions = NULL;
+	const gchar *sparams[] = {"S11", "S12", "S21", "S22"};
 
 	if (!filename)
 		return NULL;
@@ -361,6 +394,29 @@ DataVector *import_datafile (gchar *filename, gboolean interactive)
 		dialog_message ("Cannot open '%s' as a datafile, this is a directory.", basename);
 		g_free (basename);
 		return NULL;
+	}
+
+	/* Handle S1P und S2P files */
+	if (g_str_has_suffix (filename, ".s1p") || g_str_has_suffix (filename, ".s1p.gz"))
+	{
+		snp = -1;
+	}
+	if (g_str_has_suffix (filename, ".s2p") || g_str_has_suffix (filename, ".s2p.gz"))
+	{
+		snp = s2p_sparam_choose ();
+		if (!snp)
+		{
+			statusbar_message("Import data aborted");
+			return NULL;
+		}
+	}
+	if (g_strrstr (filename, ".s2p:S") || g_strrstr (filename, ".s2p.gz:S"))
+	{
+		if (g_str_has_suffix (filename, "S11")) snp = 1;
+		if (g_str_has_suffix (filename, "S12")) snp = 2;
+		if (g_str_has_suffix (filename, "S21")) snp = 3;
+		if (g_str_has_suffix (filename, "S22")) snp = 4;
+		filename[strlen (filename) - 4] = '\0';
 	}
 
 #ifdef NO_ZLIB
@@ -400,11 +456,6 @@ DataVector *import_datafile (gchar *filename, gboolean interactive)
 		filename = tmpname;
 	}
 #endif
-	if (g_str_has_suffix (filename, ".s1p") || g_str_has_suffix (filename, ".s1p.gz"))
-	{
-		/* This should an S1P or S2P file */
-		snp = TRUE;
-	}
 
 	/* Estimate filesize */
 	stat (filename, &filestat);
@@ -540,7 +591,22 @@ DataVector *import_datafile (gchar *filename, gboolean interactive)
 			/* Ignore comments and empty lines. */
 			continue;
 
-		if (sscanf(dataline, "%lf %lf %lf", &f, &y.re, &y.im) != 3) 
+		switch (snp)
+		{
+			case 2:
+				scanresult = sscanf(dataline, "%lf %lf %lf %lf %lf", &f, &dummy, &dummy, &y.re, &y.im) - 2;
+				break;
+			case 3:
+				scanresult = sscanf(dataline, "%lf %lf %lf %lf %lf %lf %lf", &f, &dummy, &dummy, &dummy, &dummy, &y.re, &y.im) - 4;
+				break;
+			case 4:
+				scanresult = sscanf(dataline, "%lf %lf %lf %lf %lf %lf %lf %lf %lf", &f, &dummy, &dummy, &dummy, &dummy, &dummy, &dummy, &y.re, &y.im) - 6;
+				break;
+			default:
+				scanresult = sscanf(dataline, "%lf %lf %lf", &f, &y.re, &y.im);
+				break;
+		}
+		if (scanresult != 3) 
 		{
 #ifdef NO_ZLIB
 			fclose (datafile);
@@ -597,7 +663,15 @@ DataVector *import_datafile (gchar *filename, gboolean interactive)
 
 	if (snp && !data_is_fft)
 	{
+		/* Parse snp options line */
 		adjust_snp_data (data, snpoptions);
+		if (snp > 0)
+		{
+			/* Mark selection in filename */
+			tmpname = g_strdup_printf ("%s:%s", data->file, sparams[snp-1]);
+			g_free (data->file);
+			data->file = tmpname;
+		}
 	}
 	g_free (snpoptions);
 
