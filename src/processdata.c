@@ -261,7 +261,7 @@ gboolean make_unique_dataset (DataVector *data)
 /* Adjust the read S1P data into GWignerFit's standard form */
 void adjust_snp_data (DataVector *data, gchar *options)
 {
-	gdouble frqmultiply = 1/1e9;
+	gdouble frqmultiply = 1e9;
 	gchar format = 1;
 	gchar *snpoptions;
 	gdouble re, im, tmp;
@@ -272,9 +272,9 @@ void adjust_snp_data (DataVector *data, gchar *options)
 
 	/* Determine units of frequency */
 	if (g_strrstr (snpoptions, " MHZ "))
-		frqmultiply = 1/1e6;
+		frqmultiply = 1e6;
 	if (g_strrstr (snpoptions, " KHZ "))
-		frqmultiply = 1/1e3;
+		frqmultiply = 1e3;
 	if (g_strrstr (snpoptions, " HZ "))
 		frqmultiply = 1.0;
 
