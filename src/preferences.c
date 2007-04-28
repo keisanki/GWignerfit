@@ -229,7 +229,7 @@ void prefs_change_win ()
 			TRUE);
 	else
 		gtk_toggle_button_set_active (
-			GTK_TOGGLE_BUTTON (glade_xml_get_widget (xmldialog, "khz_radio")), 
+			GTK_TOGGLE_BUTTON (glade_xml_get_widget (xmldialog, "rad_radio")), 
 			TRUE);
 
 	result = gtk_dialog_run (GTK_DIALOG (dialog));
