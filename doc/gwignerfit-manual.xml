@@ -1,9 +1,10 @@
 <?xml version="1.0"?>
 <!DOCTYPE article PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
-  "http://www.oasis-open.org/docbook/xml/4.4/docbookx.dtd" [
+	"/usr/share/sgml/docbook/dtd/4.4/docbookx.dtd" [
+<!--  "http://www.oasis-open.org/docbook/xml/4.4/docbookx.dtd" [ -->
 <!--"/usr/share/sgml/docbook/xml-dtd-4.4-1.0-26/docbookx.dtd" [ -->
 	<!ENTITY legal SYSTEM "legal.xml">
-	<!ENTITY appversion "2007-04-02">
+	<!ENTITY appversion "2007-04-28">
 	<!ENTITY manrevision "1.0">
 	<!ENTITY date "August 2005">
 	<!ENTITY app "<application>GWignerFit</application>">
@@ -107,7 +108,9 @@
 
 	<itemizedlist>
 		<listitem>
-			<para>Versatile methods of data visualization.</para>
+			<para>Versatile methods of data visualization. &app; can read industy
+				standard <filename>S1P</filename> and <filename>S2P</filename> spectrum
+				datafiles as well its own datafile format.</para>
 		</listitem>
 		<listitem>
 			<para>Support for transmission and reflection spectra.</para>
@@ -137,6 +140,10 @@
 		<listitem>
 			<para>Spectral data can be measured directly through a HP8510 compatible
 				network analyzer.</para>
+		</listitem>
+		<listitem>
+			<para>Raw, uncalibrated spectrum data can be calibrated offline or online
+				utilizing a HP8510 compatible network analyzer.</para>
 		</listitem>
 	</itemizedlist>
 </sect1>
@@ -602,6 +609,19 @@
 				</listitem>
 			</varlistentry>
 			<varlistentry>
+				<term><guimenuitem>View theory</guimenuitem></term>
+				<listitem>
+					<para>Check or uncheck this option to enable or disable the display
+						of the blue theory graph in the main graph view area as well in the
+						graph of the time spectrum (see <xref linkend="gwignerfit-fft" />).
+						The startup default of &app; is to not display the theory graph. It
+						will, however, be automatically be shown if a resonanace gets added
+						so that the theory graph becomes meaningfull. This default behavior
+						can in any case be overruled with this menu item.
+					</para>
+				</listitem>
+			</varlistentry>
+			<varlistentry>
 				<term><guimenuitem>View difference</guimenuitem></term>
 				<listitem>
 					<para>When activating this checkbox the graph view area will not show
@@ -673,23 +693,32 @@
 				<keycap>I</keycap>
 			</keycombo>)
 			from the menubar. A file selector will open where you can browse to and
-			select the name of the file that contains the dataset.</para>
+			select the name of the file that contains the dataset. If the selected
+			datafile follows the <filename>S2P</filename> standard, that is it
+			includes information on a full 2&times;2 measurement, &app; will then
+			bring up a new dialog. Use this dialog to choose which scattering
+			parameter actually to import. The current version of &app; cannot
+			import all four matrix elements at once.
+		</para>
 
 		<para>You can either import the raw spectrum data of the frequency domain
-			or the Fourier transformed data of a time domain spectrum (see
-			<xref linkend="gwignerfit-fft" />). Both types of spectra must abide by
-			the datafile standard defined in <xref linkend="gwf-datafile-format" />.
-			The preferred extension for datafiles is <filename>.dat</filename>.
-			All datafiles can be compressed with the zlib algorithm, too, which &app;
-			can decompress on the fly. This algorithm is used for example by the Unix
+			or the Fourier transformed data of a time domain spectrum (see <xref
+			linkend="gwignerfit-fft" />). Both types of spectra must abide by the
+			datafile standard defined in <xref linkend="gwf-datafile-format" />. The
+			preferred extension for datafiles is <filename>.s1p</filename>,
+			<filename>.s2p</filename> or <filename>.dat</filename>. All datafiles can
+			be compressed with the zlib algorithm, too, which &app; can decompress on
+			the fly. This algorithm is used for example by the Unix
 			<command>gzip</command> command. Compressed datafiles should have the
-			suffix <filename>.dat.gz</filename>.
+			additional suffix <filename>.gz</filename>.
 		</para>
 
 		<sect3 id="gwf-datafile-format">
 			<title>Datafile Format</title>
-			<para>&app; expects all datafiles to follow the following
-				standard:</para>
+			<para>&app; expects all datafiles to abide by the
+				<filename>S1P</filename> or <filename>S2P</filename> industry standard
+				or to follow the following rules (which are similar to a special
+				variant of the <filename>S1P</filename> standard):</para>
 			<itemizedlist>
 				<listitem>
 					<para>All lines containing actual data must consist of three floating
@@ -964,7 +993,9 @@
 				<para>Red: The main dataset graph is in red.</para>
 			</listitem>
 			<listitem>
-				<para>Blue: The theory graph is colored blue.</para>
+				<para>Blue: The theory graph, if enabled (see <guimenuitem>View
+					theory</guimenuitem> in <xref linkend="gwf-view-menu" />), is colored
+					blue.</para>
 			</listitem>
 			<listitem>
 				<para>Grey: Grey is the color for all overlayed graphs. You can see in
