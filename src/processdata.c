@@ -263,26 +263,29 @@ void adjust_snp_data (DataVector *data, gchar *options)
 {
 	gdouble frqmultiply = 1e9;
 	gchar format = 1;
-	gchar *snpoptions;
+	gchar *snpoptions = NULL;
 	gdouble re, im, tmp;
 	ComplexDouble R;
 	guint i;
 
-	snpoptions = g_ascii_strup (options, strlen (options));
+	if (options)
+	{
+		snpoptions = g_ascii_strup (options, strlen (options));
 
-	/* Determine units of frequency */
-	if (g_strrstr (snpoptions, " MHZ "))
-		frqmultiply = 1e6;
-	if (g_strrstr (snpoptions, " KHZ "))
-		frqmultiply = 1e3;
-	if (g_strrstr (snpoptions, " HZ "))
-		frqmultiply = 1.0;
+		/* Determine units of frequency */
+		if (g_strrstr (snpoptions, " MHZ "))
+			frqmultiply = 1e6;
+		if (g_strrstr (snpoptions, " KHZ "))
+			frqmultiply = 1e3;
+		if (g_strrstr (snpoptions, " HZ "))
+			frqmultiply = 1.0;
 
-	/* Determine format of complex data */
-	if (g_strrstr (snpoptions, " DB "))
-		format = 2;
-	if (g_strrstr (snpoptions, " MA "))
-		format = 3;
+		/* Determine format of complex data */
+		if (g_strrstr (snpoptions, " DB "))
+			format = 2;
+		if (g_strrstr (snpoptions, " MA "))
+			format = 3;
+	}
 
 	/* Adjust what we have learned so far */
 	for (i=0; i<data->len; i++)
@@ -309,11 +312,11 @@ void adjust_snp_data (DataVector *data, gchar *options)
 	R.re  = 50;
 	R.im  = 0;
 	R.abs = 50;
-	if (g_strrstr (snpoptions, " R "))
+	if (snpoptions && g_strrstr (snpoptions, " R "))
 		sscanf (g_strrstr (snpoptions, " R "), " R %lf ", &R.re);
 
 	/* Performe conversion Impedance -> Scattering parameter */
-	if (g_strrstr (snpoptions, " Z "))
+	if (snpoptions && g_strrstr (snpoptions, " Z "))
 		for (i=0; i<data->len; i++)
 		{
 			/* R (Z+R) / (Z-R) */
@@ -321,9 +324,9 @@ void adjust_snp_data (DataVector *data, gchar *options)
 			data->y[i].abs = sqrt (data->y[i].re*data->y[i].re+data->y[i].im*data->y[i].im);
 		}
 
-	if (g_strrstr (snpoptions, " Y ") || g_strrstr (snpoptions, " H ") || g_strrstr (snpoptions, " G "))
+	if (snpoptions && (g_strrstr (snpoptions, " Y ") || g_strrstr (snpoptions, " H ") || g_strrstr (snpoptions, " G ")))
 	{
-		dialog_message ("Error: Encounterd unknown data format in SNP data file.");
+		dialog_message ("Warning: Encounterd unknown data format in SNP data file, will display data as is.");
 	}
 
 	g_free (snpoptions);
@@ -346,9 +349,9 @@ gint s2p_sparam_choose ()
 	{
 		if (gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (glade_xml_get_widget (xml, "sparam_s11_radio"))))
 			retval = 1;
-		if (gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (glade_xml_get_widget (xml, "sparam_s12_radio"))))
-			retval = 2;
 		if (gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (glade_xml_get_widget (xml, "sparam_s21_radio"))))
+			retval = 2;
+		if (gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (glade_xml_get_widget (xml, "sparam_s12_radio"))))
 			retval = 3;
 		if (gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (glade_xml_get_widget (xml, "sparam_s22_radio"))))
 			retval = 4;
@@ -383,7 +386,7 @@ DataVector *import_datafile (gchar *filename, gboolean interactive)
 
 	gint snp = 0;
 	gchar *snpoptions = NULL;
-	const gchar *sparams[] = {"S11", "S12", "S21", "S22"};
+	const gchar *sparams[] = {"S11", "S21", "S12", "S22"};
 
 	if (!filename)
 		return NULL;
@@ -413,8 +416,8 @@ DataVector *import_datafile (gchar *filename, gboolean interactive)
 	if (g_strrstr (filename, ".s2p:S") || g_strrstr (filename, ".s2p.gz:S"))
 	{
 		if (g_str_has_suffix (filename, "S11")) snp = 1;
-		if (g_str_has_suffix (filename, "S12")) snp = 2;
-		if (g_str_has_suffix (filename, "S21")) snp = 3;
+		if (g_str_has_suffix (filename, "S21")) snp = 2;
+		if (g_str_has_suffix (filename, "S12")) snp = 3;
 		if (g_str_has_suffix (filename, "S22")) snp = 4;
 		filename[strlen (filename) - 4] = '\0';
 	}

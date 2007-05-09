@@ -151,6 +151,7 @@ __USE_XOPEN	helpers.c	13;"	d	file:
 a	calibrate_vna.c	/^	DataVector *a;$/;"	m	struct:__anon9	file:
 a	compl_mrqcof.c	/^	double *a;$/;"	m	struct:__anon2	file:
 add_resonance_to_list	resonancelist.c	/^void add_resonance_to_list (Resonance *res)$/;"	f
+adjust_snp_data	processdata.c	/^void adjust_snp_data (DataVector *data, gchar *options)$/;"	f
 adjustpriority	helpers.c	/^int adjustpriority ()$/;"	f
 alpha	compl_mrqcof.c	/^	double **alpha;$/;"	m	struct:__anon2	file:
 ampbut	export.c	/^	GtkToggleButton *idbut, *frqbut, *widbut, *ampbut, *phasbut, *qualbut, *stddevbut;$/;"	m	struct:__anon6	file:
@@ -171,6 +172,7 @@ cal_connect_select_but	calibrate.c	/^static void cal_connect_select_but (CalWin 
 cal_do_calibration	calibrate.c	/^static gboolean cal_do_calibration ()$/;"	f	file:
 cal_do_full_calibration	calibrate.c	/^static gboolean cal_do_full_calibration (CalWin *calwin)$/;"	f	file:
 cal_fill_full_filenames	calibrate.c	/^static void cal_fill_full_filenames (gchar *filename)$/;"	f	file:
+cal_fill_trl_filenames	calibrate.c	/^static void cal_fill_trl_filenames (gchar *filename)$/;"	f	file:
 cal_get_valid_file	calibrate.c	/^static gchar* cal_get_valid_file (gchar *entry)$/;"	f	file:
 cal_method_toggled	calibrate.c	/^void cal_method_toggled (GtkToggleButton *togglebutton, gpointer user_data) $/;"	f
 cal_open_win	calibrate.c	/^void cal_open_win ()$/;"	f
@@ -313,8 +315,8 @@ free_lvector	nrutil.c	/^void free_lvector(unsigned long *v, long nl, long nh)$/;
 free_lvector	nrutil.c	/^void free_lvector(v,nl,nh)$/;"	f
 free_matrix	nrutil.c	/^void free_matrix(float **m, long nrl, long nrh, long ncl, long nch)$/;"	f
 free_matrix	nrutil.c	/^void free_matrix(m,nrl,nrh,ncl,nch)$/;"	f
-free_memory	calibrate.c	627;"	d	file:
-free_memory	calibrate.c	841;"	d	file:
+free_memory	calibrate.c	669;"	d	file:
+free_memory	calibrate.c	883;"	d	file:
 free_submatrix	nrutil.c	/^void free_submatrix(b,nrl,nrh,ncl,nch)$/;"	f
 free_submatrix	nrutil.c	/^void free_submatrix(double **b, long nrl, long nrh, long ncl, long nch)$/;"	f
 free_vector	nrutil.c	/^void free_vector(float *v, long nl, long nh)$/;"	f
@@ -592,6 +594,7 @@ on_transmission_activate	callbacks.c	/^gboolean on_transmission_activate (GtkMen
 on_uncheck_all_activate	callbacks.c	/^void on_uncheck_all_activate (GtkMenuItem *menuitem, gpointer user_data)$/;"	f
 on_undo_last_fit_activate	callbacks.c	/^void on_undo_last_fit_activate (GtkMenuItem *menuitem, gpointer user_data)$/;"	f
 on_view_difference_activate	callbacks.c	/^gboolean on_view_difference_activate (GtkMenuItem *menuitem, gpointer user_data)$/;"	f
+on_view_theory_activate	callbacks.c	/^gboolean on_view_theory_activate (GtkMenuItem *menuitem, gpointer user_data)$/;"	f
 on_vna_close_activate	network.c	/^void on_vna_close_activate (GtkMenuItem *menuitem, gpointer user_data)$/;"	f
 on_vna_select_activate	network.c	/^void on_vna_select_activate (GtkButton *button, gpointer user_data)$/;"	f
 on_vna_start_activate	network.c	/^void on_vna_start_activate (GtkMenuItem *menuitem, gpointer user_data)$/;"	f
@@ -632,13 +635,14 @@ quit_application	callbacks.c	/^gboolean quit_application (GtkWidget *widget, Gdk
 r	spectral_numeric.c	/^typedef struct FCOMPLEX {float r,i;} fcomplex;$/;"	m	struct:FCOMPLEX	file:
 read_datafile	processdata.c	/^gboolean read_datafile (gchar *selected_filename, gboolean called_from_open) $/;"	f
 read_resonancefile	processdata.c	/^gint read_resonancefile (gchar *selected_filename, const gchar *label)$/;"	f
-read_resonancefile_cleanup	processdata.c	1019;"	d	file:
-read_resonancefile_cleanup	processdata.c	656;"	d	file:
+read_resonancefile_cleanup	processdata.c	1191;"	d	file:
+read_resonancefile_cleanup	processdata.c	828;"	d	file:
 remove_resonance	resonancelist.c	/^void remove_resonance (GtkTreeIter iter)$/;"	f
 remove_selected_resonance	resonancelist.c	/^void remove_selected_resonance ()$/;"	f
 reslist_update_widthunit	resonancelist.c	/^void reslist_update_widthunit ()$/;"	f
 resonance_check_all	resonancelist.c	/^void resonance_check_all (gboolean type)$/;"	f
 resonance_toggle_row	resonancelist.c	/^void resonance_toggle_row ()$/;"	f
+s2p_sparam_choose	processdata.c	/^gint s2p_sparam_choose ()$/;"	f
 save_write_section	processdata.c	/^void save_write_section (FILE *datafile, gchar *filename, gchar *section, gchar *newline)$/;"	f
 sec_to_hhmmss	helpers.c	/^void sec_to_hhmmss (glong sec, gint *h, gint *m, gint *s)$/;"	f
 select_res_by_id	resonancelist.c	/^gboolean select_res_by_id (gint id)$/;"	f
