@@ -74,19 +74,29 @@ GList* ls_get_sections (gchar *filename, gchar *marker)
  * it as the initial value. Return the (newly allocated) section. */
 gchar* ls_select_section (GList *sections, gchar *default_section)
 {
-	GtkWidget *combo;
+	GtkWidget *combo, *vbox;
 	GladeXML *xml;
 	gchar *section = NULL;
 	gint result;
+	GList *sectionsstart;
 
 	g_return_val_if_fail (sections, NULL);
 
 	xml = glade_xml_new (GLADEFILE, "section_dialog", NULL);
 	
 	/* Add sections to combo box */
-	combo = glade_xml_get_widget (xml, "sections_combo");
-	gtk_combo_set_popdown_strings (GTK_COMBO (combo), sections);
-
+	combo = gtk_combo_box_new_text ();
+	sectionsstart = sections;
+	while (sections)
+	{
+		gtk_combo_box_append_text (GTK_COMBO_BOX (combo), sections->data);
+		sections = g_list_next (sections);
+	}
+	sections = sectionsstart;
+	vbox = glade_xml_get_widget (xml, "sections_vbox");
+	gtk_box_pack_end (GTK_BOX (vbox), combo, FALSE, FALSE, 0);
+	gtk_widget_show (combo);
+#if 0
 	/* Select current section if found */
 	if (default_section)
 	{
@@ -102,15 +112,13 @@ gchar* ls_select_section (GList *sections, gchar *default_section)
 				GTK_ENTRY (glade_xml_get_widget(xml, "section_combo_entry")), 
 				default_section);
 	}
-
+#endif
 	/* Run dialog */
 	result = gtk_dialog_run (GTK_DIALOG (glade_xml_get_widget (xml, "section_dialog")));
 
 	if (result == GTK_RESPONSE_OK)
 	{
-		section = g_strdup (gtk_entry_get_text (
-					GTK_ENTRY (glade_xml_get_widget (
-							xml, "section_combo_entry"))));
+		section = gtk_combo_box_get_active_text (GTK_COMBO_BOX (combo));
 		
 		gtk_widget_destroy (glade_xml_get_widget (xml, "section_dialog"));
 //		g_free (xml);

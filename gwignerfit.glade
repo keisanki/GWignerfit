@@ -710,10 +710,12 @@
               </widget>
               <packing>
                 <property name="resize">False</property>
+                <property name="shrink">False</property>
               </packing>
             </child>
             <child>
               <widget class="GtkHBox" id="hbox2">
+                <property name="height_request">155</property>
                 <property name="visible">True</property>
                 <child>
                   <widget class="GtkFrame" id="frame1">
@@ -983,6 +985,9 @@
                   </packing>
                 </child>
               </widget>
+              <packing>
+                <property name="shrink">False</property>
+              </packing>
             </child>
           </widget>
           <packing>
@@ -1142,7 +1147,7 @@ since September 2004</property>
         <property name="height_request">180</property>
         <property name="visible">True</property>
         <child>
-          <widget class="GtkVBox" id="vbox2">
+          <widget class="GtkVBox" id="sections_vbox">
             <property name="visible">True</property>
             <property name="border_width">10</property>
             <property name="spacing">10</property>
@@ -1158,16 +1163,7 @@ since September 2004</property>
               </packing>
             </child>
             <child>
-              <widget class="GtkCombo" id="sections_combo">
-                <property name="visible">True</property>
-                <property name="enable_arrows_always">False</property>
-                <property name="allow_empty">False</property>
-              </widget>
-              <packing>
-                <property name="expand">False</property>
-                <property name="fill">False</property>
-                <property name="position">1</property>
-              </packing>
+              <placeholder/>
             </child>
           </widget>
           <packing>

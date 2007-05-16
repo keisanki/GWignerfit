@@ -1198,6 +1198,7 @@ gboolean load_gwf_resonance_file (gchar *filename)
 	gchar *title, *basename;
 	gchar *section = NULL;
 	GList *sections = NULL;
+	gint numres;
 
 	sections = ls_get_sections (filename, "=$");
 
@@ -1216,13 +1217,16 @@ gboolean load_gwf_resonance_file (gchar *filename)
 
 	on_comment_done (NULL, (gpointer) 1);
 
-	/* Resonances may be added, so enable the theory graph */
-	gtk_check_menu_item_set_active (
-		GTK_CHECK_MENU_ITEM (glade_xml_get_widget (gladexml, "view_theory")),
-		TRUE
-	);
+	numres = read_resonancefile (filename, section);
 
-	if (read_resonancefile (filename, section) >= 0)
+	if (numres > 0)
+		/* Resonances have been added, so enable the theory graph */
+		gtk_check_menu_item_set_active (
+			GTK_CHECK_MENU_ITEM (glade_xml_get_widget (gladexml, "view_theory")),
+			TRUE
+		);
+
+	if (numres >= 0)
 	{
 		glob->section = section;
 		glob->resonancefile = g_strdup (filename);
@@ -1235,7 +1239,8 @@ gboolean load_gwf_resonance_file (gchar *filename)
 		g_free (basename);
 		g_free (title);
 
-		gtk_spect_vis_zoom_y_all (GTK_SPECTVIS (graph));
+		if (GTK_SPECTVIS (graph)->view)
+			gtk_spect_vis_zoom_y_all (GTK_SPECTVIS (graph));
 		visualize_update_min_max (1);
 
 		spectral_resonances_changed ();
