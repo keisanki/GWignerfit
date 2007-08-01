@@ -882,6 +882,7 @@
                                     <property name="visible">True</property>
                                     <property name="can_focus">True</property>
                                     <property name="use_underline">True</property>
+                                    <property name="response_id">0</property>
                                     <property name="active">True</property>
                                     <property name="draw_indicator">True</property>
                                   </widget>
@@ -897,6 +898,7 @@
                                     <property name="visible">True</property>
                                     <property name="can_focus">True</property>
                                     <property name="use_underline">True</property>
+                                    <property name="response_id">0</property>
                                     <property name="active">True</property>
                                     <property name="draw_indicator">True</property>
                                   </widget>
@@ -914,6 +916,7 @@
                                     <property name="visible">True</property>
                                     <property name="can_focus">True</property>
                                     <property name="use_underline">True</property>
+                                    <property name="response_id">0</property>
                                     <property name="active">True</property>
                                     <property name="draw_indicator">True</property>
                                   </widget>
@@ -986,6 +989,7 @@
                 </child>
               </widget>
               <packing>
+                <property name="resize">True</property>
                 <property name="shrink">False</property>
               </packing>
             </child>
@@ -1090,6 +1094,7 @@ since September 2004</property>
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="can_default">True</property>
+                <property name="response_id">0</property>
                 <signal name="clicked" handler="on_close_dialog"/>
                 <child>
                   <widget class="GtkAlignment" id="alignment1">
@@ -1543,6 +1548,7 @@ since September 2004</property>
                     <property name="can_focus">True</property>
                     <property name="has_focus">True</property>
                     <property name="can_default">True</property>
+                    <property name="response_id">0</property>
                     <signal name="clicked" handler="take_current_values"/>
                     <child>
                       <widget class="GtkAlignment" id="alignment6">
@@ -1588,6 +1594,7 @@ since September 2004</property>
                     <property name="can_default">True</property>
                     <property name="label">gtk-cancel</property>
                     <property name="use_stock">True</property>
+                    <property name="response_id">0</property>
                     <signal name="clicked" handler="cancel_fit_in_progress"/>
                   </widget>
                   <packing>
@@ -1775,6 +1782,7 @@ Please check and decide what to do.</property>
                     <property name="can_focus">True</property>
                     <property name="label" translatable="yes">Take old parameters for this resonance</property>
                     <property name="use_underline">True</property>
+                    <property name="response_id">0</property>
                     <property name="draw_indicator">True</property>
                   </widget>
                   <packing>
@@ -1788,6 +1796,7 @@ Please check and decide what to do.</property>
                     <property name="can_focus">True</property>
                     <property name="label" translatable="yes">Use those parameters anyway</property>
                     <property name="use_underline">True</property>
+                    <property name="response_id">0</property>
                     <property name="draw_indicator">True</property>
                     <property name="group">old_param_radio</property>
                   </widget>
@@ -1803,6 +1812,7 @@ Please check and decide what to do.</property>
                     <property name="can_focus">True</property>
                     <property name="label" translatable="yes">Skip entire fit, revert to old parameter set</property>
                     <property name="use_underline">True</property>
+                    <property name="response_id">0</property>
                     <property name="draw_indicator">True</property>
                     <property name="group">old_param_radio</property>
                   </widget>
@@ -2141,6 +2151,7 @@ Please check and decide what to do.</property>
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="can_default">True</property>
+                <property name="response_id">0</property>
                 <signal name="clicked" handler="overlay_swap_files"/>
                 <child>
                   <widget class="GtkAlignment" id="alignment8">
@@ -2186,6 +2197,7 @@ Please check and decide what to do.</property>
                 <property name="can_default">True</property>
                 <property name="label">gtk-remove</property>
                 <property name="use_stock">True</property>
+                <property name="response_id">0</property>
                 <signal name="clicked" handler="overlay_remove_files"/>
               </widget>
               <packing>
@@ -2199,6 +2211,7 @@ Please check and decide what to do.</property>
                 <property name="can_default">True</property>
                 <property name="label">gtk-add</property>
                 <property name="use_stock">True</property>
+                <property name="response_id">0</property>
                 <signal name="clicked" handler="overlay_file_selection"/>
               </widget>
               <packing>
@@ -2212,6 +2225,7 @@ Please check and decide what to do.</property>
                 <property name="can_default">True</property>
                 <property name="label">gtk-ok</property>
                 <property name="use_stock">True</property>
+                <property name="response_id">0</property>
                 <signal name="clicked" handler="overlay_close_window"/>
               </widget>
               <packing>
@@ -2296,6 +2310,7 @@ Please check and decide what to do.</property>
                         <property name="can_focus">True</property>
                         <property name="label" translatable="yes">kHz</property>
                         <property name="use_underline">True</property>
+                        <property name="response_id">0</property>
                         <property name="draw_indicator">True</property>
                       </widget>
                       <packing>
@@ -2309,6 +2324,7 @@ Please check and decide what to do.</property>
                         <property name="can_focus">True</property>
                         <property name="label" translatable="yes">MHz</property>
                         <property name="use_underline">True</property>
+                        <property name="response_id">0</property>
                         <property name="draw_indicator">True</property>
                         <property name="group">khz_radio</property>
                       </widget>
@@ -2382,6 +2398,7 @@ Please check and decide what to do.</property>
                         <property name="can_focus">True</property>
                         <property name="label" translatable="yes">rad</property>
                         <property name="use_underline">True</property>
+                        <property name="response_id">0</property>
                         <property name="draw_indicator">True</property>
                       </widget>
                       <packing>
@@ -2395,6 +2412,7 @@ Please check and decide what to do.</property>
                         <property name="can_focus">True</property>
                         <property name="label" translatable="yes">deg</property>
                         <property name="use_underline">True</property>
+                        <property name="response_id">0</property>
                         <property name="draw_indicator">True</property>
                         <property name="group">rad_radio</property>
                       </widget>
@@ -2422,6 +2440,7 @@ Please check and decide what to do.</property>
                 <property name="can_focus">True</property>
                 <property name="label" translatable="yes">Detect convergence of fit</property>
                 <property name="use_underline">True</property>
+                <property name="response_id">0</property>
                 <property name="draw_indicator">True</property>
               </widget>
               <packing>
@@ -2436,6 +2455,7 @@ Please check and decide what to do.</property>
                 <property name="can_focus">True</property>
                 <property name="label" translatable="yes">Confirm appending of sections</property>
                 <property name="use_underline">True</property>
+                <property name="response_id">0</property>
                 <property name="draw_indicator">True</property>
               </widget>
               <packing>
@@ -2450,6 +2470,7 @@ Please check and decide what to do.</property>
                 <property name="can_focus">True</property>
                 <property name="label" translatable="yes">Confirm deletion of resonances</property>
                 <property name="use_underline">True</property>
+                <property name="response_id">0</property>
                 <property name="draw_indicator">True</property>
               </widget>
               <packing>
@@ -2464,6 +2485,7 @@ Please check and decide what to do.</property>
                 <property name="can_focus">True</property>
                 <property name="label" translatable="yes">Include overlayed graphs in save file</property>
                 <property name="use_underline">True</property>
+                <property name="response_id">0</property>
                 <property name="draw_indicator">True</property>
               </widget>
               <packing>
@@ -2478,6 +2500,7 @@ Please check and decide what to do.</property>
                 <property name="can_focus">True</property>
                 <property name="label" translatable="yes">Enable datapoint marker in graphs</property>
                 <property name="use_underline">True</property>
+                <property name="response_id">0</property>
                 <property name="draw_indicator">True</property>
               </widget>
               <packing>
@@ -2492,6 +2515,7 @@ Please check and decide what to do.</property>
                 <property name="can_focus">True</property>
                 <property name="label" translatable="yes">Sort resonance IDs by frequency</property>
                 <property name="use_underline">True</property>
+                <property name="response_id">0</property>
                 <property name="draw_indicator">True</property>
               </widget>
               <packing>
@@ -2506,6 +2530,7 @@ Please check and decide what to do.</property>
                 <property name="can_focus">True</property>
                 <property name="label" translatable="yes">Use relative paths in gwf files</property>
                 <property name="use_underline">True</property>
+                <property name="response_id">0</property>
                 <property name="draw_indicator">True</property>
               </widget>
               <packing>
@@ -2589,6 +2614,7 @@ Please check and decide what to do.</property>
                     <property name="can_focus">True</property>
                     <property name="label" translatable="yes">Include ID of resonance</property>
                     <property name="use_underline">True</property>
+                    <property name="response_id">0</property>
                     <property name="draw_indicator">True</property>
                   </widget>
                   <packing>
@@ -2602,6 +2628,7 @@ Please check and decide what to do.</property>
                     <property name="can_focus">True</property>
                     <property name="label" translatable="yes">Include frequency data [GHz]</property>
                     <property name="use_underline">True</property>
+                    <property name="response_id">0</property>
                     <property name="active">True</property>
                     <property name="draw_indicator">True</property>
                   </widget>
@@ -2617,6 +2644,7 @@ Please check and decide what to do.</property>
                     <property name="can_focus">True</property>
                     <property name="label" translatable="yes">Include width data</property>
                     <property name="use_underline">True</property>
+                    <property name="response_id">0</property>
                     <property name="active">True</property>
                     <property name="draw_indicator">True</property>
                   </widget>
@@ -2632,6 +2660,7 @@ Please check and decide what to do.</property>
                     <property name="can_focus">True</property>
                     <property name="label" translatable="yes">Include amplitude data [Hz]</property>
                     <property name="use_underline">True</property>
+                    <property name="response_id">0</property>
                     <property name="active">True</property>
                     <property name="draw_indicator">True</property>
                   </widget>
@@ -2647,6 +2676,7 @@ Please check and decide what to do.</property>
                     <property name="can_focus">True</property>
                     <property name="label" translatable="yes">Include phase data [degree]</property>
                     <property name="use_underline">True</property>
+                    <property name="response_id">0</property>
                     <property name="active">True</property>
                     <property name="draw_indicator">True</property>
                   </widget>
@@ -2662,6 +2692,7 @@ Please check and decide what to do.</property>
                     <property name="can_focus">True</property>
                     <property name="label" translatable="yes">Include quality factor</property>
                     <property name="use_underline">True</property>
+                    <property name="response_id">0</property>
                     <property name="draw_indicator">True</property>
                   </widget>
                   <packing>
@@ -2676,6 +2707,7 @@ Please check and decide what to do.</property>
                     <property name="can_focus">True</property>
                     <property name="label" translatable="yes">Add error estimates for each included parameter</property>
                     <property name="use_underline">True</property>
+                    <property name="response_id">0</property>
                     <property name="draw_indicator">True</property>
                   </widget>
                   <packing>
@@ -2708,6 +2740,7 @@ Please check and decide what to do.</property>
                 <property name="has_default">True</property>
                 <property name="label">gtk-save</property>
                 <property name="use_stock">True</property>
+                <property name="response_id">0</property>
               </widget>
             </child>
             <child>
@@ -3082,6 +3115,7 @@ Please check and decide what to do.</property>
                               <widget class="GtkButton" id="button10">
                                 <property name="visible">True</property>
                                 <property name="can_focus">True</property>
+                                <property name="response_id">0</property>
                                 <child>
                                   <widget class="GtkAlignment" id="alignment9">
                                     <property name="visible">True</property>
@@ -3239,6 +3273,7 @@ Please check and decide what to do.</property>
                                 <property name="can_focus">True</property>
                                 <property name="label" translatable="yes">Include theory graph</property>
                                 <property name="use_underline">True</property>
+                                <property name="response_id">0</property>
                                 <property name="active">True</property>
                                 <property name="draw_indicator">True</property>
                               </widget>
@@ -3253,6 +3288,7 @@ Please check and decide what to do.</property>
                                 <property name="can_focus">True</property>
                                 <property name="label" translatable="yes">Include overlay graphs</property>
                                 <property name="use_underline">True</property>
+                                <property name="response_id">0</property>
                                 <property name="active">True</property>
                                 <property name="draw_indicator">True</property>
                               </widget>
@@ -3272,6 +3308,7 @@ Please check and decide what to do.</property>
                                     <property name="can_focus">True</property>
                                     <property name="label" translatable="yes">Create legend at</property>
                                     <property name="use_underline">True</property>
+                                    <property name="response_id">0</property>
                                     <property name="active">True</property>
                                     <property name="draw_indicator">True</property>
                                   </widget>
@@ -3286,6 +3323,7 @@ Please check and decide what to do.</property>
                                     <property name="can_focus">True</property>
                                     <property name="label" translatable="yes">top or at</property>
                                     <property name="use_underline">True</property>
+                                    <property name="response_id">0</property>
                                     <property name="active">True</property>
                                     <property name="draw_indicator">True</property>
                                   </widget>
@@ -3301,6 +3339,7 @@ Please check and decide what to do.</property>
                                     <property name="can_focus">True</property>
                                     <property name="label" translatable="yes">bottom</property>
                                     <property name="use_underline">True</property>
+                                    <property name="response_id">0</property>
                                     <property name="draw_indicator">True</property>
                                     <property name="group">ps_top_button</property>
                                   </widget>
@@ -3783,6 +3822,7 @@ Please check and decide what to do.</property>
                 <property name="can_focus">True</property>
                 <property name="label" translatable="yes">Fit Weyl</property>
                 <property name="use_underline">True</property>
+                <property name="response_id">0</property>
                 <signal name="clicked" handler="on_spectral_fit_button_clicked"/>
               </widget>
               <packing>
@@ -3838,6 +3878,7 @@ Please check and decide what to do.</property>
                     <property name="can_focus">True</property>
                     <property name="label" translatable="yes">normalize</property>
                     <property name="use_underline">True</property>
+                    <property name="response_id">0</property>
                     <property name="active">True</property>
                     <property name="draw_indicator">True</property>
                     <signal name="toggled" handler="on_spectral_norm_button_toggled"/>
@@ -3879,6 +3920,7 @@ Please check and decide what to do.</property>
                 <property name="can_focus">True</property>
                 <property name="label" translatable="yes">Poisson</property>
                 <property name="use_underline">True</property>
+                <property name="response_id">0</property>
                 <property name="active">True</property>
                 <property name="draw_indicator">True</property>
                 <signal name="toggled" handler="on_spectral_predict_button_toggled"/>
@@ -3894,6 +3936,7 @@ Please check and decide what to do.</property>
                 <property name="can_focus">True</property>
                 <property name="label" translatable="yes">GOE</property>
                 <property name="use_underline">True</property>
+                <property name="response_id">0</property>
                 <property name="active">True</property>
                 <property name="draw_indicator">True</property>
                 <signal name="toggled" handler="on_spectral_predict_button_toggled"/>
@@ -3909,6 +3952,7 @@ Please check and decide what to do.</property>
                 <property name="can_focus">True</property>
                 <property name="label" translatable="yes">GUE</property>
                 <property name="use_underline">True</property>
+                <property name="response_id">0</property>
                 <property name="active">True</property>
                 <property name="draw_indicator">True</property>
                 <signal name="toggled" handler="on_spectral_predict_button_toggled"/>
@@ -4044,6 +4088,7 @@ Please check and decide what to do.</property>
                             <property name="can_focus">True</property>
                             <property name="label" translatable="yes">Compress output file</property>
                             <property name="use_underline">True</property>
+                            <property name="response_id">0</property>
                             <property name="draw_indicator">True</property>
                           </widget>
                         </child>
@@ -4051,6 +4096,7 @@ Please check and decide what to do.</property>
                           <widget class="GtkButton" id="vna_select_button">
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
+                            <property name="response_id">0</property>
                             <signal name="clicked" handler="on_vna_select_activate"/>
                             <child>
                               <widget class="GtkAlignment" id="alignment12">
@@ -4167,6 +4213,7 @@ Please check and decide what to do.</property>
                         <property name="can_focus">True</property>
                         <property name="label" translatable="yes">Sweep a frequency range</property>
                         <property name="use_underline">True</property>
+                        <property name="response_id">0</property>
                         <property name="draw_indicator">True</property>
                         <signal name="toggled" handler="on_vna_sweep_mode_change"/>
                       </widget>
@@ -4180,6 +4227,7 @@ Please check and decide what to do.</property>
                         <property name="can_focus">True</property>
                         <property name="label" translatable="yes">Take a snapshot</property>
                         <property name="use_underline">True</property>
+                        <property name="response_id">0</property>
                         <property name="draw_indicator">True</property>
                         <property name="group">vna_sweep_radio</property>
                       </widget>
@@ -4335,43 +4383,6 @@ Please check and decide what to do.</property>
                       </packing>
                     </child>
                     <child>
-                      <widget class="GtkCombo" id="vna_s_combo">
-                        <property name="visible">True</property>
-                        <property name="enable_arrows_always">False</property>
-                      </widget>
-                      <packing>
-                        <property name="left_attach">3</property>
-                        <property name="right_attach">4</property>
-                        <property name="y_options"></property>
-                      </packing>
-                    </child>
-                    <child>
-                      <widget class="GtkCombo" id="vna_avg_combo">
-                        <property name="visible">True</property>
-                        <property name="enable_arrows_always">False</property>
-                      </widget>
-                      <packing>
-                        <property name="left_attach">3</property>
-                        <property name="right_attach">4</property>
-                        <property name="top_attach">1</property>
-                        <property name="bottom_attach">2</property>
-                        <property name="y_options"></property>
-                      </packing>
-                    </child>
-                    <child>
-                      <widget class="GtkCombo" id="vna_stim_combo">
-                        <property name="visible">True</property>
-                        <property name="enable_arrows_always">False</property>
-                      </widget>
-                      <packing>
-                        <property name="left_attach">3</property>
-                        <property name="right_attach">4</property>
-                        <property name="top_attach">2</property>
-                        <property name="bottom_attach">3</property>
-                        <property name="y_options"></property>
-                      </packing>
-                    </child>
-                    <child>
                       <widget class="GtkEntry" id="vna_start_entry">
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
@@ -4382,6 +4393,57 @@ Please check and decide what to do.</property>
                         <property name="left_attach">1</property>
                         <property name="right_attach">2</property>
                         <property name="y_options"></property>
+                      </packing>
+                    </child>
+                    <child>
+                      <widget class="GtkComboBox" id="vna_s_combo">
+                        <property name="visible">True</property>
+                        <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
+                        <property name="items" translatable="yes">S11
+S12
+S21
+S22
+S
+TRL</property>
+                      </widget>
+                      <packing>
+                        <property name="left_attach">3</property>
+                        <property name="right_attach">4</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <widget class="GtkComboBox" id="vna_avg_combo">
+                        <property name="visible">True</property>
+                        <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
+                        <property name="items" translatable="yes">1x
+2x
+4x
+8x
+16x
+32x
+64x
+128x
+256x</property>
+                      </widget>
+                      <packing>
+                        <property name="left_attach">3</property>
+                        <property name="right_attach">4</property>
+                        <property name="top_attach">1</property>
+                        <property name="bottom_attach">2</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <widget class="GtkComboBox" id="vna_stim_combo">
+                        <property name="visible">True</property>
+                        <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
+                        <property name="items" translatable="yes">ramp mode
+step mode</property>
+                      </widget>
+                      <packing>
+                        <property name="left_attach">3</property>
+                        <property name="right_attach">4</property>
+                        <property name="top_attach">2</property>
+                        <property name="bottom_attach">3</property>
                       </packing>
                     </child>
                   </widget>
@@ -4532,6 +4594,7 @@ Please check and decide what to do.</property>
                 <property name="can_default">True</property>
                 <property name="label">gtk-cancel</property>
                 <property name="use_stock">True</property>
+                <property name="response_id">0</property>
                 <signal name="clicked" handler="on_vna_close_activate"/>
               </widget>
             </child>
@@ -4540,6 +4603,7 @@ Please check and decide what to do.</property>
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="can_default">True</property>
+                <property name="response_id">0</property>
                 <signal name="clicked" handler="on_vna_start_activate"/>
                 <child>
                   <widget class="GtkAlignment" id="alignment11">
@@ -4666,6 +4730,7 @@ Please check and decide what to do.</property>
                                               <widget class="GtkButton" id="cal_in_but">
                                                 <property name="visible">True</property>
                                                 <property name="can_focus">True</property>
+                                                <property name="response_id">0</property>
                                                 <child>
                                                   <widget class="GtkAlignment" id="alignment20">
                                                     <property name="visible">True</property>
@@ -4744,6 +4809,7 @@ Please check and decide what to do.</property>
                                               <widget class="GtkButton" id="cal_out_but">
                                                 <property name="visible">True</property>
                                                 <property name="can_focus">True</property>
+                                                <property name="response_id">0</property>
                                                 <child>
                                                   <widget class="GtkAlignment" id="alignment21">
                                                     <property name="visible">True</property>
@@ -4914,6 +4980,7 @@ Please check and decide what to do.</property>
                                           <widget class="GtkButton" id="cal_open_but">
                                             <property name="visible">True</property>
                                             <property name="can_focus">True</property>
+                                            <property name="response_id">0</property>
                                             <child>
                                               <widget class="GtkAlignment" id="alignment15">
                                                 <property name="visible">True</property>
@@ -4961,6 +5028,7 @@ Please check and decide what to do.</property>
                                           <widget class="GtkButton" id="cal_short_but">
                                             <property name="visible">True</property>
                                             <property name="can_focus">True</property>
+                                            <property name="response_id">0</property>
                                             <child>
                                               <widget class="GtkAlignment" id="alignment16">
                                                 <property name="visible">True</property>
@@ -5010,6 +5078,7 @@ Please check and decide what to do.</property>
                                           <widget class="GtkButton" id="cal_load_but">
                                             <property name="visible">True</property>
                                             <property name="can_focus">True</property>
+                                            <property name="response_id">0</property>
                                             <child>
                                               <widget class="GtkAlignment" id="alignment17">
                                                 <property name="visible">True</property>
@@ -5136,6 +5205,7 @@ Please check and decide what to do.</property>
                                               <widget class="GtkButton" id="cal_trans_in_but">
                                                 <property name="visible">True</property>
                                                 <property name="can_focus">True</property>
+                                                <property name="response_id">0</property>
                                                 <child>
                                                   <widget class="GtkAlignment" id="alignment43">
                                                     <property name="visible">True</property>
@@ -5214,6 +5284,7 @@ Please check and decide what to do.</property>
                                               <widget class="GtkButton" id="cal_trans_out_but">
                                                 <property name="visible">True</property>
                                                 <property name="can_focus">True</property>
+                                                <property name="response_id">0</property>
                                                 <child>
                                                   <widget class="GtkAlignment" id="alignment44">
                                                     <property name="visible">True</property>
@@ -5330,6 +5401,7 @@ Please check and decide what to do.</property>
                                           <widget class="GtkButton" id="cal_thru_but">
                                             <property name="visible">True</property>
                                             <property name="can_focus">True</property>
+                                            <property name="response_id">0</property>
                                             <child>
                                               <widget class="GtkAlignment" id="alignment52">
                                                 <property name="visible">True</property>
@@ -5377,6 +5449,7 @@ Please check and decide what to do.</property>
                                           <widget class="GtkButton" id="cal_isol_but">
                                             <property name="visible">True</property>
                                             <property name="can_focus">True</property>
+                                            <property name="response_id">0</property>
                                             <child>
                                               <widget class="GtkAlignment" id="alignment53">
                                                 <property name="visible">True</property>
@@ -5537,6 +5610,7 @@ Please check and decide what to do.</property>
                                                   <widget class="GtkButton" id="cal_full_s11in_but">
                                                     <property name="visible">True</property>
                                                     <property name="can_focus">True</property>
+                                                    <property name="response_id">0</property>
                                                     <child>
                                                       <widget class="GtkAlignment" id="alignment58">
                                                         <property name="visible">True</property>
@@ -5615,6 +5689,7 @@ Please check and decide what to do.</property>
                                                   <widget class="GtkButton" id="cal_full_s12in_but">
                                                     <property name="visible">True</property>
                                                     <property name="can_focus">True</property>
+                                                    <property name="response_id">0</property>
                                                     <child>
                                                       <widget class="GtkAlignment" id="alignment59">
                                                         <property name="visible">True</property>
@@ -5709,6 +5784,7 @@ Please check and decide what to do.</property>
                                                   <widget class="GtkButton" id="cal_full_s21in_but">
                                                     <property name="visible">True</property>
                                                     <property name="can_focus">True</property>
+                                                    <property name="response_id">0</property>
                                                     <child>
                                                       <widget class="GtkAlignment" id="alignment60">
                                                         <property name="visible">True</property>
@@ -5777,6 +5853,7 @@ Please check and decide what to do.</property>
                                                   <widget class="GtkButton" id="cal_full_s22in_but">
                                                     <property name="visible">True</property>
                                                     <property name="can_focus">True</property>
+                                                    <property name="response_id">0</property>
                                                     <child>
                                                       <widget class="GtkAlignment" id="alignment61">
                                                         <property name="visible">True</property>
@@ -5884,6 +5961,7 @@ Please check and decide what to do.</property>
                                                   <widget class="GtkButton" id="cal_full_s11out_but">
                                                     <property name="visible">True</property>
                                                     <property name="can_focus">True</property>
+                                                    <property name="response_id">0</property>
                                                     <child>
                                                       <widget class="GtkAlignment" id="alignment62">
                                                         <property name="visible">True</property>
@@ -5962,6 +6040,7 @@ Please check and decide what to do.</property>
                                                   <widget class="GtkButton" id="cal_full_s12out_but">
                                                     <property name="visible">True</property>
                                                     <property name="can_focus">True</property>
+                                                    <property name="response_id">0</property>
                                                     <child>
                                                       <widget class="GtkAlignment" id="alignment63">
                                                         <property name="visible">True</property>
@@ -6056,6 +6135,7 @@ Please check and decide what to do.</property>
                                                   <widget class="GtkButton" id="cal_full_s21out_but">
                                                     <property name="visible">True</property>
                                                     <property name="can_focus">True</property>
+                                                    <property name="response_id">0</property>
                                                     <child>
                                                       <widget class="GtkAlignment" id="alignment64">
                                                         <property name="visible">True</property>
@@ -6124,6 +6204,7 @@ Please check and decide what to do.</property>
                                                   <widget class="GtkButton" id="cal_full_s22out_but">
                                                     <property name="visible">True</property>
                                                     <property name="can_focus">True</property>
+                                                    <property name="response_id">0</property>
                                                     <child>
                                                       <widget class="GtkAlignment" id="alignment65">
                                                         <property name="visible">True</property>
@@ -6233,6 +6314,7 @@ Please check and decide what to do.</property>
                                                   <widget class="GtkButton" id="cal_full_s11open_but">
                                                     <property name="visible">True</property>
                                                     <property name="can_focus">True</property>
+                                                    <property name="response_id">0</property>
                                                     <child>
                                                       <widget class="GtkAlignment" id="alignment66">
                                                         <property name="visible">True</property>
@@ -6311,6 +6393,7 @@ Please check and decide what to do.</property>
                                                   <widget class="GtkButton" id="cal_full_s11short_but">
                                                     <property name="visible">True</property>
                                                     <property name="can_focus">True</property>
+                                                    <property name="response_id">0</property>
                                                     <child>
                                                       <widget class="GtkAlignment" id="alignment67">
                                                         <property name="visible">True</property>
@@ -6405,6 +6488,7 @@ Please check and decide what to do.</property>
                                                   <widget class="GtkButton" id="cal_full_s11load_but">
                                                     <property name="visible">True</property>
                                                     <property name="can_focus">True</property>
+                                                    <property name="response_id">0</property>
                                                     <child>
                                                       <widget class="GtkAlignment" id="alignment68">
                                                         <property name="visible">True</property>
@@ -6473,6 +6557,7 @@ Please check and decide what to do.</property>
                                                   <widget class="GtkButton" id="cal_full_s22open_but">
                                                     <property name="visible">True</property>
                                                     <property name="can_focus">True</property>
+                                                    <property name="response_id">0</property>
                                                     <child>
                                                       <widget class="GtkAlignment" id="alignment69">
                                                         <property name="visible">True</property>
@@ -6567,6 +6652,7 @@ Please check and decide what to do.</property>
                                                   <widget class="GtkButton" id="cal_full_s22short_but">
                                                     <property name="visible">True</property>
                                                     <property name="can_focus">True</property>
+                                                    <property name="response_id">0</property>
                                                     <child>
                                                       <widget class="GtkAlignment" id="alignment70">
                                                         <property name="visible">True</property>
@@ -6635,6 +6721,7 @@ Please check and decide what to do.</property>
                                                   <widget class="GtkButton" id="cal_full_s22load_but">
                                                     <property name="visible">True</property>
                                                     <property name="can_focus">True</property>
+                                                    <property name="response_id">0</property>
                                                     <child>
                                                       <widget class="GtkAlignment" id="alignment71">
                                                         <property name="visible">True</property>
@@ -6744,6 +6831,7 @@ Please check and decide what to do.</property>
                                                   <widget class="GtkButton" id="cal_full_s11thru_but">
                                                     <property name="visible">True</property>
                                                     <property name="can_focus">True</property>
+                                                    <property name="response_id">0</property>
                                                     <child>
                                                       <widget class="GtkAlignment" id="alignment72">
                                                         <property name="visible">True</property>
@@ -6822,6 +6910,7 @@ Please check and decide what to do.</property>
                                                   <widget class="GtkButton" id="cal_full_s12thru_but">
                                                     <property name="visible">True</property>
                                                     <property name="can_focus">True</property>
+                                                    <property name="response_id">0</property>
                                                     <child>
                                                       <widget class="GtkAlignment" id="alignment73">
                                                         <property name="visible">True</property>
@@ -6916,6 +7005,7 @@ Please check and decide what to do.</property>
                                                   <widget class="GtkButton" id="cal_full_s21thru_but">
                                                     <property name="visible">True</property>
                                                     <property name="can_focus">True</property>
+                                                    <property name="response_id">0</property>
                                                     <child>
                                                       <widget class="GtkAlignment" id="alignment74">
                                                         <property name="visible">True</property>
@@ -6984,6 +7074,7 @@ Please check and decide what to do.</property>
                                                   <widget class="GtkButton" id="cal_full_s22thru_but">
                                                     <property name="visible">True</property>
                                                     <property name="can_focus">True</property>
+                                                    <property name="response_id">0</property>
                                                     <child>
                                                       <widget class="GtkAlignment" id="alignment75">
                                                         <property name="visible">True</property>
@@ -7139,6 +7230,7 @@ Please check and decide what to do.</property>
                                                   <widget class="GtkButton" id="cal_trl_s11in_but">
                                                     <property name="visible">True</property>
                                                     <property name="can_focus">True</property>
+                                                    <property name="response_id">0</property>
                                                     <child>
                                                       <widget class="GtkAlignment" id="alignment82">
                                                         <property name="visible">True</property>
@@ -7217,6 +7309,7 @@ Please check and decide what to do.</property>
                                                   <widget class="GtkButton" id="cal_trl_s12in_but">
                                                     <property name="visible">True</property>
                                                     <property name="can_focus">True</property>
+                                                    <property name="response_id">0</property>
                                                     <child>
                                                       <widget class="GtkAlignment" id="alignment83">
                                                         <property name="visible">True</property>
@@ -7311,6 +7404,7 @@ Please check and decide what to do.</property>
                                                   <widget class="GtkButton" id="cal_trl_s21in_but">
                                                     <property name="visible">True</property>
                                                     <property name="can_focus">True</property>
+                                                    <property name="response_id">0</property>
                                                     <child>
                                                       <widget class="GtkAlignment" id="alignment84">
                                                         <property name="visible">True</property>
@@ -7379,6 +7473,7 @@ Please check and decide what to do.</property>
                                                   <widget class="GtkButton" id="cal_trl_s22in_but">
                                                     <property name="visible">True</property>
                                                     <property name="can_focus">True</property>
+                                                    <property name="response_id">0</property>
                                                     <child>
                                                       <widget class="GtkAlignment" id="alignment85">
                                                         <property name="visible">True</property>
@@ -7486,6 +7581,7 @@ Please check and decide what to do.</property>
                                                   <widget class="GtkButton" id="cal_trl_s11out_but">
                                                     <property name="visible">True</property>
                                                     <property name="can_focus">True</property>
+                                                    <property name="response_id">0</property>
                                                     <child>
                                                       <widget class="GtkAlignment" id="alignment87">
                                                         <property name="visible">True</property>
@@ -7564,6 +7660,7 @@ Please check and decide what to do.</property>
                                                   <widget class="GtkButton" id="cal_trl_s12out_but">
                                                     <property name="visible">True</property>
                                                     <property name="can_focus">True</property>
+                                                    <property name="response_id">0</property>
                                                     <child>
                                                       <widget class="GtkAlignment" id="alignment88">
                                                         <property name="visible">True</property>
@@ -7658,6 +7755,7 @@ Please check and decide what to do.</property>
                                                   <widget class="GtkButton" id="cal_trl_s21out_but">
                                                     <property name="visible">True</property>
                                                     <property name="can_focus">True</property>
+                                                    <property name="response_id">0</property>
                                                     <child>
                                                       <widget class="GtkAlignment" id="alignment89">
                                                         <property name="visible">True</property>
@@ -7726,6 +7824,7 @@ Please check and decide what to do.</property>
                                                   <widget class="GtkButton" id="cal_trl_s22out_but">
                                                     <property name="visible">True</property>
                                                     <property name="can_focus">True</property>
+                                                    <property name="response_id">0</property>
                                                     <child>
                                                       <widget class="GtkAlignment" id="alignment90">
                                                         <property name="visible">True</property>
@@ -7835,6 +7934,7 @@ Please check and decide what to do.</property>
                                                   <widget class="GtkButton" id="cal_trl_s11thru_but">
                                                     <property name="visible">True</property>
                                                     <property name="can_focus">True</property>
+                                                    <property name="response_id">0</property>
                                                     <child>
                                                       <widget class="GtkAlignment" id="alignment92">
                                                         <property name="visible">True</property>
@@ -7913,6 +8013,7 @@ Please check and decide what to do.</property>
                                                   <widget class="GtkButton" id="cal_trl_s12thru_but">
                                                     <property name="visible">True</property>
                                                     <property name="can_focus">True</property>
+                                                    <property name="response_id">0</property>
                                                     <child>
                                                       <widget class="GtkAlignment" id="alignment93">
                                                         <property name="visible">True</property>
@@ -8007,6 +8108,7 @@ Please check and decide what to do.</property>
                                                   <widget class="GtkButton" id="cal_trl_s21thru_but">
                                                     <property name="visible">True</property>
                                                     <property name="can_focus">True</property>
+                                                    <property name="response_id">0</property>
                                                     <child>
                                                       <widget class="GtkAlignment" id="alignment94">
                                                         <property name="visible">True</property>
@@ -8075,6 +8177,7 @@ Please check and decide what to do.</property>
                                                   <widget class="GtkButton" id="cal_trl_s22thru_but">
                                                     <property name="visible">True</property>
                                                     <property name="can_focus">True</property>
+                                                    <property name="response_id">0</property>
                                                     <child>
                                                       <widget class="GtkAlignment" id="alignment95">
                                                         <property name="visible">True</property>
@@ -8169,6 +8272,7 @@ Please check and decide what to do.</property>
                                                   <widget class="GtkButton" id="cal_trl_a1thru_but">
                                                     <property name="visible">True</property>
                                                     <property name="can_focus">True</property>
+                                                    <property name="response_id">0</property>
                                                     <child>
                                                       <widget class="GtkAlignment" id="alignment96">
                                                         <property name="visible">True</property>
@@ -8237,6 +8341,7 @@ Please check and decide what to do.</property>
                                                   <widget class="GtkButton" id="cal_trl_a2thru_but">
                                                     <property name="visible">True</property>
                                                     <property name="can_focus">True</property>
+                                                    <property name="response_id">0</property>
                                                     <child>
                                                       <widget class="GtkAlignment" id="alignment97">
                                                         <property name="visible">True</property>
@@ -8346,6 +8451,7 @@ Please check and decide what to do.</property>
                                                   <widget class="GtkButton" id="cal_trl_s11refl_but">
                                                     <property name="visible">True</property>
                                                     <property name="can_focus">True</property>
+                                                    <property name="response_id">0</property>
                                                     <child>
                                                       <widget class="GtkAlignment" id="alignment99">
                                                         <property name="visible">True</property>
@@ -8424,6 +8530,7 @@ Please check and decide what to do.</property>
                                                   <widget class="GtkButton" id="cal_trl_s22refl_but">
                                                     <property name="visible">True</property>
                                                     <property name="can_focus">True</property>
+                                                    <property name="response_id">0</property>
                                                     <child>
                                                       <widget class="GtkAlignment" id="alignment100">
                                                         <property name="visible">True</property>
@@ -8533,6 +8640,7 @@ Please check and decide what to do.</property>
                                                   <widget class="GtkButton" id="cal_trl_s11line_but">
                                                     <property name="visible">True</property>
                                                     <property name="can_focus">True</property>
+                                                    <property name="response_id">0</property>
                                                     <child>
                                                       <widget class="GtkAlignment" id="alignment102">
                                                         <property name="visible">True</property>
@@ -8611,6 +8719,7 @@ Please check and decide what to do.</property>
                                                   <widget class="GtkButton" id="cal_trl_s12line_but">
                                                     <property name="visible">True</property>
                                                     <property name="can_focus">True</property>
+                                                    <property name="response_id">0</property>
                                                     <child>
                                                       <widget class="GtkAlignment" id="alignment103">
                                                         <property name="visible">True</property>
@@ -8705,6 +8814,7 @@ Please check and decide what to do.</property>
                                                   <widget class="GtkButton" id="cal_trl_s21line_but">
                                                     <property name="visible">True</property>
                                                     <property name="can_focus">True</property>
+                                                    <property name="response_id">0</property>
                                                     <child>
                                                       <widget class="GtkAlignment" id="alignment104">
                                                         <property name="visible">True</property>
@@ -8773,6 +8883,7 @@ Please check and decide what to do.</property>
                                                   <widget class="GtkButton" id="cal_trl_s22line_but">
                                                     <property name="visible">True</property>
                                                     <property name="can_focus">True</property>
+                                                    <property name="response_id">0</property>
                                                     <child>
                                                       <widget class="GtkAlignment" id="alignment105">
                                                         <property name="visible">True</property>
@@ -8867,6 +8978,7 @@ Please check and decide what to do.</property>
                                                   <widget class="GtkButton" id="cal_trl_a1line_but">
                                                     <property name="visible">True</property>
                                                     <property name="can_focus">True</property>
+                                                    <property name="response_id">0</property>
                                                     <child>
                                                       <widget class="GtkAlignment" id="alignment106">
                                                         <property name="visible">True</property>
@@ -8935,6 +9047,7 @@ Please check and decide what to do.</property>
                                                   <widget class="GtkButton" id="cal_trl_a2line_but">
                                                     <property name="visible">True</property>
                                                     <property name="can_focus">True</property>
+                                                    <property name="response_id">0</property>
                                                     <child>
                                                       <widget class="GtkAlignment" id="alignment107">
                                                         <property name="visible">True</property>
@@ -9081,6 +9194,7 @@ Please check and decide what to do.</property>
                             <property name="can_focus">True</property>
                             <property name="label" translatable="yes">Offline</property>
                             <property name="use_underline">True</property>
+                            <property name="response_id">0</property>
                             <property name="active">True</property>
                             <property name="draw_indicator">True</property>
                             <signal name="toggled" handler="cal_method_toggled"/>
@@ -9129,6 +9243,7 @@ Please check and decide what to do.</property>
                             <property name="can_focus">True</property>
                             <property name="label" translatable="yes">Online</property>
                             <property name="use_underline">True</property>
+                            <property name="response_id">0</property>
                             <property name="draw_indicator">True</property>
                             <property name="group">cal_offline_radio</property>
                           </widget>
@@ -9334,6 +9449,7 @@ Please check and decide what to do.</property>
                             <property name="can_focus">True</property>
                             <property name="label" translatable="yes">Add new fourier components by click on graph</property>
                             <property name="use_underline">True</property>
+                            <property name="response_id">0</property>
                             <property name="active">True</property>
                             <property name="draw_indicator">True</property>
                           </widget>
@@ -9360,6 +9476,7 @@ Please check and decide what to do.</property>
               </widget>
               <packing>
                 <property name="resize">False</property>
+                <property name="shrink">True</property>
               </packing>
             </child>
             <child>
@@ -9403,6 +9520,10 @@ Please check and decide what to do.</property>
                   </packing>
                 </child>
               </widget>
+              <packing>
+                <property name="resize">True</property>
+                <property name="shrink">True</property>
+              </packing>
             </child>
           </widget>
         </child>
@@ -9427,6 +9548,7 @@ Please check and decide what to do.</property>
                 <property name="can_default">True</property>
                 <property name="label">gtk-close</property>
                 <property name="use_stock">True</property>
+                <property name="response_id">0</property>
                 <signal name="clicked" handler="fcomp_win_close"/>
               </widget>
             </child>
@@ -9782,6 +9904,7 @@ Please check and decide what to do.</property>
               </widget>
               <packing>
                 <property name="resize">False</property>
+                <property name="shrink">True</property>
               </packing>
             </child>
             <child>
@@ -9803,6 +9926,7 @@ Please check and decide what to do.</property>
                   </widget>
                   <packing>
                     <property name="resize">False</property>
+                    <property name="shrink">True</property>
                   </packing>
                 </child>
                 <child>
@@ -9860,8 +9984,16 @@ Please check and decide what to do.</property>
                       </packing>
                     </child>
                   </widget>
+                  <packing>
+                    <property name="resize">True</property>
+                    <property name="shrink">True</property>
+                  </packing>
                 </child>
               </widget>
+              <packing>
+                <property name="resize">True</property>
+                <property name="shrink">True</property>
+              </packing>
             </child>
           </widget>
           <packing>
@@ -10544,6 +10676,7 @@ Please check and decide what to do.</property>
                     <property name="can_focus">True</property>
                     <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
                     <property name="label" translatable="yes">S11</property>
+                    <property name="response_id">0</property>
                     <property name="draw_indicator">True</property>
                   </widget>
                 </child>
@@ -10553,6 +10686,7 @@ Please check and decide what to do.</property>
                     <property name="can_focus">True</property>
                     <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
                     <property name="label" translatable="yes">S12</property>
+                    <property name="response_id">0</property>
                     <property name="active">True</property>
                     <property name="draw_indicator">True</property>
                     <property name="group">sparam_s11_radio</property>
@@ -10568,6 +10702,7 @@ Please check and decide what to do.</property>
                     <property name="can_focus">True</property>
                     <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
                     <property name="label" translatable="yes">S21</property>
+                    <property name="response_id">0</property>
                     <property name="draw_indicator">True</property>
                     <property name="group">sparam_s11_radio</property>
                   </widget>
@@ -10582,6 +10717,7 @@ Please check and decide what to do.</property>
                     <property name="can_focus">True</property>
                     <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
                     <property name="label" translatable="yes">S22</property>
+                    <property name="response_id">0</property>
                     <property name="draw_indicator">True</property>
                     <property name="group">sparam_s11_radio</property>
                   </widget>

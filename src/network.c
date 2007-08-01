@@ -88,6 +88,7 @@ static void network_struct_to_gui ()
 	NetworkWin *netwin;
 	GtkEntry *entry;
 	gchar *text;
+	gint index;
 
 	g_return_if_fail (glob->netwin);
 	netwin = glob->netwin;
@@ -172,27 +173,38 @@ static void network_struct_to_gui ()
 
 	if (netwin->param[0] != '\0')
 	{
-		entry = GTK_ENTRY (glade_xml_get_widget (netwin->xmlnet, "vna_s_entry"));
-		gtk_entry_set_text (entry, netwin->param);
+		if (!strcmp (netwin->param, "S11")) index = 0;
+		if (!strcmp (netwin->param, "S12")) index = 1;
+		if (!strcmp (netwin->param, "S21")) index = 2;
+		if (!strcmp (netwin->param, "S22")) index = 3;
+		if (!strcmp (netwin->param, "S"))   index = 4;
+		if (!strcmp (netwin->param, "TRL")) index = 5;
+		gtk_combo_box_set_active (
+			GTK_COMBO_BOX (glade_xml_get_widget (netwin->xmlnet, "vna_s_combo")),
+			index);
 	}
 
 	if (netwin->avg > 0)
 	{
-		entry = GTK_ENTRY (glade_xml_get_widget (netwin->xmlnet, "vna_avg_entry"));
-		text = g_strdup_printf ("%ix", netwin->avg);
-		gtk_entry_set_text (entry, text);
-		g_free (text);
+		index = abs (log (netwin->avg) / log (2.0) + 0.1);
+		gtk_combo_box_set_active (
+			GTK_COMBO_BOX (glade_xml_get_widget (netwin->xmlnet, "vna_avg_combo")),
+			index);
 	}
 
 	if (netwin->swpmode == 1)
 	{
-		entry = GTK_ENTRY (glade_xml_get_widget (netwin->xmlnet, "vna_stim_entry"));
-		gtk_entry_set_text (entry, "ramp mode");
+		/* ramp mode */
+		gtk_combo_box_set_active (
+			GTK_COMBO_BOX (glade_xml_get_widget (netwin->xmlnet, "vna_stim_combo")),
+			0);
 	}
 	else
 	{
-		entry = GTK_ENTRY (glade_xml_get_widget (netwin->xmlnet, "vna_stim_entry"));
-		gtk_entry_set_text (entry, "step mode");
+		/* step mode */
+		gtk_combo_box_set_active (
+			GTK_COMBO_BOX (glade_xml_get_widget (netwin->xmlnet, "vna_stim_combo")),
+			1);
 	}
 }
 
@@ -200,6 +212,7 @@ static void network_struct_to_gui ()
 static int network_gui_to_struct ()
 {
 	NetworkWin *netwin;
+	GtkTreeIter iter;
 	GtkEntry *entry;
 	const gchar *text;
 	gdouble val;
@@ -312,8 +325,10 @@ static int network_gui_to_struct ()
 	}
 	netwin->resol = val;
 
-	entry = GTK_ENTRY (glade_xml_get_widget (netwin->xmlnet, "vna_s_entry"));
-	text = gtk_entry_get_text (entry);
+	gtk_combo_box_get_active_iter (GTK_COMBO_BOX (glade_xml_get_widget (netwin->xmlnet, "vna_s_combo")), &iter);
+	gtk_tree_model_get (
+			GTK_TREE_MODEL (gtk_combo_box_get_model (GTK_COMBO_BOX (glade_xml_get_widget (netwin->xmlnet, "vna_s_combo")))),
+			&iter, 0, &text, -1);
 	snprintf (netwin->param, 4, "%s", text);
 
 	if ( ((strlen (netwin->param) == 1) || !(strcmp (netwin->param, "TRL"))) 
@@ -323,16 +338,12 @@ static int network_gui_to_struct ()
 		return 1;
 	}
 	
-	entry = GTK_ENTRY (glade_xml_get_widget (netwin->xmlnet, "vna_avg_entry"));
-	text = gtk_entry_get_text (entry);
-	sscanf (text, "%ix", &netwin->avg);
+	netwin->avg = 1 << gtk_combo_box_get_active (
+			GTK_COMBO_BOX (glade_xml_get_widget (netwin->xmlnet, "vna_avg_combo")));
 
-	entry = GTK_ENTRY (glade_xml_get_widget (netwin->xmlnet, "vna_stim_entry"));
-	text = gtk_entry_get_text (entry);
-	if (text[0] == 'r')	/* _r_amp mode */
-		netwin->swpmode = 1;
-	else
-		netwin->swpmode = 2;
+	/* ramp mode -> 1; step mode -> 2 */
+	netwin->swpmode = 1 + gtk_combo_box_get_active (
+			GTK_COMBO_BOX (glade_xml_get_widget (netwin->xmlnet, "vna_stim_combo")));
 
 	return 0;
 }
@@ -341,7 +352,6 @@ static int network_gui_to_struct ()
 void network_open_win ()
 {
 	GladeXML *xmlnet;
-	GList *items = NULL;
 
 	if (glob->netwin == NULL)
 	{
@@ -386,60 +396,19 @@ void network_open_win ()
 			"100");
 
 		/* Set up S-Parameter combo */
-		items = g_list_append (items, "S12");
-		items = g_list_append (items, "S21");
-		items = g_list_append (items, "S11");
-		items = g_list_append (items, "S22");
-		items = g_list_append (items, "S");
-		items = g_list_append (items, "TRL");
-		gtk_combo_set_popdown_strings (
-			GTK_COMBO (glade_xml_get_widget (xmlnet, "vna_s_combo")),
-			items);
-		g_list_free (items);
-		gtk_entry_set_text (
-			GTK_ENTRY (glade_xml_get_widget (xmlnet, "vna_s_entry")),
-			"S12");
-		gtk_entry_set_editable (
-			GTK_ENTRY (glade_xml_get_widget (xmlnet, "vna_s_entry")),
-			FALSE);
-		items = NULL;
+		gtk_combo_box_set_active (
+			GTK_COMBO_BOX (glade_xml_get_widget (xmlnet, "vna_s_combo")),
+			1);
 
 		/* Set up averaging combo */
-		items = g_list_append (items, "1x");
-		items = g_list_append (items, "2x");
-		items = g_list_append (items, "4x");
-		items = g_list_append (items, "8x");
-		items = g_list_append (items, "16x");
-		items = g_list_append (items, "32x");
-		items = g_list_append (items, "64x");
-		items = g_list_append (items, "128x");
-		items = g_list_append (items, "256x");
-		gtk_combo_set_popdown_strings (
-			GTK_COMBO (glade_xml_get_widget (xmlnet, "vna_avg_combo")),
-			items);
-		g_list_free (items);
-		gtk_entry_set_text (
-			GTK_ENTRY (glade_xml_get_widget (xmlnet, "vna_avg_entry")),
-			"4x");
-		gtk_entry_set_editable (
-			GTK_ENTRY (glade_xml_get_widget (xmlnet, "vna_avg_entry")),
-			FALSE);
-		items = NULL;
+		gtk_combo_box_set_active (
+			GTK_COMBO_BOX (glade_xml_get_widget (xmlnet, "vna_avg_combo")),
+			2);
 
 		/* Set up stimulus combo */
-		items = g_list_append (items, "ramp mode");
-		items = g_list_append (items, "step mode");
-		gtk_combo_set_popdown_strings (
-			GTK_COMBO (glade_xml_get_widget (xmlnet, "vna_stim_combo")),
-			items);
-		g_list_free (items);
-		gtk_entry_set_text (
-			GTK_ENTRY (glade_xml_get_widget (xmlnet, "vna_stim_entry")),
-			"ramp mode");
-		gtk_entry_set_editable (
-			GTK_ENTRY (glade_xml_get_widget (xmlnet, "vna_stim_entry")),
-			FALSE);
-		items = NULL;
+		gtk_combo_box_set_active (
+			GTK_COMBO_BOX (glade_xml_get_widget (xmlnet, "vna_stim_combo")),
+			0);
 		
 		/* Update the GUI with remembered values */
 		network_struct_to_gui ();
