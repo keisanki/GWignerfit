@@ -1370,7 +1370,7 @@ static void vna_take_snapshot ()
 		if (glob->netwin->comment)
 			gzprintf (gzoutfh, "%c Comment            : %s\r\n", comment_char, glob->netwin->comment);
 		if (glob->netwin->format == 2)
-			fprintf (outfh, "# Hz S  RI   R 50\r\n");
+			gzprintf (gzoutfh, "# Hz S  RI   R 50\r\n");
 		gzprintf (gzoutfh, DATAHDR, comment_char, comment_char);
 		for (i=0; i<points; i++)
 			gzprintf (gzoutfh, DATAFRMT, frq[i], data[i].re, data[i].im);
@@ -1489,7 +1489,7 @@ static gboolean vna_write_header (gint pos, gchar *sparam, NetworkWin *netwin)
 		if (netwin->comment)
 			gzprintf (netwin->gzoutfh[pos], "%c Comment            : %s\r\n", comment_char, netwin->comment);
 		if (glob->netwin->format == 2)
-			fprintf (outfh, "# Hz S  RI   R 50\r\n");
+			gzprintf (netwin->gzoutfh[pos], "# Hz S  RI   R 50\r\n");
 		if ((glob->netwin->format == 1) || (strlen (sparam) > 1))
 			gzprintf (netwin->gzoutfh[pos], DATAHDR, comment_char, comment_char);
 		else
