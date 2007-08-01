@@ -4,7 +4,7 @@
 <!--  "http://www.oasis-open.org/docbook/xml/4.4/docbookx.dtd" [ -->
 <!--"/usr/share/sgml/docbook/xml-dtd-4.4-1.0-26/docbookx.dtd" [ -->
 	<!ENTITY legal SYSTEM "legal.xml">
-	<!ENTITY appversion "2007-04-28">
+	<!ENTITY appversion "2007-08-01">
 	<!ENTITY manrevision "1.0">
 	<!ENTITY date "August 2005">
 	<!ENTITY app "<application>GWignerFit</application>">
@@ -109,8 +109,8 @@
 	<itemizedlist>
 		<listitem>
 			<para>Versatile methods of data visualization. &app; can read industy
-				standard <filename>S1P</filename> and <filename>S2P</filename> spectrum
-				datafiles as well its own datafile format.</para>
+				standard Touchstone&reg; spectrum datafiles as well its own datafile
+				format.</para>
 		</listitem>
 		<listitem>
 			<para>Support for transmission and reflection spectra.</para>
@@ -715,10 +715,13 @@
 
 		<sect3 id="gwf-datafile-format">
 			<title>Datafile Format</title>
-			<para>&app; expects all datafiles to abide by the
-				<filename>S1P</filename> or <filename>S2P</filename> industry standard
-				or to follow the following rules (which are similar to a special
-				variant of the <filename>S1P</filename> standard):</para>
+			<para>&app; expects all datafiles to abide by the Touchstone&reg;
+				industry standard (as defined in <ulink
+				url="http://www.vhdl.org/pub/ibis/connector/touchstone_spec11.pdf">Rev
+				1.1</ulink>, filename suffixes <filename>.s1p</filename> or
+			  <filename>.s2p</filename>) or to follow the following rules (which are
+				similar to a special variant of the <filename>S1P</filename>
+				standard):</para>
 			<itemizedlist>
 				<listitem>
 					<para>All lines containing actual data must consist of three floating
@@ -3701,16 +3704,21 @@
 						mandatory, the name should have the suffix
 						<filename>.dat</filename>. You can use the <guibutton>Select
 						file</guibutton> button to select a path and/or filename through a
-						file chooser dialog. If you want to measure all four S-matrix
-						elements in one run you have to include the two characters "%%"
-						somewhere in the filename, &app; will later replace this wild-card
-						by the appropriate S-matrix element number, i.e. 11, 12, 21 or 22.
-						The created datafile(s) can be compressed to save disk space. This
-						is enabled through the <guilabel>Compress output file</guilabel>
-						checkbox. Compressed files will get an additional suffix,
-						<filename>.gz</filename>, which you must not append to the filename
-						yourself. See <xref linkend="gwf-import" /> for more information on
-						compressed datafiles.
+						file chooser dialog. The created datafile(s) can be compressed to
+						save disk space. This is enabled through the <guilabel>Compress
+						output file</guilabel> checkbox. Compressed files will get an
+						additional suffix, <filename>.gz</filename>, which you must not
+						append to the filename yourself. See <xref linkend="gwf-import" />
+						for more information on compressed datafiles.
+					</para>
+					<para>The created datafile can either follow the <guilabel>DAT
+						format</guilabel> native to &app; or it can abide by the
+						Touchstone&reg; standard (<guilabel>SNP format</guilabel>).
+						If you want to measure all four S-matrix elements in one run and
+						use the <guilabel>DAT format</guilabel> you have to include the two
+						characters "%%" somewhere in the filename, &app; will later replace
+						this wild-card by the appropriate S-matrix element number, i.e. 11,
+						12, 21 or 22.
 					</para>
 					<para>The generated datafile will contain a header with the most
 						important information of the measurement parameters (like date of
@@ -3772,15 +3780,16 @@
 						measure, in addition to the four S-parameters, two user-defined
 						parameters and save the resulting spectra as additional files with
 						<emphasis>a1</emphasis> and <emphasis>a2</emphasis> instead of the
-						wild-card characters. The given <guilabel>Averaging</guilabel>
-						value increases the signal-to-noise ratio but a measurement will
-						take longer, too. Finally, there is the
-						<guilabel>Stimulus</guilabel> entry. It can either be "ramp mode"
-						or "step mode", this refers to the two major frequency generation
-						methods of the VNA. Please refer the manual of your VNA for further
-						information on those modes. A rule of thumb may be that the ramp
-						mode allows for quicker measurements whereas the step mode measures
-						with a higher frequency precision.
+						wild-card characters. TRL data can only be stored using the
+						<guilabel>DAT format</guilabel>. The given
+						<guilabel>Averaging</guilabel> value increases the signal-to-noise
+						ratio but a measurement will take longer, too. Finally, there is
+						the <guilabel>Stimulus</guilabel> entry. It can either be "ramp
+						mode" or "step mode", this refers to the two major frequency
+						generation methods of the VNA. Please refer the manual of your VNA
+						for further information on those modes. A rule of thumb may be that
+						the ramp mode allows for quicker measurements whereas the step mode
+						measures with a higher frequency precision.
 					</para>
 				</listitem>
 			</varlistentry>
