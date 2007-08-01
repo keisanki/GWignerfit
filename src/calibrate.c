@@ -621,7 +621,7 @@ static gboolean cal_do_full_calibration (CalWin *calwin)
 		fprintf (fh, "# Calibration standard files:\r\n");
 		for (i=4; i<inlength; i++)
 			fprintf (fh, "#    %2d: %s\r\n", i-3, calwin->full_filenames[i+inoffset]);
-		fprintf (fh, DATAHDR);
+		fprintf (fh, DATAHDR, '#', '#');
 		fclose (fh);
 	}
 	
@@ -861,7 +861,7 @@ static gboolean cal_do_calibration ()
 		fprintf (fh, "# Short standard data file: %s\r\n", b->file);
 		fprintf (fh, "# Load standard data file : %s\r\n", c->file);
 	}
-	fprintf (fh, DATAHDR);
+	fprintf (fh, DATAHDR, '#', '#');
 	for (i=0; i<out->len; i++)
 		fprintf (fh, DATAFRMT, out->x[i], out->y[i].re, out->y[i].im);
 	fclose (fh);

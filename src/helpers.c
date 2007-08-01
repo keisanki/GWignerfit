@@ -212,7 +212,7 @@ void free_datavector (DataVector *vec)
 	if ((!vec) || (!vec->x))
 		return;
 
-	if (glob->overlaystore)
+	if (glob->overlaystore && glob->overlayspectra)
 		for (i=0; i<glob->overlayspectra->len; i++)
 		{
 			testvec = (DataVector *) g_ptr_array_index (glob->overlayspectra, i);

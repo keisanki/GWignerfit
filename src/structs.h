@@ -33,8 +33,11 @@
 
 #define NUM_GLOB_PARAM 3	/* Number of global fit parameters */
 
-#define DATAHDR  "#\r\n# f [Hz]\t Re(S)\t\t Im(S)\r\n"	/* Output data header */
-#define DATAFRMT "%13.1f\t% 11.8f\t% 11.8f\r\n"		/* Format for output data */
+#define DATAHDR  "%c\r\n%c f [Hz]\t Re(S)\t\t Im(S)\r\n"	/* Output data header */
+#define DATAFRMT "%13.1f\t% 11.8f\t% 11.8f\r\n"			/* Format for output data (dat or s1p) */
+
+#define DATAHSNP "!\r\n! f [Hz]\t Re(S11)\t Im(S11)\t Re(S21)\t Im(S21)\t Re(S12)\t Im(S12)\t Re(S22)\t Im(S22)\r\n"	/* Output data header */
+#define DATAFSNP "%13.1f\t% 11.8f\t% 11.8f\t% 11.8f\t% 11.8f\t% 11.8f\t% 11.8f\t% 11.8f\t% 11.8f\r\n"			/* Format for output data (s2p) */
 
 #ifndef GLADEFILE
 #define GLADEFILE "../gwignerfit.glade"
@@ -149,6 +152,7 @@ typedef struct
 	gchar *file;			/* Filename for output file */
 	gchar *fullname[6];		/* The full name of the output file(s) */
 	gchar *comment;			/* An optional comment for the datafile header */
+	gint format;			/* File format: 1=dat; 2=snp */
 	gboolean compress;		/* Compress the output file? */
 	gchar type;			/* 1=sweep mode; 2=snapshot mode */
 	gdouble start;			/* Start frequency for sweep in Hz */
