@@ -77,7 +77,7 @@ gchar* ls_select_section (GList *sections, gchar *default_section)
 	GtkWidget *combo, *vbox;
 	GladeXML *xml;
 	gchar *section = NULL;
-	gint result;
+	gint index, result;
 	GList *sectionsstart;
 
 	g_return_val_if_fail (sections, NULL);
@@ -96,8 +96,9 @@ gchar* ls_select_section (GList *sections, gchar *default_section)
 	vbox = glade_xml_get_widget (xml, "sections_vbox");
 	gtk_box_pack_end (GTK_BOX (vbox), combo, FALSE, FALSE, 0);
 	gtk_widget_show (combo);
-#if 0
+
 	/* Select current section if found */
+	index = 0;
 	if (default_section)
 	{
 		while (sections)
@@ -105,14 +106,14 @@ gchar* ls_select_section (GList *sections, gchar *default_section)
 			if (!strcmp ((gchar *) sections->data, default_section))
 				break;
 			sections = g_list_next (sections);
+			index++;
 		}
 		
-		if (sections && (!strcmp ((gchar *) sections->data, default_section)))
-			gtk_entry_set_text (
-				GTK_ENTRY (glade_xml_get_widget(xml, "section_combo_entry")), 
-				default_section);
+		if (!(sections && (!strcmp ((gchar *) sections->data, default_section))))
+			index = 0;
 	}
-#endif
+	gtk_combo_box_set_active (GTK_COMBO_BOX (combo), index);
+
 	/* Run dialog */
 	result = gtk_dialog_run (GTK_DIALOG (glade_xml_get_widget (xml, "section_dialog")));
 
