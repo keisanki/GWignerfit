@@ -366,7 +366,7 @@ gint s2p_sparam_choose ()
 /* Tries very hard to retrieve spectrum data from a given filename */
 DataVector *import_datafile (gchar *filename, gboolean interactive)
 {
-	gchar dataline[200], *basename;
+	gchar dataline[256], *basename;
 	DataVector *data, *testvec;
 #ifdef NO_ZLIB
 	FILE *datafile;
@@ -437,7 +437,7 @@ DataVector *import_datafile (gchar *filename, gboolean interactive)
 	else if (datafile == NULL)
 	{
 		/* Perhaps the user (un)compressed the file */
-		if (g_str_has_suffix (filename, ".dat") || g_str_has_suffix (filename, ".s1p"))
+		if (g_str_has_suffix (filename, ".dat") || g_str_has_suffix (filename, ".s1p") || g_str_has_suffix (filename, ".s2p"))
 			/* Try with suffix .gz */
 			tmpname = g_strdup_printf ("%s.gz", filename);
 		else if (g_str_has_suffix (filename, ".gz"))
@@ -471,11 +471,11 @@ DataVector *import_datafile (gchar *filename, gboolean interactive)
 	numpoints = 0;
 #ifdef NO_ZLIB
 	while (!feof (datafile)) {
-		if (!(fgets (dataline, 199, datafile)))
+		if (!(fgets (dataline, 255, datafile)))
 			continue;
 #else
 	while (!gzeof (datafile)) {
-		if (!(gzgets (datafile, dataline, 199)))
+		if (!(gzgets (datafile, dataline, 255)))
 			continue;
 #endif
 
@@ -574,11 +574,11 @@ DataVector *import_datafile (gchar *filename, gboolean interactive)
 	numpoints = 0;
 #ifdef NO_ZLIB
 	while (!feof (datafile)) {
-		if (!(fgets (dataline, 199, datafile)))
+		if (!(fgets (dataline, 255, datafile)))
 			continue;
 #else
 	while (!gzeof (datafile)) {
-		if (!(gzgets (datafile, dataline, 199)))
+		if (!(gzgets (datafile, dataline, 255)))
 			continue;
 #endif
 
