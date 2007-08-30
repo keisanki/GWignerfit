@@ -20,7 +20,8 @@ Cmul	spectral_numeric.c	/^static fcomplex Cmul(fcomplex a, fcomplex b)$/;"	f	fil
 Complex	spectral_numeric.c	/^static fcomplex Complex(float re, float im)$/;"	f	file:
 ComplexWigner	numeric.c	/^ComplexDouble ComplexWigner (double x, double a[], int ma) {$/;"	f
 DV	dnd.c	28;"	d	file:
-DV	network.c	46;"	d	file:
+DV	vna_n5230a.c	13;"	d	file:
+DV	vna_proxy.c	13;"	d	file:
 DeriveComplexWigner	numeric.c	/^void DeriveComplexWigner (double x, double a[], ComplexDouble *yfit, ComplexDouble dyda[], int ma) {$/;"	f
 EPS	spectral_numeric.c	132;"	d	file:
 EPS	spectral_numeric.c	167;"	d	file:
@@ -130,21 +131,6 @@ TRUE	spectral_numeric.c	138;"	d	file:
 TRUE	spectral_numeric.c	68;"	d	file:
 VALUE_SELECTED	gtkspectvis.c	/^	VALUE_SELECTED,$/;"	e	enum:__anon3	file:
 VIEWPORT_CHANGED	gtkspectvis.c	/^	VIEWPORT_CHANGED,$/;"	e	enum:__anon3	file:
-VNA_CONN_TOUT	network.c	36;"	d	file:
-VNA_ENOLISTE	network.c	40;"	d	file:
-VNA_EQUOTEDS	network.c	41;"	d	file:
-VNA_ESUCCEOI	network.c	44;"	d	file:
-VNA_ESUCCESS	network.c	38;"	d	file:
-VNA_ESYNTAXE	network.c	39;"	d	file:
-VNA_ETIMEOUT	network.c	42;"	d	file:
-VNA_EUNKNOWN	network.c	43;"	d	file:
-VNA_GBIP	network.c	31;"	d	file:
-VNA_GBIP_INT	network.c	32;"	d	file:
-VNA_GREET_LEN	network.c	33;"	d	file:
-VNA_PORT	network.c	30;"	d	file:
-VNA_RARR_LEN	network.c	35;"	d	file:
-VNA_RECV_TOUT	network.c	37;"	d	file:
-VNA_STAT_LEN	network.c	34;"	d	file:
 WID_COL	export.c	/^	FRQ_COL, WID_COL, AMP_COL, PHAS_COL,$/;"	e	enum:__anon5	file:
 WID_COL	resonancelist.c	/^	FRQ_COL, WID_COL, AMP_COL, PHAS_COL,$/;"	e	enum:__anon1	file:
 __USE_XOPEN	helpers.c	13;"	d	file:
@@ -596,6 +582,7 @@ on_undo_last_fit_activate	callbacks.c	/^void on_undo_last_fit_activate (GtkMenuI
 on_view_difference_activate	callbacks.c	/^gboolean on_view_difference_activate (GtkMenuItem *menuitem, gpointer user_data)$/;"	f
 on_view_theory_activate	callbacks.c	/^gboolean on_view_theory_activate (GtkMenuItem *menuitem, gpointer user_data)$/;"	f
 on_vna_close_activate	network.c	/^void on_vna_close_activate (GtkMenuItem *menuitem, gpointer user_data)$/;"	f
+on_vna_model_change	network.c	/^void on_vna_model_change (GtkToggleButton *toggle, gpointer user_data)$/;"	f
 on_vna_select_activate	network.c	/^void on_vna_select_activate (GtkButton *button, gpointer user_data)$/;"	f
 on_vna_start_activate	network.c	/^void on_vna_start_activate (GtkMenuItem *menuitem, gpointer user_data)$/;"	f
 on_vna_sweep_mode_change	network.c	/^void on_vna_sweep_mode_change (GtkToggleButton *toggle, gpointer user_data)$/;"	f
@@ -723,24 +710,61 @@ visualize_update_res_bar	visualize.c	/^void visualize_update_res_bar (gboolean r
 visualize_zoom_to_frequency_range	visualize.c	/^void visualize_zoom_to_frequency_range (gdouble min, gdouble max)$/;"	f
 vna_add_data_to_graph	network.c	/^static gboolean vna_add_data_to_graph (NetworkGraphUpdateData *data)$/;"	f	file:
 vna_cal_measurement_finished	calibrate_vna.c	/^static gboolean vna_cal_measurement_finished (gpointer data)$/;"	f	file:
-vna_connect	network.c	/^int vna_connect (const gchar *host)$/;"	f
-vna_enter	network.c	/^void vna_enter (int sockfd, char *buf, int len, int addr, int errmask)$/;"	f
+vna_connect_backend	network.c	/^void vna_connect_backend (VnaBackend *vna_func)$/;"	f
 vna_measurement_finished	network.c	/^static gboolean vna_measurement_finished (gpointer data)$/;"	f	file:
-vna_ms_sleep	network.c	/^static void vna_ms_sleep (glong ms)$/;"	f	file:
-vna_receiveall	network.c	/^int vna_receiveall (int s, char *buf, int len)$/;"	f
-vna_receiveall_full	network.c	/^static int vna_receiveall_full (int s, char *buf, int len, int failok)$/;"	f	file:
-vna_recv_data	network.c	/^ComplexDouble *vna_recv_data (int sockfd, int points)$/;"	f
-vna_send_cmd	network.c	/^int vna_send_cmd (int fd, char *msg, int errmask)$/;"	f
-vna_sendall	network.c	/^int vna_sendall (int s, char *buf, int len)$/;"	f
+vna_ms_sleep	network.c	/^void vna_ms_sleep (glong ms)$/;"	f
+vna_n5230a_connect	vna_n5230a.c	/^int vna_n5230a_connect (const gchar *host)$/;"	f
+vna_n5230a_get_capa	vna_n5230a.c	/^gdouble vna_n5230a_get_capa (gint type)$/;"	f
+vna_n5230a_get_points	vna_n5230a.c	/^gint vna_n5230a_get_points ()$/;"	f
+vna_n5230a_get_reply	vna_n5230a.c	/^int vna_n5230a_get_reply (int s, char *buf, int maxlen)$/;"	f
+vna_n5230a_get_start_frq	vna_n5230a.c	/^gdouble vna_n5230a_get_start_frq ()$/;"	f
+vna_n5230a_get_stop_frq	vna_n5230a.c	/^gdouble vna_n5230a_get_stop_frq ()$/;"	f
+vna_n5230a_gtl	vna_n5230a.c	/^void vna_n5230a_gtl ()$/;"	f
+vna_n5230a_llo	vna_n5230a.c	/^void vna_n5230a_llo ()$/;"	f
+vna_n5230a_receiveall	vna_n5230a.c	/^int vna_n5230a_receiveall (int s, char *buf, int len)$/;"	f
+vna_n5230a_receiveall_full	vna_n5230a.c	/^int vna_n5230a_receiveall_full (int s, char *buf, int len, int failok)$/;"	f
+vna_n5230a_recv_data	vna_n5230a.c	/^ComplexDouble *vna_n5230a_recv_data (int points)$/;"	f
+vna_n5230a_select_s	vna_n5230a.c	/^void vna_n5230a_select_s (gchar *sparam)$/;"	f
+vna_n5230a_select_trl	vna_n5230a.c	/^void vna_n5230a_select_trl (gint Si)$/;"	f
+vna_n5230a_send_cmd	vna_n5230a.c	/^int vna_n5230a_send_cmd (int fd, char *msg)$/;"	f
+vna_n5230a_sendall	vna_n5230a.c	/^int vna_n5230a_sendall (int s, char *buf, int len)$/;"	f
+vna_n5230a_set_numg	vna_n5230a.c	/^void vna_n5230a_set_numg (gint numg)$/;"	f
+vna_n5230a_set_startstop	vna_n5230a.c	/^void vna_n5230a_set_startstop (gdouble start, gdouble stop)$/;"	f
+vna_n5230a_sweep_cal_sleep	vna_n5230a.c	/^glong vna_n5230a_sweep_cal_sleep ()$/;"	f
+vna_n5230a_sweep_prepare	vna_n5230a.c	/^void vna_n5230a_sweep_prepare ()$/;"	f
+vna_n5230a_trace_fourparam	vna_n5230a.c	/^void vna_n5230a_trace_fourparam ()$/;"	f
+vna_n5230a_trace_scale_auto	vna_n5230a.c	/^void vna_n5230a_trace_scale_auto (gchar *sparam)$/;"	f
+vna_n5230a_wait	vna_n5230a.c	/^void vna_n5230a_wait ()$/;"	f
+vna_proxy_connect	vna_proxy.c	/^int vna_proxy_connect (const gchar *host)$/;"	f
+vna_proxy_enter	vna_proxy.c	/^void vna_proxy_enter (int sockfd, char *buf, int len, int addr, int errmask)$/;"	f
+vna_proxy_get_capa	vna_proxy.c	/^gdouble vna_proxy_get_capa (gint type)$/;"	f
+vna_proxy_get_points	vna_proxy.c	/^gint vna_proxy_get_points ()$/;"	f
+vna_proxy_get_start_frq	vna_proxy.c	/^gdouble vna_proxy_get_start_frq ()$/;"	f
+vna_proxy_get_stop_frq	vna_proxy.c	/^gdouble vna_proxy_get_stop_frq ()$/;"	f
+vna_proxy_gtl	vna_proxy.c	/^void vna_proxy_gtl ()$/;"	f
+vna_proxy_llo	vna_proxy.c	/^void vna_proxy_llo ()$/;"	f
+vna_proxy_receiveall	vna_proxy.c	/^int vna_proxy_receiveall (int s, char *buf, int len)$/;"	f
+vna_proxy_receiveall_full	vna_proxy.c	/^int vna_proxy_receiveall_full (int s, char *buf, int len, int failok)$/;"	f
+vna_proxy_recv_data	vna_proxy.c	/^ComplexDouble *vna_proxy_recv_data (int points)$/;"	f
+vna_proxy_select_s	vna_proxy.c	/^void vna_proxy_select_s (gchar *sparam)$/;"	f
+vna_proxy_select_trl	vna_proxy.c	/^void vna_proxy_select_trl (gint Si)$/;"	f
+vna_proxy_send_cmd	vna_proxy.c	/^int vna_proxy_send_cmd (int fd, char *msg, int errmask)$/;"	f
+vna_proxy_sendall	vna_proxy.c	/^int vna_proxy_sendall (int s, char *buf, int len)$/;"	f
+vna_proxy_set_numg	vna_proxy.c	/^void vna_proxy_set_numg (gint numg)$/;"	f
+vna_proxy_set_startstop	vna_proxy.c	/^void vna_proxy_set_startstop (gdouble start, gdouble stop)$/;"	f
+vna_proxy_spoll_wait	vna_proxy.c	/^void vna_proxy_spoll_wait (int sockfd, int status)$/;"	f
+vna_proxy_sweep_cal_sleep	vna_proxy.c	/^glong vna_proxy_sweep_cal_sleep ()$/;"	f
+vna_proxy_sweep_prepare	vna_proxy.c	/^void vna_proxy_sweep_prepare ()$/;"	f
+vna_proxy_trace_fourparam	vna_proxy.c	/^void vna_proxy_trace_fourparam ()$/;"	f
+vna_proxy_trace_scale_auto	vna_proxy.c	/^void vna_proxy_trace_scale_auto (gchar *sparam)$/;"	f
+vna_proxy_wait	vna_proxy.c	/^void vna_proxy_wait ()$/;"	f
 vna_set_netstat	network.c	/^static gboolean vna_set_netstat (gpointer data)$/;"	f	file:
 vna_show_time_estimates	network.c	/^static gboolean vna_show_time_estimates ()$/;"	f	file:
-vna_spoll_wait	network.c	/^void vna_spoll_wait (int sockfd, int status)$/;"	f
 vna_start	network.c	/^static void vna_start ()$/;"	f	file:
-vna_sweep_cal_sleep	network.c	/^static glong vna_sweep_cal_sleep ()$/;"	f	file:
 vna_sweep_frequency_range	network.c	/^static void vna_sweep_frequency_range ()$/;"	f	file:
 vna_take_snapshot	network.c	/^static void vna_take_snapshot ()$/;"	f	file:
-vna_thread_exit	network.c	/^static void vna_thread_exit (gchar *format, ...)$/;"	f	file:
-vna_update_netstat	network.c	/^static void vna_update_netstat (gchar *format, ...)$/;"	f	file:
+vna_thread_exit	network.c	/^void vna_thread_exit (gchar *format, ...)$/;"	f
+vna_update_netstat	network.c	/^void vna_update_netstat (gchar *format, ...)$/;"	f
 vna_write_header	network.c	/^static gboolean vna_write_header (gint pos, gchar *sparam, NetworkWin *netwin)$/;"	f	file:
 what_to_fit	resonancelist.c	/^void what_to_fit (gint *ia)$/;"	f
 widbut	export.c	/^	GtkToggleButton *idbut, *frqbut, *widbut, *ampbut, *phasbut, *qualbut, *stddevbut;$/;"	m	struct:__anon6	file:

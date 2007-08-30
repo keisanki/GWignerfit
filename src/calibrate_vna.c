@@ -12,6 +12,7 @@
 #include "structs.h"
 #include "helpers.h"
 #include "network.h"
+#include "vna_proxy.h"
 
 extern GlobalData *glob;
 extern GladeXML *gladexml;
@@ -186,19 +187,19 @@ void cal_vna_command (int sockfd, gchar *cmd)
 {
 	gchar statbyte[10], cmdstr[81];
 
-	vna_send_cmd (sockfd, "MTA LISTEN "VNA_GBIP" DATA 'OUTPSTAT;'", VNA_ETIMEOUT);
-	vna_enter (sockfd, statbyte, 10, VNA_GBIP_INT, VNA_ETIMEOUT);
+	vna_proxy_send_cmd (sockfd, "MTA LISTEN "VNA_GBIP" DATA 'OUTPSTAT;'", VNA_ETIMEOUT);
+	vna_proxy_enter (sockfd, statbyte, 10, VNA_GBIP_INT, VNA_ETIMEOUT);
 	//printf ("cal_vna_command: statbyte = %s\n", statbyte);
 	while (strncmp (statbyte, "000,000", 10) )
 	{
 		usleep (1e5);
-		vna_send_cmd (sockfd, "MTA LISTEN "VNA_GBIP" DATA 'OUTPSTAT;'", VNA_ETIMEOUT);
-		vna_enter (sockfd, statbyte, 10, VNA_GBIP_INT, VNA_ETIMEOUT);
+		vna_proxy_send_cmd (sockfd, "MTA LISTEN "VNA_GBIP" DATA 'OUTPSTAT;'", VNA_ETIMEOUT);
+		vna_proxy_enter (sockfd, statbyte, 10, VNA_GBIP_INT, VNA_ETIMEOUT);
 	}
 
 	g_snprintf (cmdstr, 80, "MTA LISTEN "VNA_GBIP" DATA '%s'", cmd);
-	vna_send_cmd (sockfd, cmdstr, VNA_ETIMEOUT|VNA_ESYNTAXE);
-	vna_send_cmd (sockfd, "MTA LISTEN "VNA_GBIP" DATA 'WAIT;ENTO;'", VNA_ETIMEOUT|VNA_ESYNTAXE);
+	vna_proxy_send_cmd (sockfd, cmdstr, VNA_ETIMEOUT|VNA_ESYNTAXE);
+	vna_proxy_send_cmd (sockfd, "MTA LISTEN "VNA_GBIP" DATA 'WAIT;ENTO;'", VNA_ETIMEOUT|VNA_ESYNTAXE);
 }
 
 /* Push spectrum data to VNA via tarray command */
@@ -215,19 +216,19 @@ static void cal_vna_transmit_data_block (ComplexDouble *data, gint len, gint mem
 	g_return_if_fail ((mem > 0) && (mem < 5));
 
 	/* Prepare data input */
-	vna_send_cmd (sockfd, "DCL", VNA_ETIMEOUT|VNA_ESYNTAXE);
-	vna_send_cmd (sockfd, "MTA LISTEN "VNA_GBIP" DATA 'CLES;'", VNA_ETIMEOUT|VNA_ESYNTAXE);
-	vna_send_cmd (sockfd, "MTA LISTEN "VNA_GBIP" DATA 'FORM2;'", VNA_ETIMEOUT|VNA_ESYNTAXE);
+	vna_proxy_send_cmd (sockfd, "DCL", VNA_ETIMEOUT|VNA_ESYNTAXE);
+	vna_proxy_send_cmd (sockfd, "MTA LISTEN "VNA_GBIP" DATA 'CLES;'", VNA_ETIMEOUT|VNA_ESYNTAXE);
+	vna_proxy_send_cmd (sockfd, "MTA LISTEN "VNA_GBIP" DATA 'FORM2;'", VNA_ETIMEOUT|VNA_ESYNTAXE);
 	g_snprintf (cmdstr, 80, "MTA LISTEN "VNA_GBIP" DATA 'INPURAW%d;' END", mem);
-	vna_send_cmd (sockfd, cmdstr, VNA_ETIMEOUT|VNA_ESYNTAXE);
-	vna_send_cmd (sockfd, "MTA LISTEN "VNA_GBIP, VNA_ETIMEOUT|VNA_ESYNTAXE);
+	vna_proxy_send_cmd (sockfd, cmdstr, VNA_ETIMEOUT|VNA_ESYNTAXE);
+	vna_proxy_send_cmd (sockfd, "MTA LISTEN "VNA_GBIP, VNA_ETIMEOUT|VNA_ESYNTAXE);
 
 	/* Transmit FORM2 header for 801 datapoints */
 	/* 0x23 0x41 is '#A', the standard VNA data header, and 0x08 0x19 is hex for 6408 */
-	vna_send_cmd (sockfd, "* PROXYCMD: tarray 4 0", VNA_ETIMEOUT);
-	vna_sendall (sockfd, header, 4);
+	vna_proxy_send_cmd (sockfd, "* PROXYCMD: tarray 4 0", VNA_ETIMEOUT);
+	vna_proxy_sendall (sockfd, header, 4);
 	/* Get status message */
-	vna_receiveall (sockfd, reply, VNA_STAT_LEN);
+	vna_proxy_receiveall (sockfd, reply, VNA_STAT_LEN);
 	if (sscanf (reply, "* PROXYMSG: Status %d", &status) != 1)
 		cal_vna_exit ("Could not parse proxy reply: %s", reply);
 
@@ -248,12 +249,12 @@ static void cal_vna_transmit_data_block (ComplexDouble *data, gint len, gint mem
 	}
 
 	g_snprintf (cmdstr, 80, "* PROXYCMD: tarray %d 1", 8*len);
-	vna_send_cmd (sockfd, cmdstr, VNA_ETIMEOUT);
+	vna_proxy_send_cmd (sockfd, cmdstr, VNA_ETIMEOUT);
 
-	vna_sendall (sockfd, buf, 8*len);
+	vna_proxy_sendall (sockfd, buf, 8*len);
 	usleep (1e6);
 	/* Get status message */
-	vna_receiveall (sockfd, cmdstr, VNA_STAT_LEN);
+	vna_proxy_receiveall (sockfd, cmdstr, VNA_STAT_LEN);
 	if (sscanf (reply, "* PROXYMSG: Status %d", &status) != 1)
 		cal_vna_exit ("Could not parse proxy reply: %s", reply);
 }
@@ -272,8 +273,8 @@ static void cal_vna_push_data (ComplexDouble *data, gint len, gchar *type, gint 
 	if (type)
 	{
 		g_snprintf (cmdstr, 80, "MTA LISTEN "VNA_GBIP" DATA '%s;' END", type);
-		vna_send_cmd (sockfd, cmdstr, VNA_ETIMEOUT|VNA_ESYNTAXE);
-		vna_spoll_wait (sockfd, 4);
+		vna_proxy_send_cmd (sockfd, cmdstr, VNA_ETIMEOUT|VNA_ESYNTAXE);
+		vna_proxy_spoll_wait (sockfd, 4);
 	}
 
 	/* Transmit data */
@@ -289,12 +290,12 @@ static void cal_vna_push_data (ComplexDouble *data, gint len, gchar *type, gint 
 	}
 	
 	/* Finish transmission */
-	vna_send_cmd (sockfd, "MTA LISTEN "VNA_GBIP" EOI 10", VNA_ETIMEOUT|VNA_ESYNTAXE);
+	vna_proxy_send_cmd (sockfd, "MTA LISTEN "VNA_GBIP" EOI 10", VNA_ETIMEOUT|VNA_ESYNTAXE);
 	
 	if (type)
-		vna_send_cmd (sockfd, "MTA LISTEN "VNA_GBIP" DATA 'SIMS;'", VNA_ETIMEOUT|VNA_ESYNTAXE);
+		vna_proxy_send_cmd (sockfd, "MTA LISTEN "VNA_GBIP" DATA 'SIMS;'", VNA_ETIMEOUT|VNA_ESYNTAXE);
 
-	vna_send_cmd (sockfd, "MTA LISTEN "VNA_GBIP" DATA 'WAIT;' END", VNA_ETIMEOUT|VNA_ESYNTAXE);
+	vna_proxy_send_cmd (sockfd, "MTA LISTEN "VNA_GBIP" DATA 'WAIT;' END", VNA_ETIMEOUT|VNA_ESYNTAXE);
 }
 
 /* Do a reflection calibration */
@@ -305,9 +306,9 @@ static void cal_vna_reflection (CalVnaThreadInfo *threadinfo, gint sockfd)
 	gchar cmdstr[81];
 	int winleft, windone;
 
-	vna_send_cmd (sockfd, "MTA LISTEN "VNA_GBIP" DATA 'S11;'", VNA_ETIMEOUT);
+	vna_proxy_send_cmd (sockfd, "MTA LISTEN "VNA_GBIP" DATA 'S11;'", VNA_ETIMEOUT);
 	usleep (2e6);
-	vna_send_cmd (sockfd, "MTA LISTEN "VNA_GBIP" DATA 'DELC;CALS1;WAIT;'", VNA_ETIMEOUT);
+	vna_proxy_send_cmd (sockfd, "MTA LISTEN "VNA_GBIP" DATA 'DELC;CALS1;WAIT;'", VNA_ETIMEOUT);
 	usleep (2e6);
 
 	/* Set up time estimates */
@@ -333,11 +334,11 @@ static void cal_vna_reflection (CalVnaThreadInfo *threadinfo, gint sockfd)
 			);
 
 		/* Set frequency window and prepare for data aquisition */
-		vna_send_cmd (sockfd, "MTA LISTEN "VNA_GBIP" DATA 'CLES;'", VNA_ETIMEOUT);
+		vna_proxy_send_cmd (sockfd, "MTA LISTEN "VNA_GBIP" DATA 'CLES;'", VNA_ETIMEOUT);
 		g_snprintf (cmdstr, 80, "MTA LISTEN "VNA_GBIP" DATA 'CONT;STAR %.1lfHZ;STOP %.1lfHZ;'", 
 				threadinfo->a->x[datapos],
 				threadinfo->a->x[datapos]+(threadinfo->a->x[1]-threadinfo->a->x[0])*800);
-		vna_send_cmd (sockfd, cmdstr, VNA_ETIMEOUT|VNA_ESYNTAXE);
+		vna_proxy_send_cmd (sockfd, cmdstr, VNA_ETIMEOUT|VNA_ESYNTAXE);
 		cal_vna_command (sockfd, "CLES;TRIG;");
 		cal_vna_command (sockfd, "CORROFF;WAIT;");
 		cal_vna_command (sockfd, "CAL2;");
@@ -349,22 +350,22 @@ static void cal_vna_reflection (CalVnaThreadInfo *threadinfo, gint sockfd)
 		cal_vna_push_data (threadinfo->c->y + datapos, points_in_win, "CLASS11C;STANA", 1, sockfd); /* load  */
 
 		/* Create and recall calset */
-		vna_send_cmd (sockfd, "MTA LISTEN "VNA_GBIP" DATA 'DONE;SAV1;CALS1;'", VNA_ETIMEOUT);
+		vna_proxy_send_cmd (sockfd, "MTA LISTEN "VNA_GBIP" DATA 'DONE;SAV1;CALS1;'", VNA_ETIMEOUT);
 		usleep (5e6);
-		vna_spoll_wait (sockfd, 4);
-		vna_send_cmd (sockfd, "MTA LISTEN "VNA_GBIP" DATA 'FRER;WAIT;'", VNA_ETIMEOUT);
+		vna_proxy_spoll_wait (sockfd, 4);
+		vna_proxy_send_cmd (sockfd, "MTA LISTEN "VNA_GBIP" DATA 'FRER;WAIT;'", VNA_ETIMEOUT);
 		usleep (2e6);
 
 		/* Transmit measurement data to be calibrated */
-		vna_send_cmd (sockfd, "MTA LISTEN "VNA_GBIP" DATA 'HOLD;'", VNA_ETIMEOUT);
+		vna_proxy_send_cmd (sockfd, "MTA LISTEN "VNA_GBIP" DATA 'HOLD;'", VNA_ETIMEOUT);
 		cal_vna_push_data (threadinfo->in->y + datapos, points_in_win, NULL, 1, sockfd);
 
 		/* Give the vna some time and do useless stuff */
-		vna_send_cmd (sockfd, "MTA LISTEN "VNA_GBIP" DATA 'AUTO;WAIT;' END", VNA_ETIMEOUT);
+		vna_proxy_send_cmd (sockfd, "MTA LISTEN "VNA_GBIP" DATA 'AUTO;WAIT;' END", VNA_ETIMEOUT);
 		usleep (1e6);
 
 		/* Read calibrated data */
-		data = vna_recv_data (sockfd, 801);
+		data = vna_proxy_recv_data (801);
 		g_return_if_fail (data);
 		for (i=0; i<points_in_win; i++)
 		{
@@ -373,7 +374,7 @@ static void cal_vna_reflection (CalVnaThreadInfo *threadinfo, gint sockfd)
 		}
 		g_free (data);
 
-		vna_send_cmd (sockfd, "MTA LISTEN "VNA_GBIP" DATA 'CLES;FRER;CONT;CORROFF;'", VNA_ETIMEOUT);
+		vna_proxy_send_cmd (sockfd, "MTA LISTEN "VNA_GBIP" DATA 'CLES;FRER;CONT;CORROFF;'", VNA_ETIMEOUT);
 		usleep (2e6);
 
 		/* Update ETA */
@@ -393,7 +394,7 @@ static void cal_vna_full (CalVnaThreadInfo *threadinfo, gint sockfd)
 	int winleft, windone;
 	FILE *fh;
 
-	vna_send_cmd (sockfd, "MTA LISTEN "VNA_GBIP" DATA 'DELC;CALS1;WAIT;ENTO;'", VNA_ETIMEOUT);
+	vna_proxy_send_cmd (sockfd, "MTA LISTEN "VNA_GBIP" DATA 'DELC;CALS1;WAIT;ENTO;'", VNA_ETIMEOUT);
 	usleep (2e6);
 
 	/* Set up time estimates */
@@ -415,11 +416,11 @@ static void cal_vna_full (CalVnaThreadInfo *threadinfo, gint sockfd)
 		cal_vna_set_netstat (g_strdup_printf ("Calibrating %.3f - %.3f GHz (init)...", startfrq, stopfrq));
 
 		/* Set frequency window and prepare for data aquisition */
-		vna_send_cmd (sockfd, "MTA LISTEN "VNA_GBIP" DATA 'CLES;'", VNA_ETIMEOUT);
+		vna_proxy_send_cmd (sockfd, "MTA LISTEN "VNA_GBIP" DATA 'CLES;'", VNA_ETIMEOUT);
 		g_snprintf (cmdstr, 80, "MTA LISTEN "VNA_GBIP" DATA 'CONT;STAR %.1lfHZ;STOP %.1lfHZ;'", 
 				threadinfo->fullin[0]->x[datapos],
 				threadinfo->fullin[0]->x[datapos]+(threadinfo->fullin[0]->x[1]-threadinfo->fullin[0]->x[0])*800);
-		vna_send_cmd (sockfd, cmdstr, VNA_ETIMEOUT|VNA_ESYNTAXE);
+		vna_proxy_send_cmd (sockfd, cmdstr, VNA_ETIMEOUT|VNA_ESYNTAXE);
 		cal_vna_command (sockfd, "CLES;TRIG;");
 		cal_vna_command (sockfd, "CORROFF;WAIT;");
 		cal_vna_command (sockfd, "CAL2;");
@@ -427,7 +428,7 @@ static void cal_vna_full (CalVnaThreadInfo *threadinfo, gint sockfd)
 
 		/* Transmit calibration data */
 		cal_vna_set_netstat (g_strdup_printf ("Calibrating %.3f - %.3f GHz (reflection)...", startfrq, stopfrq));
-		vna_send_cmd (sockfd, "MTA LISTEN "VNA_GBIP" DATA 'REFL;'", VNA_ETIMEOUT);
+		vna_proxy_send_cmd (sockfd, "MTA LISTEN "VNA_GBIP" DATA 'REFL;'", VNA_ETIMEOUT);
 		cal_vna_push_data (threadinfo->fullin[ 4]->y + datapos, points_in_win, "CLASS11A", 1, sockfd); /* open  */
 		cal_vna_push_data (threadinfo->fullin[ 5]->y + datapos, points_in_win, "CLASS11B", 1, sockfd); /* short */
 		cal_vna_push_data (threadinfo->fullin[ 6]->y + datapos, points_in_win, "CLASS11C;STANA", 1, sockfd); /* load */
@@ -435,30 +436,30 @@ static void cal_vna_full (CalVnaThreadInfo *threadinfo, gint sockfd)
 		cal_vna_push_data (threadinfo->fullin[ 8]->y + datapos, points_in_win, "CLASS22B", 1, sockfd); /* short */
 		cal_vna_push_data (threadinfo->fullin[ 9]->y + datapos, points_in_win, "CLASS22C;STANA", 1, sockfd); /* load */
 		cal_vna_set_netstat (g_strdup_printf ("Calibrating %.3f - %.3f GHz (refl. save)...", startfrq, stopfrq));
-		vna_send_cmd (sockfd, "MTA LISTEN "VNA_GBIP" DATA 'REFD;'", VNA_ETIMEOUT);
+		vna_proxy_send_cmd (sockfd, "MTA LISTEN "VNA_GBIP" DATA 'REFD;'", VNA_ETIMEOUT);
 		usleep(21e6);
 		cal_vna_set_netstat (g_strdup_printf ("Calibrating %.3f - %.3f GHz (thru)...", startfrq, stopfrq));
-		vna_send_cmd (sockfd, "MTA LISTEN "VNA_GBIP" DATA 'TRAN;'", VNA_ETIMEOUT);
+		vna_proxy_send_cmd (sockfd, "MTA LISTEN "VNA_GBIP" DATA 'TRAN;'", VNA_ETIMEOUT);
 		cal_vna_push_data (threadinfo->fullin[10]->y + datapos, points_in_win, "FWDM", 1, sockfd); /* s11thru */
 		cal_vna_push_data (threadinfo->fullin[11]->y + datapos, points_in_win, "REVT", 1, sockfd); /* s12thru */
 		cal_vna_push_data (threadinfo->fullin[12]->y + datapos, points_in_win, "FWDT", 1, sockfd); /* s21thru */
 		cal_vna_push_data (threadinfo->fullin[13]->y + datapos, points_in_win, "REVM", 1, sockfd); /* s22thru */
-		vna_send_cmd (sockfd, "MTA LISTEN "VNA_GBIP" DATA 'TRAD;'", VNA_ETIMEOUT);
+		vna_proxy_send_cmd (sockfd, "MTA LISTEN "VNA_GBIP" DATA 'TRAD;'", VNA_ETIMEOUT);
 		usleep(1e6);
 		cal_vna_command (sockfd, "ISOL;OMII;ISOD;"); /* omit isolation */
 		usleep(1e6);
 
 		/* Create and recall calset */
-		vna_send_cmd (sockfd, "MTA LISTEN "VNA_GBIP" DATA 'DONE;SAV2;CALS1;'", VNA_ETIMEOUT);
+		vna_proxy_send_cmd (sockfd, "MTA LISTEN "VNA_GBIP" DATA 'DONE;SAV2;CALS1;'", VNA_ETIMEOUT);
 		usleep (5e6);
-		vna_spoll_wait (sockfd, 4);
+		vna_proxy_spoll_wait (sockfd, 4);
 		cal_vna_command (sockfd, "CORROFF;");
 		cal_vna_set_netstat (g_strdup_printf ("Calibrating %.3f - %.3f GHz (data input)...", startfrq, stopfrq));
-		vna_send_cmd (sockfd, "MTA LISTEN "VNA_GBIP" DATA 'FOUPSPLI;FRER;WAIT;'", VNA_ETIMEOUT);
+		vna_proxy_send_cmd (sockfd, "MTA LISTEN "VNA_GBIP" DATA 'FOUPSPLI;FRER;WAIT;'", VNA_ETIMEOUT);
 		usleep (2e6);
 
 		/* Transmit measurement data to be calibrated */
-		vna_send_cmd (sockfd, "MTA LISTEN "VNA_GBIP" DATA 'HOLD;'", VNA_ETIMEOUT);
+		vna_proxy_send_cmd (sockfd, "MTA LISTEN "VNA_GBIP" DATA 'HOLD;'", VNA_ETIMEOUT);
 		cal_vna_command (sockfd, "S11;");
 		cal_vna_push_data (threadinfo->fullin[0]->y + datapos, points_in_win, NULL, 1, sockfd);
 		cal_vna_command (sockfd, "S12;");
@@ -469,7 +470,7 @@ static void cal_vna_full (CalVnaThreadInfo *threadinfo, gint sockfd)
 		cal_vna_push_data (threadinfo->fullin[3]->y + datapos, points_in_win, NULL, 4, sockfd);
 
 		/* Turn on calibration */
-		vna_send_cmd (sockfd, "MTA LISTEN "VNA_GBIP" DATA 'CORRON;CALS1;WAIT;' END", VNA_ETIMEOUT);
+		vna_proxy_send_cmd (sockfd, "MTA LISTEN "VNA_GBIP" DATA 'CORRON;CALS1;WAIT;' END", VNA_ETIMEOUT);
 		usleep (4e6);
 
 		/* Read calibrated data */
@@ -492,7 +493,7 @@ static void cal_vna_full (CalVnaThreadInfo *threadinfo, gint sockfd)
 					break;
 			}
 
-			data = vna_recv_data (sockfd, 801);
+			data = vna_proxy_recv_data (801);
 			g_return_if_fail (data);
 			for (i=0; i<points_in_win; i++)
 			{
@@ -514,7 +515,7 @@ static void cal_vna_full (CalVnaThreadInfo *threadinfo, gint sockfd)
 			fclose (fh);
 		}
 
-		vna_send_cmd (sockfd, "MTA LISTEN "VNA_GBIP" DATA 'CLES;FRER;CONT;CORROFF;'", VNA_ETIMEOUT);
+		vna_proxy_send_cmd (sockfd, "MTA LISTEN "VNA_GBIP" DATA 'CLES;FRER;CONT;CORROFF;'", VNA_ETIMEOUT);
 		usleep (2e6);
 
 		/* Update ETA */
@@ -534,7 +535,7 @@ static void cal_vna_trl (CalVnaThreadInfo *threadinfo, gint sockfd)
 	int winleft, windone;
 	FILE *fh;
 
-	vna_send_cmd (sockfd, "MTA LISTEN "VNA_GBIP" DATA 'DELC;CALS1;WAIT;ENTO;'", VNA_ETIMEOUT);
+	vna_proxy_send_cmd (sockfd, "MTA LISTEN "VNA_GBIP" DATA 'DELC;CALS1;WAIT;ENTO;'", VNA_ETIMEOUT);
 	usleep (2e6);
 
 	/* Set up time estimates */
@@ -556,11 +557,11 @@ static void cal_vna_trl (CalVnaThreadInfo *threadinfo, gint sockfd)
 		cal_vna_set_netstat (g_strdup_printf ("Calibrating %.3f - %.3f GHz (init)...", startfrq, stopfrq));
 
 		/* Set frequency window and prepare for data aquisition */
-		vna_send_cmd (sockfd, "MTA LISTEN "VNA_GBIP" DATA 'CLES;'", VNA_ETIMEOUT);
+		vna_proxy_send_cmd (sockfd, "MTA LISTEN "VNA_GBIP" DATA 'CLES;'", VNA_ETIMEOUT);
 		g_snprintf (cmdstr, 80, "MTA LISTEN "VNA_GBIP" DATA 'CONT;STAR %.1lfHZ;STOP %.1lfHZ;'", 
 				threadinfo->fullin[0]->x[datapos],
 				threadinfo->fullin[0]->x[datapos]+(threadinfo->fullin[0]->x[1]-threadinfo->fullin[0]->x[0])*800);
-		vna_send_cmd (sockfd, cmdstr, VNA_ETIMEOUT|VNA_ESYNTAXE);
+		vna_proxy_send_cmd (sockfd, cmdstr, VNA_ETIMEOUT|VNA_ESYNTAXE);
 		cal_vna_command (sockfd, "CLES;TRIG;");
 		cal_vna_command (sockfd, "CORROFF;WAIT;");
 		cal_vna_command (sockfd, "CAL2;");
@@ -569,20 +570,20 @@ static void cal_vna_trl (CalVnaThreadInfo *threadinfo, gint sockfd)
 		/* Transmit calibration data */
 		/* Thru (zero length) standard */
 		cal_vna_set_netstat (g_strdup_printf ("Calibrating %.3f - %.3f GHz (thru)...", startfrq, stopfrq));
-		vna_send_cmd (sockfd, "MTA LISTEN "VNA_GBIP" DATA 'TRLT;'", VNA_ETIMEOUT);
+		vna_proxy_send_cmd (sockfd, "MTA LISTEN "VNA_GBIP" DATA 'TRLT;'", VNA_ETIMEOUT);
 		usleep(1e6);
 		cal_vna_push_data (threadinfo->fullin[ 4]->y + datapos, points_in_win, NULL, 1, sockfd); /* S11  */
-		vna_send_cmd (sockfd, "MTA LISTEN "VNA_GBIP" DATA 'SIMS;'", VNA_ETIMEOUT|VNA_ESYNTAXE);
+		vna_proxy_send_cmd (sockfd, "MTA LISTEN "VNA_GBIP" DATA 'SIMS;'", VNA_ETIMEOUT|VNA_ESYNTAXE);
 		cal_vna_push_data (threadinfo->fullin[ 6]->y + datapos, points_in_win, NULL, 1, sockfd); /* S21 */
-		vna_send_cmd (sockfd, "MTA LISTEN "VNA_GBIP" DATA 'SIMS;'", VNA_ETIMEOUT|VNA_ESYNTAXE);
+		vna_proxy_send_cmd (sockfd, "MTA LISTEN "VNA_GBIP" DATA 'SIMS;'", VNA_ETIMEOUT|VNA_ESYNTAXE);
 		cal_vna_push_data (threadinfo->fullin[ 5]->y + datapos, points_in_win, NULL, 1, sockfd); /* S12 */
-		vna_send_cmd (sockfd, "MTA LISTEN "VNA_GBIP" DATA 'SIMS;'", VNA_ETIMEOUT|VNA_ESYNTAXE);
+		vna_proxy_send_cmd (sockfd, "MTA LISTEN "VNA_GBIP" DATA 'SIMS;'", VNA_ETIMEOUT|VNA_ESYNTAXE);
 		cal_vna_push_data (threadinfo->fullin[ 7]->y + datapos, points_in_win, NULL, 1, sockfd); /* S22  */
-		vna_send_cmd (sockfd, "MTA LISTEN "VNA_GBIP" DATA 'SIMS;'", VNA_ETIMEOUT|VNA_ESYNTAXE);
+		vna_proxy_send_cmd (sockfd, "MTA LISTEN "VNA_GBIP" DATA 'SIMS;'", VNA_ETIMEOUT|VNA_ESYNTAXE);
 		cal_vna_push_data (threadinfo->fullin[ 8]->y + datapos, points_in_win, NULL, 1, sockfd); /* User3 */
-		vna_send_cmd (sockfd, "MTA LISTEN "VNA_GBIP" DATA 'SIMS;'", VNA_ETIMEOUT|VNA_ESYNTAXE);
+		vna_proxy_send_cmd (sockfd, "MTA LISTEN "VNA_GBIP" DATA 'SIMS;'", VNA_ETIMEOUT|VNA_ESYNTAXE);
 		cal_vna_push_data (threadinfo->fullin[ 9]->y + datapos, points_in_win, NULL, 1, sockfd); /* User3 */
-		vna_send_cmd (sockfd, "MTA LISTEN "VNA_GBIP" DATA 'SIMS;'", VNA_ETIMEOUT|VNA_ESYNTAXE);
+		vna_proxy_send_cmd (sockfd, "MTA LISTEN "VNA_GBIP" DATA 'SIMS;'", VNA_ETIMEOUT|VNA_ESYNTAXE);
 
 		/* S11 & S22 reflection */
 		cal_vna_set_netstat (g_strdup_printf ("Calibrating %.3f - %.3f GHz (refl.)...", startfrq, stopfrq));
@@ -591,20 +592,20 @@ static void cal_vna_trl (CalVnaThreadInfo *threadinfo, gint sockfd)
 
 		/* Line standard */
 		cal_vna_set_netstat (g_strdup_printf ("Calibrating %.3f - %.3f GHz (line)...", startfrq, stopfrq));
-		vna_send_cmd (sockfd, "MTA LISTEN "VNA_GBIP" DATA 'TRLL;'", VNA_ETIMEOUT);
+		vna_proxy_send_cmd (sockfd, "MTA LISTEN "VNA_GBIP" DATA 'TRLL;'", VNA_ETIMEOUT);
 		usleep(1e6);
 		cal_vna_push_data (threadinfo->fullin[12]->y + datapos, points_in_win, NULL, 1, sockfd); /* S11  */
-		vna_send_cmd (sockfd, "MTA LISTEN "VNA_GBIP" DATA 'SIMS;'", VNA_ETIMEOUT|VNA_ESYNTAXE);
+		vna_proxy_send_cmd (sockfd, "MTA LISTEN "VNA_GBIP" DATA 'SIMS;'", VNA_ETIMEOUT|VNA_ESYNTAXE);
 		cal_vna_push_data (threadinfo->fullin[14]->y + datapos, points_in_win, NULL, 1, sockfd); /* S21 */
-		vna_send_cmd (sockfd, "MTA LISTEN "VNA_GBIP" DATA 'SIMS;'", VNA_ETIMEOUT|VNA_ESYNTAXE);
+		vna_proxy_send_cmd (sockfd, "MTA LISTEN "VNA_GBIP" DATA 'SIMS;'", VNA_ETIMEOUT|VNA_ESYNTAXE);
 		cal_vna_push_data (threadinfo->fullin[13]->y + datapos, points_in_win, NULL, 1, sockfd); /* S12 */
-		vna_send_cmd (sockfd, "MTA LISTEN "VNA_GBIP" DATA 'SIMS;'", VNA_ETIMEOUT|VNA_ESYNTAXE);
+		vna_proxy_send_cmd (sockfd, "MTA LISTEN "VNA_GBIP" DATA 'SIMS;'", VNA_ETIMEOUT|VNA_ESYNTAXE);
 		cal_vna_push_data (threadinfo->fullin[15]->y + datapos, points_in_win, NULL, 1, sockfd); /* S22  */
-		vna_send_cmd (sockfd, "MTA LISTEN "VNA_GBIP" DATA 'SIMS;'", VNA_ETIMEOUT|VNA_ESYNTAXE);
+		vna_proxy_send_cmd (sockfd, "MTA LISTEN "VNA_GBIP" DATA 'SIMS;'", VNA_ETIMEOUT|VNA_ESYNTAXE);
 		cal_vna_push_data (threadinfo->fullin[16]->y + datapos, points_in_win, NULL, 1, sockfd); /* User3 */
-		vna_send_cmd (sockfd, "MTA LISTEN "VNA_GBIP" DATA 'SIMS;'", VNA_ETIMEOUT|VNA_ESYNTAXE);
+		vna_proxy_send_cmd (sockfd, "MTA LISTEN "VNA_GBIP" DATA 'SIMS;'", VNA_ETIMEOUT|VNA_ESYNTAXE);
 		cal_vna_push_data (threadinfo->fullin[17]->y + datapos, points_in_win, NULL, 1, sockfd); /* User3 */
-		vna_send_cmd (sockfd, "MTA LISTEN "VNA_GBIP" DATA 'SIMS;'", VNA_ETIMEOUT|VNA_ESYNTAXE);
+		vna_proxy_send_cmd (sockfd, "MTA LISTEN "VNA_GBIP" DATA 'SIMS;'", VNA_ETIMEOUT|VNA_ESYNTAXE);
 		usleep(1e6);
 
 		/* Omit isolation */
@@ -612,16 +613,16 @@ static void cal_vna_trl (CalVnaThreadInfo *threadinfo, gint sockfd)
 
 		/* Create and recall calset */
 		cal_vna_set_netstat (g_strdup_printf ("Calibrating %.3f - %.3f GHz (save)...", startfrq, stopfrq));
-		vna_send_cmd (sockfd, "MTA LISTEN "VNA_GBIP" DATA 'DONE;SAVT;CALS1;'", VNA_ETIMEOUT);
+		vna_proxy_send_cmd (sockfd, "MTA LISTEN "VNA_GBIP" DATA 'DONE;SAVT;CALS1;'", VNA_ETIMEOUT);
 		usleep (10e6);
-		vna_spoll_wait (sockfd, 4);
+		vna_proxy_spoll_wait (sockfd, 4);
 		cal_vna_command (sockfd, "CORROFF;");
 		cal_vna_set_netstat (g_strdup_printf ("Calibrating %.3f - %.3f GHz (data input)...", startfrq, stopfrq));
-		vna_send_cmd (sockfd, "MTA LISTEN "VNA_GBIP" DATA 'FOUPSPLI;FRER;WAIT;'", VNA_ETIMEOUT);
+		vna_proxy_send_cmd (sockfd, "MTA LISTEN "VNA_GBIP" DATA 'FOUPSPLI;FRER;WAIT;'", VNA_ETIMEOUT);
 		usleep (2e6);
 
 		/* Transmit measurement data to be calibrated */
-		vna_send_cmd (sockfd, "MTA LISTEN "VNA_GBIP" DATA 'HOLD;'", VNA_ETIMEOUT);
+		vna_proxy_send_cmd (sockfd, "MTA LISTEN "VNA_GBIP" DATA 'HOLD;'", VNA_ETIMEOUT);
 		cal_vna_command (sockfd, "S11;");
 		cal_vna_push_data (threadinfo->fullin[0]->y + datapos, points_in_win, NULL, 1, sockfd);
 		cal_vna_command (sockfd, "S12;");
@@ -632,7 +633,7 @@ static void cal_vna_trl (CalVnaThreadInfo *threadinfo, gint sockfd)
 		cal_vna_push_data (threadinfo->fullin[3]->y + datapos, points_in_win, NULL, 4, sockfd);
 
 		/* Turn on calibration */
-		vna_send_cmd (sockfd, "MTA LISTEN "VNA_GBIP" DATA 'CORRON;CALS1;WAIT;' END", VNA_ETIMEOUT);
+		vna_proxy_send_cmd (sockfd, "MTA LISTEN "VNA_GBIP" DATA 'CORRON;CALS1;WAIT;' END", VNA_ETIMEOUT);
 		usleep (4e6);
 
 		/* Read calibrated data */
@@ -655,7 +656,7 @@ static void cal_vna_trl (CalVnaThreadInfo *threadinfo, gint sockfd)
 					break;
 			}
 
-			data = vna_recv_data (sockfd, 801);
+			data = vna_proxy_recv_data (801);
 			g_return_if_fail (data);
 			for (i=0; i<points_in_win; i++)
 			{
@@ -677,7 +678,7 @@ static void cal_vna_trl (CalVnaThreadInfo *threadinfo, gint sockfd)
 			fclose (fh);
 		}
 
-		vna_send_cmd (sockfd, "MTA LISTEN "VNA_GBIP" DATA 'CLES;FRER;CONT;CORROFF;'", VNA_ETIMEOUT);
+		vna_proxy_send_cmd (sockfd, "MTA LISTEN "VNA_GBIP" DATA 'CLES;FRER;CONT;CORROFF;'", VNA_ETIMEOUT);
 		usleep (2e6);
 
 		/* Update ETA */
@@ -696,23 +697,23 @@ static void cal_vna_start (gpointer data)
 	threadinfo = (CalVnaThreadInfo *) data;
 	
 	/* Open connection */
-	sockfd = (gint) vna_connect (threadinfo->host);
+	sockfd = (gint) vna_proxy_connect (threadinfo->host);
 	if (sockfd < 0)
 		cal_vna_exit ("Could not connect to Ieee488Proxy host %s", threadinfo->host);
 
 	glob->calwin->sockfd = sockfd;
 
 	/* Give the Ieee488 card GPIB 21 */
-	if (vna_send_cmd (sockfd, "* PROXYCMD: initialize 21", VNA_ETIMEOUT))
+	if (vna_proxy_send_cmd (sockfd, "* PROXYCMD: initialize 21", VNA_ETIMEOUT))
 		cal_vna_exit ("Could not initialize Ieee488 Card.");
 
 	/* Reset network (to 801 points) and do local lock out */
 	cal_vna_set_netstat (g_strdup ("Setting up network analyzer..."));
-	vna_send_cmd (sockfd, "MTA LISTEN "VNA_GBIP" DATA 'PRES;'", VNA_ETIMEOUT|VNA_ESYNTAXE);
+	vna_proxy_send_cmd (sockfd, "MTA LISTEN "VNA_GBIP" DATA 'PRES;'", VNA_ETIMEOUT|VNA_ESYNTAXE);
 	usleep (8e6);
-	vna_send_cmd (sockfd, "MTA LISTEN "VNA_GBIP" LLO", VNA_ETIMEOUT);
-	vna_send_cmd (sockfd, "MTA LISTEN "VNA_GBIP" DATA 'CORROFF;CONT;LOGM;'", VNA_ETIMEOUT|VNA_ESYNTAXE);
-	vna_send_cmd (sockfd, "MTA LISTEN "VNA_GBIP" DATA 'POIN801;AVEROFF;RAMP;WAIT;'", VNA_ETIMEOUT|VNA_ESYNTAXE);
+	vna_proxy_send_cmd (sockfd, "MTA LISTEN "VNA_GBIP" LLO", VNA_ETIMEOUT);
+	vna_proxy_send_cmd (sockfd, "MTA LISTEN "VNA_GBIP" DATA 'CORROFF;CONT;LOGM;'", VNA_ETIMEOUT|VNA_ESYNTAXE);
+	vna_proxy_send_cmd (sockfd, "MTA LISTEN "VNA_GBIP" DATA 'POIN801;AVEROFF;RAMP;WAIT;'", VNA_ETIMEOUT|VNA_ESYNTAXE);
 
 	switch (threadinfo->type)
 	{
@@ -731,7 +732,7 @@ static void cal_vna_start (gpointer data)
 			break;
 	}
 
-	vna_send_cmd (sockfd, "MTA LISTEN "VNA_GBIP" GTL", VNA_ETIMEOUT);
+	vna_proxy_send_cmd (sockfd, "MTA LISTEN "VNA_GBIP" GTL", VNA_ETIMEOUT);
 
 	close (sockfd);
 	glob->flag &= ~FLAG_VNA_CAL;

@@ -146,8 +146,31 @@ typedef struct
 
 typedef struct
 {
+	int (*connect) (const gchar*);
+	ComplexDouble* (*recv_data)(int);
+	void (*gtl) ();
+	void (*llo) ();
+	glong (*sweep_cal_sleep) ();
+	gdouble (*get_start_frq) ();
+	gdouble (*get_stop_frq) ();
+	gint (*get_points) ();
+	void (*sweep_prepare) ();
+	void (*set_startstop) (gdouble, gdouble);
+	void (*trace_scale_auto) ();
+	void (*trace_fourparam) ();
+	void (*set_numg) (gint);
+	void (*wait) ();
+	void (*select_s) (gchar*);
+	void (*select_trl) (gint);
+	gdouble (*get_capa) (gint);
+} VnaBackend;
+
+typedef struct
+{
 	GladeXML *xmlnet;		/* Glade XML structure for network_window */
+	gint vnamodel;			/* VNA backend: 1=proxy, 2=n5230a */
 	gchar *host;			/* Ieee488Proxy hostname */
+	VnaBackend *vna_func;		/* Callbacks to VNA communication layer */
 	gchar *path;			/* Path for output file */
 	gchar *file;			/* Filename for output file */
 	gchar *fullname[6];		/* The full name of the output file(s) */
@@ -158,6 +181,7 @@ typedef struct
 	gdouble start;			/* Start frequency for sweep in Hz */
 	gdouble stop;			/* Stop frequency for sweep in Hz */
 	gdouble resol;			/* Resolution of sweep in Hz */
+	gint points;			/* Number of points in one measurement window */
 	gchar param[6];			/* S-Parameter to measure in sweep mode */
 	gint avg;			/* Averaging factor for sweep */
 	gchar swpmode;			/* 1=ramp mode; 2=step mode */
