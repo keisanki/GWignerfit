@@ -3863,8 +3863,99 @@
 		</screenshot>
 	</figure>
 
-	<para>The currently available preferences are:</para>
+	<para>The preferences dialog is devided into four major logical sections
+		(<guilabel>Display, Files, Fitting, Network Analyzer</guilabel>). The
+		currently available preferences are:</para>
 	<variablelist>
+		<varlistentry>
+			<term><guilabel>Unit for width column</guilabel></term>
+			<listitem>
+				<para>The default is to present all width values in the parameter area
+					in MHz. If your spectrum has many very sharp resonances and you do
+					not want all those small numbers you can change the unit to kHz here.
+				</para>
+			</listitem>
+		</varlistentry>
+		<varlistentry>
+			<term><guilabel>Angle units</guilabel></term>
+			<listitem>
+				<para>Here you can choose, whether the ordinate of phase graphs should
+					display radians (<guilabel>rad</guilabel>, the default) or degrees
+					(<guilabel>deg</guilabel>).
+				</para>
+			</listitem>
+		</varlistentry>
+		<varlistentry>
+			<term><guilabel>Sort resonance IDs by frequency</guilabel></term>
+			<listitem>
+				<para>Newly added resonances do normally get an ID which is just the
+					next unused number. Those IDs represent the order in which the
+					resonances have been added to the resonance list. You can enable this
+					options if the IDs should be sorted by the resonance frequencies.
+					This is especially useful for spectral statistics as the IDs can then
+					be interpreted as level numbers (given that you have not missed any
+					levels). Adding a resonance will then increase the IDs of all
+					resonances with a higher resonance frequency by one.
+				</para>
+			</listitem>
+		</varlistentry>
+		<varlistentry>
+			<term><guilabel>Enable datapoint marker in graphs</guilabel></term>
+			<listitem>
+				<para>If you zoom close enough into a graph with measured data you will
+					get short vertical lines that mark the positions of the datapoints
+					(remember: the lines between the points are just "to guide the eye").
+					Unchecking this box will disable this feature.
+				</para>
+			</listitem>
+		</varlistentry>
+		<varlistentry>
+			<term><guilabel>Confirm deletion of resonances</guilabel></term>
+			<listitem>
+				<para>Enable this to get a confirmation dialog each time you try to
+					delete a resonance from the resonance list. This can be useful if you
+					want to be protected from accidentally hitting the
+					<keycap>Delete</keycap> key.
+				</para>
+			</listitem>
+		</varlistentry>
+		<varlistentry>
+			<term><guilabel>Confirm appending of sections</guilabel></term>
+			<listitem>
+				<para>If you save a &app; session by appending it to an already present
+					gwf file, &app; will normally show a confirmation dialog. You can
+					disable this behavior here. This will <emphasis>not</emphasis>
+					disable the confirmation dialog when you try to overwrite a section.
+				</para>
+			</listitem>
+		</varlistentry>
+		<varlistentry>
+			<term><guilabel>Include overlayed graphs in gwf files</guilabel></term>
+			<listitem>
+				<para>&app;'s saved sessions will normally include the filenames of all
+					overlayed datasets, too. If you do not want them to be included in
+					the gwf file disable this checkbox.
+				</para>
+			</listitem>
+		</varlistentry>
+		<varlistentry>
+			<term><guilabel>Use relative paths in gwf files</guilabel></term>
+			<listitem>
+				<para>You can define how &app; includes datafile names in
+					<filename>.gwf</filename> files. If this option is
+					<emphasis>not</emphasis> checked, all filenames are stored as
+					absolute positions. That means that you can move the
+					<filename>.gwf</filename> file around and &app; will still find the
+					files with the spectra data, but the position of the spectra files
+					must not be changed. If this option <emphasis>is</emphasis> enabled,
+					&app; stores only relative positions in the session file, that is the
+					position of the spectra files relative to the
+					<filename>.gwf</filename> file. This way you can move both (the data
+					and the session files) around as long as their relative positions in
+					the filesystem stay the same.
+				</para>
+			</listitem>
+		</varlistentry>
 		<varlistentry>
 			<term><guilabel>Number of fit iterations</guilabel></term>
 			<listitem>
@@ -3890,24 +3981,6 @@
 			</listitem>
 		</varlistentry>
 		<varlistentry>
-			<term><guilabel>Unit for width column</guilabel></term>
-			<listitem>
-				<para>The default is to present all width values in the parameter area
-					in MHz. If your spectrum has many very sharp resonances and you do
-					not want all those small numbers you can change the unit to kHz here.
-				</para>
-			</listitem>
-		</varlistentry>
-		<varlistentry>
-			<term><guilabel>Angle units</guilabel></term>
-			<listitem>
-				<para>Here you can choose, whether the ordinate of phase graphs should
-					display radians (<guilabel>rad</guilabel>, the default) or degrees
-					(<guilabel>deg</guilabel>).
-				</para>
-			</listitem>
-		</varlistentry>
-		<varlistentry>
 			<term><guilabel>Detect convergence of fit</guilabel></term>
 			<listitem>
 				<para>Enable this option if &app; should automatically stop a running
@@ -3919,73 +3992,23 @@
 			</listitem>
 		</varlistentry>
 		<varlistentry>
-			<term><guilabel>Confirm appending of sections</guilabel></term>
+			<term><guilabel>Default model</guilabel></term>
 			<listitem>
-				<para>If you save a &app; session by appending it to an already present
-					gwf file, &app; will normally show a confirmation dialog. You can
-					disable this behavior here. This will <emphasis>not</emphasis>
-					disable the confirmation dialog when you try to overwrite a section.
+				<para>You can specify which network analyzer you are normally using for
+					measurements with &app;, either the Agilent N5230A PNA-L or the
+					Hewlett Packard HP-8510C are currently supported. This model
+					selection will be entered into the measurement dialog when it is
+					first opened.
 				</para>
 			</listitem>
 		</varlistentry>
 		<varlistentry>
-			<term><guilabel>Confirm deletion of resonances</guilabel></term>
+			<term><guilabel>Default host</guilabel></term>
 			<listitem>
-				<para>Enable this to get a confirmation dialog each time you try to
-					delete a resonance from the resonance list. This can be useful if you
-					want to be protected from accidentally hitting the
-					<keycap>Delete</keycap> key.
-				</para>
-			</listitem>
-		</varlistentry>
-		<varlistentry>
-			<term><guilabel>Include overlayed graphs in save file</guilabel></term>
-			<listitem>
-				<para>&app;'s saved sessions will normally include the filenames of all
-					overlayed datasets, too. If you do not want them to be included in
-					the gwf file disable this checkbox.
-				</para>
-			</listitem>
-		</varlistentry>
-		<varlistentry>
-			<term><guilabel>Enable datapoint marker in graphs</guilabel></term>
-			<listitem>
-				<para>If you zoom close enough into a graph with measured data you will
-					get short vertical lines that mark the positions of the datapoints
-					(remember: the lines between the points are just "to guide the eye").
-					Unchecking this box will disable this feature.
-				</para>
-			</listitem>
-		</varlistentry>
-		<varlistentry>
-			<term><guilabel>Sort resonance IDs by frequency</guilabel></term>
-			<listitem>
-				<para>Newly added resonances do normally get an ID which is just the
-					next unused number. Those IDs represent the order in which the
-					resonances have been added to the resonance list. You can enable this
-					options if the IDs should be sorted by the resonance frequencies.
-					This is especially useful for spectral statistics as the IDs can then
-					be interpreted as level numbers (given that you have not missed any
-					levels). Adding a resonance will then increase the IDs of all
-					resonances with a higher resonance frequency by one.
-				</para>
-			</listitem>
-		</varlistentry>
-		<varlistentry>
-			<term><guilabel>Use relative paths in gwf files</guilabel></term>
-			<listitem>
-				<para>You can define how &app; includes datafile names in
-					<filename>.gwf</filename> files. If this option is
-					<emphasis>not</emphasis> checked, all filenames are stored as
-					absolute positions. That means that you can move the
-					<filename>.gwf</filename> file around and &app; will still find the
-					files with the spectra data, but the position of the spectra files
-					must not be changed. If this option <emphasis>is</emphasis> enabled,
-					&app; stores only relative positions in the session file, that is the
-					position of the spectra files relative to the
-					<filename>.gwf</filename> file. This way you can move both (the data
-					and the session files) around as long as their relative positions in
-					the filesystem stay the same.
+				<para>This is either the hostname/IP of the N5230A network analyzer or
+					the hostname/IP of the computer running the
+					<application>Ieee488Proxy</application> application. This hostname
+					will be entered into the measurement dialog as well.
 				</para>
 			</listitem>
 		</varlistentry>
