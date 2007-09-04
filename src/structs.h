@@ -36,8 +36,8 @@
 #define DATAHDR  "%c\r\n%c f [Hz]\t Re(S)\t\t Im(S)\r\n"	/* Output data header */
 #define DATAFRMT "%13.1f\t% 11.8f\t% 11.8f\r\n"			/* Format for output data (dat or s1p) */
 
-#define DATAHSNP "!\r\n! f [Hz]\t Re(S11)\t Im(S11)\t Re(S21)\t Im(S21)\t Re(S12)\t Im(S12)\t Re(S22)\t Im(S22)\r\n"	/* Output data header */
-#define DATAFSNP "%13.1f\t% 11.8f\t% 11.8f\t% 11.8f\t% 11.8f\t% 11.8f\t% 11.8f\t% 11.8f\t% 11.8f\r\n"			/* Format for output data (s2p) */
+#define DATAHS2P "!\r\n! f [Hz]\t Re(S11)\t Im(S11)\t Re(S21)\t Im(S21)\t Re(S12)\t Im(S12)\t Re(S22)\t Im(S22)\r\n"	/* Output data header */
+#define DATAFS2P "%13.1f\t% 11.8f\t% 11.8f\t% 11.8f\t% 11.8f\t% 11.8f\t% 11.8f\t% 11.8f\t% 11.8f\r\n"			/* Format for output data (s2p) */
 
 #ifndef GLADEFILE
 #define GLADEFILE "../gwignerfit.glade"
@@ -146,23 +146,23 @@ typedef struct
 
 typedef struct
 {
-	int (*connect) (const gchar*);
-	ComplexDouble* (*recv_data)(int);
-	void (*gtl) ();
-	void (*llo) ();
-	glong (*sweep_cal_sleep) ();
-	gdouble (*get_start_frq) ();
-	gdouble (*get_stop_frq) ();
-	gint (*get_points) ();
-	void (*sweep_prepare) ();
-	void (*set_startstop) (gdouble, gdouble);
-	void (*trace_scale_auto) ();
-	void (*trace_fourparam) ();
-	void (*set_numg) (gint);
-	void (*wait) ();
-	void (*select_s) (gchar*);
-	void (*select_trl) (gint);
-	gdouble (*get_capa) (gint);
+	int (*connect) (const gchar*);	/* Connect to the VNA/proxy to given host */
+	ComplexDouble* (*recv_data)(int); /* Get data of current trace, points given */
+	void (*gtl) ();			/* Go to local method */
+	void (*llo) ();			/* Local lock out method */
+	glong (*sweep_cal_sleep) ();	/* Estimated time for one sweep in ms */
+	gdouble (*get_start_frq) ();	/* Return start frequency of current window in Hz */
+	gdouble (*get_stop_frq) ();	/* Return stop frequency of current window in Hz */
+	gint (*get_points) ();		/* Get number of currently selected points */
+	void (*sweep_prepare) ();	/* Prepare a sweep (reset, display, traces, etc.) */
+	void (*set_startstop) (gdouble, gdouble); /* Change frequency window to given limits in Hz */
+	void (*trace_scale_auto) ();	/* Autoscale all traces */
+	void (*trace_fourparam) ();	/* Display full 2x2 S-matrix on display */
+	void (*set_numg) (gint);	/* Set up number of groups */
+	void (*wait) ();		/* Wait for VNA operation to finish */
+	void (*select_s) (gchar*);	/* Select given S-parameter for first trace */
+	void (*select_trl) (gint);	/* Set up measurement of special TRL parameters */
+	gdouble (*get_capa) (gint);	/* Return VNA capabilities: 1=f_min, 2=f_max, 3=number_of_points */
 } VnaBackend;
 
 typedef struct
@@ -182,9 +182,12 @@ typedef struct
 	gdouble stop;			/* Stop frequency for sweep in Hz */
 	gdouble resol;			/* Resolution of sweep in Hz */
 	gint points;			/* Number of points in one measurement window */
-	gchar param[6];			/* S-Parameter to measure in sweep mode */
+	gchar param[6];			/* S-Parameter (Sxy, S, TRL) to measure in sweep mode */
+	gint numparam;			/* Total number of parameters to measure */
 	gint avg;			/* Averaging factor for sweep */
 	gchar swpmode;			/* 1=ramp mode; 2=step mode */
+	gdouble bandwidth;		/* Measurement IF bandwidth */
+	gdouble dwell;			/* Measurement dwell time */
 	GThread *vna_GThread;		/* The handle of the measurement process */
 	glong start_t;			/* The time at which the measurement started in sec */
 	glong estim_t;			/* Estimated time for measurement in sec */

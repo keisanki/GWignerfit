@@ -414,10 +414,10 @@ glong vna_proxy_sweep_cal_sleep ()
 		delta += 2000;
 	}
 
-	if (strlen (glob->netwin->param) == 1)
+	if (glob->netwin->numparam == 4)
 		delta *= (glob->netwin->swpmode == 1) ? 5 : 1.5;
 
-	if (!strcmp (glob->netwin->param, "TRL") == 1)
+	if (glob->netwin->numparam == 6)
 		delta *= (glob->netwin->swpmode == 1) ? 7 : 2.0;
 
 	return delta;
@@ -488,7 +488,7 @@ void vna_proxy_sweep_prepare ()
 	vna_proxy_send_cmd (sockfd, "MTA LISTEN "VNA_GBIP" DATA 'POIN801;'", VNA_ETIMEOUT|VNA_ESYNTAXE);
 
 	vna_proxy_llo (sockfd);
-	if ((strlen (netwin->param) == 1) || !(strcmp (netwin->param, "TRL")))
+	if (netwin->numparam > 1)
 		/* Prepare display for full S-matrix measurement */
 		g_snprintf (cmdstr, 80, "MTA LISTEN "VNA_GBIP" DATA 'FOUPSPLI;WAIT;'");
 	else
@@ -617,18 +617,26 @@ void vna_proxy_select_trl (gint Si)
 /* Return some VNA capabilities */
 gdouble vna_proxy_get_capa (gint type)
 {
-	if (type == 1)
-		/* Minimal frequency */
-		return 0.045;
+	gdouble ret = -1;
 
-	if (type == 2)
-		/* Maximal frequency */
-		return 50.000;
+	switch (type)
+	{
+		case 1: /* Minimal frequency */
+			ret =  0.045;
+			break;
+		case 2: /* Maximal frequency */
+			ret = 50.000;
+			break;
+		case 3: /* Number of points */
+			ret = 801.0;
+			break;
+		case 4: /* Minimal IF bandwidth */
+			ret = -1;
+			break;
+		case 5: /* Maximal IF bandwidth */
+			ret = -1;
+			break;
+	}
 
-	if (type == 3)
-		/* Number of points */
-		return 801.0;
-
-	/* We should not get to this point */
-	return -1;
+	return ret;
 }

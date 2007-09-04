@@ -347,10 +347,10 @@ glong vna_n5230a_sweep_cal_sleep ()
 		delta += 2000;
 	}
 
-	if (strlen (glob->netwin->param) == 1)
+	if (glob->netwin->numparam == 4)
 		delta *= (glob->netwin->swpmode == 1) ? 5 : 1.5;
 
-	if (!strcmp (glob->netwin->param, "TRL") == 1)
+	if (glob->netwin->numparam == 6)
 		delta *= (glob->netwin->swpmode == 1) ? 7 : 2.0;
 
 	return delta;
@@ -419,7 +419,7 @@ void vna_n5230a_sweep_prepare ()
 	vna_n5230a_llo (sockfd);
 	vna_n5230a_send_cmd (sockfd, "SYST:FPR");
 
-	if ((strlen (netwin->param) == 1) || !(strcmp (netwin->param, "TRL")))
+	if (netwin->numparam > 1)
 	{
 		/* Prepare display for full S-matrix measurement */
 		vna_n5230a_send_cmd (sockfd, "DISP:ARR STAC");
@@ -450,6 +450,20 @@ void vna_n5230a_sweep_prepare ()
 		g_snprintf (cmdstr, 80, "CALC:PAR:SEL 'gwf_%s'", netwin->param);
 		vna_n5230a_send_cmd (sockfd, cmdstr);
 	}
+
+	if (netwin->bandwidth > 0)
+	{
+		g_snprintf (cmdstr, 80, "SENS:BWID %f", netwin->bandwidth);
+		vna_n5230a_send_cmd (sockfd, cmdstr);
+		vna_n5230a_wait ();
+	}
+
+	if (netwin->dwell > 0)
+		g_snprintf (cmdstr, 80, "SENS:SWE:DWEL %f", netwin->dwell);
+	else
+		g_snprintf (cmdstr, 80, "SENS:SWE:DWEL 0");
+	vna_n5230a_send_cmd (sockfd, cmdstr);
+	vna_n5230a_wait ();
 
 	if (netwin->swpmode == 1)
 		g_snprintf (cmdstr, 80, "SENS:SWE:GEN ANAL");
@@ -484,8 +498,7 @@ void vna_n5230a_trace_scale_auto (gchar *sparam)
 	g_return_if_fail (glob->netwin);
 	g_return_if_fail (glob->netwin->sockfd > 0);
 
-	if ((sparam) && 
-	    ((strlen (glob->netwin->param) == 1) || !(strcmp (glob->netwin->param, "TRL"))))
+	if ( (sparam) && (glob->netwin->numparam > 1) )
 	{
 		if (!strncmp (sparam, "S12", 3))
 			vna_n5230a_send_cmd (glob->netwin->sockfd, "DISP:WIND1:TRAC1:Y:SCALE:AUTO");
@@ -590,18 +603,26 @@ void vna_n5230a_select_trl (gint Si)
 /* Return some VNA capabilities */
 gdouble vna_n5230a_get_capa (gint type)
 {
-	if (type == 1)
-		/* Minimal frequency */
-		return 0.010;
+	gdouble ret = -1;
 
-	if (type == 2)
-		/* Maximal frequency */
-		return 50.000;
+	switch (type)
+	{
+		case 1: /* Minimal frequency */
+			ret =  0.010;
+			break;
+		case 2: /* Maximal frequency */
+			ret = 50.000;
+			break;
+		case 3: /* Number of points */
+			ret = 16001.0;
+			break;
+		case 4: /* Minimal IF bandwidth */
+			ret = 1.0;
+			break;
+		case 5: /* Maximal IF bandwidth */
+			ret = 250000.0;
+			break;
+	}
 
-	if (type == 3)
-		/* Number of points */
-		return 16000.0;
-
-	/* We should not get to this point */
-	return -1;
+	return ret;
 }

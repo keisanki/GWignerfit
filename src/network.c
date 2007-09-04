@@ -84,6 +84,9 @@ static void network_struct_to_gui ()
 		gtk_toggle_button_set_active (
 			GTK_TOGGLE_BUTTON (glade_xml_get_widget (netwin->xmlnet, "vna_5230_radio")),
 			FALSE);
+		gtk_widget_set_sensitive (
+			glade_xml_get_widget (glob->netwin->xmlnet, "vna_advanced_frame"),
+			FALSE);
 	}
 	else
 	{
@@ -164,6 +167,9 @@ static void network_struct_to_gui ()
 		gtk_toggle_button_set_active (
 			GTK_TOGGLE_BUTTON (glade_xml_get_widget (netwin->xmlnet, "vna_snap_radio")),
 			TRUE);
+		gtk_widget_set_sensitive (
+			glade_xml_get_widget (glob->netwin->xmlnet, "vna_advanced_frame"),
+			FALSE);
 	}
 
 	if (netwin->start)
@@ -225,6 +231,19 @@ static void network_struct_to_gui ()
 			GTK_COMBO_BOX (glade_xml_get_widget (netwin->xmlnet, "vna_stim_combo")),
 			1);
 	}
+
+	if (netwin->bandwidth)
+	{
+		entry = GTK_ENTRY (glade_xml_get_widget (netwin->xmlnet, "vna_bw_entry"));
+		text = g_strdup_printf ("%g", netwin->bandwidth / 1e3);
+		gtk_entry_set_text (entry, text);
+		g_free (text);
+	}
+
+	entry = GTK_ENTRY (glade_xml_get_widget (netwin->xmlnet, "vna_dwell_entry"));
+	text = g_strdup_printf ("%g", netwin->dwell / 1e3);
+	gtk_entry_set_text (entry, text);
+	g_free (text);
 }
 
 /* Connect the VNA accessing backend functions */
@@ -411,31 +430,38 @@ static int network_gui_to_struct ()
 			&iter, 0, &text, -1);
 	snprintf (netwin->param, 4, "%s", text);
 
-	if ( ((strlen (netwin->param) == 1) || !(strcmp (netwin->param, "TRL"))) 
-	     && (!g_strrstr (netwin->file, "%%")) && (netwin->format == 1) )
+	if (strlen (netwin->param) == 1)
+		netwin->numparam = 4; /* Full S-matrix -> 4 parameters */
+	else if (!(strcmp (netwin->param, "TRL")))
+		netwin->numparam = 6; /* TRL -> 6 parameters */
+	else
+		netwin->numparam = 1; /* Single element -> 1 parameter */
+
+	if ( (netwin->numparam == 6) && (netwin->format == 2) )
+	{
+		/* TRL selected and SNP format are not possible */
+		dialog_message ("You cannot use the SNP format for TRL type measurements.");
+		return 1;
+	}
+	if ( (netwin->numparam > 1) && (netwin->format == 1) 
+	     && (!g_strrstr (netwin->file, "%%")) )
 	{
 		/* S or TRL selected, DAT format but no wild-card */
 		dialog_message ("Output filename does not contain wild-card \"%%%%\".");
 		return 1;
 	}
-	if ( (strlen (netwin->param) == 1) && (netwin->format == 2) 
+	if ( (netwin->numparam == 4) && (netwin->format == 2) 
 	     && (!g_str_has_suffix (netwin->file, ".s2p")) )
 	{
 		/* S selected, SNP format but wrong suffix */
 		dialog_message ("The output filename must have '.s2p' as suffix.");
 		return 1;
 	}
-	if ( ((strlen (netwin->param) == 3) && (netwin->param[0] == 'S')) 
-	     && (netwin->format == 2) && (!g_str_has_suffix (netwin->file, ".s1p")) )
+	if ( (netwin->numparam == 1) && (netwin->format == 2) 
+	     && (!g_str_has_suffix (netwin->file, ".s1p")) )
 	{
 		/* S?? selected, SNP format but wrong suffix */
 		dialog_message ("The output filename must have '.s1p' as suffix.");
-		return 1;
-	}
-	if ( (!strcmp (netwin->param, "TRL")) && (netwin->format == 2) )
-	{
-		/* TRL selected and SNP format are not possible */
-		dialog_message ("You cannot use the SNP format for TRL type measurements.");
 		return 1;
 	}
 	
@@ -445,6 +471,45 @@ static int network_gui_to_struct ()
 	/* ramp mode -> 1; step mode -> 2 */
 	netwin->swpmode = 1 + gtk_combo_box_get_active (
 			GTK_COMBO_BOX (glade_xml_get_widget (netwin->xmlnet, "vna_stim_combo")));
+
+	entry = GTK_ENTRY (glade_xml_get_widget (netwin->xmlnet, "vna_bw_entry"));
+	text = gtk_entry_get_text (entry);
+	if (sscanf (text, "%lf", &val) != 1)
+	{
+		dialog_message ("Could not parse IF bandwidth.");
+		return 1;
+	}
+	val *= 1e3;
+	if (netwin->vna_func->get_capa (4) > 0)
+	{
+		if (val < netwin->vna_func->get_capa (4))
+		{
+			dialog_message ("IF bandwidth must not be less than %f kHz.",
+				netwin->vna_func->get_capa (4) / 1e3);
+			return 1;
+		}
+		if (val > netwin->vna_func->get_capa (5))
+		{
+			dialog_message ("IF bandwidth must not be greater than %f kHz.",
+				netwin->vna_func->get_capa (5) / 1e3);
+			return 1;
+		}
+	}
+	netwin->bandwidth = val;
+
+	entry = GTK_ENTRY (glade_xml_get_widget (netwin->xmlnet, "vna_dwell_entry"));
+	text = gtk_entry_get_text (entry);
+	if (sscanf (text, "%lf", &val) != 1)
+	{
+		dialog_message ("Could not parse dwell time.");
+		return 1;
+	}
+	if (val < 0)
+	{
+		dialog_message ("Dwell time must not be negative");
+		return 1;
+	}
+	netwin->bandwidth = val / 1e3;
 
 	return 0;
 }
@@ -468,9 +533,12 @@ void network_open_win ()
 		glob->netwin->format = 1;
 		glob->netwin->type = 1;
 		glob->netwin->param[0] = '\0';
+		glob->netwin->numparam = 0;
 		glob->netwin->points = 801;
 		glob->netwin->avg = 0;
 		glob->netwin->swpmode = 1;
+		glob->netwin->bandwidth = 50000;
+		glob->netwin->dwell = 0;
 		glob->netwin->vna_func = NULL;
 	}
 
@@ -492,7 +560,7 @@ void network_open_win ()
 			GTK_ENTRY (glade_xml_get_widget (xmlnet, "vna_host_entry")),
 			0, 0);
 
-		/* Set default start, stop and avg values */
+		/* Set default start, stop, avg, bw and dwell values */
 		gtk_entry_set_text (
 			GTK_ENTRY (glade_xml_get_widget (xmlnet, "vna_start_entry")),
 			"0.045");
@@ -502,6 +570,12 @@ void network_open_win ()
 		gtk_entry_set_text (
 			GTK_ENTRY (glade_xml_get_widget (xmlnet, "vna_res_entry")),
 			"100");
+		gtk_entry_set_text (
+			GTK_ENTRY (glade_xml_get_widget (xmlnet, "vna_bw_entry")),
+			"50");
+		gtk_entry_set_text (
+			GTK_ENTRY (glade_xml_get_widget (xmlnet, "vna_dwell_entry")),
+			"0");
 
 		/* Set up S-Parameter combo */
 		gtk_combo_box_set_active (
@@ -557,10 +631,9 @@ void on_vna_start_activate (GtkMenuItem *menuitem, gpointer user_data)
 	}
 
 	/* Check file(s) */
-	if ( ((strlen (glob->netwin->param) != 1) && (strcmp (glob->netwin->param , "TRL")))
-	     || (glob->netwin->format == 2) )
+	if ((glob->netwin->numparam == 1) || (glob->netwin->format == 2))
 	{
-		/* (no S or TRL measurement) or (SNP format) */
+		/* (single S-parameter measurement) or (SNP format) */
 		if (!file_is_writeable (filename))
 		{
 			g_free (filename);
@@ -595,7 +668,7 @@ void on_vna_start_activate (GtkMenuItem *menuitem, gpointer user_data)
 				glob->netwin->fullname[2*i+j] = g_strdup (filename);
 			}
 
-		if (!strcmp (glob->netwin->param , "TRL"))
+		if (glob->netwin->numparam == 6)
 		{
 			/* TRL measurement */
 			pos[0] = 'a';
@@ -651,6 +724,9 @@ void on_vna_sweep_mode_change (GtkToggleButton *toggle, gpointer user_data)
 	gtk_widget_set_sensitive (
 		glade_xml_get_widget (glob->netwin->xmlnet, "vna_settings_frame"),
 		gtk_toggle_button_get_active (toggle));
+	gtk_widget_set_sensitive (
+		glade_xml_get_widget (glob->netwin->xmlnet, "vna_advanced_frame"),
+		gtk_toggle_button_get_active (toggle) && (glob->netwin->vnamodel == 2));
 }
 
 /* Change VNA model */
@@ -663,17 +739,18 @@ void on_vna_model_change (GtkToggleButton *toggle, gpointer user_data)
 			GTK_TOGGLE_BUTTON (glade_xml_get_widget (glob->netwin->xmlnet, "vna_8510_radio"))))
 	{
 		glob->netwin->vnamodel = 1;
-		gtk_label_set_text (
-			GTK_LABEL (glade_xml_get_widget (glob->netwin->xmlnet, "vna_proxy_label")),
-			"Ieee488Proxy host: ");
-				
+		gtk_widget_set_sensitive (
+			glade_xml_get_widget (glob->netwin->xmlnet, "vna_advanced_frame"),
+			FALSE);
 	}
 	else
 	{
 		glob->netwin->vnamodel = 2;
-		gtk_label_set_text (
-			GTK_LABEL (glade_xml_get_widget (glob->netwin->xmlnet, "vna_proxy_label")),
-			"PNA N5230A host: ");
+		gtk_widget_set_sensitive (
+			glade_xml_get_widget (glob->netwin->xmlnet, "vna_advanced_frame"),
+			TRUE && gtk_toggle_button_get_active (
+				GTK_TOGGLE_BUTTON (glade_xml_get_widget (glob->netwin->xmlnet, "vna_sweep_radio"))
+			));
 	}
 }
 
@@ -1150,14 +1227,17 @@ static gboolean vna_write_header (gint pos, gchar *sparam, NetworkWin *netwin)
 				comment_char, netwin->start/1e9, netwin->stop/1e9, netwin->resol/1e3);
 		fprintf (outfh, "%c Stimulus settings  : %s, %dx averaging, %s mode\r\n",
 				comment_char, sparam, netwin->avg, netwin->swpmode == 1 ? "ramp" : "step");
+		if (netwin->vnamodel > 1)
+			fprintf (outfh, "%c                      bandwidth %f kHz, dwell time %g ms\r\n",
+		                comment_char, netwin->bandwidth / 1e3, netwin->dwell / 1e3);
 		if (netwin->comment)
 			fprintf (outfh, "%c Comment            : %s\r\n", comment_char, netwin->comment);
 		if (glob->netwin->format == 2)
 			fprintf (outfh, "# Hz S  RI   R 50\r\n");
-		if ((glob->netwin->format == 1) || (strlen (sparam) > 1))
+		if ((glob->netwin->format == 1) || (glob->netwin->numparam == 1))
 			fprintf (outfh, DATAHDR, comment_char, comment_char);
 		else
-			fprintf (outfh, DATAHSNP);
+			fprintf (outfh, DATAHS2P);
 		fclose (outfh);
 	}
 	else
@@ -1173,14 +1253,17 @@ static gboolean vna_write_header (gint pos, gchar *sparam, NetworkWin *netwin)
 				comment_char, netwin->start/1e9, netwin->stop/1e9, netwin->resol/1e3);
 		gzprintf (netwin->gzoutfh[pos], "%c Stimulus settings  : %s, %dx averaging, %s mode\r\n",
 				comment_char, sparam, netwin->avg, netwin->swpmode == 1 ? "ramp" : "step");
+		if (netwin->vnamodel > 1)
+			gzprintf (netwin->gzoutfh[pos], "%c                      bandwidth %f kHz, dwell time %g ms\r\n",
+		                comment_char, netwin->bandwidth / 1e3, netwin->dwell / 1e3);
 		if (netwin->comment)
 			gzprintf (netwin->gzoutfh[pos], "%c Comment            : %s\r\n", comment_char, netwin->comment);
 		if (glob->netwin->format == 2)
 			gzprintf (netwin->gzoutfh[pos], "# Hz S  RI   R 50\r\n");
-		if ((glob->netwin->format == 1) || (strlen (sparam) > 1))
+		if ((glob->netwin->format == 1) || (glob->netwin->numparam == 1))
 			gzprintf (netwin->gzoutfh[pos], DATAHDR, comment_char, comment_char);
 		else
-			gzprintf (netwin->gzoutfh[pos], DATAHSNP);
+			gzprintf (netwin->gzoutfh[pos], DATAHS2P);
 #endif
 	}
 
@@ -1221,8 +1304,7 @@ static void vna_sweep_frequency_range ()
 	strftime (time_string, sizeof (time_string), "%Y-%m-%d %H:%M:%S", ptm);
 	sec_to_hhmmss (netwin->estim_t, &h, &m, &s);
 
-	if ( ((strlen (netwin->param) == 1) || !(strcmp (netwin->param, "TRL")))
-	     && (netwin->format == 1) )
+	if ((netwin->numparam > 1) && (netwin->format == 1))
 	{
 		/* Full S-matrix measurement in DAT format */
 		for (Si=0; Si<4; Si++)
@@ -1234,7 +1316,7 @@ static void vna_sweep_frequency_range ()
 			}
 		}
 
-		if (!strcmp (netwin->param, "TRL"))
+		if (netwin->numparam == 6)
 		{
 			/* TRL measurement (in DAT format) */
 			if (!vna_write_header (4, sparam[4], netwin))
@@ -1294,17 +1376,21 @@ static void vna_sweep_frequency_range ()
 		/* Wait for this part of the measurement to finish */
 		vna_func->wait ();
 
-		Si = 0;
-		while ( ((netwin->fullname[Si]) && (Si<6)) 
-		        || ((netwin->format == 2) && (strlen (netwin->param) == 1) && (Si<4)) )
+		Si = 0; /* Si: S-parameter iterator */
+		while ( ((netwin->fullname[Si]) && (Si<6)) /* parameters left not in S2P format */
+		        || ((netwin->format == 2) && (netwin->numparam == 4) && (Si<4)) ) /* left in S2P format */
 		{
 			/* Get data */
-			if ((netwin->fullname[1] || (netwin->format == 2)) && (Si < 4))
-				/* Full S-matrix measurement -> set correct S-parameter */
-				vna_func->select_s (sparam[Si]);
-			else
-				/* Prepare TRL measurement */
-				vna_func->select_trl (Si);
+			if (netwin->numparam > 1)
+			{
+				/* more then 1 S-parameter -> select correct one */
+				if (Si < 4)
+					/* Full S-matrix measurement */
+					vna_func->select_s (sparam[Si]);
+				else
+					/* Prepare TRL measurement */
+					vna_func->select_trl (Si);
+			}
 
 			vna_func->trace_scale_auto (sparam[Si]);
 
@@ -1332,7 +1418,7 @@ static void vna_sweep_frequency_range ()
 			{
 				/* First window, initialize graph */
 				dvec = new_datavector ( (guint) ((netwin->stop - netwin->start)/netwin->resol) + 1 );
-				if ((netwin->format == 1) || (strlen (netwin->param) > 1))
+				if ((netwin->format == 1) || (netwin->numparam == 1))
 					dvec->file = g_strdup (netwin->fullname[Si]);
 				else
 					dvec->file = g_strdup_printf ("%s:%s", netwin->fullname[0], sparam[Si]);
@@ -1371,7 +1457,7 @@ static void vna_sweep_frequency_range ()
 		}
 
 		/* Write new data to file(s) */
-		if ((netwin->format == 1) || (Si == 1))
+		if ((netwin->format == 1) || (netwin->numparam == 1))
 		{
 			/* DAT or S1P format */
 			for (j=0; j<Si; j++)
@@ -1393,7 +1479,7 @@ static void vna_sweep_frequency_range ()
 #ifndef NO_ZLIB
 					/* There ain't no append for gzopen... */
 					for (i=0; (i<netwin->points) && (fstart+(gdouble)i*netwin->resol <= netwin->stop); i++)
-						gzprintf (netwin->gzoutfh[Si], DATAFRMT,
+						gzprintf (netwin->gzoutfh[j], DATAFRMT,
 								fstart+(gdouble)i*netwin->resol, data[j][i].re, data[j][i].im);
 #endif
 				}
@@ -1412,7 +1498,7 @@ static void vna_sweep_frequency_range ()
 					vna_thread_exit ("Could not open output file for writing.");
 				}
 				for (i=0; (i<netwin->points) && (fstart+(gdouble)i*netwin->resol <= netwin->stop); i++)
-					fprintf (outfh, DATAFSNP, fstart+(gdouble)i*netwin->resol, 
+					fprintf (outfh, DATAFS2P, fstart+(gdouble)i*netwin->resol, 
 							data[0][i].re, data[0][i].im, data[2][i].re, data[2][i].im,
 							data[1][i].re, data[1][i].im, data[3][i].re, data[3][i].im);
 				fclose (outfh);
@@ -1422,7 +1508,7 @@ static void vna_sweep_frequency_range ()
 #ifndef NO_ZLIB
 				/* There ain't no append for gzopen... */
 				for (i=0; (i<netwin->points) && (fstart+(gdouble)i*netwin->resol <= netwin->stop); i++)
-					gzprintf (netwin->gzoutfh[0], DATAFSNP, fstart+(gdouble)i*netwin->resol, 
+					gzprintf (netwin->gzoutfh[0], DATAFS2P, fstart+(gdouble)i*netwin->resol, 
 							data[0][i].re, data[0][i].im, data[2][i].re, data[2][i].im,
 							data[1][i].re, data[1][i].im, data[3][i].re, data[3][i].im);
 #endif
@@ -1463,7 +1549,7 @@ static void vna_sweep_frequency_range ()
 		for (i=0; i<6; i++)
 			if (netwin->gzoutfh[i])
 			{
-				gzclose(netwin->gzoutfh[i]);
+				gzclose (netwin->gzoutfh[i]);
 				netwin->gzoutfh[i] = NULL;
 			}
 	}

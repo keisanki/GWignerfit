@@ -3998,24 +3998,9 @@ Please check and decide what to do.</property>
                     <property name="n_columns">2</property>
                     <property name="row_spacing">5</property>
                     <child>
-                      <placeholder/>
-                    </child>
-                    <child>
                       <widget class="GtkHBox" id="hbox13">
                         <property name="visible">True</property>
                         <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
-                        <child>
-                          <widget class="GtkRadioButton" id="vna_8510_radio">
-                            <property name="visible">True</property>
-                            <property name="can_focus">True</property>
-                            <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
-                            <property name="label" translatable="yes">8510C</property>
-                            <property name="response_id">0</property>
-                            <property name="active">True</property>
-                            <property name="draw_indicator">True</property>
-                            <signal name="toggled" handler="on_vna_model_change"/>
-                          </widget>
-                        </child>
                         <child>
                           <widget class="GtkRadioButton" id="vna_5230_radio">
                             <property name="visible">True</property>
@@ -4026,6 +4011,17 @@ Please check and decide what to do.</property>
                             <property name="active">True</property>
                             <property name="draw_indicator">True</property>
                             <property name="group">vna_8510_radio</property>
+                          </widget>
+                        </child>
+                        <child>
+                          <widget class="GtkRadioButton" id="vna_8510_radio">
+                            <property name="visible">True</property>
+                            <property name="can_focus">True</property>
+                            <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
+                            <property name="label" translatable="yes">8510C</property>
+                            <property name="response_id">0</property>
+                            <property name="draw_indicator">True</property>
+                            <signal name="toggled" handler="on_vna_model_change"/>
                           </widget>
                           <packing>
                             <property name="position">1</property>
@@ -4044,12 +4040,15 @@ Please check and decide what to do.</property>
                         <property name="xalign">0</property>
                         <property name="label" translatable="yes">VNA model:</property>
                       </widget>
+                      <packing>
+                        <property name="x_options">GTK_SHRINK | GTK_FILL</property>
+                      </packing>
                     </child>
                     <child>
                       <widget class="GtkLabel" id="vna_proxy_label">
                         <property name="visible">True</property>
                         <property name="xalign">0</property>
-                        <property name="label" translatable="yes">Ieee488Proxy host: </property>
+                        <property name="label" translatable="yes">VNA/Proxy host: </property>
                       </widget>
                       <packing>
                         <property name="top_attach">1</property>
@@ -4235,6 +4234,7 @@ Please check and decide what to do.</property>
                       <packing>
                         <property name="top_attach">5</property>
                         <property name="bottom_attach">6</property>
+                        <property name="x_options">GTK_FILL</property>
                       </packing>
                     </child>
                     <child>
@@ -4272,6 +4272,18 @@ Please check and decide what to do.</property>
                         <property name="right_attach">2</property>
                         <property name="top_attach">5</property>
                         <property name="bottom_attach">6</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <widget class="GtkLabel" id="label5">
+                        <property name="visible">True</property>
+                        <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
+                        <property name="label" translatable="yes"> </property>
+                      </widget>
+                      <packing>
+                        <property name="top_attach">4</property>
+                        <property name="bottom_attach">5</property>
+                        <property name="x_options"></property>
                       </packing>
                     </child>
                   </widget>
@@ -4456,6 +4468,7 @@ Please check and decide what to do.</property>
                         <property name="can_focus">True</property>
                         <property name="invisible_char">*</property>
                         <property name="width_chars">11</property>
+                        <property name="xalign">1</property>
                       </widget>
                       <packing>
                         <property name="left_attach">1</property>
@@ -4471,6 +4484,7 @@ Please check and decide what to do.</property>
                         <property name="can_focus">True</property>
                         <property name="invisible_char">*</property>
                         <property name="width_chars">11</property>
+                        <property name="xalign">1</property>
                       </widget>
                       <packing>
                         <property name="left_attach">1</property>
@@ -4486,6 +4500,7 @@ Please check and decide what to do.</property>
                         <property name="can_focus">True</property>
                         <property name="invisible_char">*</property>
                         <property name="width_chars">11</property>
+                        <property name="xalign">1</property>
                       </widget>
                       <packing>
                         <property name="left_attach">1</property>
@@ -4561,6 +4576,103 @@ step mode</property>
           </widget>
           <packing>
             <property name="position">2</property>
+          </packing>
+        </child>
+        <child>
+          <widget class="GtkFrame" id="vna_advanced_frame">
+            <property name="visible">True</property>
+            <property name="label_xalign">0</property>
+            <property name="shadow_type">GTK_SHADOW_NONE</property>
+            <child>
+              <widget class="GtkAlignment" id="alignment10">
+                <property name="visible">True</property>
+                <property name="left_padding">12</property>
+                <child>
+                  <widget class="GtkHBox" id="hbox21">
+                    <property name="visible">True</property>
+                    <property name="border_width">5</property>
+                    <property name="homogeneous">True</property>
+                    <child>
+                      <widget class="GtkHBox" id="hbox29">
+                        <property name="visible">True</property>
+                        <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
+                        <child>
+                          <widget class="GtkLabel" id="label13">
+                            <property name="visible">True</property>
+                            <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
+                            <property name="xalign">0</property>
+                            <property name="label" translatable="yes">IF Bandwidth [kHz]: </property>
+                          </widget>
+                          <packing>
+                            <property name="expand">False</property>
+                            <property name="fill">False</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <widget class="GtkEntry" id="vna_bw_entry">
+                            <property name="visible">True</property>
+                            <property name="can_focus">True</property>
+                            <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
+                            <property name="width_chars">11</property>
+                            <property name="xalign">1</property>
+                          </widget>
+                          <packing>
+                            <property name="position">1</property>
+                          </packing>
+                        </child>
+                      </widget>
+                    </child>
+                    <child>
+                      <widget class="GtkHBox" id="hbox30">
+                        <property name="visible">True</property>
+                        <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
+                        <child>
+                          <widget class="GtkLabel" id="label19">
+                            <property name="visible">True</property>
+                            <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
+                            <property name="xalign">0</property>
+                            <property name="xpad">10</property>
+                            <property name="label" translatable="yes">Dwell time [ms]: </property>
+                          </widget>
+                          <packing>
+                            <property name="expand">False</property>
+                            <property name="fill">False</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <widget class="GtkEntry" id="vna_dwell_entry">
+                            <property name="visible">True</property>
+                            <property name="can_focus">True</property>
+                            <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
+                            <property name="width_chars">11</property>
+                            <property name="xalign">1</property>
+                          </widget>
+                          <packing>
+                            <property name="position">1</property>
+                          </packing>
+                        </child>
+                      </widget>
+                      <packing>
+                        <property name="position">1</property>
+                      </packing>
+                    </child>
+                  </widget>
+                </child>
+              </widget>
+            </child>
+            <child>
+              <widget class="GtkLabel" id="label10">
+                <property name="visible">True</property>
+                <property name="label" translatable="yes">&lt;b&gt;Advanced settings&lt;/b&gt;</property>
+                <property name="use_markup">True</property>
+              </widget>
+              <packing>
+                <property name="type">label_item</property>
+              </packing>
+            </child>
+          </widget>
+          <packing>
+            <property name="position">3</property>
           </packing>
         </child>
         <child>
@@ -4667,7 +4779,7 @@ step mode</property>
             </child>
           </widget>
           <packing>
-            <property name="position">3</property>
+            <property name="position">4</property>
           </packing>
         </child>
         <child>
@@ -4676,7 +4788,7 @@ step mode</property>
           </widget>
           <packing>
             <property name="expand">False</property>
-            <property name="position">4</property>
+            <property name="position">5</property>
           </packing>
         </child>
         <child>
@@ -4746,7 +4858,7 @@ step mode</property>
           </widget>
           <packing>
             <property name="expand">False</property>
-            <property name="position">5</property>
+            <property name="position">6</property>
           </packing>
         </child>
       </widget>
