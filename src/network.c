@@ -240,10 +240,13 @@ static void network_struct_to_gui ()
 		g_free (text);
 	}
 
-	entry = GTK_ENTRY (glade_xml_get_widget (netwin->xmlnet, "vna_dwell_entry"));
-	text = g_strdup_printf ("%g", netwin->dwell / 1e3);
-	gtk_entry_set_text (entry, text);
-	g_free (text);
+	if (netwin->dwell >= 0)
+	{
+		entry = GTK_ENTRY (glade_xml_get_widget (netwin->xmlnet, "vna_dwell_entry"));
+		text = g_strdup_printf ("%g", netwin->dwell / 1e3);
+		gtk_entry_set_text (entry, text);
+		g_free (text);
+	}
 }
 
 /* Connect the VNA accessing backend functions */
@@ -521,8 +524,9 @@ void network_open_win ()
 
 	if (glob->netwin == NULL)
 	{
+		/* Populate struct with sensible default values */
 		glob->netwin = g_new0 (NetworkWin, 1);
-		glob->netwin->vnamodel = 1;
+		glob->netwin->vnamodel = glob->prefs->vnamodel;
 		glob->netwin->fullname[0] = NULL;
 		glob->netwin->fullname[1] = NULL;
 		glob->netwin->fullname[2] = NULL;
@@ -530,16 +534,25 @@ void network_open_win ()
 		glob->netwin->fullname[4] = NULL;
 		glob->netwin->fullname[5] = NULL;
 		glob->netwin->comment = NULL;
+		glob->netwin->compress = FALSE;
 		glob->netwin->format = 1;
 		glob->netwin->type = 1;
-		glob->netwin->param[0] = '\0';
+		glob->netwin->start =  0.045e9;
+		glob->netwin->stop = 20e9;
+		glob->netwin->resol = 100e3;
+		glob->netwin->param[0] = 'S';
+		glob->netwin->param[1] = '1';
+		glob->netwin->param[2] = '2';
+		glob->netwin->param[3] = '\0';
 		glob->netwin->numparam = 0;
 		glob->netwin->points = 801;
-		glob->netwin->avg = 0;
+		glob->netwin->avg = 4;
 		glob->netwin->swpmode = 1;
 		glob->netwin->bandwidth = 50000;
 		glob->netwin->dwell = 0;
 		glob->netwin->vna_func = NULL;
+		if (glob->prefs->vnahost)
+			glob->netwin->host = g_strdup (glob->prefs->vnahost);
 	}
 
 	if (glob->netwin->vna_func == NULL)
@@ -547,6 +560,7 @@ void network_open_win ()
 
 	if (glob->netwin->xmlnet == NULL)
 	{
+		/* Create, show and populate measurement window */
 		xmlnet = glade_xml_new (GLADEFILE, "vna_win", NULL);
 		glob->netwin->xmlnet = xmlnet;
 		glade_xml_signal_autoconnect (xmlnet);
@@ -555,44 +569,6 @@ void network_open_win ()
 		gtk_widget_hide_all (glade_xml_get_widget (xmlnet, "vna_compress_check"));
 #endif
 
-		/* Unselect host entry */
-		gtk_entry_select_region (
-			GTK_ENTRY (glade_xml_get_widget (xmlnet, "vna_host_entry")),
-			0, 0);
-
-		/* Set default start, stop, avg, bw and dwell values */
-		gtk_entry_set_text (
-			GTK_ENTRY (glade_xml_get_widget (xmlnet, "vna_start_entry")),
-			"0.045");
-		gtk_entry_set_text (
-			GTK_ENTRY (glade_xml_get_widget (xmlnet, "vna_stop_entry")),
-			"10.000");
-		gtk_entry_set_text (
-			GTK_ENTRY (glade_xml_get_widget (xmlnet, "vna_res_entry")),
-			"100");
-		gtk_entry_set_text (
-			GTK_ENTRY (glade_xml_get_widget (xmlnet, "vna_bw_entry")),
-			"50");
-		gtk_entry_set_text (
-			GTK_ENTRY (glade_xml_get_widget (xmlnet, "vna_dwell_entry")),
-			"0");
-
-		/* Set up S-Parameter combo */
-		gtk_combo_box_set_active (
-			GTK_COMBO_BOX (glade_xml_get_widget (xmlnet, "vna_s_combo")),
-			1);
-
-		/* Set up averaging combo */
-		gtk_combo_box_set_active (
-			GTK_COMBO_BOX (glade_xml_get_widget (xmlnet, "vna_avg_combo")),
-			2);
-
-		/* Set up stimulus combo */
-		gtk_combo_box_set_active (
-			GTK_COMBO_BOX (glade_xml_get_widget (xmlnet, "vna_stim_combo")),
-			0);
-		
-		/* Update the GUI with remembered values */
 		network_struct_to_gui ();
 	}
 }

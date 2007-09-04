@@ -118,6 +118,8 @@ typedef struct
 	gdouble cal_C1;			/* Open calibration signal: capacity C1 value */
 	gdouble cal_C2;			/* Open calibration signal: capacity C2 value */
 	gdouble cal_C3;			/* Open calibration signal: capacity C3 value */
+	gint vnamodel;			/* VNA backend: 1=proxy, 2=n5230a */
+	gchar *vnahost;			/* VNA resp. Ieee488Proxy hostname */
 } Preferences;
 
 typedef struct
@@ -169,7 +171,7 @@ typedef struct
 {
 	GladeXML *xmlnet;		/* Glade XML structure for network_window */
 	gint vnamodel;			/* VNA backend: 1=proxy, 2=n5230a */
-	gchar *host;			/* Ieee488Proxy hostname */
+	gchar *host;			/* VNA resp. Ieee488Proxy hostname */
 	VnaBackend *vna_func;		/* Callbacks to VNA communication layer */
 	gchar *path;			/* Path for output file */
 	gchar *file;			/* Filename for output file */

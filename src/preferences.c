@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <string.h>
 #include <gtk/gtk.h>
 #include <glade/glade.h>
 
@@ -36,6 +37,8 @@ void prefs_set_default ()
 	glob->prefs->cal_C1 = 165.78e-27;
 	glob->prefs->cal_C2 = -3.54e-36;
 	glob->prefs->cal_C3 = 0.07e-45;
+	glob->prefs->vnamodel = 2;
+	glob->prefs->vnahost = NULL;
 }
 
 /* Save the preferences in ~/.gwignerfitrc */
@@ -76,6 +79,9 @@ void prefs_save (Preferences *prefs)
 	fprintf (fh, "cal_C1 = %e\n", prefs->cal_C1);
 	fprintf (fh, "cal_C2 = %e\n", prefs->cal_C2);
 	fprintf (fh, "cal_C3 = %e\n", prefs->cal_C3);
+	fprintf (fh, "vna_model = %d\n", prefs->vnamodel);
+	if (prefs->vnahost)
+		fprintf (fh, "vna_host = %s\n", prefs->vnahost);
 
 	fclose (fh);
 }
@@ -85,7 +91,7 @@ void prefs_load (Preferences *prefs)
 {
 	FILE *fh;
 	gchar *filename;
-	gchar line[100], cmd[100];
+	gchar line[100], cmd[100], str[100];
 	gint val;
 	gdouble val2;
 
@@ -127,6 +133,20 @@ void prefs_load (Preferences *prefs)
 				prefs->cal_C2 = val2;
 			if (!g_ascii_strncasecmp (cmd, "cal_C3", 9))
 				prefs->cal_C3 = val2;
+
+			continue;
+		}
+
+		if (g_str_has_prefix (line, "vna_host"))
+		{
+			/* VNA host is a string */
+			
+			if (sscanf (line, "%s = %s", cmd, str) != 2)
+				continue;
+
+			prefs->vnahost = g_strdup (str);
+
+			continue;
 		}
 
 		if (sscanf (line, "%s = %d", cmd, &val) != 2)
@@ -156,6 +176,8 @@ void prefs_load (Preferences *prefs)
 			prefs->res_export = val;
 		if (!g_ascii_strncasecmp (cmd, "priority", 9))
 			prefs->priority = val;
+		if (!g_ascii_strncasecmp (cmd, "vna_model", 9))
+			prefs->vnamodel = val;
 	}
 	fclose (fh);
 }
@@ -231,6 +253,20 @@ void prefs_change_win ()
 		gtk_toggle_button_set_active (
 			GTK_TOGGLE_BUTTON (glade_xml_get_widget (xmldialog, "rad_radio")), 
 			TRUE);
+
+	if (glob->prefs->vnamodel == 1)
+		gtk_toggle_button_set_active (
+			GTK_TOGGLE_BUTTON (glade_xml_get_widget (xmldialog, "prefs_8510c_radio")), 
+			TRUE);
+	else
+		gtk_toggle_button_set_active (
+			GTK_TOGGLE_BUTTON (glade_xml_get_widget (xmldialog, "prefs_n5230a_radio")), 
+			TRUE);
+
+	if (glob->prefs->vnahost)
+		gtk_entry_set_text (
+			GTK_ENTRY (glade_xml_get_widget (xmldialog, "prefs_vnahost_entry")),
+			glob->prefs->vnahost);
 
 	result = gtk_dialog_run (GTK_DIALOG (dialog));
 
@@ -359,6 +395,25 @@ void prefs_change_win ()
 		}
 		else
 			glob->prefs->sortparam = FALSE;
+
+		if (gtk_toggle_button_get_active (
+			GTK_TOGGLE_BUTTON (glade_xml_get_widget (xmldialog, "prefs_8510c_radio"))))
+		{
+			glob->prefs->vnamodel = 1;
+		}
+		if (gtk_toggle_button_get_active (
+			GTK_TOGGLE_BUTTON (glade_xml_get_widget (xmldialog, "prefs_n5230a_radio"))))
+		{
+			glob->prefs->vnamodel = 2;
+		}
+
+		glob->prefs->vnahost = g_strdup (gtk_entry_get_text (
+			GTK_ENTRY (glade_xml_get_widget (xmldialog, "prefs_vnahost_entry"))));
+		if (strlen (glob->prefs->vnahost) == 0)
+		{
+			g_free (glob->prefs->vnahost);
+			glob->prefs->vnahost = NULL;
+		}
 		
 		prefs_save (glob->prefs);
 		statusbar_message ("Preferences changed");
