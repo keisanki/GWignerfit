@@ -549,7 +549,7 @@ void vna_proxy_set_numg (gint numg)
 	g_return_if_fail (numg > 0);
 
 	/* Only one sweep necessary in step mode */
-	if (glob->netwin->swpmode == 1)
+	if (glob->netwin->swpmode == 2)
 		numg = 1;
 
 	g_snprintf (cmdstr, 80, "MTA LISTEN "VNA_GBIP" DATA 'NUMG %d;'", numg);
