@@ -512,7 +512,7 @@ static int network_gui_to_struct ()
 		dialog_message ("Dwell time must not be negative");
 		return 1;
 	}
-	netwin->bandwidth = val / 1e3;
+	netwin->dwell = val / 1e3;
 
 	return 0;
 }
@@ -1204,7 +1204,7 @@ static gboolean vna_write_header (gint pos, gchar *sparam, NetworkWin *netwin)
 		fprintf (outfh, "%c Stimulus settings  : %s, %dx averaging, %s mode\r\n",
 				comment_char, sparam, netwin->avg, netwin->swpmode == 1 ? "ramp" : "step");
 		if (netwin->vnamodel > 1)
-			fprintf (outfh, "%c                      bandwidth %f kHz, dwell time %g ms\r\n",
+			fprintf (outfh, "%c                      bandwidth %.3f kHz, dwell time %g ms\r\n",
 		                comment_char, netwin->bandwidth / 1e3, netwin->dwell / 1e3);
 		if (netwin->comment)
 			fprintf (outfh, "%c Comment            : %s\r\n", comment_char, netwin->comment);

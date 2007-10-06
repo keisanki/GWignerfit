@@ -58,10 +58,6 @@ int vna_n5230a_receiveall_full (int s, char *buf, int len, int failok)
 				if (glob->netwin && glob->netwin->sockfd)
 					vna_n5230a_gtl ();
 
-				DV(if (len < 128)
-					printf ("received (%d bytes): %.*s", len, len, buf);
-				else
-					printf ("received (%d bytes): [data not shown]\n", len);)
 				vna_thread_exit ("Connection to proxy host timed out "
 						"(received only %i of %i expected bytes).", total, len);
 			}
@@ -83,6 +79,11 @@ int vna_n5230a_receiveall_full (int s, char *buf, int len, int failok)
 	}
 
 	/*len = total;*/ /* return number actually received here */
+
+	DV(if (len < 128)
+		printf ("received (%d bytes): %.*s\n", len, len, buf);
+	else
+		printf ("received (%d bytes): [data not shown]\n", len);)
 
 	return n==-1?-1:0; /* return -1 on failure, 0 on success */
 }
@@ -322,38 +323,34 @@ void vna_n5230a_llo ()
 /* Calculate the ms to wait for a window to be measured for an HP 8510C */
 glong vna_n5230a_sweep_cal_sleep ()
 {
-	glong delta;
+	gdouble delta;
 	
 	if (glob->netwin->swpmode == 1)
-		delta = 380 * glob->netwin->avg + 700;
+	{
+		/* Ramp mode */
+		delta = 10.0 * pow (glob->netwin->bandwidth/1e3, -0.7);
+		delta *= (gdouble) glob->netwin->avg;
+		delta += (gdouble) glob->netwin->points * glob->netwin->dwell;
+		delta *= 1000.0;
+	}
 	else
 	{
-		switch (glob->netwin->avg)
-		{
-			case 1: case 2: case 4: case 8: case 16:
-				delta = 40000;
-			case 32: case 64:
-				delta = 45000;
-			case 128:
-				delta = 65000;
-			case 256:
-				delta = 75000;
-			default:
-				/* Should not be reached */
-				delta = 50000;
-		}
-
-		/* Prevent numerous timeouts */
-		delta += 2000;
+		/* Step mode */
+		delta = 29.5 * (pow (glob->netwin->bandwidth/1e3, -1.4) + 0.17 * pow (glob->netwin->bandwidth/1e3, -0.13));
+		delta *= (gdouble) glob->netwin->avg;
+		delta += (gdouble) glob->netwin->points * glob->netwin->dwell;
+		delta *= 1000.0;
 	}
 
 	if (glob->netwin->numparam == 4)
 		delta *= (glob->netwin->swpmode == 1) ? 5 : 1.5;
 
+	/*
 	if (glob->netwin->numparam == 6)
 		delta *= (glob->netwin->swpmode == 1) ? 7 : 2.0;
+	*/
 
-	return delta;
+	return (glong) delta;
 }
 
 /* Retrieve the current start frequency from the VNA */
@@ -423,10 +420,10 @@ void vna_n5230a_sweep_prepare ()
 	{
 		/* Prepare display for full S-matrix measurement */
 		vna_n5230a_send_cmd (sockfd, "DISP:ARR STAC");
-		vna_n5230a_send_cmd (sockfd, "CALC:PAR:DEF:EXT 'gwf_S11','S11'");
-		vna_n5230a_send_cmd (sockfd, "CALC:PAR:DEF:EXT 'gwf_S12','S12'");
-		vna_n5230a_send_cmd (sockfd, "CALC:PAR:DEF:EXT 'gwf_S21','S21'");
-		vna_n5230a_send_cmd (sockfd, "CALC:PAR:DEF:EXT 'gwf_S22','S22'");
+		vna_n5230a_send_cmd (sockfd, "CALC:PAR:DEF 'gwf_S11',S11");
+		vna_n5230a_send_cmd (sockfd, "CALC:PAR:DEF 'gwf_S12',S12");
+		vna_n5230a_send_cmd (sockfd, "CALC:PAR:DEF 'gwf_S21',S21");
+		vna_n5230a_send_cmd (sockfd, "CALC:PAR:DEF 'gwf_S22',S22");
 		vna_n5230a_send_cmd (sockfd, "SENS:SWE:POIN 16001");
 		vna_n5230a_send_cmd (sockfd, "DISP:WIND1:TRAC1:FEED 'gwf_S12'");
 		vna_n5230a_send_cmd (sockfd, "DISP:WIND1:TRAC2:FEED 'gwf_S21'");
@@ -441,7 +438,7 @@ void vna_n5230a_sweep_prepare ()
 	{
 		/* Select correct S parameter for single element measurement */
 		vna_n5230a_send_cmd (sockfd, "DISP:WIND ON");
-		g_snprintf (cmdstr, 80, "CALC:PAR:DEF:EXT 'gwf_%s','%s'", netwin->param, netwin->param);
+		g_snprintf (cmdstr, 80, "CALC:PAR:DEF 'gwf_%s',%s", netwin->param, netwin->param);
 		vna_n5230a_send_cmd (sockfd, cmdstr);
 		vna_n5230a_send_cmd (sockfd, "SENS:SWE:POIN 16001");
 		g_snprintf (cmdstr, 80, "DISP:WIND:TRAC:FEED 'gwf_%s'", netwin->param);
@@ -450,6 +447,9 @@ void vna_n5230a_sweep_prepare ()
 		g_snprintf (cmdstr, 80, "CALC:PAR:SEL 'gwf_%s'", netwin->param);
 		vna_n5230a_send_cmd (sockfd, cmdstr);
 	}
+
+	/* Prevent a possibly long initial update cycle */
+	vna_n5230a_send_cmd (glob->netwin->sockfd, "SENS:SWE:MODE HOLD");
 
 	if (netwin->bandwidth > 0)
 	{
@@ -530,6 +530,8 @@ void vna_n5230a_set_numg (gint numg)
 
 	g_return_if_fail (glob->netwin);
 	g_return_if_fail (glob->netwin->sockfd > 0);
+
+	numg--;
 	g_return_if_fail (numg > 0);
 
 	vna_n5230a_send_cmd (glob->netwin->sockfd, "SENS:AVER:CLE");
@@ -549,6 +551,7 @@ void vna_n5230a_wait ()
 
 	vna_n5230a_send_cmd (glob->netwin->sockfd, "*OPC?");
 
+	buf[0] = '\0';
 	while ((buf[0] != '+') && (counter < 1200))
 	{
 		buf[0] = '\0';
