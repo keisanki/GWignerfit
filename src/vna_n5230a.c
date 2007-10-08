@@ -10,7 +10,7 @@
 #include "vna_n5230a.h"
 #include "network.h"
 
-#define DV(x) x			/* For debuggin set DV(x) x */
+#define DV(x)  			/* For debuggin set DV(x) x */
 
 extern GlobalData *glob;	/* Global variables */
 
@@ -256,13 +256,14 @@ int vna_n5230a_connect (const gchar *host)
 ComplexDouble *vna_n5230a_recv_data (int points)
 {
 	ComplexDouble *data;
-	char buf[16001*8], tmp;
+	char buf[16001*8];
 	int sockfd, i, numdigits;
 
 	g_return_val_if_fail (glob->netwin || glob->calwin, NULL);
 	g_return_val_if_fail (glob->netwin->sockfd > 0, NULL);
 	sockfd = glob->netwin->sockfd;
 
+	vna_n5230a_send_cmd (sockfd, "FORM:BORD SWAP");
 	vna_n5230a_send_cmd (sockfd, "FORM:DATA REAL,32");
 	vna_n5230a_send_cmd (sockfd, "CALC:DATA? SDATA");
 
@@ -280,15 +281,6 @@ ComplexDouble *vna_n5230a_recv_data (int points)
 	vna_n5230a_receiveall (sockfd, buf, numdigits+1);
 
 	data = g_new (ComplexDouble, points);
-	for (i=0; i<2*points; i++)
-	{
-		tmp        = buf[4*i+0];
-		buf[4*i+0] = buf[4*i+3];
-		buf[4*i+3] = tmp;
-		tmp        = buf[4*i+1];
-		buf[4*i+1] = buf[4*i+2];
-		buf[4*i+2] = tmp;
-	}
 	for (i=0; i<points; i++)
 	{
 		data[i].re = (gdouble) *((gfloat *) &buf[8*i+0]);
@@ -558,7 +550,6 @@ void vna_n5230a_wait ()
 	{
 		buf[0] = '\0';
 		vna_n5230a_receiveall_full (glob->netwin->sockfd, buf, 3, 1);
-		usleep (5e5);
 		counter++;
 	}
 
