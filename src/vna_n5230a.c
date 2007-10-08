@@ -332,6 +332,7 @@ glong vna_n5230a_sweep_cal_sleep ()
 		delta *= (gdouble) glob->netwin->avg;
 		delta += (gdouble) glob->netwin->points * glob->netwin->dwell;
 		delta *= 1000.0;
+		delta *= 1.3;
 	}
 	else
 	{
@@ -340,10 +341,11 @@ glong vna_n5230a_sweep_cal_sleep ()
 		delta *= (gdouble) glob->netwin->avg;
 		delta += (gdouble) glob->netwin->points * glob->netwin->dwell;
 		delta *= 1000.0;
+		delta *= 0.85;
 	}
 
 	if (glob->netwin->numparam == 4)
-		delta *= (glob->netwin->swpmode == 1) ? 5 : 1.5;
+		delta *= (glob->netwin->swpmode == 1) ? 3.5 : 2.2;
 
 	/*
 	if (glob->netwin->numparam == 6)
