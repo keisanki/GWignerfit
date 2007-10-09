@@ -11,7 +11,7 @@
 int vna_n5230a_receiveall_full (int s, char *buf, int len, int failok);
 int vna_n5230a_receiveall (int s, char *buf, int len);
 int vna_n5230a_sendall (int s, char *buf, int len);
-int vna_n5230a_send_cmd (int fd, char *msg);
+int vna_n5230a_send_cmd (int fd, char *format, ...);
 
 int vna_n5230a_connect (const gchar *host);
 ComplexDouble *vna_n5230a_recv_data (int points);

@@ -144,13 +144,19 @@ int vna_n5230a_sendall (int s, char *buf, int len)
 }
 
 /* Send (must be \0 terminated!) msg to the proxy and return the status message. */
-int vna_n5230a_send_cmd (int fd, char *msg)
+int vna_n5230a_send_cmd (int fd, char *format, ...)
 {
-	gchar *sndmsg;
+	va_list ap;
+	gchar *msg, *sndmsg;
 
-	g_return_val_if_fail (msg, -1);
+	g_return_val_if_fail (format, -1);
+
+	va_start (ap, format);
+	msg = g_strdup_vprintf (format, ap);
+	va_end (ap);
 
 	sndmsg = g_strdup_printf ("%s\n", msg);
+	g_free (msg);
 	vna_n5230a_sendall (fd, sndmsg, strlen (sndmsg));
 	g_free (sndmsg);
 
@@ -399,7 +405,6 @@ gint vna_n5230a_get_points ()
 void vna_n5230a_sweep_prepare ()
 {
 	NetworkWin *netwin;
-	char cmdstr[81];
 	int sockfd;
 
 	g_return_if_fail (glob->netwin);
@@ -432,14 +437,11 @@ void vna_n5230a_sweep_prepare ()
 	{
 		/* Select correct S parameter for single element measurement */
 		vna_n5230a_send_cmd (sockfd, "DISP:WIND ON");
-		g_snprintf (cmdstr, 80, "CALC:PAR:DEF 'gwf_%s',%s", netwin->param, netwin->param);
-		vna_n5230a_send_cmd (sockfd, cmdstr);
+		vna_n5230a_send_cmd (sockfd, "CALC:PAR:DEF 'gwf_%s',%s", netwin->param, netwin->param);
 		vna_n5230a_send_cmd (sockfd, "SENS:SWE:POIN 16001");
-		g_snprintf (cmdstr, 80, "DISP:WIND:TRAC:FEED 'gwf_%s'", netwin->param);
-		vna_n5230a_send_cmd (sockfd, cmdstr);
+		vna_n5230a_send_cmd (sockfd, "DISP:WIND:TRAC:FEED 'gwf_%s'", netwin->param);
 		vna_n5230a_send_cmd (sockfd, "DISP:WIND:TRAC:Y:SCALE:AUTO");
-		g_snprintf (cmdstr, 80, "CALC:PAR:SEL 'gwf_%s'", netwin->param);
-		vna_n5230a_send_cmd (sockfd, cmdstr);
+		vna_n5230a_send_cmd (sockfd, "CALC:PAR:SEL 'gwf_%s'", netwin->param);
 	}
 
 	/* Prevent a possibly long initial update cycle */
@@ -447,43 +449,35 @@ void vna_n5230a_sweep_prepare ()
 
 	if (netwin->bandwidth > 0)
 	{
-		g_snprintf (cmdstr, 80, "SENS:BWID %f", netwin->bandwidth);
-		vna_n5230a_send_cmd (sockfd, cmdstr);
+		vna_n5230a_send_cmd (sockfd, "SENS:BWID %f", netwin->bandwidth);
 		vna_n5230a_wait ();
 	}
 
 	if (netwin->dwell > 0)
-		g_snprintf (cmdstr, 80, "SENS:SWE:DWEL %f", netwin->dwell);
+		vna_n5230a_send_cmd (sockfd, "SENS:SWE:DWEL %f", netwin->dwell);
 	else
-		g_snprintf (cmdstr, 80, "SENS:SWE:DWEL 0");
-	vna_n5230a_send_cmd (sockfd, cmdstr);
+		vna_n5230a_send_cmd (sockfd, "SENS:SWE:DWEL 0");
 	vna_n5230a_wait ();
 
 	if (netwin->swpmode == 1)
-		g_snprintf (cmdstr, 80, "SENS:SWE:GEN ANAL");
+		vna_n5230a_send_cmd (sockfd, "SENS:SWE:GEN ANAL");
 	else
-		g_snprintf (cmdstr, 80, "SENS:SWE:GEN STEP");
-	vna_n5230a_send_cmd (sockfd, cmdstr);
+		vna_n5230a_send_cmd (sockfd, "SENS:SWE:GEN STEP");
 	vna_n5230a_wait ();
 
-	g_snprintf (cmdstr, 80, "SENS:AVER:COUN %d", netwin->avg);
-	vna_n5230a_send_cmd (sockfd, cmdstr);
+	vna_n5230a_send_cmd (sockfd, "SENS:AVER:COUN %d", netwin->avg);
 	vna_n5230a_send_cmd (sockfd, "SENS:AVER ON");
 }
 
 /* Set the VNA start and stop frequency (in Hz) */
 void vna_n5230a_set_startstop (gdouble start, gdouble stop)
 {
-	char cmdstr[81];
-
 	g_return_if_fail (glob->netwin);
 	g_return_if_fail (glob->netwin->sockfd > 0);
 	g_return_if_fail (stop > start);
 
-	g_snprintf (cmdstr, 80, "SENS:FREQ:STAR %.1lf", start);
-	vna_n5230a_send_cmd (glob->netwin->sockfd, cmdstr);
-	g_snprintf (cmdstr, 80, "SENS:FREQ:STOP %.1lf", stop);
-	vna_n5230a_send_cmd (glob->netwin->sockfd, cmdstr);
+	vna_n5230a_send_cmd (glob->netwin->sockfd, "SENS:FREQ:STAR %.1lf", start);
+	vna_n5230a_send_cmd (glob->netwin->sockfd, "SENS:FREQ:STOP %.1lf", stop);
 }
 
 /* Scale the trace on the VNA automatically */
@@ -520,8 +514,6 @@ void vna_n5230a_trace_fourparam ()
 /* Set the number of groups */
 void vna_n5230a_set_numg (gint numg)
 {
-	char cmdstr[81];
-
 	g_return_if_fail (glob->netwin);
 	g_return_if_fail (glob->netwin->sockfd > 0);
 
@@ -529,8 +521,7 @@ void vna_n5230a_set_numg (gint numg)
 	g_return_if_fail (numg > 0);
 
 	vna_n5230a_send_cmd (glob->netwin->sockfd, "SENS:AVER:CLE");
-	g_snprintf (cmdstr, 80, "SENS:SWE:GRO:COUN %d", numg);
-	vna_n5230a_send_cmd (glob->netwin->sockfd, cmdstr);
+	vna_n5230a_send_cmd (glob->netwin->sockfd, "SENS:SWE:GRO:COUN %d", numg);
 	vna_n5230a_send_cmd (glob->netwin->sockfd, "SENS:SWE:MODE GRO");
 }
 
@@ -560,14 +551,11 @@ void vna_n5230a_wait ()
 /* Select/activate given S-parameter */
 void vna_n5230a_select_s (gchar *sparam)
 {
-	char cmdstr[81];
-
 	g_return_if_fail (glob->netwin);
 	g_return_if_fail (glob->netwin->sockfd > 0);
 	g_return_if_fail (strlen (sparam) == 3);
 
-	g_snprintf (cmdstr, 80, "CALC:PAR:SEL 'gwf_%s'", sparam);
-	vna_n5230a_send_cmd (glob->netwin->sockfd, cmdstr);
+	vna_n5230a_send_cmd (glob->netwin->sockfd, "CALC:PAR:SEL 'gwf_%s'", sparam);
 }
 
 /* Prepare VNA for special TRL measurements */
