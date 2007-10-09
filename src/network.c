@@ -1246,6 +1246,11 @@ static gboolean vna_write_header (gint pos, gchar *sparam, NetworkWin *netwin)
 		if (netwin->vnamodel > 1)
 			fprintf (outfh, "%c                      bandwidth %.3f kHz, dwell time %g ms\r\n",
 		                comment_char, netwin->bandwidth / 1e3, netwin->dwell / 1e3);
+		fprintf (outfh, "%c Calibration mode   : ", comment_char);
+		if (netwin->calmode == 1)
+			fprintf (outfh, "ECal full 2-port SOLT calibration\r\n");
+		else
+			fprintf (outfh, "none\r\n");
 		if (netwin->comment)
 			fprintf (outfh, "%c Comment            : %s\r\n", comment_char, netwin->comment);
 		if (glob->netwin->format == 2)
@@ -1272,6 +1277,11 @@ static gboolean vna_write_header (gint pos, gchar *sparam, NetworkWin *netwin)
 		if (netwin->vnamodel > 1)
 			gzprintf (netwin->gzoutfh[pos], "%c                      bandwidth %f kHz, dwell time %g ms\r\n",
 		                comment_char, netwin->bandwidth / 1e3, netwin->dwell / 1e3);
+		gzprintf (netwin->gzoutfh[pos], "%c Calibration mode   : ", comment_char);
+		if (netwin->calmode == 1)
+			gzprintf (netwin->gzoutfh[pos], "ECal full 2-port SOLT calibration\r\n");
+		else
+			gzprintf (netwin->gzoutfh[pos], "none\r\n");
 		if (netwin->comment)
 			gzprintf (netwin->gzoutfh[pos], "%c Comment            : %s\r\n", comment_char, netwin->comment);
 		if (glob->netwin->format == 2)
