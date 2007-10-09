@@ -10,7 +10,7 @@
 #include "vna_n5230a.h"
 #include "network.h"
 
-#define DV(x) x			/* For debuggin set DV(x) x */
+#define DV(x)  			/* For debuggin set DV(x) x */
 
 extern GlobalData *glob;	/* Global variables */
 
@@ -329,7 +329,7 @@ glong vna_n5230a_sweep_cal_sleep ()
 		delta *= (gdouble) glob->netwin->avg;
 		delta += (gdouble) glob->netwin->points * glob->netwin->dwell;
 		delta *= 1000.0;
-		delta *= 1.3;
+		delta *= 0.9;
 	}
 	else
 	{
