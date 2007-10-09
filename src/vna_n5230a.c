@@ -10,7 +10,7 @@
 #include "vna_n5230a.h"
 #include "network.h"
 
-#define DV(x)  			/* For debuggin set DV(x) x */
+#define DV(x) x			/* For debuggin set DV(x) x */
 
 extern GlobalData *glob;	/* Global variables */
 
@@ -26,9 +26,6 @@ int vna_n5230a_receiveall_full (int s, char *buf, int len, int failok)
 	fd_set fdset;
 	int i;
 
-	FD_ZERO (&fdset);
-	FD_SET (s, &fdset);
-
 	while (total < len)
 	{
 		/* Wait VNA_N5230A_RECV_TOUT seconds for data */
@@ -36,8 +33,10 @@ int vna_n5230a_receiveall_full (int s, char *buf, int len, int failok)
 		{
 			tv.tv_sec  = 1;
 			tv.tv_usec = 0;
+			FD_ZERO (&fdset);
+			FD_SET (s, &fdset);
 			select (s+1, &fdset, NULL, NULL, &tv);
-			
+
 			if (FD_ISSET (s, &fdset))
 				break;
 

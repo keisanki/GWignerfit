@@ -6,7 +6,7 @@
 
 #define VNA_N5230A_PORT 5025	/* Port of Ieee488Proxy */
 #define VNA_N5230A_CONN_TOUT  5	/* Timeout (in sec) for connect */
-#define VNA_N5230A_RECV_TOUT  3	/* Timeout (in sec) for recv */
+#define VNA_N5230A_RECV_TOUT 30	/* Timeout (in sec) for recv */
 
 int vna_n5230a_receiveall_full (int s, char *buf, int len, int failok);
 int vna_n5230a_receiveall (int s, char *buf, int len);
