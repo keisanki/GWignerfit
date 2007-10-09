@@ -247,6 +247,10 @@ static void network_struct_to_gui ()
 		gtk_entry_set_text (entry, text);
 		g_free (text);
 	}
+
+	gtk_combo_box_set_active (
+		GTK_COMBO_BOX (glade_xml_get_widget (netwin->xmlnet, "vna_cal_combo")),
+		netwin->calmode);
 }
 
 /* Connect the VNA accessing backend functions */
@@ -274,6 +278,8 @@ void vna_connect_backend (VnaBackend *vna_func)
 		vna_func->wait = &vna_proxy_wait;
 		vna_func->select_s = &vna_proxy_select_s;
 		vna_func->select_trl = &vna_proxy_select_trl;
+		vna_func->calibrate = NULL;
+		vna_func->cal_recall = NULL;
 		vna_func->get_capa = &vna_proxy_get_capa;
 		glob->netwin->points = (gint) vna_proxy_get_capa (3);
 	}
@@ -296,6 +302,8 @@ void vna_connect_backend (VnaBackend *vna_func)
 		vna_func->wait = &vna_n5230a_wait;
 		vna_func->select_s = &vna_n5230a_select_s;
 		vna_func->select_trl = &vna_n5230a_select_trl;
+		vna_func->calibrate = &vna_n5230a_calibrate;
+		vna_func->cal_recall = &vna_n5230a_cal_recall;
 		vna_func->get_capa = &vna_n5230a_get_capa;
 		glob->netwin->points = (gint) vna_n5230a_get_capa (3);
 	}
@@ -318,6 +326,7 @@ static int network_gui_to_struct ()
 	/* Connect the VNA accessing backend functions */
 	vna_connect_backend (glob->netwin->vna_func);
 
+	/* VNA host */
 	entry = GTK_ENTRY (glade_xml_get_widget (netwin->xmlnet, "vna_host_entry"));
 	text = gtk_entry_get_text (entry);
 	if (!strlen(text))
@@ -328,12 +337,18 @@ static int network_gui_to_struct ()
 	g_free (netwin->host);
 	netwin->host = g_strdup (text);
 
+	/* calibration mode */
+	netwin->calmode = gtk_combo_box_get_active (
+			GTK_COMBO_BOX (glade_xml_get_widget (netwin->xmlnet, "vna_cal_combo")));
+
+	/* file format */
 	if (gtk_toggle_button_get_active (
 			GTK_TOGGLE_BUTTON (glade_xml_get_widget (netwin->xmlnet, "vna_dat_radio"))))
 		netwin->format = 1;
 	else
 		netwin->format = 2;
 
+	/* datafile path */
 	entry = GTK_ENTRY (glade_xml_get_widget (netwin->xmlnet, "vna_path_entry"));
 	text = gtk_entry_get_text (entry);
 	g_free (netwin->path);
@@ -342,24 +357,28 @@ static int network_gui_to_struct ()
 	else
 		netwin->path = NULL;
 
+	/* datafile name */
 	entry = GTK_ENTRY (glade_xml_get_widget (netwin->xmlnet, "vna_file_entry"));
 	text = gtk_entry_get_text (entry);
-	if (!strlen(text))
+	if (netwin->calmode < 2)
 	{
-		dialog_message ("Please enter a filename.");
-		return 1;
-	}
-	if (g_strrstr (text, G_DIR_SEPARATOR_S))
-	{
-		dialog_message ("A filename must not contain the '%c' character.", G_DIR_SEPARATOR);
-		return 1;
-	}
-	if ((!g_str_has_suffix (text, ".dat")) && (netwin->format == 1))
-		if (dialog_question ("You output file does not have the suffix '.dat', proceed anyway?")
-				!= GTK_RESPONSE_YES)
+		if (!strlen(text))
+		{
+			dialog_message ("Please enter a filename.");
 			return 1;
-	g_free (netwin->file);
-	netwin->file = g_strdup (text);
+		}
+		if (g_strrstr (text, G_DIR_SEPARATOR_S))
+		{
+			dialog_message ("A filename must not contain the '%c' character.", G_DIR_SEPARATOR);
+			return 1;
+		}
+		if ((!g_str_has_suffix (text, ".dat")) && (netwin->format == 1))
+			if (dialog_question ("You output file does not have the suffix '.dat', proceed anyway?")
+					!= GTK_RESPONSE_YES)
+				return 1;
+		g_free (netwin->file);
+		netwin->file = g_strdup (text);
+	}
 
 	entry = GTK_ENTRY (glade_xml_get_widget (netwin->xmlnet, "vna_comment_entry"));
 	text = gtk_entry_get_text (entry);
@@ -446,26 +465,30 @@ static int network_gui_to_struct ()
 		dialog_message ("You cannot use the SNP format for TRL type measurements.");
 		return 1;
 	}
-	if ( (netwin->numparam > 1) && (netwin->format == 1) 
-	     && (!g_strrstr (netwin->file, "%%")) )
+
+	if (netwin->calmode < 2)
 	{
-		/* S or TRL selected, DAT format but no wild-card */
-		dialog_message ("Output filename does not contain wild-card \"%%%%\".");
-		return 1;
-	}
-	if ( (netwin->numparam == 4) && (netwin->format == 2) 
-	     && (!g_str_has_suffix (netwin->file, ".s2p")) )
-	{
-		/* S selected, SNP format but wrong suffix */
-		dialog_message ("The output filename must have '.s2p' as suffix.");
-		return 1;
-	}
-	if ( (netwin->numparam == 1) && (netwin->format == 2) 
-	     && (!g_str_has_suffix (netwin->file, ".s1p")) )
-	{
-		/* S?? selected, SNP format but wrong suffix */
-		dialog_message ("The output filename must have '.s1p' as suffix.");
-		return 1;
+		if ( (netwin->numparam > 1) && (netwin->format == 1) 
+		     && (!g_strrstr (netwin->file, "%%")) )
+		{
+			/* S or TRL selected, DAT format but no wild-card */
+			dialog_message ("Output filename does not contain wild-card \"%%%%\".");
+			return 1;
+		}
+		if ( (netwin->numparam == 4) && (netwin->format == 2) 
+		     && (!g_str_has_suffix (netwin->file, ".s2p")) )
+		{
+			/* S selected, SNP format but wrong suffix */
+			dialog_message ("The output filename must have '.s2p' as suffix.");
+			return 1;
+		}
+		if ( (netwin->numparam == 1) && (netwin->format == 2) 
+		     && (!g_str_has_suffix (netwin->file, ".s1p")) )
+		{
+			/* S?? selected, SNP format but wrong suffix */
+			dialog_message ("The output filename must have '.s1p' as suffix.");
+			return 1;
+		}
 	}
 	
 	netwin->avg = 1 << gtk_combo_box_get_active (
@@ -550,6 +573,7 @@ void network_open_win ()
 		glob->netwin->swpmode = 1;
 		glob->netwin->bandwidth = 50000;
 		glob->netwin->dwell = 0;
+		glob->netwin->calmode = 0;
 		glob->netwin->vna_func = NULL;
 		if (glob->prefs->vnahost)
 			glob->netwin->host = g_strdup (glob->prefs->vnahost);
@@ -573,18 +597,10 @@ void network_open_win ()
 	}
 }
 
-/* The user clicked the start button */
-void on_vna_start_activate (GtkMenuItem *menuitem, gpointer user_data)
+gboolean network_create_files ()
 {
 	gchar *filename, *tmpname, *pos;
 	gint i, j;
-
-	g_return_if_fail (glob->netwin);
-	g_return_if_fail (glob->netwin->xmlnet);
-	
-	/* Update glob->netwin struct */
-	if (network_gui_to_struct ())
-		return;
 
 	/* Create filename(s) */
 	if (glob->netwin->path)
@@ -613,7 +629,7 @@ void on_vna_start_activate (GtkMenuItem *menuitem, gpointer user_data)
 		if (!file_is_writeable (filename))
 		{
 			g_free (filename);
-			return;
+			return FALSE;
 		}
 
 		glob->netwin->fullname[0] = filename;
@@ -622,7 +638,7 @@ void on_vna_start_activate (GtkMenuItem *menuitem, gpointer user_data)
 	{
 		/* Full S-matrix measurement (S or TRL) in DAT format */
 		pos = g_strrstr (filename, "%%");
-		g_return_if_fail (pos);
+		g_return_val_if_fail (pos, FALSE);
 
 		for (i=0; i<2; i++)
 			for (j=0; j<2; j++)
@@ -638,7 +654,7 @@ void on_vna_start_activate (GtkMenuItem *menuitem, gpointer user_data)
 						g_free (glob->netwin->fullname[i]);
 						glob->netwin->fullname[i] = NULL;
 					}
-					return;
+					return FALSE;
 				}
 
 				glob->netwin->fullname[2*i+j] = g_strdup (filename);
@@ -659,7 +675,7 @@ void on_vna_start_activate (GtkMenuItem *menuitem, gpointer user_data)
 						g_free (glob->netwin->fullname[i]);
 						glob->netwin->fullname[i] = NULL;
 					}
-					return;
+					return FALSE;
 				}
 				glob->netwin->fullname[4+i] = g_strdup (filename);
 			}
@@ -668,6 +684,30 @@ void on_vna_start_activate (GtkMenuItem *menuitem, gpointer user_data)
 		pos[0] = '%';
 		pos[1] = '%';
 	}
+
+	return TRUE;
+}
+
+/* The user clicked the start button */
+void on_vna_start_activate (GtkMenuItem *menuitem, gpointer user_data)
+{
+	g_return_if_fail (glob->netwin);
+	g_return_if_fail (glob->netwin->xmlnet);
+	
+	/* Update glob->netwin struct */
+	if (network_gui_to_struct ())
+		return;
+
+	if (glob->netwin->calmode < 2)
+	{
+		if (!network_create_files ())
+			return;
+	} else {
+		if (dialog_question ("Is the ECal module connected to the PNA and properly warmed up?") 
+				!= GTK_RESPONSE_YES)
+			return;
+	}
+
 
 	/* Disable start button and GUI entries */
 	gtk_widget_set_sensitive (
@@ -1246,6 +1286,91 @@ static gboolean vna_write_header (gint pos, gchar *sparam, NetworkWin *netwin)
 	return TRUE;
 }
 
+static void vna_cal_frequency_range ()
+{
+	NetworkWin *netwin;
+	VnaBackend *vna_func;
+	int winleft, windone;
+	gint startpointoffset;
+	GTimeVal starttime, curtime, difftime;
+	gdouble fstart, fstop;
+	gchar *err;
+
+	g_return_if_fail (glob->netwin);
+	netwin = glob->netwin;
+	vna_func = glob->netwin->vna_func;
+	g_return_if_fail (vna_func->calibrate);
+
+	/* Bring the VNA into the right state of mind */
+	vna_update_netstat ("Setting up network analyzer...");
+	vna_func->sweep_prepare ();
+
+	/* Calibrate those frequency windows */
+	g_get_current_time (&starttime);
+	windone = 0;
+	winleft = (int) ceil((netwin->stop - netwin->start)/((gdouble)netwin->points*netwin->resol));
+	for (fstart=netwin->start; fstart<=netwin->stop; fstart+=netwin->resol*(gdouble)netwin->points)
+	{
+		fstop = fstart + netwin->resol * ((gdouble)netwin->points - 1.0);
+
+		if (fstop > 50e9)
+		{
+			/* Right align measurement window */
+			while (fstop > 50e9)
+				fstop -= netwin->resol;
+
+			/* startpointoffset: position in data array where new data will start */
+			startpointoffset = (gint) ((fstart - (fstop - netwin->resol * ((gdouble)netwin->points - 1.0)))/netwin->resol);
+
+			fstart = fstop - netwin->resol * ((gdouble)netwin->points - 1.0);
+		}
+		else
+			startpointoffset = 0;
+
+		vna_update_netstat ("Calibrating %6.3f - %6.3f GHz...", fstart/1e9, fstop/1e9);
+
+		/* Choose frequency window and run calibration */
+		vna_func->set_startstop (fstart, fstop);
+		err = vna_func->calibrate (netwin->start, netwin->stop, netwin->resol, windone+1);
+		if (err)
+		{
+			vna_func->gtl ();
+			//FIXME: This will leak some memory.
+			vna_thread_exit (err);
+		}
+
+		if (startpointoffset)
+			/* Restore original start frequency */
+			fstart += (gdouble) startpointoffset * netwin->resol;
+
+		if (winleft)
+		{
+			/* Recalcualte ETA (only if we aren't finished yet) */
+			g_get_current_time (&curtime);
+			difftime.tv_sec  = curtime.tv_sec  - starttime.tv_sec;
+			difftime.tv_usec = curtime.tv_usec - starttime.tv_usec;
+			windone++;	/* Frequency windoes already measured */
+			winleft--;	/* Those left to be measured */
+
+			netwin->estim_t = curtime.tv_sec - netwin->start_t
+				+ (glong)( (float)difftime.tv_sec  * ((float)winleft/(float)windone))
+				+ (glong)(((float)difftime.tv_usec * ((float)winleft/(float)windone))/1e6);
+		}
+
+		/* Has anyone canceled the calibration? */
+		if (! (glob->flag & FLAG_VNA_MEAS) )
+		{
+			vna_func->gtl ();
+			vna_thread_exit (NULL);
+		}
+
+		/* Finished with this window, start next one */
+	}
+
+	/* Go back to continuous and local mode */
+	vna_func->gtl ();
+}
+
 /* Measure a whole frequency range by dividing it into windows */
 static void vna_sweep_frequency_range ()
 {
@@ -1265,6 +1390,7 @@ static void vna_sweep_frequency_range ()
 			   "a2 (drive: port 2, lock: a2, numer: a2, denom: a1, conv: S)"};
 	NetworkGraphUpdateData *graphupdate;
 	FILE *outfh;
+	gchar *err;
 
 	g_return_if_fail (glob->netwin);
 	netwin = glob->netwin;
@@ -1342,6 +1468,16 @@ static void vna_sweep_frequency_range ()
 		vna_update_netstat ("Measuring %6.3f - %6.3f GHz...", fstart/1e9, fstop/1e9);
 
 		vna_func->set_startstop (fstart, fstop);
+		if (netwin->calmode == 1)
+		{
+			err = vna_func->cal_recall (netwin->start, netwin->stop, netwin->resol, windone+1);
+			if (err)
+			{
+				vna_func->gtl ();
+				//FIXME: This will leak some memory.
+				vna_thread_exit (err);
+			}
+		}
 		vna_func->trace_scale_auto (NULL);
 		vna_func->set_numg (netwin->avg+1);
 
@@ -1582,8 +1718,12 @@ static void vna_start ()
 				* ceil((netwin->stop - netwin->start)/netwin->resol/(gdouble)netwin->points));
 		g_timeout_add (500, (GSourceFunc) vna_show_time_estimates, NULL);
 
-		/* Start the measurement */
-		vna_sweep_frequency_range ();
+		if ((glob->netwin->vnamodel == 1) || glob->netwin->calmode < 2)
+			/* Start the measurement */
+			vna_sweep_frequency_range ();
+		else
+			/* Start the calibration */
+			vna_cal_frequency_range ();
 
 		/* Make sure, that ETA is correct now. ;-) */
 		g_get_current_time (&curtime);

@@ -3,7 +3,7 @@
 !_TAG_PROGRAM_AUTHOR	Darren Hiebert	/dhiebert@users.sourceforge.net/
 !_TAG_PROGRAM_NAME	Exuberant Ctags	//
 !_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
-!_TAG_PROGRAM_VERSION	5.6	//
+!_TAG_PROGRAM_VERSION	5.7	//
 ADD_MARK_DISTANCE	gtkspectvis.c	18;"	d	file:
 AMP_COL	export.c	/^	FRQ_COL, WID_COL, AMP_COL, PHAS_COL,$/;"	e	enum:__anon5	file:
 AMP_COL	resonancelist.c	/^	FRQ_COL, WID_COL, AMP_COL, PHAS_COL,$/;"	e	enum:__anon1	file:
@@ -479,6 +479,7 @@ mrqmin	compl_mrqmin.c	/^void mrqmin(DataVector *d, double sig[], int ndata, doub
 mrqmin_chisq	compl_mrqmin.c	/^void mrqmin_chisq (DataVector *d, double sig[], int ndata, double a[],$/;"	f
 n_drag_types	dnd.c	/^static gint n_drag_types = sizeof(drag_types) \/ sizeof(drag_types[0]);$/;"	v	file:
 ndata	compl_mrqcof.c	/^	int ndata;$/;"	m	struct:__anon2	file:
+network_create_files	network.c	/^gboolean network_create_files ()$/;"	f
 network_gui_to_struct	network.c	/^static int network_gui_to_struct ()$/;"	f	file:
 network_open_win	network.c	/^void network_open_win ()$/;"	f
 network_struct_to_gui	network.c	/^static void network_struct_to_gui ()$/;"	f	file:
@@ -709,12 +710,16 @@ visualize_update_min_max	visualize.c	/^void visualize_update_min_max (gboolean r
 visualize_update_res_bar	visualize.c	/^void visualize_update_res_bar (gboolean redraw)$/;"	f
 visualize_zoom_to_frequency_range	visualize.c	/^void visualize_zoom_to_frequency_range (gdouble min, gdouble max)$/;"	f
 vna_add_data_to_graph	network.c	/^static gboolean vna_add_data_to_graph (NetworkGraphUpdateData *data)$/;"	f	file:
+vna_cal_frequency_range	network.c	/^static void vna_cal_frequency_range ()$/;"	f	file:
 vna_cal_measurement_finished	calibrate_vna.c	/^static gboolean vna_cal_measurement_finished (gpointer data)$/;"	f	file:
 vna_connect_backend	network.c	/^void vna_connect_backend (VnaBackend *vna_func)$/;"	f
 vna_measurement_finished	network.c	/^static gboolean vna_measurement_finished (gpointer data)$/;"	f	file:
 vna_ms_sleep	network.c	/^void vna_ms_sleep (glong ms)$/;"	f
+vna_n5230a_cal_recall	vna_n5230a.c	/^gchar* vna_n5230a_cal_recall (gdouble fstart, gdouble fstop, gdouble resol, gint num)$/;"	f
+vna_n5230a_calibrate	vna_n5230a.c	/^gchar* vna_n5230a_calibrate (gdouble fstart, gdouble fstop, gdouble resol, gint num)$/;"	f
 vna_n5230a_connect	vna_n5230a.c	/^int vna_n5230a_connect (const gchar *host)$/;"	f
 vna_n5230a_get_capa	vna_n5230a.c	/^gdouble vna_n5230a_get_capa (gint type)$/;"	f
+vna_n5230a_get_err	vna_n5230a.c	/^gchar* vna_n5230a_get_err ()$/;"	f
 vna_n5230a_get_points	vna_n5230a.c	/^gint vna_n5230a_get_points ()$/;"	f
 vna_n5230a_get_reply	vna_n5230a.c	/^int vna_n5230a_get_reply (int s, char *buf, int maxlen)$/;"	f
 vna_n5230a_get_start_frq	vna_n5230a.c	/^gdouble vna_n5230a_get_start_frq ()$/;"	f
@@ -726,7 +731,7 @@ vna_n5230a_receiveall_full	vna_n5230a.c	/^int vna_n5230a_receiveall_full (int s,
 vna_n5230a_recv_data	vna_n5230a.c	/^ComplexDouble *vna_n5230a_recv_data (int points)$/;"	f
 vna_n5230a_select_s	vna_n5230a.c	/^void vna_n5230a_select_s (gchar *sparam)$/;"	f
 vna_n5230a_select_trl	vna_n5230a.c	/^void vna_n5230a_select_trl (gint Si)$/;"	f
-vna_n5230a_send_cmd	vna_n5230a.c	/^int vna_n5230a_send_cmd (int fd, char *msg)$/;"	f
+vna_n5230a_send_cmd	vna_n5230a.c	/^int vna_n5230a_send_cmd (int fd, char *format, ...)$/;"	f
 vna_n5230a_sendall	vna_n5230a.c	/^int vna_n5230a_sendall (int s, char *buf, int len)$/;"	f
 vna_n5230a_set_numg	vna_n5230a.c	/^void vna_n5230a_set_numg (gint numg)$/;"	f
 vna_n5230a_set_startstop	vna_n5230a.c	/^void vna_n5230a_set_startstop (gdouble start, gdouble stop)$/;"	f

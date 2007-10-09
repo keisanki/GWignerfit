@@ -164,6 +164,8 @@ typedef struct
 	void (*wait) ();		/* Wait for VNA operation to finish */
 	void (*select_s) (gchar*);	/* Select given S-parameter for first trace */
 	void (*select_trl) (gint);	/* Set up measurement of special TRL parameters */
+	gchar* (*calibrate ) (gdouble, gdouble, gdouble, gint); /* Calibrate current frequency window */
+	gchar* (*cal_recall) (gdouble, gdouble, gdouble, gint); /* Recall a calibration set */
 	gdouble (*get_capa) (gint);	/* Return VNA capabilities: 1=f_min, 2=f_max, 3=number_of_points */
 } VnaBackend;
 
@@ -190,6 +192,7 @@ typedef struct
 	gchar swpmode;			/* 1=ramp mode; 2=step mode */
 	gdouble bandwidth;		/* Measurement IF bandwidth */
 	gdouble dwell;			/* Measurement dwell time */
+	gint calmode;			/* Calibration status: 0=disabled; 1=enabled; 2=aquire */
 	GThread *vna_GThread;		/* The handle of the measurement process */
 	glong start_t;			/* The time at which the measurement started in sec */
 	glong estim_t;			/* Estimated time for measurement in sec */

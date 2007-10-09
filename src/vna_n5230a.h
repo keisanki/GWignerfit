@@ -29,6 +29,8 @@ void vna_n5230a_set_numg (gint numg);
 void vna_n5230a_wait ();
 void vna_n5230a_select_s (gchar *sparam);
 void vna_n5230a_select_trl (gint Si);
+gchar* vna_n5230a_calibrate (gdouble fstart, gdouble fstop, gdouble resol, gint num);
+gchar* vna_n5230a_cal_recall (gdouble fstart, gdouble fstop, gdouble resol, gint num);
 gdouble vna_n5230a_get_capa (gint type);
 
 #endif

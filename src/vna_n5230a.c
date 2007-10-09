@@ -423,7 +423,6 @@ void vna_n5230a_sweep_prepare ()
 		vna_n5230a_send_cmd (sockfd, "CALC:PAR:DEF 'gwf_S12',S12");
 		vna_n5230a_send_cmd (sockfd, "CALC:PAR:DEF 'gwf_S21',S21");
 		vna_n5230a_send_cmd (sockfd, "CALC:PAR:DEF 'gwf_S22',S22");
-		vna_n5230a_send_cmd (sockfd, "SENS:SWE:POIN 16001");
 		vna_n5230a_send_cmd (sockfd, "DISP:WIND1:TRAC1:FEED 'gwf_S12'");
 		vna_n5230a_send_cmd (sockfd, "DISP:WIND1:TRAC2:FEED 'gwf_S21'");
 		vna_n5230a_send_cmd (sockfd, "DISP:WIND2:TRAC1:FEED 'gwf_S11'");
@@ -438,14 +437,13 @@ void vna_n5230a_sweep_prepare ()
 		/* Select correct S parameter for single element measurement */
 		vna_n5230a_send_cmd (sockfd, "DISP:WIND ON");
 		vna_n5230a_send_cmd (sockfd, "CALC:PAR:DEF 'gwf_%s',%s", netwin->param, netwin->param);
-		vna_n5230a_send_cmd (sockfd, "SENS:SWE:POIN 16001");
 		vna_n5230a_send_cmd (sockfd, "DISP:WIND:TRAC:FEED 'gwf_%s'", netwin->param);
 		vna_n5230a_send_cmd (sockfd, "DISP:WIND:TRAC:Y:SCALE:AUTO");
 		vna_n5230a_send_cmd (sockfd, "CALC:PAR:SEL 'gwf_%s'", netwin->param);
 	}
 
 	/* Prevent a possibly long initial update cycle */
-	vna_n5230a_send_cmd (glob->netwin->sockfd, "SENS:SWE:MODE HOLD");
+	vna_n5230a_send_cmd (glob->netwin->sockfd, "SENS:SWE:POIN 11");
 
 	if (netwin->bandwidth > 0)
 	{
@@ -467,6 +465,9 @@ void vna_n5230a_sweep_prepare ()
 
 	vna_n5230a_send_cmd (sockfd, "SENS:AVER:COUN %d", netwin->avg);
 	vna_n5230a_send_cmd (sockfd, "SENS:AVER ON");
+
+	vna_n5230a_send_cmd (sockfd, "SENS:SWE:POIN 16001");
+	vna_n5230a_wait ();
 }
 
 /* Set the VNA start and stop frequency (in Hz) */
@@ -548,6 +549,20 @@ void vna_n5230a_wait ()
 		vna_thread_exit ("Measurement window did not finish within 5 minutes, something must have gone wrong.");
 }
 
+/* Reads the last error message from the system error stack */
+gchar* vna_n5230a_get_err ()
+{
+	char reply[255];
+
+	g_return_val_if_fail (glob->netwin, NULL);
+	g_return_val_if_fail (glob->netwin->sockfd > 0, NULL);
+
+	vna_n5230a_send_cmd (glob->netwin->sockfd, "SYST:ERR?");
+	vna_n5230a_get_reply (glob->netwin->sockfd, reply, 255);
+
+	return g_strdup (reply);
+}
+
 /* Select/activate given S-parameter */
 void vna_n5230a_select_s (gchar *sparam)
 {
@@ -575,13 +590,55 @@ void vna_n5230a_select_trl (gint Si)
 	if (Si == 4)
 	{
 		/* Prepare TRL measurement */
+		g_return_if_fail (Si != 4 );
 
 		/* and wait */
 		vna_n5230a_wait ();
 	}
 	if (Si == 5)
 	{
+		/* Not supported */
+		g_return_if_fail (Si != 5 );
 	}
+}
+
+/* Calibrate the currently selected frequency window */
+gchar* vna_n5230a_calibrate (gdouble fstart, gdouble fstop, gdouble resol, gint num)
+{
+	gchar *err;
+
+	vna_n5230a_send_cmd (glob->netwin->sockfd, "*CLS");
+	vna_n5230a_send_cmd (glob->netwin->sockfd, "SENS:CORR:PREF:CSET:SAVU 1");
+	vna_n5230a_send_cmd (glob->netwin->sockfd, "SENS:CORR:COLL:METH SPARSOLT");
+	vna_n5230a_send_cmd (glob->netwin->sockfd, "SENS:CORR:PREF:ECAL:ORI ON");
+	vna_n5230a_send_cmd (glob->netwin->sockfd, "SENS:CORR:COLL:ACQ ECAL1,CHAR0");
+	vna_n5230a_send_cmd (glob->netwin->sockfd, "SENS:CORR:CSET:NAME 'gwfcal_%.3f-%.3f_%.0f_%03d'", fstart/1e9, fstop/1e9, resol/1e3, num);
+	vna_n5230a_wait ();
+
+	err = vna_n5230a_get_err ();
+	if ((err) && (err[1] != 0))
+		return err;
+
+	g_free (err);
+	return NULL;
+}
+
+/* Calibrate the currently selected frequency window */
+gchar* vna_n5230a_cal_recall (gdouble fstart, gdouble fstop, gdouble resol, gint num)
+{
+	gchar *err;
+
+	vna_n5230a_send_cmd (glob->netwin->sockfd, "*CLS");
+	vna_n5230a_send_cmd (glob->netwin->sockfd, "SENS:CORR:INT ON");
+	vna_n5230a_send_cmd (glob->netwin->sockfd, "SENS:CORR:CSET:ACT 'gwfcal_%.3f-%.3f_%.0f_%03d',0", fstart/1e9, fstop/1e9, resol/1e3, num);
+	vna_n5230a_wait ();
+
+	err = vna_n5230a_get_err ();
+	if ((err) && (err[1] != 0))
+		return err;
+
+	g_free (err);
+	return NULL;
 }
 
 /* Return some VNA capabilities */
