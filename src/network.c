@@ -243,7 +243,7 @@ static void network_struct_to_gui ()
 	if (netwin->dwell >= 0)
 	{
 		entry = GTK_ENTRY (glade_xml_get_widget (netwin->xmlnet, "vna_dwell_entry"));
-		text = g_strdup_printf ("%g", netwin->dwell / 1e3);
+		text = g_strdup_printf ("%g", netwin->dwell * 1e6);
 		gtk_entry_set_text (entry, text);
 		g_free (text);
 	}
@@ -535,7 +535,7 @@ static int network_gui_to_struct ()
 		dialog_message ("Dwell time must not be negative");
 		return 1;
 	}
-	netwin->dwell = val / 1e3;
+	netwin->dwell = val / 1e6;
 
 	return 0;
 }
@@ -1244,8 +1244,8 @@ static gboolean vna_write_header (gint pos, gchar *sparam, NetworkWin *netwin)
 		fprintf (outfh, "%c Stimulus settings  : %s, %dx averaging, %s mode\r\n",
 				comment_char, sparam, netwin->avg, netwin->swpmode == 1 ? "ramp" : "step");
 		if (netwin->vnamodel > 1)
-			fprintf (outfh, "%c                      bandwidth %.3f kHz, dwell time %g ms\r\n",
-		                comment_char, netwin->bandwidth / 1e3, netwin->dwell / 1e3);
+			fprintf (outfh, "%c                      bandwidth %.3f kHz, dwell time %g µs\r\n",
+		                comment_char, netwin->bandwidth / 1e3, netwin->dwell * 1e6);
 		fprintf (outfh, "%c Calibration mode   : ", comment_char);
 		if (netwin->calmode == 1)
 			fprintf (outfh, "ECal full 2-port SOLT calibration\r\n");
@@ -1276,7 +1276,7 @@ static gboolean vna_write_header (gint pos, gchar *sparam, NetworkWin *netwin)
 				comment_char, sparam, netwin->avg, netwin->swpmode == 1 ? "ramp" : "step");
 		if (netwin->vnamodel > 1)
 			gzprintf (netwin->gzoutfh[pos], "%c                      bandwidth %f kHz, dwell time %g ms\r\n",
-		                comment_char, netwin->bandwidth / 1e3, netwin->dwell / 1e3);
+		                comment_char, netwin->bandwidth / 1e3, netwin->dwell * 1e6);
 		gzprintf (netwin->gzoutfh[pos], "%c Calibration mode   : ", comment_char);
 		if (netwin->calmode == 1)
 			gzprintf (netwin->gzoutfh[pos], "ECal full 2-port SOLT calibration\r\n");

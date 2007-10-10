@@ -1064,7 +1064,7 @@
 Version ###VERSION###
 has been brought to you by 
 
-&lt;b&gt;Florian Schäfer&lt;/b&gt;
+&lt;b&gt;Florian SchÃ¤fer&lt;/b&gt;
 
 schaefer@ikp.physik.tu-darmstadt.de
 
@@ -1709,7 +1709,7 @@ Please check and decide what to do.</property>
                       <widget class="GtkLabel" id="label32">
                         <property name="visible">True</property>
                         <property name="xalign">0</property>
-                        <property name="label" translatable="yes">Phase [°]:</property>
+                        <property name="label" translatable="yes">Phase [Â°]:</property>
                       </widget>
                       <packing>
                         <property name="top_attach">3</property>
@@ -3939,7 +3939,7 @@ Please check and decide what to do.</property>
                 <child>
                   <widget class="GtkLabel" id="label45">
                     <property name="visible">True</property>
-                    <property name="label" translatable="yes">Area [cm²]: </property>
+                    <property name="label" translatable="yes">Area [cmÂ²]: </property>
                   </widget>
                   <packing>
                     <property name="expand">False</property>
@@ -4891,7 +4891,7 @@ aquire         </property>
                         <property name="visible">True</property>
                         <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
                         <property name="xalign">0</property>
-                        <property name="label" translatable="yes">  Dwell time [ms]: </property>
+                        <property name="label" translatable="yes">  Dwell time [µs]: </property>
                       </widget>
                       <packing>
                         <property name="left_attach">2</property>

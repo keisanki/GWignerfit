@@ -342,7 +342,7 @@ glong vna_n5230a_sweep_cal_sleep ()
 	}
 
 	if (glob->netwin->numparam == 4)
-		delta *= (glob->netwin->swpmode == 1) ? 3.5 : 2.2;
+		delta *= (glob->netwin->swpmode == 1) ? 2.7 : 2.0;
 
 	/*
 	if (glob->netwin->numparam == 6)
@@ -450,12 +450,6 @@ void vna_n5230a_sweep_prepare ()
 		vna_n5230a_wait ();
 	}
 
-	if (netwin->dwell > 0)
-		vna_n5230a_send_cmd (sockfd, "SENS:SWE:DWEL %f", netwin->dwell);
-	else
-		vna_n5230a_send_cmd (sockfd, "SENS:SWE:DWEL 0");
-	vna_n5230a_wait ();
-
 	if (netwin->swpmode == 1)
 		vna_n5230a_send_cmd (sockfd, "SENS:SWE:GEN ANAL");
 	else
@@ -466,6 +460,12 @@ void vna_n5230a_sweep_prepare ()
 	vna_n5230a_send_cmd (sockfd, "SENS:AVER ON");
 
 	vna_n5230a_send_cmd (sockfd, "SENS:SWE:POIN 16001");
+	vna_n5230a_wait ();
+
+	if (netwin->dwell > 0)
+		vna_n5230a_send_cmd (sockfd, "SENS:SWE:DWEL %f", netwin->dwell);
+	else
+		vna_n5230a_send_cmd (sockfd, "SENS:SWE:DWEL 0");
 	vna_n5230a_wait ();
 }
 
