@@ -42,6 +42,7 @@ void vna_proxy_trace_fourparam ();
 void vna_proxy_set_numg (gint numg);
 void vna_proxy_wait ();
 void vna_proxy_select_s (gchar *sparam);
+gboolean vna_proxy_sel_first_par ();
 void vna_proxy_select_trl (gint Si);
 gdouble vna_proxy_round_bwid (gdouble bwid_in);
 gdouble vna_proxy_get_capa (gint type);

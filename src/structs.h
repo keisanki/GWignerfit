@@ -163,6 +163,7 @@ typedef struct
 	void (*set_numg) (gint);	/* Set up number of groups */
 	void (*wait) ();		/* Wait for VNA operation to finish */
 	void (*select_s) (gchar*);	/* Select given S-parameter for first trace */
+	gboolean (*sel_first_par) ();	/* Select the first available parameter */
 	void (*select_trl) (gint);	/* Set up measurement of special TRL parameters */
 	gchar* (*calibrate ) (gdouble, gdouble, gdouble, gint); /* Calibrate current frequency window */
 	gchar* (*cal_recall) (gdouble, gdouble, gdouble, gint); /* Recall a calibration set */

@@ -463,6 +463,8 @@ void vna_n5230a_sweep_prepare ()
 	vna_n5230a_send_cmd (sockfd, "SENS:SWE:POIN 16001");
 	vna_n5230a_wait ();
 
+	vna_n5230a_send_cmd (sockfd, "SOUR:POW1 0");
+
 	if (netwin->dwell > 0)
 		vna_n5230a_send_cmd (sockfd, "SENS:SWE:DWEL %f", netwin->dwell);
 	else
@@ -601,6 +603,35 @@ void vna_n5230a_select_trl (gint Si)
 		/* Not supported */
 		g_return_if_fail (Si != 5 );
 	}
+}
+
+/* Select the first available parameter */
+gboolean vna_n5230a_sel_first_par ()
+{
+	gchar reply[256];
+	gint i=0;
+
+	g_return_val_if_fail (glob->netwin, FALSE);
+	g_return_val_if_fail (glob->netwin->sockfd > 0, FALSE);
+
+	vna_n5230a_send_cmd (glob->netwin->sockfd, "CALC:PAR:CAT?");
+	vna_n5230a_get_reply (glob->netwin->sockfd, reply, 255);
+
+	if (reply[0] == '\0')
+		return FALSE;
+
+	while ((i<255) && (reply[i]!=',') && (reply[i]!='\0'))
+		i++;
+
+	if (reply[i] != ',')
+		return FALSE;
+
+	reply[0] = '\'';
+	reply[i] = '\0';
+
+	vna_n5230a_send_cmd (glob->netwin->sockfd, "CALC:PAR:SEL %s'", reply);
+
+	return TRUE;
 }
 
 /* Calibrate the currently selected frequency window */

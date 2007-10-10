@@ -579,6 +579,12 @@ void vna_proxy_select_s (gchar *sparam)
 	vna_proxy_send_cmd (glob->netwin->sockfd, cmdstr, VNA_ETIMEOUT|VNA_ESYNTAXE);
 }
 
+/* Select the first available parameter */
+gboolean vna_proxy_sel_first_par ()
+{
+	return TRUE;
+}
+
 /* Prepare VNA for special TRL measurements */
 void vna_proxy_select_trl (gint Si)
 {

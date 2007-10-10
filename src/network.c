@@ -277,6 +277,7 @@ void vna_connect_backend (VnaBackend *vna_func)
 		vna_func->set_numg = &vna_proxy_set_numg;
 		vna_func->wait = &vna_proxy_wait;
 		vna_func->select_s = &vna_proxy_select_s;
+		vna_func->sel_first_par = &vna_proxy_sel_first_par;
 		vna_func->select_trl = &vna_proxy_select_trl;
 		vna_func->calibrate = NULL;
 		vna_func->cal_recall = NULL;
@@ -302,6 +303,7 @@ void vna_connect_backend (VnaBackend *vna_func)
 		vna_func->set_numg = &vna_n5230a_set_numg;
 		vna_func->wait = &vna_n5230a_wait;
 		vna_func->select_s = &vna_n5230a_select_s;
+		vna_func->sel_first_par = &vna_n5230a_sel_first_par;
 		vna_func->select_trl = &vna_n5230a_select_trl;
 		vna_func->calibrate = &vna_n5230a_calibrate;
 		vna_func->cal_recall = &vna_n5230a_cal_recall;
@@ -1124,6 +1126,12 @@ static void vna_take_snapshot ()
 	
 	/* Local lock out */
 	vna_func->llo ();
+	/* Select measurement */
+	if (!vna_func->sel_first_par ())
+	{
+		vna_func->gtl ();
+		vna_thread_exit ("Could not select a measurement.");
+	}
 	/* Get current start and stop frequency */
 	start = vna_func->get_start_frq ();
 	stop  = vna_func->get_stop_frq ();
