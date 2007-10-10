@@ -614,6 +614,12 @@ void vna_proxy_select_trl (gint Si)
 		vna_proxy_send_cmd (sockfd, "MTA LISTEN "VNA_GBIP" DATA 'CHAN2;'", VNA_ETIMEOUT);
 }
 
+/* Round IF bandwidth value to nearest possible value */
+gdouble vna_proxy_round_bwid (gdouble bwid_in)
+{
+	return bwid_in;
+}
+
 /* Return some VNA capabilities */
 gdouble vna_proxy_get_capa (gint type)
 {

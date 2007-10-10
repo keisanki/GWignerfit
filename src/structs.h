@@ -166,6 +166,7 @@ typedef struct
 	void (*select_trl) (gint);	/* Set up measurement of special TRL parameters */
 	gchar* (*calibrate ) (gdouble, gdouble, gdouble, gint); /* Calibrate current frequency window */
 	gchar* (*cal_recall) (gdouble, gdouble, gdouble, gint); /* Recall a calibration set */
+	gdouble (*round_bwid) (gdouble);/* Round IF bandwidth value to nearest possible value */
 	gdouble (*get_capa) (gint);	/* Return VNA capabilities: 1=f_min, 2=f_max, 3=number_of_points */
 } VnaBackend;
 

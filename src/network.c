@@ -280,6 +280,7 @@ void vna_connect_backend (VnaBackend *vna_func)
 		vna_func->select_trl = &vna_proxy_select_trl;
 		vna_func->calibrate = NULL;
 		vna_func->cal_recall = NULL;
+		vna_func->round_bwid = &vna_proxy_round_bwid;
 		vna_func->get_capa = &vna_proxy_get_capa;
 		glob->netwin->points = (gint) vna_proxy_get_capa (3);
 	}
@@ -304,6 +305,7 @@ void vna_connect_backend (VnaBackend *vna_func)
 		vna_func->select_trl = &vna_n5230a_select_trl;
 		vna_func->calibrate = &vna_n5230a_calibrate;
 		vna_func->cal_recall = &vna_n5230a_cal_recall;
+		vna_func->round_bwid = &vna_n5230a_round_bwid;
 		vna_func->get_capa = &vna_n5230a_get_capa;
 		glob->netwin->points = (gint) vna_n5230a_get_capa (3);
 	}
@@ -510,18 +512,21 @@ static int network_gui_to_struct ()
 	{
 		if (val < netwin->vna_func->get_capa (4))
 		{
-			dialog_message ("IF bandwidth must not be less than %f kHz.",
+			dialog_message ("IF bandwidth must not be less than %.3f kHz.",
 				netwin->vna_func->get_capa (4) / 1e3);
 			return 1;
 		}
 		if (val > netwin->vna_func->get_capa (5))
 		{
-			dialog_message ("IF bandwidth must not be greater than %f kHz.",
+			dialog_message ("IF bandwidth must not be greater than %.3f kHz.",
 				netwin->vna_func->get_capa (5) / 1e3);
 			return 1;
 		}
 	}
-	netwin->bandwidth = val;
+	netwin->bandwidth = netwin->vna_func->round_bwid (val);
+	if (netwin->bandwidth != val)
+		dialog_message ("IF bandwidth rounded to nearest possible value "
+				"of %.3f kHz.", netwin->bandwidth / 1e3);
 
 	entry = GTK_ENTRY (glade_xml_get_widget (netwin->xmlnet, "vna_dwell_entry"));
 	text = gtk_entry_get_text (entry);

@@ -642,6 +642,41 @@ gchar* vna_n5230a_cal_recall (gdouble fstart, gdouble fstop, gdouble resol, gint
 	return NULL;
 }
 
+/* Round IF bandwidth value to nearest possible value */
+gdouble vna_n5230a_round_bwid (gdouble bwid_in)
+{
+	int i = 0;
+	gdouble bwid_out;
+	gdouble bwids[] = {0.001, 0.002, 0.003, 0.005, 0.007, 0.010, 0.015, 0.020, 
+		           0.030, 0.050, 0.070, 0.100, 0.150, 0.200, 0.300, 0.500, 
+			   0.700, 1.000, 1.500, 2.000, 3.000, 5.000, 7.000, 10.00, 
+			   15.00, 20.00, 30.00, 50.00, 70.00, 100.0, 150.0, 200.0, 
+			   250.0, -1};
+	
+	bwid_in /= 1e3;
+	while ((bwids[i] > 0) && (bwids[i] < bwid_in))
+		i++;
+
+	if (bwids[i] <= 0)
+		bwid_out = bwids[i-1];
+	else
+	{
+		if (i > 0)
+		{
+			if (fabs (bwids[i-1]-bwid_in) <
+			    fabs (bwids[i  ]-bwid_in))
+				bwid_out = bwids[i-1];
+			else
+				bwid_out = bwids[i];
+
+		}
+		else
+			bwid_out = bwids[0];
+	}
+
+	return bwid_out * 1e3;
+}
+
 /* Return some VNA capabilities */
 gdouble vna_n5230a_get_capa (gint type)
 {
