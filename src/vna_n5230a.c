@@ -444,6 +444,7 @@ void vna_n5230a_sweep_prepare ()
 	/* Prevent a possibly long initial update cycle */
 	vna_n5230a_send_cmd (glob->netwin->sockfd, "SENS:SWE:POIN 11");
 
+	vna_n5230a_send_cmd (sockfd, "SENS:BWID:TRAC OFF");
 	if (netwin->bandwidth > 0)
 	{
 		vna_n5230a_send_cmd (sockfd, "SENS:BWID %f", netwin->bandwidth);
@@ -478,6 +479,7 @@ void vna_n5230a_set_startstop (gdouble start, gdouble stop)
 
 	vna_n5230a_send_cmd (glob->netwin->sockfd, "SENS:FREQ:STAR %.1lf", start);
 	vna_n5230a_send_cmd (glob->netwin->sockfd, "SENS:FREQ:STOP %.1lf", stop);
+	vna_n5230a_wait ();
 }
 
 /* Scale the trace on the VNA automatically */
