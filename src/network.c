@@ -578,7 +578,7 @@ void network_open_win ()
 		glob->netwin->points = 801;
 		glob->netwin->avg = 4;
 		glob->netwin->swpmode = 1;
-		glob->netwin->bandwidth = 50000;
+		glob->netwin->bandwidth = 10000;
 		glob->netwin->dwell = 0;
 		glob->netwin->calmode = 0;
 		glob->netwin->vna_func = NULL;
