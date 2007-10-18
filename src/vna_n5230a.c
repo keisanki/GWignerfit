@@ -416,6 +416,59 @@ gint vna_n5230a_get_points ()
 	return (gint) f_points;
 }
 
+/* Delete old calsets that would be in the way */
+void vna_n5230a_del_calsets ()
+{
+	NetworkWin *netwin;
+	int sockfd, i, num, maxwin;
+	gchar guid[39], curname[80], comparename[80];
+	GPtrArray *guidarray;
+
+	g_return_if_fail (glob->netwin);
+	g_return_if_fail (glob->netwin->sockfd);
+	netwin = glob->netwin;
+	sockfd = netwin->sockfd;
+
+	guidarray = g_ptr_array_new ();
+
+	/* Build array of all know GUIDs */
+	vna_n5230a_send_cmd (sockfd, "SENS:CORR:CSET:CAT?");
+	vna_n5230a_get_reply (sockfd, guid, 1);
+	guid[38] = '\0';
+	vna_n5230a_get_reply (sockfd, guid, 38);
+	while (guid[0] == '{')
+	{
+		g_ptr_array_add (guidarray, g_strdup (guid));
+		vna_n5230a_get_reply (sockfd, guid, 1);
+		vna_n5230a_get_reply (sockfd, guid, 38);
+	}
+
+	/* Delete calsets if they are to be overwritten */
+	maxwin = ceil((netwin->stop - netwin->start)/netwin->resol/(gdouble)netwin->points);
+	for (i=0; i<guidarray->len; i++)
+	{
+		vna_n5230a_send_cmd (sockfd, "SENS:CORR OFF");
+		vna_n5230a_send_cmd (sockfd, "SENS:CORR:CSET:ACT '%s',1", g_ptr_array_index (guidarray, i));
+		vna_n5230a_send_cmd (sockfd, "SENS:CORR:CSET:NAME?");
+		vna_n5230a_get_reply (sockfd, curname, 80);
+		
+		for (num=1; num<=maxwin; num++)
+		{
+			sprintf (comparename, "\"gwfcal_%.3f-%.3f_%.0f_%03d\"", 
+					netwin->start/1e9, netwin->stop/1e9, netwin->resol/1e3, num);
+			if (!strncmp (curname, comparename, 80))
+			{
+				vna_n5230a_send_cmd (sockfd, "SENS:CORR:CSET:DEL '%s'", g_ptr_array_index (guidarray, i));
+				break;
+			}
+		}
+		g_free (g_ptr_array_index (guidarray, i));
+	}
+	vna_n5230a_send_cmd (sockfd, "SENS:CORR OFF");
+
+	g_ptr_array_free (guidarray, TRUE);
+}
+
 /* Prepare a measurement in sweep mode */
 void vna_n5230a_sweep_prepare ()
 {
@@ -429,6 +482,16 @@ void vna_n5230a_sweep_prepare ()
 
 	vna_n5230a_llo (sockfd);
 	vna_n5230a_send_cmd (sockfd, "SYST:FPR");
+
+	if (netwin->calmode == 2)
+	{
+		vna_n5230a_send_cmd (sockfd, "DISP:WIND ON");
+		vna_n5230a_send_cmd (sockfd, "CALC:PAR:DEF 'gwf_S12',S12");
+		vna_n5230a_send_cmd (sockfd, "DISP:WIND1:TRAC1:FEED 'gwf_S12'");
+		vna_n5230a_send_cmd (sockfd, "DISP:WIND1:TRAC1:Y:SCALE:AUTO");
+		vna_n5230a_del_calsets ();
+		vna_n5230a_send_cmd (sockfd, "SYST:FPR");
+	}
 
 	if (netwin->numparam > 1)
 	{
@@ -661,6 +724,8 @@ gchar* vna_n5230a_calibrate (gdouble fstart, gdouble fstop, gdouble resol, gint 
 	vna_n5230a_send_cmd (glob->netwin->sockfd, "SENS:CORR:PREF:ECAL:ORI ON");
 	vna_n5230a_send_cmd (glob->netwin->sockfd, "SENS:CORR:COLL:ACQ ECAL1,CHAR0");
 	vna_n5230a_send_cmd (glob->netwin->sockfd, "SENS:CORR:CSET:NAME 'gwfcal_%.3f-%.3f_%.0f_%03d'", fstart/1e9, fstop/1e9, resol/1e3, num);
+	vna_n5230a_send_cmd (glob->netwin->sockfd, "SENS:CORR:CSET:DESC '%06.3f - %06.3f GHz'",
+			(fstart + 16001.0*((gdouble)num-1.0) * resol)/1e9, (fstart + (16001.0*(gdouble)num-1.0) * resol)/1e9);
 	vna_n5230a_wait ();
 
 	err = vna_n5230a_get_err ();

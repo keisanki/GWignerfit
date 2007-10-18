@@ -718,6 +718,7 @@ vna_ms_sleep	network.c	/^void vna_ms_sleep (glong ms)$/;"	f
 vna_n5230a_cal_recall	vna_n5230a.c	/^gchar* vna_n5230a_cal_recall (gdouble fstart, gdouble fstop, gdouble resol, gint num)$/;"	f
 vna_n5230a_calibrate	vna_n5230a.c	/^gchar* vna_n5230a_calibrate (gdouble fstart, gdouble fstop, gdouble resol, gint num)$/;"	f
 vna_n5230a_connect	vna_n5230a.c	/^int vna_n5230a_connect (const gchar *host)$/;"	f
+vna_n5230a_del_calsets	vna_n5230a.c	/^void vna_n5230a_del_calsets ()$/;"	f
 vna_n5230a_get_capa	vna_n5230a.c	/^gdouble vna_n5230a_get_capa (gint type)$/;"	f
 vna_n5230a_get_err	vna_n5230a.c	/^gchar* vna_n5230a_get_err ()$/;"	f
 vna_n5230a_get_points	vna_n5230a.c	/^gint vna_n5230a_get_points ()$/;"	f
