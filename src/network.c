@@ -729,6 +729,9 @@ void on_vna_start_activate (GtkMenuItem *menuitem, gpointer user_data)
 	gtk_widget_set_sensitive (
 		glade_xml_get_widget (glob->netwin->xmlnet, "vna_settings_frame"),
 		FALSE);
+	gtk_widget_set_sensitive (
+		glade_xml_get_widget (glob->netwin->xmlnet, "vna_advanced_frame"),
+		FALSE);
 
 	/* Fork the actual measurement into another process */
 	glob->netwin->vna_GThread = 
@@ -843,6 +846,10 @@ static gboolean vna_measurement_finished (gpointer data)
 		if (glob->netwin->type == 1)
 			gtk_widget_set_sensitive (
 				glade_xml_get_widget (glob->netwin->xmlnet, "vna_settings_frame"),
+				TRUE);
+		if ((glob->netwin->type == 1) && (glob->netwin->vnamodel > 1))
+			gtk_widget_set_sensitive (
+				glade_xml_get_widget (glob->netwin->xmlnet, "vna_advanced_frame"),
 				TRUE);
 	}
 
@@ -1489,6 +1496,9 @@ static void vna_sweep_frequency_range ()
 			startpointoffset = 0;
 
 		vna_update_netstat ("Measuring %6.3f - %6.3f GHz...", fstart/1e9, fstop/1e9);
+
+		if (netwin->calmode == 1)
+			vna_func->cal_recall (netwin->start, netwin->stop, netwin->resol, -1);
 
 		vna_func->set_startstop (fstart, fstop);
 		if (netwin->calmode == 1)

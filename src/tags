@@ -729,6 +729,8 @@ vna_n5230a_llo	vna_n5230a.c	/^void vna_n5230a_llo ()$/;"	f
 vna_n5230a_receiveall	vna_n5230a.c	/^int vna_n5230a_receiveall (int s, char *buf, int len)$/;"	f
 vna_n5230a_receiveall_full	vna_n5230a.c	/^int vna_n5230a_receiveall_full (int s, char *buf, int len, int failok)$/;"	f
 vna_n5230a_recv_data	vna_n5230a.c	/^ComplexDouble *vna_n5230a_recv_data (int points)$/;"	f
+vna_n5230a_round_bwid	vna_n5230a.c	/^gdouble vna_n5230a_round_bwid (gdouble bwid_in)$/;"	f
+vna_n5230a_sel_first_par	vna_n5230a.c	/^gboolean vna_n5230a_sel_first_par ()$/;"	f
 vna_n5230a_select_s	vna_n5230a.c	/^void vna_n5230a_select_s (gchar *sparam)$/;"	f
 vna_n5230a_select_trl	vna_n5230a.c	/^void vna_n5230a_select_trl (gint Si)$/;"	f
 vna_n5230a_send_cmd	vna_n5230a.c	/^int vna_n5230a_send_cmd (int fd, char *format, ...)$/;"	f
@@ -751,6 +753,8 @@ vna_proxy_llo	vna_proxy.c	/^void vna_proxy_llo ()$/;"	f
 vna_proxy_receiveall	vna_proxy.c	/^int vna_proxy_receiveall (int s, char *buf, int len)$/;"	f
 vna_proxy_receiveall_full	vna_proxy.c	/^int vna_proxy_receiveall_full (int s, char *buf, int len, int failok)$/;"	f
 vna_proxy_recv_data	vna_proxy.c	/^ComplexDouble *vna_proxy_recv_data (int points)$/;"	f
+vna_proxy_round_bwid	vna_proxy.c	/^gdouble vna_proxy_round_bwid (gdouble bwid_in)$/;"	f
+vna_proxy_sel_first_par	vna_proxy.c	/^gboolean vna_proxy_sel_first_par ()$/;"	f
 vna_proxy_select_s	vna_proxy.c	/^void vna_proxy_select_s (gchar *sparam)$/;"	f
 vna_proxy_select_trl	vna_proxy.c	/^void vna_proxy_select_trl (gint Si)$/;"	f
 vna_proxy_send_cmd	vna_proxy.c	/^int vna_proxy_send_cmd (int fd, char *msg, int errmask)$/;"	f

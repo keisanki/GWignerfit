@@ -341,8 +341,24 @@ glong vna_n5230a_sweep_cal_sleep ()
 		delta *= 0.85;
 	}
 
-	if (glob->netwin->numparam == 4)
-		delta *= (glob->netwin->swpmode == 1) ? 2.7 : 2.0;
+	switch (glob->netwin->calmode)
+	{
+		case 0:
+			/* No calibration */
+			if (glob->netwin->numparam == 4)
+				delta *= (glob->netwin->swpmode == 1) ? 2.7 : 2.0;
+			break;
+		case 1:
+			/* Calibration enabled */
+			delta *= glob->netwin->numparam == 1 ? 1.85 : 1.26;
+			if (glob->netwin->swpmode == 2)
+				delta *= 1.13;
+			break;
+		case 2:
+			/* Acquire calibration */
+			delta *= 21.6;
+			break;
+	}
 
 	/*
 	if (glob->netwin->numparam == 6)
@@ -648,7 +664,7 @@ gchar* vna_n5230a_calibrate (gdouble fstart, gdouble fstop, gdouble resol, gint 
 	vna_n5230a_wait ();
 
 	err = vna_n5230a_get_err ();
-	if ((err) && (err[1] != 0))
+	if ((err) && (err[1] != '0'))
 		return err;
 
 	g_free (err);
@@ -660,13 +676,34 @@ gchar* vna_n5230a_cal_recall (gdouble fstart, gdouble fstop, gdouble resol, gint
 {
 	gchar *err;
 
+	if (num < 0)
+	{
+		/* Disable calibration */
+		vna_n5230a_send_cmd (glob->netwin->sockfd, "SENS:CORR OFF");
+		vna_n5230a_wait ();
+		return NULL;
+	}
+
+	g_return_val_if_fail (fstart > 0.0   , NULL);
+	g_return_val_if_fail (fstop  > fstart, NULL);
+	g_return_val_if_fail (resol  > 0.0   , NULL);
+
+	/* Make sure the new start and stop frequencies are actually set */
+	vna_n5230a_send_cmd (glob->netwin->sockfd, "SENS:SWE:POIN 11");
+	vna_n5230a_send_cmd (glob->netwin->sockfd, "SENS:SWE:GRO:COUN 1");
+	vna_n5230a_send_cmd (glob->netwin->sockfd, "SENS:SWE:MODE GRO");
+	vna_n5230a_wait ();
+	vna_n5230a_send_cmd (glob->netwin->sockfd, "SENS:SWE:POIN 16001");
+	vna_n5230a_wait ();
+
 	vna_n5230a_send_cmd (glob->netwin->sockfd, "*CLS");
 	vna_n5230a_send_cmd (glob->netwin->sockfd, "SENS:CORR:INT ON");
 	vna_n5230a_send_cmd (glob->netwin->sockfd, "SENS:CORR:CSET:ACT 'gwfcal_%.3f-%.3f_%.0f_%03d',0", fstart/1e9, fstop/1e9, resol/1e3, num);
+	vna_n5230a_send_cmd (glob->netwin->sockfd, "SENS:CORR ON");
 	vna_n5230a_wait ();
 
 	err = vna_n5230a_get_err ();
-	if ((err) && (err[1] != 0))
+	if ((err) && (err[1] != '0'))
 		return err;
 
 	g_free (err);
