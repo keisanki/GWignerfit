@@ -463,14 +463,14 @@ static int network_gui_to_struct ()
 	else
 		netwin->numparam = 1; /* Single element -> 1 parameter */
 
-	if ( (netwin->numparam == 6) && (netwin->format == 2) )
+	if ( (netwin->numparam == 6) && (netwin->format == 2) && (netwin->type == 1))
 	{
 		/* TRL selected and SNP format are not possible */
 		dialog_message ("You cannot use the SNP format for TRL type measurements.");
 		return 1;
 	}
 
-	if (netwin->calmode < 2)
+	if ((netwin->type == 1) && (netwin->calmode < 2))
 	{
 		if ( (netwin->numparam > 1) && (netwin->format == 1) 
 		     && (!g_strrstr (netwin->file, "%%")) )
@@ -493,7 +493,16 @@ static int network_gui_to_struct ()
 			dialog_message ("The output filename must have '.s1p' as suffix.");
 			return 1;
 		}
-	}
+	} 
+	else 
+		if ((netwin->type == 2) && (netwin->format == 2)
+		     && (!g_str_has_suffix (netwin->file, ".s1p")) )
+		{
+			/* SNP format but wrong suffix in snapshot mode */
+			dialog_message ("The output filename must have '.s1p' as suffix.");
+			return 1;
+		}
+
 	
 	netwin->avg = 1 << gtk_combo_box_get_active (
 			GTK_COMBO_BOX (glade_xml_get_widget (netwin->xmlnet, "vna_avg_combo")));
@@ -526,7 +535,7 @@ static int network_gui_to_struct ()
 		}
 	}
 	netwin->bandwidth = netwin->vna_func->round_bwid (val);
-	if (netwin->bandwidth != val)
+	if (fabs (netwin->bandwidth - val) > 1)
 		dialog_message ("IF bandwidth rounded to nearest possible value "
 				"of %.3f kHz.", netwin->bandwidth / 1e3);
 
