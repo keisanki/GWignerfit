@@ -366,7 +366,7 @@ gint s2p_sparam_choose ()
 /* Tries very hard to retrieve spectrum data from a given filename */
 DataVector *import_datafile (gchar *filename, gboolean interactive)
 {
-	gchar dataline[256], *basename;
+	gchar dataline[256], *basename, *basetmp;
 	DataVector *data, *testvec;
 #ifdef NO_ZLIB
 	FILE *datafile;
@@ -558,9 +558,11 @@ DataVector *import_datafile (gchar *filename, gboolean interactive)
 		data->file = normalize_path (filename);
 	else
 	{
-		basename = g_get_current_dir ();
+		basetmp  = g_get_current_dir ();
+		basename = g_strdup_printf ("%s%c", basetmp, G_DIR_SEPARATOR);
 		data->file = filename_make_absolute (filename, basename);
 		g_free (basename);
+		g_free (basetmp);
 	}
 
 #ifdef NO_ZLIB

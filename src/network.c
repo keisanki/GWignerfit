@@ -616,6 +616,7 @@ void network_open_win ()
 gboolean network_create_files ()
 {
 	gchar *filename, *tmpname, *pos;
+	gchar *basename, *absolutefilename;
 	gint i, j;
 
 	/* Create filename(s) */
@@ -625,12 +626,19 @@ gboolean network_create_files ()
 		tmpname = g_strdup (glob->netwin->file);
 
 	if (glob->netwin->compress)
-	{
 		filename = g_strdup_printf ("%s.gz", tmpname);
-		g_free (tmpname);
-	}
 	else
-		filename = tmpname;
+		filename = g_strdup (tmpname);
+	g_free (tmpname);
+
+	/* Make filename absolute */
+	tmpname  = g_get_current_dir ();
+	basename = g_strdup_printf ("%s%c", tmpname, G_DIR_SEPARATOR);
+	absolutefilename = filename_make_absolute (filename, basename);
+	g_free (basename);
+	g_free (filename);
+	g_free (tmpname);
+	filename = absolutefilename;
 
 	for (i=0; i<6; i++)
 	{
