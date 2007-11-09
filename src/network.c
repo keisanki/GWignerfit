@@ -281,6 +281,7 @@ void vna_connect_backend (VnaBackend *vna_func)
 		vna_func->select_trl = &vna_proxy_select_trl;
 		vna_func->calibrate = NULL;
 		vna_func->cal_recall = NULL;
+		vna_func->cal_verify = NULL;
 		vna_func->round_bwid = &vna_proxy_round_bwid;
 		vna_func->get_capa = &vna_proxy_get_capa;
 		glob->netwin->points = (gint) vna_proxy_get_capa (3);
@@ -307,6 +308,7 @@ void vna_connect_backend (VnaBackend *vna_func)
 		vna_func->select_trl = &vna_n5230a_select_trl;
 		vna_func->calibrate = &vna_n5230a_calibrate;
 		vna_func->cal_recall = &vna_n5230a_cal_recall;
+		vna_func->cal_verify = &vna_n5230a_cal_verify;
 		vna_func->round_bwid = &vna_n5230a_round_bwid;
 		vna_func->get_capa = &vna_n5230a_get_capa;
 		glob->netwin->points = (gint) vna_n5230a_get_capa (3);
@@ -364,7 +366,7 @@ static int network_gui_to_struct ()
 	/* datafile name */
 	entry = GTK_ENTRY (glade_xml_get_widget (netwin->xmlnet, "vna_file_entry"));
 	text = gtk_entry_get_text (entry);
-	if (netwin->calmode < 2)
+	if (netwin->calmode != 2)
 	{
 		if (!strlen(text))
 		{
@@ -470,7 +472,7 @@ static int network_gui_to_struct ()
 		return 1;
 	}
 
-	if ((netwin->type == 1) && (netwin->calmode < 2))
+	if ((netwin->type == 1) && (netwin->calmode != 2))
 	{
 		if ( (netwin->numparam > 1) && (netwin->format == 1) 
 		     && (!g_strrstr (netwin->file, "%%")) )
@@ -722,16 +724,15 @@ void on_vna_start_activate (GtkMenuItem *menuitem, gpointer user_data)
 	if (network_gui_to_struct ())
 		return;
 
-	if (glob->netwin->calmode < 2)
-	{
-		if (!network_create_files ())
-			return;
-	} else {
-		if (dialog_question ("Is the ECal module connected to the PNA and properly warmed up?") 
+	if (glob->netwin->calmode > 1)
+		if (dialog_question ("Is the ECal module connected to the "
+				     "PNA and properly warmed up?") 
 				!= GTK_RESPONSE_YES)
 			return;
-	}
 
+	if (glob->netwin->calmode != 2)
+		if (!network_create_files ())
+			return;
 
 	/* Disable start button and GUI entries */
 	gtk_widget_set_sensitive (
@@ -1286,6 +1287,8 @@ static gboolean vna_write_header (gint pos, gchar *sparam, NetworkWin *netwin)
 		fprintf (outfh, "%c Calibration mode   : ", comment_char);
 		if (netwin->calmode == 1)
 			fprintf (outfh, "ECal full 2-port SOLT calibration\r\n");
+		else if (netwin->calmode == 3)
+			fprintf (outfh, "ECal full 2-port SOLT calibration verification\r\n");
 		else
 			fprintf (outfh, "none\r\n");
 		if (netwin->comment)
@@ -1317,6 +1320,8 @@ static gboolean vna_write_header (gint pos, gchar *sparam, NetworkWin *netwin)
 		gzprintf (netwin->gzoutfh[pos], "%c Calibration mode   : ", comment_char);
 		if (netwin->calmode == 1)
 			gzprintf (netwin->gzoutfh[pos], "ECal full 2-port SOLT calibration\r\n");
+		else if (netwin->calmode == 3)
+			gzprintf (netwin->gzoutfh[pos], "ECal full 2-port SOLT calibration verification\r\n");
 		else
 			gzprintf (netwin->gzoutfh[pos], "none\r\n");
 		if (netwin->comment)
@@ -1514,11 +1519,11 @@ static void vna_sweep_frequency_range ()
 
 		vna_update_netstat ("Measuring %6.3f - %6.3f GHz...", fstart/1e9, fstop/1e9);
 
-		if (netwin->calmode == 1)
+		if ((netwin->calmode == 1) || (netwin->calmode == 3))
 			vna_func->cal_recall (netwin->start, netwin->stop, netwin->resol, -1);
 
 		vna_func->set_startstop (fstart, fstop);
-		if (netwin->calmode == 1)
+		if ((netwin->calmode == 1) || (netwin->calmode == 3))
 		{
 			err = vna_func->cal_recall (netwin->start, netwin->stop, netwin->resol, windone+1);
 			if (err)
@@ -1528,8 +1533,16 @@ static void vna_sweep_frequency_range ()
 				vna_thread_exit (err);
 			}
 		}
-		vna_func->trace_scale_auto (NULL);
-		vna_func->set_numg (netwin->avg+1);
+
+		if (netwin->calmode != 3)
+		{
+			/* Normal measurement */
+			vna_func->trace_scale_auto (NULL);
+			vna_func->set_numg (netwin->avg+1);
+		}
+		else
+			/* Calibration verification */
+			vna_func->cal_verify ();
 
 		if (startpointoffset)
 			/* Restore original start frequency */
@@ -1768,7 +1781,7 @@ static void vna_start ()
 				* ceil((netwin->stop - netwin->start)/netwin->resol/(gdouble)netwin->points));
 		g_timeout_add (500, (GSourceFunc) vna_show_time_estimates, NULL);
 
-		if ((glob->netwin->vnamodel == 1) || glob->netwin->calmode < 2)
+		if ((glob->netwin->vnamodel == 1) || glob->netwin->calmode != 2)
 			/* Start the measurement */
 			vna_sweep_frequency_range ();
 		else

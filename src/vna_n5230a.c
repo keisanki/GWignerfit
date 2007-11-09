@@ -270,7 +270,16 @@ ComplexDouble *vna_n5230a_recv_data (int points)
 
 	vna_n5230a_send_cmd (sockfd, "FORM:BORD SWAP");
 	vna_n5230a_send_cmd (sockfd, "FORM:DATA REAL,32");
-	vna_n5230a_send_cmd (sockfd, "CALC:DATA? SDATA");
+
+	if ((glob->netwin->type == 2) || (glob->netwin->calmode != 3))
+		/* Read measurement data */
+		vna_n5230a_send_cmd (sockfd, "CALC:DATA? SDATA");
+	else
+	{
+		/* Read formatted data for calibration verification */
+		vna_n5230a_send_cmd (sockfd, "CALC:FORM SMIT");
+		vna_n5230a_send_cmd (sockfd, "CALC:DATA? FDATA");
+	}
 
 	/* Read the header */
 	vna_n5230a_receiveall (sockfd, buf, 1);
@@ -292,6 +301,10 @@ ComplexDouble *vna_n5230a_recv_data (int points)
 		data[i].im = (gdouble) *((gfloat *) &buf[8*i+4]);
 		data[i].abs = sqrt(data[i].re*data[i].re + data[i].im*data[i].im);
 	}
+
+	if ((glob->netwin->type == 1) && (glob->netwin->calmode == 3))
+		/* Go back to log scale after reading cal verify data */
+		vna_n5230a_send_cmd (sockfd, "CALC:FORM MLOG");
 
 	return data;
 }
@@ -749,6 +762,23 @@ gchar* vna_n5230a_cal_recall (gdouble fstart, gdouble fstop, gdouble resol, gint
 		return NULL;
 	}
 
+	if ((glob->netwin->calmode == 3) && (glob->netwin->numparam > 1))
+	{
+		vna_n5230a_send_cmd (glob->netwin->sockfd, "CALC:PAR:SEL 'gwf_S12'");
+		vna_n5230a_send_cmd (glob->netwin->sockfd, "CALC:MATH:FUNC NORM");
+		vna_n5230a_send_cmd (glob->netwin->sockfd, "CALC:PAR:SEL 'gwf_S21'");
+		vna_n5230a_send_cmd (glob->netwin->sockfd, "CALC:MATH:FUNC NORM");
+		vna_n5230a_send_cmd (glob->netwin->sockfd, "CALC:PAR:SEL 'gwf_S11'");
+		vna_n5230a_send_cmd (glob->netwin->sockfd, "CALC:MATH:FUNC NORM");
+		vna_n5230a_send_cmd (glob->netwin->sockfd, "CALC:PAR:SEL 'gwf_S22'");
+		vna_n5230a_send_cmd (glob->netwin->sockfd, "CALC:MATH:FUNC NORM");
+	}
+	if ((glob->netwin->calmode == 3) && (glob->netwin->numparam == 1))
+	{
+		vna_n5230a_send_cmd (glob->netwin->sockfd, "CALC:PAR:SEL 'gwf_%s'", glob->netwin->param);
+		vna_n5230a_send_cmd (glob->netwin->sockfd, "CALC:MATH:FUNC NORM");
+	}
+
 	g_return_val_if_fail (fstart > 0.0   , NULL);
 	g_return_val_if_fail (fstop  > fstart, NULL);
 	g_return_val_if_fail (resol  > 0.0   , NULL);
@@ -773,6 +803,67 @@ gchar* vna_n5230a_cal_recall (gdouble fstart, gdouble fstop, gdouble resol, gint
 
 	g_free (err);
 	return NULL;
+}
+
+/* Verify the current calibration using the ECAL confidence check */
+void vna_n5230a_cal_verify ()
+{
+	g_return_if_fail (glob->netwin->sockfd);
+	vna_n5230a_wait ();
+
+	vna_n5230a_send_cmd (glob->netwin->sockfd, "SENS:AVER OFF");
+
+	if (glob->netwin->numparam > 1)
+	{
+		/* I don't know why this is needed, but otherwise S11 is wrong */
+		vna_n5230a_send_cmd (glob->netwin->sockfd, "SENS:CORR:CCH ECAL1");
+		sleep (4);
+
+		vna_n5230a_send_cmd (glob->netwin->sockfd, "SENS:CORR:CCH:PAR 'gwf_S11'");
+		vna_n5230a_send_cmd (glob->netwin->sockfd, "SENS:CORR:CCH ECAL1");
+		sleep (4);
+		vna_n5230a_send_cmd (glob->netwin->sockfd, "CALC:PAR:SEL 'gwf_S11'");
+		vna_n5230a_send_cmd (glob->netwin->sockfd, "CALC:MATH:FUNC DIV");
+		vna_n5230a_wait ();
+
+		vna_n5230a_send_cmd (glob->netwin->sockfd, "SENS:CORR:CCH:PAR 'gwf_S12'");
+		vna_n5230a_send_cmd (glob->netwin->sockfd, "SENS:CORR:CCH ECAL1");
+		sleep (4);
+		vna_n5230a_send_cmd (glob->netwin->sockfd, "CALC:PAR:SEL 'gwf_S12'");
+		vna_n5230a_send_cmd (glob->netwin->sockfd, "CALC:MATH:FUNC DIV");
+		vna_n5230a_wait ();
+
+		vna_n5230a_send_cmd (glob->netwin->sockfd, "SENS:CORR:CCH:PAR 'gwf_S21'");
+		vna_n5230a_send_cmd (glob->netwin->sockfd, "SENS:CORR:CCH ECAL1");
+		sleep (4);
+		vna_n5230a_send_cmd (glob->netwin->sockfd, "CALC:PAR:SEL 'gwf_S21'");
+		vna_n5230a_send_cmd (glob->netwin->sockfd, "CALC:MATH:FUNC DIV");
+		vna_n5230a_wait ();
+
+		vna_n5230a_send_cmd (glob->netwin->sockfd, "SENS:CORR:CCH:PAR 'gwf_S22'");
+		vna_n5230a_send_cmd (glob->netwin->sockfd, "SENS:CORR:CCH ECAL1");
+		sleep (4);
+		vna_n5230a_send_cmd (glob->netwin->sockfd, "CALC:PAR:SEL 'gwf_S22'");
+		vna_n5230a_send_cmd (glob->netwin->sockfd, "CALC:MATH:FUNC DIV");
+		vna_n5230a_wait ();
+	}
+	else
+	{
+		vna_n5230a_send_cmd (glob->netwin->sockfd, "SENS:CORR:CCH:PAR 'gwf_%s'", glob->netwin->param);
+		vna_n5230a_send_cmd (glob->netwin->sockfd, "SENS:CORR:CCH ECAL1");
+		sleep (4);
+		vna_n5230a_send_cmd (glob->netwin->sockfd, "CALC:PAR:SEL 'gwf_%s'", glob->netwin->param);
+		vna_n5230a_send_cmd (glob->netwin->sockfd, "CALC:MATH:FUNC DIV");
+		vna_n5230a_wait ();
+	}
+
+	vna_n5230a_send_cmd (glob->netwin->sockfd, "SENS:AVER ON");
+
+	vna_n5230a_wait ();
+	vna_n5230a_set_numg (glob->netwin->avg+1);
+	vna_n5230a_wait ();
+
+	vna_n5230a_send_cmd (glob->netwin->sockfd, "SENS:CORR:CCH:DONE");
 }
 
 /* Round IF bandwidth value to nearest possible value */

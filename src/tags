@@ -623,8 +623,8 @@ quit_application	callbacks.c	/^gboolean quit_application (GtkWidget *widget, Gdk
 r	spectral_numeric.c	/^typedef struct FCOMPLEX {float r,i;} fcomplex;$/;"	m	struct:FCOMPLEX	file:
 read_datafile	processdata.c	/^gboolean read_datafile (gchar *selected_filename, gboolean called_from_open) $/;"	f
 read_resonancefile	processdata.c	/^gint read_resonancefile (gchar *selected_filename, const gchar *label)$/;"	f
-read_resonancefile_cleanup	processdata.c	1191;"	d	file:
-read_resonancefile_cleanup	processdata.c	828;"	d	file:
+read_resonancefile_cleanup	processdata.c	1193;"	d	file:
+read_resonancefile_cleanup	processdata.c	830;"	d	file:
 remove_resonance	resonancelist.c	/^void remove_resonance (GtkTreeIter iter)$/;"	f
 remove_selected_resonance	resonancelist.c	/^void remove_selected_resonance ()$/;"	f
 reslist_update_widthunit	resonancelist.c	/^void reslist_update_widthunit ()$/;"	f
@@ -716,6 +716,7 @@ vna_connect_backend	network.c	/^void vna_connect_backend (VnaBackend *vna_func)$
 vna_measurement_finished	network.c	/^static gboolean vna_measurement_finished (gpointer data)$/;"	f	file:
 vna_ms_sleep	network.c	/^void vna_ms_sleep (glong ms)$/;"	f
 vna_n5230a_cal_recall	vna_n5230a.c	/^gchar* vna_n5230a_cal_recall (gdouble fstart, gdouble fstop, gdouble resol, gint num)$/;"	f
+vna_n5230a_cal_verify	vna_n5230a.c	/^void vna_n5230a_cal_verify ()$/;"	f
 vna_n5230a_calibrate	vna_n5230a.c	/^gchar* vna_n5230a_calibrate (gdouble fstart, gdouble fstop, gdouble resol, gint num)$/;"	f
 vna_n5230a_connect	vna_n5230a.c	/^int vna_n5230a_connect (const gchar *host)$/;"	f
 vna_n5230a_del_calsets	vna_n5230a.c	/^void vna_n5230a_del_calsets ()$/;"	f
