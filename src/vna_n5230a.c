@@ -559,7 +559,10 @@ void vna_n5230a_sweep_prepare ()
 	vna_n5230a_send_cmd (sockfd, "SENS:SWE:POIN 16001");
 	vna_n5230a_wait ();
 
-	vna_n5230a_send_cmd (sockfd, "SOUR:POW1 0");
+	if (netwin->stop < 35e9)
+		vna_n5230a_send_cmd (sockfd, "SOUR:POW1 0");
+	else
+		vna_n5230a_send_cmd (sockfd, "SOUR:POW1 -6");
 
 	if (netwin->dwell > 0)
 		vna_n5230a_send_cmd (sockfd, "SENS:SWE:DWEL %f", netwin->dwell);
