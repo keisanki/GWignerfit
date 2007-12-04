@@ -57,8 +57,8 @@ int vna_n5230a_receiveall_full (int s, char *buf, int len, int failok)
 				if (glob->netwin && glob->netwin->sockfd)
 					vna_n5230a_gtl ();
 
-				vna_thread_exit ("Connection to proxy host timed out "
-						"(received only %i of %i expected bytes).", total, len);
+				vna_thread_exit ("Connection to VNA while receiving timed out "
+						 "(received only %i of %i expected bytes).", total, len);
 			}
 			else
 			{
@@ -132,7 +132,7 @@ int vna_n5230a_sendall (int s, char *buf, int len)
 	{
 		n = send (s, buf+total, bytesleft, 0);
 		if (n == -1) 
-			vna_thread_exit ("Connection to proxy host lost.");
+			vna_thread_exit ("Connection to VNA lost.");
 		total += n;
 		bytesleft -= n;
 	}
@@ -234,13 +234,13 @@ int vna_n5230a_connect (const gchar *host)
 					 lon = sizeof (int); 
 					 getsockopt (sockfd, SOL_SOCKET, SO_ERROR, (void*)(&valopt), &lon); 
 					 if ((valopt) && (valopt == ECONNREFUSED))
-						vna_thread_exit ("Connection to proy host refused. "
-								"Make sure that socket port is enabled on VNA.");
+						vna_thread_exit ("Connection to VNA refused. "
+								 "Make sure that the socket port is enabled on the VNA.");
 					 else if (valopt != 0)
 					 	vna_thread_exit( "connect: %s", g_strerror (valopt));
 				} 
 				else
-					 vna_thread_exit ("Timeout while connecting to proxy host.");
+					 vna_thread_exit ("Timeout while connecting to VNA.");
 		 } 
 		 else
 				vna_thread_exit ("Error connecting: %s", g_strerror (errno)); 
