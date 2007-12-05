@@ -4,7 +4,7 @@
 <!--  "http://www.oasis-open.org/docbook/xml/4.4/docbookx.dtd" [ -->
 <!--"/usr/share/sgml/docbook/xml-dtd-4.4-1.0-26/docbookx.dtd" [ -->
 	<!ENTITY legal SYSTEM "legal.xml">
-	<!ENTITY appversion "2007-08-01">
+	<!ENTITY appversion "2007-12-05">
 	<!ENTITY manrevision "1.0">
 	<!ENTITY date "August 2005">
 	<!ENTITY app "<application>GWignerFit</application>">
@@ -3090,31 +3090,24 @@
 		<para>A very direct approach to the analysis of a spectrum is to 
 			analyze just the spectrum itself. One such tool for the analysis of a
 			spectrum is the <emphasis>correlation function</emphasis>. Its definition
-			is given in <xref linkend="eqn-correl" />. The constant <emphasis
-			role="italic">N</emphasis> is chosen in such a way that <emphasis
-			role="italic">C</emphasis>(0)=1
-			<!--
+			is given in <xref linkend="eqn-correl" />, the brackets denote a
+			spectral average. The square of the correlation function's absolute value
+			should have &mdash; for transmission spectra &mdash; a Lorentz like
+			shape. The value of <emphasis role="italic">&epsiv;</emphasis> where this
+			squared function value is equal to half its starting value, that is 
 			<inlineequation>
-				<alt role="tex">$C(0) = 1$</alt>
-				<graphic fileref="figures/eqn_correl_norm.png" />
-			</inlineequation>
-			-->
-			holds. The square of the correlation function's absolute value should
-			have &mdash; for transmission spectra &mdash; a Lorentz like shape.
-			The value of <emphasis role="italic">&epsiv;</emphasis> where this
-			squared function value is equal to 1/2, that is 
-			<inlineequation>
-				<alt role="tex">$|C(\epsilon)|^2 = 1/2$</alt>
+				<alt role="tex">$\vert C(\epsilon)\vert^2 = 
+					               \vert C(0)\vert^2 / 2$</alt>
 				<graphic fileref="figures/eqn_correl_len.png" />
 			</inlineequation>,
-			is being called <emphasis>correlation length</emphasis>.
+			is called <emphasis>correlation length</emphasis>.
 		</para>
 		<equation id="eqn-correl">
 			<title>The correlation function</title>
 			<alt role="tex">
 				\[
-				C_{ab}(\epsilon) = \frac{1}{N}\, \int_{\nu_{\rm min}}^{\nu_{\rm max}}\,
-					S_{ab}(\nu) S_{ab}^\ast(\nu+\epsilon)\, {\rm d}\nu
+				C_{ab}(\epsilon) = \langle S_{ab}(\nu) S^\ast_{ab}(\nu+\epsilon)
+				  \rangle - \vert \langle S_{ab} \rangle \vert^2
 				\]
 			</alt>
 			<graphic fileref="figures/eqn_correl.png"/>
