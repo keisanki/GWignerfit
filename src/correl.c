@@ -18,7 +18,7 @@ static void correl_cal_correl ()
 	CorrelWin *correl;
 	ComplexDouble val1, val2;
 	guint eps, epsmax;
-	gdouble recorr, imcorr, amp, redirect, imdirect, direct, amp0;
+	gdouble recorr, imcorr, amp, redirect, imdirect, direct, amp0=0;
 	gdouble gamma=0.0, deltaf;
 	gdouble x1, x2, y1, y2;
 	guint i=0, start, num, granularity;
