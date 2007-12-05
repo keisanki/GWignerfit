@@ -18,7 +18,7 @@ static void correl_cal_correl ()
 	CorrelWin *correl;
 	ComplexDouble val1, val2;
 	guint eps, epsmax;
-	gdouble recorr, imcorr, sqsum=1.0, amp;
+	gdouble recorr, imcorr, amp, redirect, imdirect, direct, amp0;
 	gdouble gamma=0.0, deltaf;
 	gdouble x1, x2, y1, y2;
 	guint i=0, start, num, granularity;
@@ -71,6 +71,18 @@ static void correl_cal_correl ()
 	if (correl->data)
 		free_datavector (correl->data);
 	correl->data = new_datavector (epsmax);
+
+	/* Calculate mean values to account for direct processes */
+	redirect = 0.0;
+	imdirect = 0.0;
+	for (i=start; i < start+num*granularity; i+=granularity)
+	{
+		redirect += glob->data->y[i].re;
+		imdirect += glob->data->y[i].im;
+	}
+	redirect /= (gdouble)num;
+	imdirect /= (gdouble)num;
+	direct = redirect*redirect + imdirect*imdirect;
 	
 	/* Calculate correlation function */
 	for (eps=0; eps<epsmax; eps++)
@@ -85,22 +97,23 @@ static void correl_cal_correl ()
 			imcorr += val1.im*val2.re - val1.re*val2.im;
 		}
 
-		if (eps == 0)
-			sqsum = (recorr + imcorr)/(gdouble)num;
-		
-		recorr /= (gdouble)(num-eps)*sqsum;
-		imcorr /= (gdouble)(num-eps)*sqsum;
+		recorr /= (gdouble)(num-eps);
+		imcorr /= (gdouble)(num-eps);
+		recorr -= direct;
 		amp = recorr*recorr + imcorr*imcorr;
 
+		if (eps == 0)
+			amp0 = amp;
+
 		/* Interpolate correlation length */
-		if ((amp < 0.5) && (gamma == 0.0))
+		if ((gamma == 0.0) && (amp < amp0/2))
 		{
 			x1 = (eps-1) * deltaf;
 			x2 =  eps    * deltaf;
 			y1 = correl->data->y[eps-1].abs;
 			y2 = amp;
 			
-			gamma = (x1*(.5-y2)+x2*(y1-.5))/(y1-y2);
+			gamma = (x1*(amp0/2-y2)+x2*(y1-amp0/2))/(y1-y2);
 		}
 
 		correl->data->x[eps]      = eps*deltaf;
