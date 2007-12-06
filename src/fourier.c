@@ -88,6 +88,10 @@ static gdouble fourier_window_data (guint n, guint numpoints)
 			w = 0.54 - 0.46 * cos(2*M_PI*n/(numpoints-1));
 			break;
 		case 3:
+			/* Welch */
+			w = 1.0 - 4.0 * (n-(numpoints-1.0)*0.5)/(numpoints-1) * (n-(numpoints-1)*0.5)/(numpoints-1);
+			break;
+		case 4:
 			/* Blackman */
 			w = 0.42 - 0.5 * cos(2*M_PI*n/(numpoints-1)) + 0.08* cos(4*M_PI*n/(numpoints-1));
 			break;
@@ -685,9 +689,14 @@ gboolean on_fourier_window_change (GtkMenuItem *menuitem, gpointer user_data)
 		glob->fft->windowing = 2;
 
 	if (gtk_check_menu_item_get_active (GTK_CHECK_MENU_ITEM (
-				glade_xml_get_widget (glob->fft->xmlfft, "blackman_window")
+				glade_xml_get_widget (glob->fft->xmlfft, "welch_window")
 				)))
 		glob->fft->windowing = 3;
+
+	if (gtk_check_menu_item_get_active (GTK_CHECK_MENU_ITEM (
+				glade_xml_get_widget (glob->fft->xmlfft, "blackman_window")
+				)))
+		glob->fft->windowing = 4;
 
 	if (glob->overlaystore)
 	{

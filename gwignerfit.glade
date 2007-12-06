@@ -3247,13 +3247,23 @@ Please check and decide what to do.</property>
                       </widget>
                     </child>
                     <child>
+                      <widget class="GtkRadioMenuItem" id="welch_window">
+                        <property name="visible">True</property>
+                        <property name="label" translatable="yes">_Welch window</property>
+                        <property name="use_underline">True</property>
+                        <property name="group">rectangular_window</property>
+                        <signal name="activate" handler="on_fourier_window_change"/>
+                        <accelerator key="3" modifiers="" signal="activate"/>
+                      </widget>
+                    </child>
+                    <child>
                       <widget class="GtkRadioMenuItem" id="blackman_window">
                         <property name="visible">True</property>
                         <property name="label" translatable="yes">_Blackman window</property>
                         <property name="use_underline">True</property>
                         <property name="group">rectangular_window</property>
                         <signal name="activate" handler="on_fourier_window_change"/>
-                        <accelerator key="3" modifiers="" signal="activate"/>
+                        <accelerator key="4" modifiers="" signal="activate"/>
                       </widget>
                     </child>
                   </widget>
