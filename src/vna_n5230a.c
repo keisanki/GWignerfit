@@ -878,6 +878,20 @@ void vna_n5230a_cal_verify ()
 	vna_n5230a_send_cmd (glob->netwin->sockfd, "SENS:AVER ON");
 
 	vna_n5230a_wait ();
+	vna_n5230a_set_numg (2);
+	vna_n5230a_wait ();
+	vna_n5230a_send_cmd (glob->netwin->sockfd, "SENS:AVER:CLE");
+	if (glob->netwin->numparam > 1)
+	{
+		vna_n5230a_trace_scale_auto ("S11");
+		vna_n5230a_trace_scale_auto ("S22");
+		vna_n5230a_trace_scale_auto ("S12");
+		vna_n5230a_trace_scale_auto ("S21");
+	}
+	else
+		vna_n5230a_trace_scale_auto (NULL);
+
+	vna_n5230a_wait ();
 	vna_n5230a_set_numg (glob->netwin->avg+1);
 	vna_n5230a_wait ();
 
