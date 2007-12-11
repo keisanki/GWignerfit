@@ -4,7 +4,7 @@
 <!--  "http://www.oasis-open.org/docbook/xml/4.4/docbookx.dtd" [ -->
 <!--"/usr/share/sgml/docbook/xml-dtd-4.4-1.0-26/docbookx.dtd" [ -->
 	<!ENTITY legal SYSTEM "legal.xml">
-	<!ENTITY appversion "2007-12-06">
+	<!ENTITY appversion "2007-12-11">
 	<!ENTITY manrevision "1.0">
 	<!ENTITY date "August 2005">
 	<!ENTITY app "<application>GWignerFit</application>">
@@ -108,7 +108,7 @@
 
 	<itemizedlist>
 		<listitem>
-			<para>Versatile methods of data visualization. &app; can read industy
+			<para>Versatile methods of data visualization. &app; can read industry
 				standard Touchstone&reg; spectrum datafiles as well its own datafile
 				format.</para>
 		</listitem>
@@ -614,9 +614,9 @@
 					<para>Check or uncheck this option to enable or disable the display
 						of the blue theory graph in the main graph view area as well in the
 						graph of the time spectrum (see <xref linkend="gwignerfit-fft" />).
-						The startup default of &app; is to not display the theory graph. It
-						will, however, be automatically be shown if a resonanace gets added
-						so that the theory graph becomes meaningfull. This default behavior
+						The start-up default of &app; is to not display the theory graph. It
+						will, however, be automatically be shown if a resonance gets added
+						so that the theory graph becomes meaningful. This default behavior
 						can in any case be overruled with this menu item.
 					</para>
 				</listitem>
@@ -2210,7 +2210,7 @@
 			<citetitle>Michael Barth (Marburg, 2001)</citetitle></ulink>, appendix
 			A.2. Furthermore, &app; can do "online" calibrations (simple reflection,
 			full two-port and thru-reflection-line), too, by feeding the spectra data
-			back to the network analyzer.</para>
+			back to the HP8510C network analyzer.</para>
 
 		<para>For the calibration &app; needs additional data which is obtained
 			by measurements of certain standards. This data has to be available for
@@ -2292,7 +2292,7 @@
 			available via the online method. For online calibrations the host of the
 			<application>Ieee488Proxy</application> has to be entered, see <xref
 			linkend="gwf-hard-software" /> for more information on how to connect
-			&app; to a network analyzer. To start the calibration press the
+			&app; to a HP8510C network analyzer. To start the calibration press the
 			<guibutton>OK</guibutton> button. The progressbar informs you about the
 			progress of the calibration. The calibrated data will be displayed in the
 			main graph window after the calibration has finished, either as a new
@@ -3008,7 +3008,7 @@
 				</varlistentry>
 				<varlistentry>
 					<term><guimenuitem>Rectangular window</guimenuitem>,
-					      <guimenuitem>Hamming window</guimenuitem> and
+					      <guimenuitem>Hamming window</guimenuitem>,
 					      <guimenuitem>Welch window</guimenuitem> and
 					      <guimenuitem>Blackman window</guimenuitem>
 					</term>
@@ -3108,7 +3108,7 @@
 			<alt role="tex">
 				\[
 				C_{ab}(\epsilon) = \langle S_{ab}(\nu) S^\ast_{ab}(\nu+\epsilon)
-				  \rangle - \vert \langle S_{ab} \rangle \vert^2
+				  \rangle_\nu - \vert \langle S_{ab} \rangle_\nu \vert^2
 				\]
 			</alt>
 			<graphic fileref="figures/eqn_correl.png"/>
@@ -3610,26 +3610,45 @@
 
 	<sect2 id="gwf-hard-software">
 		<title>Required hard- and software</title>
-		<para>&app; is designed to communicate with a HP8510C vectorial network
-			analyzer (VNA). The VNA understands a special set of commands that allow
-			a computer program to "remote control" the device. As each VNA will
-			probably have its own language you will need a compatible device from the
-			HP8510 series.</para>
+		<para>In general, a vector network analyzer (VNA) understands a special set
+			of commands that allows a computer program to "remote control" the
+			device. As each VNA has its own set of command and usage concept, there
+			is no way for &app; to work together with all VNA models. Currently only
+			devices compatible with the venerable <emphasis>Hewlett-Packard
+			8510</emphasis> series and the <emphasis>Agilent PNA N5230A</emphasis>
+			series are supported.</para>
 
-		<para>The bus system used to communicate with the HP8510 is called IEEE
-			488. This is an industrial standard which allows a large variety of
-			devices to talk to each other. There exist IEEE 488 adapter cards for
-			PCs. Those cards have their own set of commands and driver libraries,
-			too. &app; is again designed to work with a special kind of adapter card,
-			namely those produced by Keithly.</para>
+		<para>The communication link between &app; and the
+			<emphasis>N5320A</emphasis> is easily established via a normal Ethernet
+			TCP/IP connection. In order not to unnecessarily depend on any
+			commercial libraries &app; connects to a special socket (on port 5025)
+			which can be enabled on the N5320A via 
+			<menuchoice>
+				<guimenu>System</guimenu>
+				<guimenuitem>Configure</guimenuitem>
+				<guimenuitem>SICL/GPIB/SCPI...</guimenuitem>
+				<guilabel>Sockets Enabled</guilabel>
+			</menuchoice>.
+			All you then really need to know is the IP of the VNA to enter it into
+			the appropriate fields of &app; (see further down this section).</para>
 
-		<para>&app; does not access the IEEE 488 adapter cards directly. It rather
-			sends out commands via a normal TCP/IP network to a special proxy
+		<para>Setting up a way of communication with the
+			<emphasis>HP8510</emphasis> is a bit more involved. The bus system used
+			to communicate with the HP8510 is called IEEE&nbsp;488. This is an
+			industrial standard which allows a large variety of devices to talk to
+			each other. There exist IEEE&nbsp;488 adapter cards for PCs. Those cards
+			have their own set of commands and driver libraries, too. &app; is again
+			designed to work with a special kind of adapter card, namely those
+			produced by Keithly.</para>
+
+		<para>&app; does not access the IEEE&nbsp;488 adapter cards directly. It
+			rather sends out commands via a normal TCP/IP network to a special proxy
 			program, <application>Ieee488Proxy</application>, which has been written
 			by the same author as &app;. This proxy has to run on a computer with the
-			Microsoft Windows operating system. The computer needs on the one hand access the to
-			TCP/IP network and on the other hand a built in IEEE 488 adapter
-			card. This card needs to be connected with the VNA, of course.</para>
+			Microsoft Windows operating system. The computer needs on the one hand
+			access the to TCP/IP network and on the other hand a built in IEEE 488
+			adapter card. This card needs to be connected with the VNA, of
+			course.</para>
 
 		<para>To summarize the method of communication between the &app;
 			application and a HP8510 compatible VNA: &app; sends a request over a
@@ -3683,11 +3702,13 @@
 				<term><guilabel>I/O-System</guilabel></term>
 				<listitem>
 					<para>This is short for "Input/Output System". Here you can define
-						how &app; can reach the proxy computer and how the measured data
-						should be saved. The <guilabel>Ieee488Proxy host</guilabel> entry
-						holds the hostname or IP of the computer where the
+						how &app; can connect to the VNA or proxy computer and how the measured data
+						should be saved. First you need to specify your VNA model using the
+						<guilabel>VNA model</guilabel> radio buttons. Then the
+						<guilabel>VNA/Proxy host</guilabel> entry holds the hostname or IP
+						of the N230A of the the computer where the
 						<application>Ieee488Proxy</application> program is running. Your
-						computer must be able to contact the proxy computer with this
+						computer must be able to contact the remote device with this
 						address.
 					</para>
 					<para>The place and name of the generated datafile are specified with
@@ -3766,13 +3787,14 @@
 						<guilabel>Resolution</guilabel>. Furthermore, the
 						<guilabel>S-Parameter</guilabel> that the VNA should measure can be
 						chosen. Setting this <guilabel>S-Parameter</guilabel> to just "S"
-						means that &app; measures all four S-matrix elements in one
-						run (see above for what the output filename has too look like for
-						such a measurement type). The "TRL" option is an extension of the
+						means that &app; measures all four S-matrix elements in one run
+						(see above for what the output filename has too look like for such
+						a measurement type). The "TRL" option is an extension of the
 						complete S-matrix measurement suited to measure the TRL thru and
-						line standards (see <xref linkend="gwf-calibrate" />). It will
-						measure, in addition to the four S-parameters, two user-defined
-						parameters and save the resulting spectra as additional files with
+						line standards (see <xref linkend="gwf-calibrate" />) and can only
+						be used in conjunction with the HP8510 VNA. It will measure, in
+						addition to the four S-parameters, two user-defined parameters and
+						save the resulting spectra as additional files with
 						<emphasis>a1</emphasis> and <emphasis>a2</emphasis> instead of the
 						wild-card characters. TRL data can only be stored using the
 						<guilabel>DAT format</guilabel>. The given
@@ -3785,6 +3807,82 @@
 						the ramp mode allows for quicker measurements whereas the step mode
 						measures with a higher frequency precision.
 					</para>
+				</listitem>
+			</varlistentry>
+			<varlistentry>
+				<term><guilabel>Advanced Settings</guilabel></term>
+				<listitem>
+					<para>The options available here do only affect measurements
+						conducted the the N5230A. In fact, the whole section is only
+						enabled for measurements with this device.
+					</para>
+					<para>The two text entries give you control over the <guilabel>IF
+						bandwidth</guilabel> (in kHz) and the <guilabel>Dwell
+						time</guilabel> (in &mu;s). Please note that &app; disables the
+						automatic IF bandwidth reduction of the N5320A for low frequencies
+						to prevent artificial jumps in measured spectra.
+					</para>
+					<para>The most outstanding feature of the N5230A is its ease of
+						calibration using the ECal modules. Using the
+						<guilabel>Calibration</guilabel> drop down menu you gain access to
+						the most common operations with regard to calibration needs, i.e.
+						calibrating the device, verification of your calibration and, of
+						course, doing a fully calibrated measurement. All calibrations are
+						done using the full 2-port SOLT calibration technique. You options
+						in more detail:
+					</para>
+					<itemizedlist>
+						<listitem>
+							<para>
+								<guilabel>disabled</guilabel>: Choose this to do uncalibrated
+								measurements.
+							</para>
+						</listitem>
+						<listitem>
+							<para>
+								<guilabel>acquire</guilabel>: Before you can start doing
+								calibrated measurements the N5230A has to be calibrated. To do
+								this, define you complete measurement settings in the
+								measurement dialog and set the calibration mode to
+								<guilabel>acquire</guilabel>. &app; will then ask you to make
+								sure that the ECal is connected to the VNA and properly warmed
+								up and start the calibration run afterward. As each window of
+								your defined measurement sweep is calibrated, &app; creates Cal
+								Sets on the VNA. The names of those Cal Sets encode the start
+								and stop frequency as well as the measurement resolution. This
+								is the only way for &app; to later identify the proper Cal Sets
+								to recall for a calibrated measurement. Please note that &app;
+								will overwrite any existing Cal Sets that happen to have the
+								same name.
+							</para>
+						</listitem>
+						<listitem>
+							<para>
+								<guilabel>enabled</guilabel>: Do a calibrated measurement.
+								&app; uses the start and stop frequency together with the
+								resolution to determine which Cal Sets to recall for calibrated
+								measurements. Therefore make sure that all other settings of
+								the measurement dialog are compatible with your earlier choices
+								during the acquirement run. Please remember that &app; always
+								uses the full 2-port SOLT calibration even if you are only
+								measuring a single parameter. This might have implications on
+								the test leads connected to the VNA.
+							</para>
+						</listitem>
+						<listitem>
+							<para>
+								<guilabel>verify</guilabel>: The N5230A has this nice feature
+								called "ECal Confidence Check" where you reconnect the VNA to
+								the ECal module, measure the module as a DUT (device under
+								test) and compare the result with what the ECal says a perfect
+								calibration should look like. Taking the ratio between the
+								actual measurement and the expected result should then be equal
+								to unity. &app; can do exactly this procedure with your defined
+								frequency sweep and store the resulting ratios to your output
+								file so that you can ascertain the quality of your calibration.
+							</para>
+						</listitem>
+					</itemizedlist>
 				</listitem>
 			</varlistentry>
 			<varlistentry>
@@ -3857,7 +3955,7 @@
 		</screenshot>
 	</figure>
 
-	<para>The preferences dialog is devided into four major logical sections
+	<para>The preferences dialog is divided into four major logical sections
 		(<guilabel>Display, Files, Fitting, Network Analyzer</guilabel>). The
 		currently available preferences are:</para>
 	<variablelist>
