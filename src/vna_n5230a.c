@@ -261,7 +261,7 @@ int vna_n5230a_connect (const gchar *host)
 ComplexDouble *vna_n5230a_recv_data (int points)
 {
 	ComplexDouble *data;
-	char buf[16001*8];
+	char *buf;
 	int sockfd, i, numdigits;
 
 	g_return_val_if_fail (glob->netwin || glob->calwin, NULL);
@@ -282,6 +282,7 @@ ComplexDouble *vna_n5230a_recv_data (int points)
 	}
 
 	/* Read the header */
+	buf = g_new (char, points*8+1);
 	vna_n5230a_receiveall (sockfd, buf, 1);
 	vna_n5230a_receiveall (sockfd, buf, 1);
 	numdigits = buf[0]-48;
@@ -301,6 +302,7 @@ ComplexDouble *vna_n5230a_recv_data (int points)
 		data[i].im = (gdouble) *((gfloat *) &buf[8*i+4]);
 		data[i].abs = sqrt(data[i].re*data[i].re + data[i].im*data[i].im);
 	}
+	g_free (buf);
 
 	if ((glob->netwin->type == 1) && (glob->netwin->calmode == 3))
 		/* Go back to log scale after reading cal verify data */
