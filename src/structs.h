@@ -196,6 +196,7 @@ typedef struct
 	gdouble bandwidth;		/* Measurement IF bandwidth */
 	gdouble dwell;			/* Measurement dwell time */
 	gint calmode;			/* Calibration status: 0=disabled; 1=enabled; 2=aquire; 3=verify */
+	gint ecal_char;			/* Used ECal characterization: 0=Factory; 1-5=User 1-5 */
 	GThread *vna_GThread;		/* The handle of the measurement process */
 	glong start_t;			/* The time at which the measurement started in sec */
 	glong estim_t;			/* Estimated time for measurement in sec */

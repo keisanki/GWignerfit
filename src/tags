@@ -582,6 +582,7 @@ on_uncheck_all_activate	callbacks.c	/^void on_uncheck_all_activate (GtkMenuItem 
 on_undo_last_fit_activate	callbacks.c	/^void on_undo_last_fit_activate (GtkMenuItem *menuitem, gpointer user_data)$/;"	f
 on_view_difference_activate	callbacks.c	/^gboolean on_view_difference_activate (GtkMenuItem *menuitem, gpointer user_data)$/;"	f
 on_view_theory_activate	callbacks.c	/^gboolean on_view_theory_activate (GtkMenuItem *menuitem, gpointer user_data)$/;"	f
+on_vna_cal_change	network.c	/^void on_vna_cal_change (GtkComboBox *combo, gpointer user_data)$/;"	f
 on_vna_close_activate	network.c	/^void on_vna_close_activate (GtkMenuItem *menuitem, gpointer user_data)$/;"	f
 on_vna_model_change	network.c	/^void on_vna_model_change (GtkToggleButton *toggle, gpointer user_data)$/;"	f
 on_vna_select_activate	network.c	/^void on_vna_select_activate (GtkButton *button, gpointer user_data)$/;"	f

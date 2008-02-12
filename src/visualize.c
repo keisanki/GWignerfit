@@ -556,6 +556,7 @@ gint visualize_handle_signal_marked (GtkSpectVis *spectvis, gdouble *xval, gdoub
 	 */
 
 	gtk_spect_vis_mark_point (spectvis, *xval, *yval);
+//	printf("%f\t%f\n", *xval, *yval);
 	
 	return 0;
 }

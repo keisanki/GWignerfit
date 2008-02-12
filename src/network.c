@@ -251,6 +251,15 @@ static void network_struct_to_gui ()
 	gtk_combo_box_set_active (
 		GTK_COMBO_BOX (glade_xml_get_widget (netwin->xmlnet, "vna_cal_combo")),
 		netwin->calmode);
+
+	gtk_combo_box_set_active (
+		GTK_COMBO_BOX (glade_xml_get_widget (netwin->xmlnet, "vna_ecal_combo")),
+		netwin->ecal_char);
+
+	gtk_widget_set_sensitive (
+		glade_xml_get_widget (glob->netwin->xmlnet, "vna_ecal_combo"),
+		netwin->calmode > 1 ? TRUE : FALSE
+	);
 }
 
 /* Connect the VNA accessing backend functions */
@@ -346,6 +355,10 @@ static int network_gui_to_struct ()
 	/* calibration mode */
 	netwin->calmode = gtk_combo_box_get_active (
 			GTK_COMBO_BOX (glade_xml_get_widget (netwin->xmlnet, "vna_cal_combo")));
+
+	/* ECal characterization */
+	netwin->ecal_char = gtk_combo_box_get_active (
+			GTK_COMBO_BOX (glade_xml_get_widget (netwin->xmlnet, "vna_ecal_combo")));
 
 	/* file format */
 	if (gtk_toggle_button_get_active (
@@ -592,6 +605,7 @@ void network_open_win ()
 		glob->netwin->bandwidth = 10000;
 		glob->netwin->dwell = 0;
 		glob->netwin->calmode = 0;
+		glob->netwin->ecal_char = 0;
 		glob->netwin->vna_func = NULL;
 		if (glob->prefs->vnahost)
 			glob->netwin->host = g_strdup (glob->prefs->vnahost);
@@ -796,6 +810,15 @@ void on_vna_model_change (GtkToggleButton *toggle, gpointer user_data)
 				GTK_TOGGLE_BUTTON (glade_xml_get_widget (glob->netwin->xmlnet, "vna_sweep_radio"))
 			));
 	}
+}
+
+/* Calibration mode has been changed */
+void on_vna_cal_change (GtkComboBox *combo, gpointer user_data)
+{
+	gtk_widget_set_sensitive (
+		glade_xml_get_widget (glob->netwin->xmlnet, "vna_ecal_combo"),
+		gtk_combo_box_get_active (combo) > 1 ? TRUE : FALSE
+	);
 }
 
 /* Select an output filename */
