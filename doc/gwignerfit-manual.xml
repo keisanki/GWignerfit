@@ -4,7 +4,7 @@
 <!--  "http://www.oasis-open.org/docbook/xml/4.4/docbookx.dtd" [ -->
 <!--"/usr/share/sgml/docbook/xml-dtd-4.4-1.0-26/docbookx.dtd" [ -->
 	<!ENTITY legal SYSTEM "legal.xml">
-	<!ENTITY appversion "2007-12-11">
+	<!ENTITY appversion "2008-02-12">
 	<!ENTITY manrevision "1.0">
 	<!ENTITY date "August 2005">
 	<!ENTITY app "<application>GWignerFit</application>">
@@ -31,6 +31,7 @@
 		<year>2005</year>
 		<year>2006</year>
 		<year>2007</year>
+		<year>2008</year>
 		<holder>Florian Sch&auml;fer</holder>
 	</copyright>
 	<publisher>
@@ -3842,18 +3843,24 @@
 							<para>
 								<guilabel>acquire</guilabel>: Before you can start doing
 								calibrated measurements the N5230A has to be calibrated. To do
-								this, define you complete measurement settings in the
+								this, define your complete measurement settings in the
 								measurement dialog and set the calibration mode to
-								<guilabel>acquire</guilabel>. &app; will then ask you to make
-								sure that the ECal is connected to the VNA and properly warmed
-								up and start the calibration run afterward. As each window of
-								your defined measurement sweep is calibrated, &app; creates Cal
-								Sets on the VNA. The names of those Cal Sets encode the start
-								and stop frequency as well as the measurement resolution. This
-								is the only way for &app; to later identify the proper Cal Sets
-								to recall for a calibrated measurement. Please note that &app;
-								will overwrite any existing Cal Sets that happen to have the
-								same name.
+								<guilabel>acquire</guilabel>. If you have stored user
+								characterizations in your ECal module and you need to use one
+								of these for the calibration run choose the appropriate storage
+								ID from the <guilabel>ECal charact.</guilabel> drop down list.
+								Otherwise let it at the default <guilabel>Factory</guilabel>
+								setting. After having made your choices click on
+								<guibutton>Start</guibutton> after which &app; will ask you to
+								make sure that the ECal is connected to the VNA and properly
+								warmed up and start the calibration run afterward. As each
+								window of your defined measurement sweep is calibrated, &app;
+								creates Cal Sets on the VNA. The names of those Cal Sets encode
+								the start and stop frequency as well as the measurement
+								resolution. This is the only way for &app; to later identify
+								the proper Cal Sets to recall for a calibrated measurement.
+								Please note that &app; will overwrite any existing Cal Sets
+								that happen to have the same name.
 							</para>
 						</listitem>
 						<listitem>
@@ -3866,7 +3873,7 @@
 								during the acquirement run. Please remember that &app; always
 								uses the full 2-port SOLT calibration even if you are only
 								measuring a single parameter. This might have implications on
-								the test leads connected to the VNA.
+								the test leads that need to be connected to the VNA.
 							</para>
 						</listitem>
 						<listitem>
@@ -3880,6 +3887,9 @@
 								to unity. &app; can do exactly this procedure with your defined
 								frequency sweep and store the resulting ratios to your output
 								file so that you can ascertain the quality of your calibration.
+								If you used a user defined ECal characterization for the
+								calibration do not forget to change the <guilabel>ECal
+								charact.</guilabel> value for a valid verification process.
 							</para>
 						</listitem>
 					</itemizedlist>
