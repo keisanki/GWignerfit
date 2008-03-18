@@ -732,6 +732,7 @@ vna_n5230a_llo	vna_n5230a.c	/^void vna_n5230a_llo ()$/;"	f
 vna_n5230a_receiveall	vna_n5230a.c	/^int vna_n5230a_receiveall (int s, char *buf, int len)$/;"	f
 vna_n5230a_receiveall_full	vna_n5230a.c	/^int vna_n5230a_receiveall_full (int s, char *buf, int len, int failok)$/;"	f
 vna_n5230a_recv_data	vna_n5230a.c	/^ComplexDouble *vna_n5230a_recv_data (int points)$/;"	f
+vna_n5230a_recv_s2p_data	vna_n5230a.c	/^ComplexDouble **vna_n5230a_recv_s2p_data (int points)$/;"	f
 vna_n5230a_round_bwid	vna_n5230a.c	/^gdouble vna_n5230a_round_bwid (gdouble bwid_in)$/;"	f
 vna_n5230a_sel_first_par	vna_n5230a.c	/^gboolean vna_n5230a_sel_first_par ()$/;"	f
 vna_n5230a_select_s	vna_n5230a.c	/^void vna_n5230a_select_s (gchar *sparam)$/;"	f

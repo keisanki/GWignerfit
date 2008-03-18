@@ -311,6 +311,60 @@ ComplexDouble *vna_n5230a_recv_data (int points)
 	return data;
 }
 
+/* Retrieve the measurement points for full S-matrix */
+ComplexDouble **vna_n5230a_recv_s2p_data (int points)
+{
+	ComplexDouble **data;
+	char *buf;
+	int sockfd, i, j, numdigits;
+
+	g_return_val_if_fail (glob->netwin || glob->calwin, NULL);
+	g_return_val_if_fail (glob->netwin->sockfd > 0, NULL);
+	sockfd = glob->netwin->sockfd;
+
+	vna_n5230a_send_cmd (sockfd, "FORM:BORD SWAP");
+	vna_n5230a_send_cmd (sockfd, "FORM:DATA REAL,32");
+	vna_n5230a_send_cmd (sockfd, "CALC:PAR:SEL \"CH1_S11_1\"");
+	vna_n5230a_send_cmd (sockfd, "CALC:DATA:SNP? 2");
+
+	/* Read the header */
+	buf = g_new (char, points*32+1);
+	vna_n5230a_receiveall (sockfd, buf, 1);
+	vna_n5230a_receiveall (sockfd, buf, 1);
+	numdigits = buf[0]-48;
+	vna_n5230a_receiveall (sockfd, buf, numdigits);
+	buf[numdigits] = '\0';
+	sscanf (buf, "%d", &numdigits);
+
+	g_return_val_if_fail (numdigits >= points*36, NULL);
+
+	data    = g_new (ComplexDouble*, 4);
+	data[0] = g_new (ComplexDouble, points);
+	data[1] = g_new (ComplexDouble, points);
+	data[2] = g_new (ComplexDouble, points);
+	data[3] = g_new (ComplexDouble, points);
+
+	/* Read the frequencies */
+	vna_n5230a_receiveall (sockfd, buf, points*4);
+
+	/* Read S11, S21, S12, S22 + \n */
+	vna_n5230a_receiveall (sockfd, buf, points*8*4+1);
+
+	for (j=0; j<4; j++)
+	{
+		for (i=0; i<points; i++)
+		{
+			data[j][i].re = (gdouble) *((gfloat *) &buf[4*(i+2*points*j+0*points)]);
+			data[j][i].im = (gdouble) *((gfloat *) &buf[4*(i+2*points*j+1*points)]);
+			data[j][i].abs = sqrt(data[j][i].re*data[j][i].re + data[j][i].im*data[j][i].im);
+		}
+	}
+
+	g_free (buf);
+
+	return data;
+}
+
 /* Get the network back into a reasonable mode and do not forget the GTL */
 void vna_n5230a_gtl ()
 {

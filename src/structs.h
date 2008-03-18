@@ -149,7 +149,8 @@ typedef struct
 typedef struct
 {
 	int (*connect) (const gchar*);	/* Connect to the VNA/proxy to given host */
-	ComplexDouble* (*recv_data)(int); /* Get data of current trace, points given */
+	ComplexDouble* (*recv_data)(int);      /* Get data of current trace, points given */
+	ComplexDouble** (*recv_s2p_data)(int); /* Get s2p data, points given */
 	void (*gtl) ();			/* Go to local method */
 	void (*llo) ();			/* Local lock out method */
 	glong (*sweep_cal_sleep) ();	/* Estimated time for one sweep in ms */

@@ -273,6 +273,7 @@ void vna_connect_backend (VnaBackend *vna_func)
 		/* HP 8510C via Ieee488Proxy */
 		vna_func->connect = &vna_proxy_connect;
 		vna_func->recv_data = &vna_proxy_recv_data;
+		vna_func->recv_s2p_data = NULL;
 		vna_func->gtl = &vna_proxy_gtl;
 		vna_func->llo = &vna_proxy_llo;
 		vna_func->sweep_cal_sleep = &vna_proxy_sweep_cal_sleep;
@@ -300,6 +301,7 @@ void vna_connect_backend (VnaBackend *vna_func)
 		/* Agilent N5230A-L via LAN socket */
 		vna_func->connect = &vna_n5230a_connect;
 		vna_func->recv_data = &vna_n5230a_recv_data;
+		vna_func->recv_s2p_data = &vna_n5230a_recv_s2p_data;
 		vna_func->gtl = &vna_n5230a_gtl;
 		vna_func->llo = &vna_n5230a_llo;
 		vna_func->sweep_cal_sleep = &vna_n5230a_sweep_cal_sleep;
@@ -510,12 +512,18 @@ static int network_gui_to_struct ()
 		}
 	} 
 	else 
-		if ((netwin->type == 2) && (netwin->format == 2)
-		     && (!g_str_has_suffix (netwin->file, ".s1p")) )
+		if ((netwin->type == 2) && (netwin->format == 2))
 		{
-			/* SNP format but wrong suffix in snapshot mode */
-			dialog_message ("The output filename must have '.s1p' as suffix.");
-			return 1;
+			if  (g_str_has_suffix (netwin->file, ".s1p"))
+				netwin->numparam = 1;
+			else if  (g_str_has_suffix (netwin->file, ".s2p"))
+				netwin->numparam = 4;
+			else
+			{
+				/* SNP format but wrong suffix in snapshot mode */
+				dialog_message ("The output filename must have '.s1p' or '.s2p' as suffix.");
+				return 1;
+			}
 		}
 
 	
@@ -1153,10 +1161,10 @@ void vna_ms_sleep (glong ms)
 static void vna_take_snapshot ()
 {
 	VnaBackend *vna_func;
-	int i;
+	int i, j;
 	gint points=0;
 	gdouble start=0.0, stop=0.0, *frq;
-	ComplexDouble *data;
+	ComplexDouble *data, **S2Pdata;
 	DataVector *dvec;
 	FILE *outfh;
 #ifndef NO_ZLIB
@@ -1165,6 +1173,7 @@ static void vna_take_snapshot ()
 	struct timeval tv;
 	struct tm* ptm;
 	char time_string[22], comment_char;
+	gchar *sparam[] = {"S11", "S12", "S21", "S22"};
 	NetworkGraphUpdateData *graphupdate;
 
 	g_return_if_fail (glob->netwin);
@@ -1199,16 +1208,27 @@ static void vna_take_snapshot ()
 
 	/* Get data */
 	vna_update_netstat ("Reading datapoints from network analyzer...");
-	data = vna_func->recv_data (points);
-	g_return_if_fail (data);
 
-	/* Clear VNA display and go back to local mode */
-	vna_func->gtl ();
+	if (glob->netwin->numparam == 1)
+	{
+		/* Read single parameter */
+		data = vna_func->recv_data (points);
+		g_return_if_fail (data);
+	}
+	else
+	{
+		/* Read complete S-matrix */
+		S2Pdata = vna_func->recv_s2p_data (points);
+		g_return_if_fail (S2Pdata);
+	}
 
 	/* Create frequency list */
 	frq = g_new (gdouble, points);
 	for (i=0; i<points; i++)
 		frq[i] = start + (gdouble)i/(gdouble)(points-1) * (stop-start);
+
+	/* Clear VNA display and go back to local mode */
+	vna_func->gtl ();
 
 	gettimeofday (&tv, NULL);
 	ptm = localtime (&tv.tv_sec);
@@ -1231,9 +1251,20 @@ static void vna_take_snapshot ()
 			fprintf (outfh, "%c Comment            : %s\r\n", comment_char, glob->netwin->comment);
 		if (glob->netwin->format == 2)
 			fprintf (outfh, "# Hz S  RI   R 50\r\n");
-		fprintf (outfh, DATAHDR, comment_char, comment_char);
-		for (i=0; i<points; i++)
-			fprintf (outfh, DATAFRMT, frq[i], data[i].re, data[i].im);
+		if (glob->netwin->numparam == 1)
+		{
+			fprintf (outfh, DATAHDR, comment_char, comment_char);
+			for (i=0; i<points; i++)
+				fprintf (outfh, DATAFRMT, frq[i], data[i].re, data[i].im);
+		}
+		else
+		{
+			fprintf (outfh, DATAHS2P);
+			for (i=0; i<points; i++)
+				fprintf (outfh, DATAFS2P, frq[i],
+						S2Pdata[0][i].re, S2Pdata[0][i].im, S2Pdata[2][i].re, S2Pdata[2][i].im,
+						S2Pdata[1][i].re, S2Pdata[1][i].im, S2Pdata[3][i].re, S2Pdata[3][i].im);
+		}
 		fclose (outfh);
 	}
 	else
@@ -1249,25 +1280,65 @@ static void vna_take_snapshot ()
 			gzprintf (gzoutfh, "%c Comment            : %s\r\n", comment_char, glob->netwin->comment);
 		if (glob->netwin->format == 2)
 			gzprintf (gzoutfh, "# Hz S  RI   R 50\r\n");
-		gzprintf (gzoutfh, DATAHDR, comment_char, comment_char);
-		for (i=0; i<points; i++)
-			gzprintf (gzoutfh, DATAFRMT, frq[i], data[i].re, data[i].im);
+		if (glob->netwin->numparam == 1)
+		{
+			gzprintf (gzoutfh, DATAHDR, comment_char, comment_char);
+			for (i=0; i<points; i++)
+				gzprintf (gzoutfh, DATAFRMT, frq[i], data[i].re, data[i].im);
+		}
+		else
+		{
+			gzprintf (gzoutfh, DATAHS2P);
+			for (i=0; i<points; i++)
+				gzprintf (gzoutfh, DATAFS2P, frq[i],
+						S2Pdata[0][i].re, S2Pdata[0][i].im, S2Pdata[2][i].re, S2Pdata[2][i].im,
+						S2Pdata[1][i].re, S2Pdata[1][i].im, S2Pdata[3][i].re, S2Pdata[3][i].im);
+		}
 		gzclose (gzoutfh);
 #endif
 	}
 
-	dvec = g_new (DataVector, 1);
-	dvec->x = frq;
-	dvec->y = data;
-	dvec->len = points;
-	dvec->file = g_strdup (glob->netwin->fullname[0]);
-	dvec->index = 0;
+	if (glob->netwin->numparam == 1)
+	{
+		dvec = g_new (DataVector, 1);
+		dvec->x = frq;
+		dvec->y = data;
+		dvec->len = points;
+		dvec->file = g_strdup (glob->netwin->fullname[0]);
+		dvec->index = 0;
 
-	graphupdate = g_new (NetworkGraphUpdateData, 1);
-	graphupdate->dvec = dvec;
-	graphupdate->pos = 0;
+		graphupdate = g_new (NetworkGraphUpdateData, 1);
+		graphupdate->dvec = dvec;
+		graphupdate->pos = 0;
 
-	g_timeout_add (1, (GSourceFunc) vna_add_data_to_graph, graphupdate);
+		g_timeout_add (1, (GSourceFunc) vna_add_data_to_graph, graphupdate);
+	}
+	else
+	{
+		for (j=0; j<4; j++)
+		{
+			if (j > 0)
+			{
+				/* Create new frequency list */
+				frq = g_new (gdouble, points);
+				for (i=0; i<points; i++)
+					frq[i] = start + (gdouble)i/(gdouble)(points-1) * (stop-start);
+			}
+			dvec = g_new (DataVector, 1);
+			dvec->x = frq;
+			dvec->y = S2Pdata[j];
+			dvec->len = points;
+			dvec->file = g_strdup_printf ("%s:%s", glob->netwin->fullname[0], sparam[j]);
+			dvec->index = 0;
+
+			graphupdate = g_new (NetworkGraphUpdateData, 1);
+			graphupdate->dvec = dvec;
+			graphupdate->pos = j;
+
+			g_timeout_add (1, (GSourceFunc) vna_add_data_to_graph, graphupdate);
+		}
+		g_free (S2Pdata);
+	}
 }
 
 /* Write the data file header for sweep measurements

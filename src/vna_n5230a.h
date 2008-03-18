@@ -15,6 +15,7 @@ int vna_n5230a_send_cmd (int fd, char *format, ...);
 
 int vna_n5230a_connect (const gchar *host);
 ComplexDouble *vna_n5230a_recv_data (int points);
+ComplexDouble **vna_n5230a_recv_s2p_data (int points);
 void vna_n5230a_gtl ();
 void vna_n5230a_llo ();
 glong vna_n5230a_sweep_cal_sleep ();
