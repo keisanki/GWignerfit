@@ -1164,7 +1164,7 @@ static void vna_take_snapshot ()
 	int i, j;
 	gint points=0;
 	gdouble start=0.0, stop=0.0, *frq;
-	ComplexDouble *data, **S2Pdata;
+	ComplexDouble *data, **S2Pdata = NULL;
 	DataVector *dvec;
 	FILE *outfh;
 #ifndef NO_ZLIB
