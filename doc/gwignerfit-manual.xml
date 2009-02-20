@@ -4,7 +4,7 @@
 <!--  "http://www.oasis-open.org/docbook/xml/4.4/docbookx.dtd" [ -->
 <!--"/usr/share/sgml/docbook/xml-dtd-4.4-1.0-26/docbookx.dtd" [ -->
 	<!ENTITY legal SYSTEM "legal.xml">
-	<!ENTITY appversion "2008-02-12">
+	<!ENTITY appversion "2009-02-20">
 	<!ENTITY manrevision "1.0">
 	<!ENTITY date "August 2005">
 	<!ENTITY app "<application>GWignerFit</application>">
@@ -32,6 +32,7 @@
 		<year>2006</year>
 		<year>2007</year>
 		<year>2008</year>
+		<year>2009</year>
 		<holder>Florian Sch&auml;fer</holder>
 	</copyright>
 	<publisher>
@@ -549,10 +550,10 @@
 				</listitem>
 			</varlistentry>
 			<varlistentry>
-				<term><guimenuitem>Correlation function</guimenuitem></term>
+				<term><guimenuitem>Autocorrelation function</guimenuitem></term>
 				<listitem>
-					<para>This function calculates the so called correlation function of
-						the currently active main dataset. It provides the correlation
+					<para>This function calculates the so called autocorrelation function
+						of the currently active main dataset. It provides the correlation
 						length and additionally some further statistical data for the
 						spectrum. Further explanations can be found in <xref
 						linkend="gwignerfit-spectrum-stat" />.</para>
@@ -3088,15 +3089,16 @@
 	</para>
 
 	<sect2 id="gwignerfit-spectrum-stat">
-		<title>Spectrum Statistics &mdash; The Correlation Function</title>
+		<title>Spectrum Statistics &mdash; The Autocorrelation Function</title>
 		<para>A very direct approach to the analysis of a spectrum is to 
 			analyze just the spectrum itself. One such tool for the analysis of a
-			spectrum is the <emphasis>correlation function</emphasis>. Its definition
+			spectrum is the <emphasis>autocorrelation function</emphasis>. Its definition
 			is given in <xref linkend="eqn-correl" />, the brackets denote a
-			spectral average. The square of the correlation function's absolute value
-			should have &mdash; for transmission spectra &mdash; a Lorentz like
-			shape. The value of <emphasis role="italic">&epsiv;</emphasis> where this
-			squared function value is equal to half its starting value, that is 
+			spectral average. The square of the autocorrelation function's absolute
+			value should have &mdash; in the limit of strongly overlapping resonances
+			&mdash; a Lorentz like shape. The value of <emphasis
+			role="italic">&epsiv;</emphasis> where this squared function value is
+			equal to half its starting value, that is 
 			<inlineequation>
 				<alt role="tex">$\vert C(\epsilon)\vert^2 = 
 					               \vert C(0)\vert^2 / 2$</alt>
@@ -3105,7 +3107,7 @@
 			is called <emphasis>correlation length</emphasis>.
 		</para>
 		<equation id="eqn-correl">
-			<title>The correlation function</title>
+			<title>The autocorrelation function</title>
 			<alt role="tex">
 				\[
 				C_{ab}(\epsilon) = \langle S_{ab}(\nu) S^\ast_{ab}(\nu+\epsilon)
@@ -3115,10 +3117,10 @@
 			<graphic fileref="figures/eqn_correl.png"/>
 		</equation>
 
-		<para>To calculate and visualize the correlation function select
+		<para>To calculate and visualize the autocorrelation function select
 			<menuchoice>
 				<guimenu>Analyze</guimenu>
-				<guimenuitem>Correlation function</guimenuitem>
+				<guimenuitem>Autocorrelation function</guimenuitem>
 			</menuchoice>
 			from the menubar of the main window. The new window will look similar to
 			the one shown in <xref linkend="correl-win" />. It is divided into four
@@ -3127,7 +3129,7 @@
 		</para>
 
 		<figure id="correl-win">
-			<title>The correlation function window</title>
+			<title>The autocorrelation function window</title>
 			<screenshot>
 				<mediaobject>
 					<imageobject><imagedata
@@ -3137,7 +3139,7 @@
 							fileref="figures/gwf_correl_window.png" format="PNG"/>
 					</imageobject>
 					<textobject>
-						<phrase>Shows the correlation function window.</phrase>
+						<phrase>Shows the autocorrelation function window.</phrase>
 					</textobject>
 				</mediaobject>
 			</screenshot>
@@ -3155,10 +3157,10 @@
 				</listitem>
 			</varlistentry>
 			<varlistentry>
-				<term><guimenuitem>The correlation graph</guimenuitem></term>
+				<term><guimenuitem>The autocorrelation graph</guimenuitem></term>
 				<listitem>
 					<para>This graph displays the <emphasis>square</emphasis> of the
-						correlation function's absolute value (see <xref
+						autocorrelation function's absolute value (see <xref
 						linkend="eqn-correl" />). The abscissa gives the value of
 						<emphasis role="italic">&epsiv;</emphasis> in MHz, the ordinate
 						reads the corresponding function's value. You can choose between a
@@ -3171,7 +3173,7 @@
 			<varlistentry>
 				<term><guimenuitem>The frequency range area</guimenuitem></term>
 				<listitem>
-					<para>The integral of the correlation function has to be taken over a
+					<para>The integral of the autocorrelation function has to be taken over a
 						certain frequency range. The default range is taken from the Min
 						and Max frequencies of the main window. You can modify this range
 						here. Input the new boundaries into the <guilabel>Start
@@ -3199,22 +3201,22 @@
 					<para>This part provides you a) with the <guilabel>Correlation
 						length</guilabel> value and b) with further <guilabel>Spectrum
 						averages</guilabel>. The correlation length is the frequency where
-						the above graph is equal to 1/2. As the correlation function can
-						for a discrete dataset only be evaluated at discrete points, &app;
-						interpolates the correlation length from the two closest lying
-						points on the graph. The spectrum averages provide some very basic
-						information on the spectrum in your selected frequency range. The
-						angle brackets denote the average over all points. Those averages
-						are not influenced by the granularity value, all datapoints are
-						always included.
+						the above graph is equal to 1/2. As the autocorrelation function
+						can for a discrete dataset only be evaluated at discrete points,
+						&app; interpolates the correlation length from the two closest
+						lying points on the graph. The spectrum averages provide some very
+						basic information on the spectrum in your selected frequency range.
+						The angle brackets denote the average over all points. Those
+						averages are not influenced by the granularity value, all
+						datapoints are always included.
 					</para>
 				</listitem>
 			</varlistentry>
 		</variablelist>
 
 		<sect3 id="gwf-correl-menubar">
-			<title>The Menubar of the Correlation Function Window</title>
-			<para>The correlation window's menubar has only a fistful of entries.
+			<title>The Menubar of the Autocorrelation Function Window</title>
+			<para>The autocorrelation window's menubar has only a fistful of entries.
 				They will be explained in this section. First, the
 				<guimenu>File</guimenu> menu:
 			</para>
@@ -3237,7 +3239,7 @@
 				<varlistentry>
 					<term><guimenuitem>Close</guimenuitem></term>
 					<listitem>
-						<para>Use this to close the correlation function window. &app;
+						<para>Use this to close the autocorrelation function window. &app;
 							itself will keep on running.
 						</para>
 					</listitem>
