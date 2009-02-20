@@ -686,7 +686,8 @@
           <widget class="GtkVPaned" id="vpaned">
             <property name="visible">True</property>
             <property name="can_focus">True</property>
-            <property name="position">350</property>
+            <property name="position">380</property>
+            <property name="position_set">True</property>
             <child>
               <widget class="GtkScrolledWindow" id="scrolledwindow1">
                 <property name="visible">True</property>
@@ -709,13 +710,13 @@
                 </child>
               </widget>
               <packing>
-                <property name="resize">False</property>
+                <property name="resize">True</property>
                 <property name="shrink">False</property>
               </packing>
             </child>
             <child>
               <widget class="GtkHBox" id="hbox2">
-                <property name="height_request">155</property>
+                <property name="height_request">160</property>
                 <property name="visible">True</property>
                 <child>
                   <widget class="GtkFrame" id="frame1">
@@ -989,7 +990,7 @@
                 </child>
               </widget>
               <packing>
-                <property name="resize">True</property>
+                <property name="resize">False</property>
                 <property name="shrink">False</property>
               </packing>
             </child>
