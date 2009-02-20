@@ -488,11 +488,13 @@ void gnuplot_plot_xy(
 	double			*	y,
     int                 n,
     char            *   title,
-    int			lt
+    int			col_r,
+    int			col_g,
+    int			col_b
 )
 {
     int     i ;
-	int		tmpfd ;
+    int	    tmpfd ;
     char    name[128] ;
     char    cmd[GP_CMD_SIZE] ;
     char    line[GP_CMD_SIZE] ;
@@ -531,20 +533,13 @@ void gnuplot_plot_xy(
         strcpy(cmd, "plot") ;
     }
     
-    if (lt == 0)
-	    if (title == NULL) {
-		sprintf(line, "%s \"%s\" with %s", cmd, name, handle->pstyle) ;
-	    } else {
-		sprintf(line, "%s \"%s\" title \"%s\" with %s", cmd, name,
-			      title, handle->pstyle) ;
-	    }
-    else
-	    if (title == NULL) {
-		sprintf(line, "%s \"%s\" with %s lt %d", cmd, name, handle->pstyle, lt) ;
-	    } else {
-		sprintf(line, "%s \"%s\" title \"%s\" with %s lt %d", cmd, name,
-			      title, handle->pstyle, lt);
-	    }
+    if (title == NULL) {
+        sprintf(line, "%s \"%s\" with %s lt rgb \"#%02X%02X%02X\"", cmd, name, handle->pstyle,
+			col_r, col_g, col_b);
+    } else {
+        sprintf(line, "%s \"%s\" title \"%s\" with %s lt rgb \"#%02X%02X%02X\"", cmd, name,
+			title, handle->pstyle, col_r, col_g, col_b);
+    }
 
     /* send command to gnuplot  */
     gnuplot_cmd(handle, line) ;
@@ -608,7 +603,7 @@ void gnuplot_plot_once(
 	if (y==NULL) {
 		gnuplot_plot_x(handle, x, n, title);
 	} else {
-		gnuplot_plot_xy(handle, x, y, n, title, 0);
+		gnuplot_plot_xy(handle, x, y, n, title, 0, 0, 0);
 	}
 	printf("press ENTER to continue\n");
 	while (getchar()!='\n') {}

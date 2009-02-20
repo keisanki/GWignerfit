@@ -210,8 +210,7 @@ gboolean	gtk_spect_vis_export_ps		(GtkSpectVis *spectvis,
 						 const gchar *ylabel,
 						 const gchar *footer,
 						 GArray *legend,
-						 const gchar legendpos,
-						 GArray *lt);
+						 const gchar legendpos);
 void		gtk_spect_vis_mark_point	(GtkSpectVis *spectvis,
 						 gdouble xval,
 						 gdouble yval);

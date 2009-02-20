@@ -709,12 +709,11 @@ gboolean postscript_export_dialog (
 gboolean export_graph_ps ()
 {
 	GtkSpectVis *spectvis;
-	GArray *uids, *legend, *lt;
+	GArray *uids, *legend;
 	gchar *default_footer=NULL, *basename, *str;
 	gchar *selected_filename, *selected_title, *selected_footer;
 	gchar selected_legend;
 	gboolean selected_theory, selected_overlay = FALSE;
-	gint linetype;
 	GtkTreeIter iter;
 	GtkTreeModel *model;
 	guint overlayid;
@@ -758,7 +757,6 @@ gboolean export_graph_ps ()
 
 	uids   = g_array_new (FALSE, FALSE, sizeof (guint) );
 	legend = g_array_new (FALSE, FALSE, sizeof (gchar*));
-	lt     = g_array_new (FALSE, FALSE, sizeof (gint)  );
 
 	if (selected_overlay && glob->overlaystore)
 	{
@@ -770,11 +768,6 @@ gboolean export_graph_ps ()
 			gtk_tree_model_get (model, &iter, 0, &overlayid, -1);
 			g_array_append_val (uids, overlayid);
 
-			/* Set the linetype */
-			/* g_array_append_val needs a variable as second parameter */
-			linetype = 9;
-			g_array_append_val (lt, linetype);
-
 			str = g_strdup_printf ("overlay");
 			g_array_append_val (legend, str);
 			str = "";
@@ -784,7 +777,6 @@ gboolean export_graph_ps ()
 				gtk_tree_model_get (model, &iter, 0, &overlayid, -1);
 				g_array_append_val (uids, overlayid);
 				g_array_append_val (legend, str);
-				g_array_append_val (lt, linetype);
 			}
 		}
 	}
@@ -794,24 +786,18 @@ gboolean export_graph_ps ()
 	str = g_strdup_printf ("data");
 	g_array_append_val (legend, str);
 
-	linetype = 1;
-	g_array_append_val (lt, linetype);
-
 	if (selected_theory)
 	{
 		/* Include the theory graph */
 		g_array_append_val (uids, glob->theory->index);
 		str = g_strdup_printf ("theory");
 		g_array_append_val (legend, str);
-
-		linetype = 3;
-		g_array_append_val (lt, linetype);
 	}
 
 	/* Export! */
 	if (!gtk_spect_vis_export_ps (spectvis, uids, selected_filename, selected_title, 
-				 "frequency (GHz)", NULL, selected_footer, 
-				 legend, selected_legend, lt))
+				 "Frequency (GHz)", NULL, selected_footer, 
+				 legend, selected_legend))
 	{
 		dialog_message ("Error: Could not create graph. Is gnuplot installed on your system?");
 		if (selected_filename[0] != '|')
@@ -821,7 +807,6 @@ gboolean export_graph_ps ()
 	/* Tidy up */
 	g_array_free (uids, TRUE);
 	g_array_free (legend, TRUE);
-	g_array_free (lt, TRUE);
 	g_free (selected_filename);
 	g_free (selected_title);
 	g_free (selected_footer);

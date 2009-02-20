@@ -444,7 +444,7 @@ gboolean on_corr_statistical_data_activate (GtkMenuItem *menuitem, gpointer user
 			GTK_SPIN_BUTTON (
 				glade_xml_get_widget (correl->xmlcorrel, "corr_spinner")
 			));
-	fprintf (fh, "# Correlation function calculated with GWignerFit\r\n#\r\n");
+	fprintf (fh, "# Autocorrelation function calculated with GWignerFit\r\n#\r\n");
 	fprintf (fh, "# Date              : %s\r\n", date);
 	fprintf (fh, "# Spectrum data file: %s\r\n", glob->data->file);
 	fprintf (fh, "# Frequency range   : %f - %f GHz\r\n", 
@@ -486,7 +486,7 @@ gboolean on_corr_statistical_data_activate (GtkMenuItem *menuitem, gpointer user
 gboolean on_corr_graph_as_postscript_activate (GtkMenuItem *menuitem, gpointer user_data)
 {
 	GtkSpectVis *graph;
-	GArray *uids, *legend, *lt;
+	GArray *uids, *legend;
 	gchar *default_footer, *basename;
 	gchar *selected_filename, *selected_title, *selected_footer;
 	gchar selected_legend;
@@ -516,20 +516,18 @@ gboolean on_corr_graph_as_postscript_activate (GtkMenuItem *menuitem, gpointer u
 	g_free (default_footer);
 
 	graph = GTK_SPECTVIS (glade_xml_get_widget (glob->correl->xmlcorrel, "correl_graph"));
-	uids   = g_array_new (FALSE, FALSE, sizeof (guint) );
-	legend = g_array_new (FALSE, FALSE, sizeof (gchar*));
-	lt     = g_array_new (FALSE, FALSE, sizeof (gint)  );
+	uids   = g_array_new (FALSE, FALSE, sizeof (guint)   );
+	legend = g_array_new (FALSE, FALSE, sizeof (gchar*)  );
 	
 	value = 1;
 	g_array_append_val (uids, value);
-	g_array_append_val (lt, value);
 
-	basename = "Correlation function";
+	basename = "Autocorrelation function";
 	g_array_append_val (legend, basename);
 
 	if (!gtk_spect_vis_export_ps (graph, uids, selected_filename, selected_title, 
-				 "frequency (MHz)", NULL, selected_footer, 
-				 legend, selected_legend, lt))
+				 "Frequency (MHz)", NULL, selected_footer, 
+				 legend, selected_legend))
 	{
 		dialog_message ("Error: Could not create graph. Is gnuplot installed on your system?");
 		if (selected_filename[0] != '|')
@@ -538,7 +536,6 @@ gboolean on_corr_graph_as_postscript_activate (GtkMenuItem *menuitem, gpointer u
 
 	g_array_free (uids, TRUE);
 	g_array_free (legend, TRUE);
-	g_array_free (lt, TRUE);
 	g_free (selected_filename);
 	g_free (selected_title);
 	g_free (selected_footer);

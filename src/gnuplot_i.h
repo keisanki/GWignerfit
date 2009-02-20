@@ -297,7 +297,9 @@ void gnuplot_plot_xy(
     double          *   y,
     int                 n,
     char            *   title,
-    int			lt
+    int			col_r,
+    int			col_g,
+    int			col_b
 ) ;
 
 

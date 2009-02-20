@@ -828,7 +828,7 @@ void on_fft_measure_distance_activate (GtkMenuItem *menuitem, gpointer user_data
 gboolean on_fourier_export_ps (GtkMenuItem *menuitem, gpointer user_data)
 {
 	GtkSpectVis *spectvis;
-	GArray *uids, *legend, *lt;
+	GArray *uids, *legend;
 	gchar *default_footer=NULL, *basename;
 	gchar *selected_filename, *selected_title, *selected_footer;
 	gboolean selected_theory, selected_overlay;
@@ -836,7 +836,6 @@ gboolean on_fourier_export_ps (GtkMenuItem *menuitem, gpointer user_data)
 	GtkTreeIter iter;
 	GtkTreeModel *model;
 	guint overlayid;
-	gint linetype;
 	gchar *str;
 
 	spectvis = GTK_SPECTVIS (glade_xml_get_widget (glob->fft->xmlfft, "fft_spectvis"));
@@ -877,7 +876,6 @@ gboolean on_fourier_export_ps (GtkMenuItem *menuitem, gpointer user_data)
 
 	uids   = g_array_new (FALSE, FALSE, sizeof (guint) );
 	legend = g_array_new (FALSE, FALSE, sizeof (gchar*));
-	lt     = g_array_new (FALSE, FALSE, sizeof (gint)  );
 
 	if (selected_overlay && glob->overlaystore)
 	{
@@ -889,11 +887,6 @@ gboolean on_fourier_export_ps (GtkMenuItem *menuitem, gpointer user_data)
 			gtk_tree_model_get (model, &iter, 0, &overlayid, -1);
 			g_array_append_val (uids, overlayid);
 
-			/* Set the linetype */
-			/* g_array_append_val needs a variable as second parameter */
-			linetype = 9;
-			g_array_append_val (lt, linetype);
-
 			str = g_strdup_printf ("overlay");
 			g_array_append_val (legend, str);
 			str = "";
@@ -903,7 +896,6 @@ gboolean on_fourier_export_ps (GtkMenuItem *menuitem, gpointer user_data)
 				gtk_tree_model_get (model, &iter, 0, &overlayid, -1);
 				g_array_append_val (uids, overlayid);
 				g_array_append_val (legend, str);
-				g_array_append_val (lt, linetype);
 			}
 		}
 	}
@@ -913,30 +905,24 @@ gboolean on_fourier_export_ps (GtkMenuItem *menuitem, gpointer user_data)
 	str = g_strdup_printf ("data");
 	g_array_append_val (legend, str);
 
-	linetype = 1;
-	g_array_append_val (lt, linetype);
-
 	if (selected_theory)
 	{
 		/* Include the theory graph */
 		g_array_append_val (uids, glob->theory->index);
 		str = g_strdup_printf ("theory");
 		g_array_append_val (legend, str);
-
-		linetype = 3;
-		g_array_append_val (lt, linetype);
 	}
 
 	/* Export! */
 	if (gtk_check_menu_item_get_active (GTK_CHECK_MENU_ITEM (
 				glade_xml_get_widget (glob->fft->xmlfft, "abscissa_ns")
 				)))
-		str = "time [ns]";
+		str = "Time (ns)";
 	else
-		str = "length [m]";
+		str = "Length (m)";
 
 	if (!gtk_spect_vis_export_ps (spectvis, uids, selected_filename, selected_title, 
-				 str, NULL, selected_footer, legend, selected_legend, lt))
+				 str, NULL, selected_footer, legend, selected_legend))
 	{
 		dialog_message ("Error: Could not create graph. Is gnuplot installed on your system?");
 		if (selected_filename[0] != '|')
@@ -946,7 +932,6 @@ gboolean on_fourier_export_ps (GtkMenuItem *menuitem, gpointer user_data)
 	/* Tidy up */
 	g_array_free (uids, TRUE);
 	g_array_free (legend, TRUE);
-	g_array_free (lt, TRUE);
 	g_free (selected_filename);
 	g_free (selected_title);
 	g_free (selected_footer);
@@ -1153,11 +1138,11 @@ gboolean on_fourier_export_ps (GtkMenuItem *menuitem, gpointer user_data)
 					glade_xml_get_widget (glob->fft->xmlfft, "abscissa_ns")
 					)))
 			status = gtk_spect_vis_export_ps (spectvis, uids, filename, title, 
-						 "time [ns]", NULL, footer, 
+						 "Time (ns)", NULL, footer, 
 						 legend, pos, lt);
 		else
 			status = gtk_spect_vis_export_ps (spectvis, uids, filename, title, 
-						 "length [m]", NULL, footer, 
+						 "Length (m)", NULL, footer, 
 						 legend, pos, lt);
 
 		if (!status)

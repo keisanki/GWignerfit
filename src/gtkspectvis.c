@@ -90,8 +90,7 @@ gboolean	gtk_spect_vis_export_ps		(GtkSpectVis *spectvis,
 						 const gchar *ylabel,
 						 const gchar *footer,
 						 GArray *legend,
-						 const gchar legendpos,
-						 GArray *lt);
+						 const gchar legendpos);
 void		gtk_spect_vis_mark_point	(GtkSpectVis *spectvis,
 						 gdouble xval,
 						 gdouble yval);
@@ -2129,13 +2128,12 @@ gtk_spect_vis_export_ps (GtkSpectVis *spectvis, GArray *uids,
 			 const gchar *filename, const gchar *title, 
 			 const gchar *xlabel, const gchar *ylabel,
 			 const gchar *footer, GArray *legend, 
-			 const gchar legendpos, GArray *lt)
+			 const gchar legendpos)
 {
 	gnuplot_ctrl *g;
 	gdouble *x, *y, from, to;
 	guint start, stop, len;
 	guint arraypos, i;
-	gint linetype;
 	ComplexDouble tmp;
 	GtkSpectVisViewport *view;
 	GtkSpectVisData *data;
@@ -2158,6 +2156,8 @@ gtk_spect_vis_export_ps (GtkSpectVis *spectvis, GArray *uids,
 	view = spectvis->view;
 	gnuplot_cmd(g, "set xrange [%e:%e]", view->xmin/spectvis->xAxisScale, view->xmax/spectvis->xAxisScale);
 	gnuplot_cmd(g, "set yrange [%e:%e]", view->ymin/spectvis->yAxisScale, view->ymax/spectvis->yAxisScale);
+	gnuplot_cmd(g, "set mxtics 2");
+	gnuplot_cmd(g, "set mytics 2");
 
 	if (xlabel)
 		gnuplot_set_xlabel (g, (gchar *) xlabel);
@@ -2167,19 +2167,19 @@ gtk_spect_vis_export_ps (GtkSpectVis *spectvis, GArray *uids,
 		switch (spectvis->displaytype)
 		{
 			case 'r':
-				gnuplot_set_ylabel (g, "real part of amplitude (a.u.)");
+				gnuplot_set_ylabel (g, "Real part of amplitude (a.u.)");
 				break;
 			case 'i':
-				gnuplot_set_ylabel (g, "imaginary part of amplitude (a.u.)");
+				gnuplot_set_ylabel (g, "Imaginary part of amplitude (a.u.)");
 				break;
 			case 'p':
-				gnuplot_set_ylabel (g, "phase value of amplitude (a.u.)");
+				gnuplot_set_ylabel (g, "Phase value of amplitude (a.u.)");
 				break;
 			case 'l':
-				gnuplot_set_ylabel (g, "squared amplitude (dB)");
+				gnuplot_set_ylabel (g, "Squared amplitude (dB)");
 				break;
 			default:
-				gnuplot_set_ylabel (g, "absolute amplitude (a.u.)");
+				gnuplot_set_ylabel (g, "Absolute amplitude (a.u.)");
 		}
 	else
 		gnuplot_set_ylabel (g, (gchar *) ylabel);
@@ -2208,9 +2208,8 @@ gtk_spect_vis_export_ps (GtkSpectVis *spectvis, GArray *uids,
 		if (data->type == 'i')
 		{
 			/* Draw impulses */
-			linetype  = g_array_index (lt, gint, arraypos);
-			tmp.re    = 0.0;
-			tmp.im    = 0.0;
+			tmp.re = 0.0;
+			tmp.im = 0.0;
 			for (i=start; i<=stop; i++)
 			{
 				if (spectvis->displaytype == 'l')
@@ -2232,12 +2231,12 @@ gtk_spect_vis_export_ps (GtkSpectVis *spectvis, GArray *uids,
 				to   = to   < view->ymin/spectvis->yAxisScale ? view->ymin/spectvis->yAxisScale : to  ;
 				to   = to   > view->ymax/spectvis->yAxisScale ? view->ymax/spectvis->yAxisScale : to  ;
 
-				gnuplot_cmd (g, "set arrow from %f,%f to %f,%f nohead lt %d",
+				gnuplot_cmd (g, "set arrow from %f,%f to %f,%f nohead lt rgb \"#%02X%02X%02X\"",
 						data->X[i] / spectvis->xAxisScale,
 						from,
 						data->X[i] / spectvis->xAxisScale,
 						to,
-						linetype
+						(int) (data->color.red/256), (int) (data->color.green/256), (int) (data->color.blue/256)
 					    );
 			}
 
@@ -2252,7 +2251,8 @@ gtk_spect_vis_export_ps (GtkSpectVis *spectvis, GArray *uids,
 			x[1] = data->Y[i].im / spectvis->yAxisScale;
 
 			legendstr = g_array_index (legend, gchar*, arraypos);
-			gnuplot_plot_xy (g, x, y, 2, legendstr, linetype);
+			gnuplot_plot_xy (g, x, y, 2, legendstr,
+					(int) (data->color.red/256), (int) (data->color.green/256), (int) (data->color.blue/256));
 
 			g_free (x);
 			g_free (y);
@@ -2314,9 +2314,9 @@ gtk_spect_vis_export_ps (GtkSpectVis *spectvis, GArray *uids,
 #endif
 		}
 
-		linetype  = g_array_index (lt, gint, arraypos);
 		legendstr = g_array_index (legend, gchar*, arraypos);
-		gnuplot_plot_xy (g, x, y, len, legendstr, linetype);
+		gnuplot_plot_xy (g, x, y, len, legendstr, 
+				(int) (data->color.red/256), (int) (data->color.green/256), (int) (data->color.blue/256));
 
 		if (data->type == 'h')
 			/* Set plot style back to lines */

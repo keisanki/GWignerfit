@@ -1920,13 +1920,13 @@ gboolean on_spectral_export_data (GtkMenuItem *menuitem, gpointer user_data)
 gboolean on_spectral_export_ps (GtkMenuItem *menuitem, gpointer user_data)
 {
 	GtkSpectVis *graph;
-	GArray *uids, *legend, *lt;
+	GArray *uids, *legend;
 	gchar *default_footer=NULL, *basename, *str;
 	gchar *selected_filename, *selected_title, *selected_footer;
 	gchar *xlabel = NULL, *ylabel = NULL, *ylabel2;
 	gchar selected_legend;
 	gboolean selected_theory;
-	gint uid, linetype;
+	gint uid;
 
 	if ((!glob->spectral) || (!glob->spectral->xmlspect))
 		return FALSE;
@@ -1965,19 +1965,15 @@ gboolean on_spectral_export_ps (GtkMenuItem *menuitem, gpointer user_data)
 
 	uids   = g_array_new (FALSE, FALSE, sizeof (guint) );
 	legend = g_array_new (FALSE, FALSE, sizeof (gchar*));
-	lt     = g_array_new (FALSE, FALSE, sizeof (gint)  );
 
 	/* Always include the data graph */;
 	uid = 1;
 	g_array_append_val (uids, uid);
 	if (glob->spectral->view == SPECTRAL_WIDTHS_HIST)
-		str = g_strdup_printf ("widths histogram");
+		str = g_strdup_printf ("Widths histogram");
 	else
-		str = g_strdup_printf ("spectral data");
+		str = g_strdup_printf ("Spectral data");
 	g_array_append_val (legend, str);
-
-	linetype = 1;
-	g_array_append_val (lt, linetype);
 
 	if (selected_theory)
 	{
@@ -1991,24 +1987,18 @@ gboolean on_spectral_export_ps (GtkMenuItem *menuitem, gpointer user_data)
 		else
 			str = g_strdup_printf ("Poisson");
 		g_array_append_val (legend, str);
-		linetype = 3;
-		g_array_append_val (lt, linetype);
 
 		/* GOE */
 		uid = 3;
 		g_array_append_val (uids, uid);
 		str = g_strdup_printf ("GOE");
 		g_array_append_val (legend, str);
-		linetype = 4;
-		g_array_append_val (lt, linetype);
 
 		/* Poisson */
 		uid = 4;
 		g_array_append_val (uids, uid);
 		str = g_strdup_printf ("GUE");
 		g_array_append_val (legend, str);
-		linetype = 2;
-		g_array_append_val (lt, linetype);
 	}
 
 	/* Choose a xlabel */
@@ -2017,7 +2007,7 @@ gboolean on_spectral_export_ps (GtkMenuItem *menuitem, gpointer user_data)
 		case SPECTRAL_WEYL:
 			ylabel = g_strdup_printf ("N(f)");
 		case SPECTRAL_FLUC:
-			xlabel = g_strdup_printf ("frequency (GHz)");
+			xlabel = g_strdup_printf ("Frequency (GHz)");
 			if (!ylabel)
 				ylabel = g_strdup_printf ("N^{fluc}(f)");
 			break;
@@ -2027,7 +2017,7 @@ gboolean on_spectral_export_ps (GtkMenuItem *menuitem, gpointer user_data)
 			else
 				ylabel = g_strdup_printf ("N(s)");
 		case SPECTRAL_INT_NND:
-			xlabel = g_strdup_printf ("spacing");
+			xlabel = g_strdup_printf ("Spacing");
 			if (!ylabel)
 			{
 				if (glob->spectral->normalize)
@@ -2039,13 +2029,13 @@ gboolean on_spectral_export_ps (GtkMenuItem *menuitem, gpointer user_data)
 		case SPECTRAL_S2:
 			ylabel = g_strdup_printf ("{/Symbol S}(l)");
 		case SPECTRAL_D3:
-			xlabel = g_strdup_printf ("length");
+			xlabel = g_strdup_printf ("Length");
 			if (!ylabel)
 				ylabel = g_strdup_printf ("{/Symbol D}(l)");
 			break;
 		case SPECTRAL_LENGTH:
-			xlabel = g_strdup_printf ("length (m)");
-			ylabel = g_strdup_printf ("intensity");
+			xlabel = g_strdup_printf ("Length (m)");
+			ylabel = g_strdup_printf ("Intensity");
 			break;
 	}
 
@@ -2063,7 +2053,7 @@ gboolean on_spectral_export_ps (GtkMenuItem *menuitem, gpointer user_data)
 	graph = GTK_SPECTVIS (glade_xml_get_widget (glob->spectral->xmlspect, "spectral_spectvis"));
 	if (!gtk_spect_vis_export_ps (graph, uids, selected_filename, selected_title, 
 				 xlabel, ylabel, selected_footer, 
-				 legend, selected_legend, lt))
+				 legend, selected_legend))
 	{
 		dialog_message ("Error: Could not create graph. Is gnuplot installed on your system?");
 		if (selected_filename[0] != '|')
@@ -2073,7 +2063,6 @@ gboolean on_spectral_export_ps (GtkMenuItem *menuitem, gpointer user_data)
 	/* Tidy up */
 	g_array_free (uids, TRUE);
 	g_array_free (legend, TRUE);
-	g_array_free (lt, TRUE);
 	g_free (xlabel);
 	g_free (ylabel);
 
