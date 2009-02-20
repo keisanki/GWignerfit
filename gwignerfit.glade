@@ -514,7 +514,7 @@
                       <widget class="GtkMenuItem" id="correlation_function">
                         <property name="visible">True</property>
                         <property name="sensitive">False</property>
-                        <property name="label" translatable="yes">Co_rrelation function</property>
+                        <property name="label" translatable="yes">Autoco_rrelation function</property>
                         <property name="use_underline">True</property>
                         <signal name="activate" handler="on_correlation_function_activate"/>
                       </widget>
@@ -10560,7 +10560,7 @@ User 5</property>
   </widget>
   <widget class="GtkWindow" id="correl_win">
     <property name="visible">True</property>
-    <property name="title" translatable="yes">Correlation function</property>
+    <property name="title" translatable="yes">Autocorrelation function</property>
     <property name="default_width">600</property>
     <property name="default_height">400</property>
     <signal name="destroy_event" handler="on_correl_close_activate"/>
