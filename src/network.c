@@ -1459,10 +1459,11 @@ static void vna_cal_frequency_range ()
 	{
 		fstop = fstart + netwin->resol * ((gdouble)netwin->points - 1.0);
 
-		if (fstop > 50e9)
+		/* Fit measurement window into VNA frequency range */
+		if (fstop > vna_func->get_capa(2) * 1e9)
 		{
 			/* Right align measurement window */
-			while (fstop > 50e9)
+			while (fstop > vna_func->get_capa(2) * 1e9)
 				fstop -= netwin->resol;
 
 			/* startpointoffset: position in data array where new data will start */
@@ -1597,10 +1598,11 @@ static void vna_sweep_frequency_range ()
 	{
 		fstop = fstart + netwin->resol * ((gdouble)netwin->points - 1.0);
 
-		if (fstop > 50e9)
+		/* Fit measurement window into VNA frequency range */
+		if (fstop > vna_func->get_capa(2) * 1e9)
 		{
 			/* Right align measurement window */
-			while (fstop > 50e9)
+			while (fstop > vna_func->get_capa(2) * 1e9)
 				fstop -= netwin->resol;
 
 			/* startpointoffset: position in data array where new data will start */
