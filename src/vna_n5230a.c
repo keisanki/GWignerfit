@@ -813,7 +813,8 @@ gchar* vna_n5230a_calibrate (gdouble fstart, gdouble fstop, gdouble resol, gint 
 	vna_n5230a_send_cmd (glob->netwin->sockfd, "SENS:CORR:COLL:ACQ ECAL1,CHAR%d", glob->netwin->ecal_char);
 	vna_n5230a_send_cmd (glob->netwin->sockfd, "SENS:CORR:CSET:NAME 'gwfcal_%.3f-%.3f_%.0f_%03d'", fstart/1e9, fstop/1e9, resol/1e3, num);
 	vna_n5230a_send_cmd (glob->netwin->sockfd, "SENS:CORR:CSET:DESC '%06.3f - %06.3f GHz'",
-			(fstart + 16001.0*((gdouble)num-1.0) * resol)/1e9, (fstart + ((gdouble)points*(gdouble)num-1.0) * resol)/1e9);
+			(fstart + (16001.0*((gdouble)num-1.0)                    ) * resol)/1e9, 
+			(fstart + (16001.0*((gdouble)num-1.0)+(gdouble)points-1.0) * resol)/1e9);
 	vna_n5230a_wait ();
 
 	err = vna_n5230a_get_err ();
