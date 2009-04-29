@@ -489,6 +489,18 @@ gint vna_n5230a_get_points ()
 	return (gint) f_points;
 }
 
+/* Set set number of points */
+void vna_n5230a_set_points (gint points)
+{
+	g_return_if_fail (points < 16001);
+	g_return_if_fail (points > 0);
+	g_return_if_fail (glob->netwin);
+	g_return_if_fail (glob->netwin->sockfd);
+
+	vna_n5230a_send_cmd (glob->netwin->sockfd, "SENS:SWE:POIN %d", points);
+	vna_n5230a_wait ();
+}
+
 /* Delete old calsets that would be in the way */
 void vna_n5230a_del_calsets ()
 {
@@ -632,7 +644,7 @@ void vna_n5230a_set_startstop (gdouble start, gdouble stop)
 {
 	g_return_if_fail (glob->netwin);
 	g_return_if_fail (glob->netwin->sockfd > 0);
-	g_return_if_fail (stop > start);
+	g_return_if_fail (stop >= start);
 
 	vna_n5230a_send_cmd (glob->netwin->sockfd, "SENS:FREQ:STAR %.1lf", start);
 	vna_n5230a_send_cmd (glob->netwin->sockfd, "SENS:FREQ:STOP %.1lf", stop);
@@ -790,7 +802,7 @@ gboolean vna_n5230a_sel_first_par ()
 }
 
 /* Calibrate the currently selected frequency window */
-gchar* vna_n5230a_calibrate (gdouble fstart, gdouble fstop, gdouble resol, gint num)
+gchar* vna_n5230a_calibrate (gdouble fstart, gdouble fstop, gdouble resol, gint points, gint num)
 {
 	gchar *err;
 
@@ -801,7 +813,7 @@ gchar* vna_n5230a_calibrate (gdouble fstart, gdouble fstop, gdouble resol, gint 
 	vna_n5230a_send_cmd (glob->netwin->sockfd, "SENS:CORR:COLL:ACQ ECAL1,CHAR%d", glob->netwin->ecal_char);
 	vna_n5230a_send_cmd (glob->netwin->sockfd, "SENS:CORR:CSET:NAME 'gwfcal_%.3f-%.3f_%.0f_%03d'", fstart/1e9, fstop/1e9, resol/1e3, num);
 	vna_n5230a_send_cmd (glob->netwin->sockfd, "SENS:CORR:CSET:DESC '%06.3f - %06.3f GHz'",
-			(fstart + 16001.0*((gdouble)num-1.0) * resol)/1e9, (fstart + (16001.0*(gdouble)num-1.0) * resol)/1e9);
+			(fstart + 16001.0*((gdouble)num-1.0) * resol)/1e9, (fstart + ((gdouble)points*(gdouble)num-1.0) * resol)/1e9);
 	vna_n5230a_wait ();
 
 	err = vna_n5230a_get_err ();
@@ -813,7 +825,7 @@ gchar* vna_n5230a_calibrate (gdouble fstart, gdouble fstop, gdouble resol, gint 
 }
 
 /* Calibrate the currently selected frequency window */
-gchar* vna_n5230a_cal_recall (gdouble fstart, gdouble fstop, gdouble resol, gint num)
+gchar* vna_n5230a_cal_recall (gdouble fstart, gdouble fstop, gdouble resol, gint points, gint num)
 {
 	gchar *err;
 
@@ -851,7 +863,7 @@ gchar* vna_n5230a_cal_recall (gdouble fstart, gdouble fstop, gdouble resol, gint
 	vna_n5230a_send_cmd (glob->netwin->sockfd, "SENS:SWE:GRO:COUN 1");
 	vna_n5230a_send_cmd (glob->netwin->sockfd, "SENS:SWE:MODE GRO");
 	vna_n5230a_wait ();
-	vna_n5230a_send_cmd (glob->netwin->sockfd, "SENS:SWE:POIN 16001");
+	vna_n5230a_send_cmd (glob->netwin->sockfd, "SENS:SWE:POIN %d", points);
 	vna_n5230a_wait ();
 
 	vna_n5230a_send_cmd (glob->netwin->sockfd, "*CLS");
@@ -1009,7 +1021,7 @@ gdouble vna_n5230a_get_capa (gint type)
 			ret = 50.000;
 			break;
 		case VNA_CAPA_MAXPOINTS: /* Number of points */
-			ret = 20001.0;
+			ret = 16001.0;
 			break;
 		case VNA_CAPA_VARPOINTS: /* Number of points variable? */
 			ret = 1.0;

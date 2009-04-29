@@ -157,6 +157,7 @@ typedef struct
 	gdouble (*get_start_frq) ();	/* Return start frequency of current window in Hz */
 	gdouble (*get_stop_frq) ();	/* Return stop frequency of current window in Hz */
 	gint (*get_points) ();		/* Get number of currently selected points */
+	void (*set_points) ();		/* Set number of points */
 	void (*sweep_prepare) ();	/* Prepare a sweep (reset, display, traces, etc.) */
 	void (*set_startstop) (gdouble, gdouble); /* Change frequency window to given limits in Hz */
 	void (*trace_scale_auto) ();	/* Autoscale all traces */
@@ -166,8 +167,8 @@ typedef struct
 	void (*select_s) (gchar*);	/* Select given S-parameter for first trace */
 	gboolean (*sel_first_par) ();	/* Select the first available parameter */
 	void (*select_trl) (gint);	/* Set up measurement of special TRL parameters */
-	gchar* (*calibrate ) (gdouble, gdouble, gdouble, gint); /* Calibrate current frequency window */
-	gchar* (*cal_recall) (gdouble, gdouble, gdouble, gint); /* Recall a calibration set */
+	gchar* (*calibrate ) (gdouble, gdouble, gdouble, gint, gint); /* Calibrate current frequency window */
+	gchar* (*cal_recall) (gdouble, gdouble, gdouble, gint, gint); /* Recall a calibration set */
 	void (*cal_verify) ();		/* Verify a calibration set */
 	gdouble (*round_bwid) (gdouble);/* Round IF bandwidth value to nearest possible value */
 	gdouble (*get_capa) (gint);	/* Return VNA capabilities: 1=f_min, 2=f_max, 3=number_of_points */

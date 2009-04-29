@@ -281,6 +281,7 @@ void vna_connect_backend (VnaBackend *vna_func)
 		vna_func->get_start_frq = &vna_proxy_get_start_frq;
 		vna_func->get_stop_frq = &vna_proxy_get_stop_frq;
 		vna_func->get_points = &vna_proxy_get_points;
+		vna_func->set_points = NULL;
 		vna_func->sweep_prepare = &vna_proxy_sweep_prepare;
 		vna_func->set_startstop = &vna_proxy_set_startstop;
 		vna_func->trace_scale_auto = &vna_proxy_trace_scale_auto;
@@ -309,6 +310,7 @@ void vna_connect_backend (VnaBackend *vna_func)
 		vna_func->get_start_frq = &vna_n5230a_get_start_frq;
 		vna_func->get_stop_frq = &vna_n5230a_get_stop_frq;
 		vna_func->get_points = &vna_n5230a_get_points;
+		vna_func->set_points = &vna_n5230a_set_points;
 		vna_func->sweep_prepare = &vna_n5230a_sweep_prepare;
 		vna_func->set_startstop = &vna_n5230a_set_startstop;
 		vna_func->trace_scale_auto = &vna_n5230a_trace_scale_auto;
@@ -1433,6 +1435,51 @@ static gboolean vna_write_header (gint pos, gchar *sparam, NetworkWin *netwin)
 	return TRUE;
 }
 
+/* Fit measurement window into VNA frequency range */
+static void vna_setup_frq_win (gdouble *fstart, gdouble *fstop, gint *startpointoffset)
+{
+	NetworkWin *netwin;
+	VnaBackend *vna_func;
+	gint points;
+
+	g_return_if_fail (glob->netwin);
+	netwin = glob->netwin;
+	vna_func = glob->netwin->vna_func;
+	g_return_if_fail (vna_func->calibrate);
+	g_return_if_fail (fstart);
+	g_return_if_fail (fstop);
+	g_return_if_fail (startpointoffset);
+
+	if (*fstop <= netwin->stop)
+		/* Nothing to be done */
+		return;
+
+	if (vna_func->get_capa(VNA_CAPA_VARPOINTS) == 1.0)
+	{
+		/* Adjust number of points dynamically */
+		g_return_if_fail (vna_func->set_points);
+
+		points = (gint) floor ((netwin->stop - *fstart)/netwin->resol) + 1;
+		vna_func->set_points (points);
+		netwin->points = points;
+
+		*fstop = netwin->stop;
+		*startpointoffset = 0;
+	}
+	else
+	{
+		/* Right align measurement window */
+		while (*fstop > netwin->stop)
+			*fstop -= netwin->resol;
+
+		/* startpointoffset: position in data array where new data will start */
+		*startpointoffset = (gint) ((*fstart - (*fstop - netwin->resol * ((gdouble)netwin->points - 1.0)))/netwin->resol);
+
+		/* New start frequency */
+		*fstart = *fstop - netwin->resol * ((gdouble)netwin->points - 1.0);
+	}
+}
+
 static void vna_cal_frequency_range ()
 {
 	NetworkWin *netwin;
@@ -1461,25 +1508,14 @@ static void vna_cal_frequency_range ()
 		fstop = fstart + netwin->resol * ((gdouble)netwin->points - 1.0);
 
 		/* Fit measurement window into VNA frequency range */
-		if (fstop > vna_func->get_capa(VNA_CAPA_MAXFRQ) * 1e9)
-		{
-			/* Right align measurement window */
-			while (fstop > vna_func->get_capa(VNA_CAPA_MAXFRQ) * 1e9)
-				fstop -= netwin->resol;
-
-			/* startpointoffset: position in data array where new data will start */
-			startpointoffset = (gint) ((fstart - (fstop - netwin->resol * ((gdouble)netwin->points - 1.0)))/netwin->resol);
-
-			fstart = fstop - netwin->resol * ((gdouble)netwin->points - 1.0);
-		}
-		else
-			startpointoffset = 0;
+		startpointoffset = 0;
+		vna_setup_frq_win (&fstart, &fstop, &startpointoffset);
 
 		vna_update_netstat ("Calibrating %6.3f - %6.3f GHz...", fstart/1e9, fstop/1e9);
 
 		/* Choose frequency window and run calibration */
 		vna_func->set_startstop (fstart, fstop);
-		err = vna_func->calibrate (netwin->start, netwin->stop, netwin->resol, windone+1);
+		err = vna_func->calibrate (netwin->start, netwin->stop, netwin->resol, netwin->points, windone+1);
 		if (err)
 		{
 			vna_func->gtl ();
@@ -1600,29 +1636,18 @@ static void vna_sweep_frequency_range ()
 		fstop = fstart + netwin->resol * ((gdouble)netwin->points - 1.0);
 
 		/* Fit measurement window into VNA frequency range */
-		if (fstop > vna_func->get_capa(VNA_CAPA_MAXFRQ) * 1e9)
-		{
-			/* Right align measurement window */
-			while (fstop > vna_func->get_capa(VNA_CAPA_MAXFRQ) * 1e9)
-				fstop -= netwin->resol;
-
-			/* startpointoffset: position in data array where new data will start */
-			startpointoffset = (gint) ((fstart - (fstop - netwin->resol * ((gdouble)netwin->points - 1.0)))/netwin->resol);
-
-			fstart = fstop - netwin->resol * ((gdouble)netwin->points - 1.0);
-		}
-		else
-			startpointoffset = 0;
+		startpointoffset = 0;
+		vna_setup_frq_win (&fstart, &fstop, &startpointoffset);
 
 		vna_update_netstat ("Measuring %6.3f - %6.3f GHz...", fstart/1e9, fstop/1e9);
 
 		if ((netwin->calmode == 1) || (netwin->calmode == 3))
-			vna_func->cal_recall (netwin->start, netwin->stop, netwin->resol, -1);
+			vna_func->cal_recall (netwin->start, netwin->stop, netwin->resol, netwin->points, -1);
 
 		vna_func->set_startstop (fstart, fstop);
 		if ((netwin->calmode == 1) || (netwin->calmode == 3))
 		{
-			err = vna_func->cal_recall (netwin->start, netwin->stop, netwin->resol, windone+1);
+			err = vna_func->cal_recall (netwin->start, netwin->stop, netwin->resol, netwin->points, windone+1);
 			if (err)
 			{
 				vna_func->gtl ();
