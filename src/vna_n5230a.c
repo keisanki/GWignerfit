@@ -1002,19 +1002,22 @@ gdouble vna_n5230a_get_capa (gint type)
 
 	switch (type)
 	{
-		case 1: /* Minimal frequency */
+		case VNA_CAPA_MINFRQ: /* Minimal frequency */
 			ret =  0.010;
 			break;
-		case 2: /* Maximal frequency */
+		case VNA_CAPA_MAXFRQ: /* Maximal frequency */
 			ret = 50.000;
 			break;
-		case 3: /* Number of points */
-			ret = 16001.0;
+		case VNA_CAPA_MAXPOINTS: /* Number of points */
+			ret = 20001.0;
 			break;
-		case 4: /* Minimal IF bandwidth */
+		case VNA_CAPA_VARPOINTS: /* Number of points variable? */
 			ret = 1.0;
 			break;
-		case 5: /* Maximal IF bandwidth */
+		case VNA_CAPA_MINBW: /* Minimal IF bandwidth */
+			ret = 1.0;
+			break;
+		case VNA_CAPA_MAXBW: /* Maximal IF bandwidth */
 			ret = 250000.0;
 			break;
 	}

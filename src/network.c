@@ -22,6 +22,7 @@
 #include "calibrate_vna.h"
 #include "vna_proxy.h"
 #include "vna_n5230a.h"
+#include "network.h"
 
 extern GlobalData *glob;	/* Global variables */
 extern GladeXML *gladexml;
@@ -294,7 +295,7 @@ void vna_connect_backend (VnaBackend *vna_func)
 		vna_func->cal_verify = NULL;
 		vna_func->round_bwid = &vna_proxy_round_bwid;
 		vna_func->get_capa = &vna_proxy_get_capa;
-		glob->netwin->points = (gint) vna_proxy_get_capa (3);
+		glob->netwin->points = (gint) vna_proxy_get_capa (VNA_CAPA_MAXPOINTS);
 	}
 	else
 	{
@@ -322,7 +323,7 @@ void vna_connect_backend (VnaBackend *vna_func)
 		vna_func->cal_verify = &vna_n5230a_cal_verify;
 		vna_func->round_bwid = &vna_n5230a_round_bwid;
 		vna_func->get_capa = &vna_n5230a_get_capa;
-		glob->netwin->points = (gint) vna_n5230a_get_capa (3);
+		glob->netwin->points = (gint) vna_n5230a_get_capa (VNA_CAPA_MAXPOINTS);
 	}
 }
 
@@ -425,9 +426,9 @@ static int network_gui_to_struct ()
 		dialog_message ("Could not parse start frequency.");
 		return 1;
 	}
-	if (val < netwin->vna_func->get_capa (1))
+	if (val < netwin->vna_func->get_capa (VNA_CAPA_MINFRQ))
 	{
-		dialog_message ("Start frequency must not be less than %.3f GHz.", netwin->vna_func->get_capa (1));
+		dialog_message ("Start frequency must not be less than %.3f GHz.", netwin->vna_func->get_capa (VNA_CAPA_MINFRQ));
 		return 1;
 	}
 	netwin->start = val * 1e9;
@@ -439,9 +440,9 @@ static int network_gui_to_struct ()
 		dialog_message ("Could not parse stop frequency.");
 		return 1;
 	}
-	if (val > netwin->vna_func->get_capa (2))
+	if (val > netwin->vna_func->get_capa (VNA_CAPA_MAXFRQ))
 	{
-		dialog_message ("Stop frequency must be below %.3f GHz.",netwin->vna_func->get_capa (2));
+		dialog_message ("Stop frequency must be below %.3f GHz.",netwin->vna_func->get_capa (VNA_CAPA_MAXFRQ));
 		return 1;
 	}
 	netwin->stop = val * 1e9;
@@ -542,18 +543,18 @@ static int network_gui_to_struct ()
 		return 1;
 	}
 	val *= 1e3;
-	if (netwin->vna_func->get_capa (4) > 0)
+	if (netwin->vna_func->get_capa (VNA_CAPA_MINBW) > 0)
 	{
-		if (val < netwin->vna_func->get_capa (4))
+		if (val < netwin->vna_func->get_capa (VNA_CAPA_MINBW))
 		{
 			dialog_message ("IF bandwidth must not be less than %.3f kHz.",
-				netwin->vna_func->get_capa (4) / 1e3);
+				netwin->vna_func->get_capa (VNA_CAPA_MINBW) / 1e3);
 			return 1;
 		}
-		if (val > netwin->vna_func->get_capa (5))
+		if (val > netwin->vna_func->get_capa (VNA_CAPA_MAXBW))
 		{
 			dialog_message ("IF bandwidth must not be greater than %.3f kHz.",
-				netwin->vna_func->get_capa (5) / 1e3);
+				netwin->vna_func->get_capa (VNA_CAPA_MAXBW) / 1e3);
 			return 1;
 		}
 	}
@@ -1460,10 +1461,10 @@ static void vna_cal_frequency_range ()
 		fstop = fstart + netwin->resol * ((gdouble)netwin->points - 1.0);
 
 		/* Fit measurement window into VNA frequency range */
-		if (fstop > vna_func->get_capa(2) * 1e9)
+		if (fstop > vna_func->get_capa(VNA_CAPA_MAXFRQ) * 1e9)
 		{
 			/* Right align measurement window */
-			while (fstop > vna_func->get_capa(2) * 1e9)
+			while (fstop > vna_func->get_capa(VNA_CAPA_MAXFRQ) * 1e9)
 				fstop -= netwin->resol;
 
 			/* startpointoffset: position in data array where new data will start */
@@ -1599,10 +1600,10 @@ static void vna_sweep_frequency_range ()
 		fstop = fstart + netwin->resol * ((gdouble)netwin->points - 1.0);
 
 		/* Fit measurement window into VNA frequency range */
-		if (fstop > vna_func->get_capa(2) * 1e9)
+		if (fstop > vna_func->get_capa(VNA_CAPA_MAXFRQ) * 1e9)
 		{
 			/* Right align measurement window */
-			while (fstop > vna_func->get_capa(2) * 1e9)
+			while (fstop > vna_func->get_capa(VNA_CAPA_MAXFRQ) * 1e9)
 				fstop -= netwin->resol;
 
 			/* startpointoffset: position in data array where new data will start */
