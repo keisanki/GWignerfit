@@ -1484,7 +1484,8 @@ static void vna_cal_frequency_range ()
 {
 	NetworkWin *netwin;
 	VnaBackend *vna_func;
-	int winleft, windone;
+	int windone;
+	float winleft;
 	gint startpointoffset;
 	GTimeVal starttime, curtime, difftime;
 	gdouble fstart, fstop;
@@ -1502,7 +1503,9 @@ static void vna_cal_frequency_range ()
 	/* Calibrate those frequency windows */
 	g_get_current_time (&starttime);
 	windone = 0;
-	winleft = (int) ceil((netwin->stop - netwin->start)/((gdouble)netwin->points*netwin->resol));
+	winleft = (float)((netwin->stop - netwin->start)/((gdouble)netwin->points*netwin->resol));
+	if (vna_func->get_capa (VNA_CAPA_VARPOINTS) == 0.0)
+		winleft = ceilf (winleft);
 	for (fstart=netwin->start; fstart<=netwin->stop; fstart+=netwin->resol*(gdouble)netwin->points)
 	{
 		fstop = fstart + netwin->resol * ((gdouble)netwin->points - 1.0);
@@ -1527,7 +1530,7 @@ static void vna_cal_frequency_range ()
 			/* Restore original start frequency */
 			fstart += (gdouble) startpointoffset * netwin->resol;
 
-		if (winleft)
+		if (winleft > 0)
 		{
 			/* Recalcualte ETA (only if we aren't finished yet) */
 			g_get_current_time (&curtime);
@@ -1537,8 +1540,8 @@ static void vna_cal_frequency_range ()
 			winleft--;	/* Those left to be measured */
 
 			netwin->estim_t = curtime.tv_sec - netwin->start_t
-				+ (glong)( (float)difftime.tv_sec  * ((float)winleft/(float)windone))
-				+ (glong)(((float)difftime.tv_usec * ((float)winleft/(float)windone))/1e6);
+				+ (glong)( (float)difftime.tv_sec  * (winleft/(float)windone))
+				+ (glong)(((float)difftime.tv_usec * (winleft/(float)windone))/1e6);
 		}
 
 		/* Has anyone canceled the calibration? */
@@ -1560,7 +1563,8 @@ static void vna_sweep_frequency_range ()
 {
 	NetworkWin *netwin;
 	VnaBackend *vna_func;
-	int i = 0, j, winleft, windone, h, m, s, Si;
+	int i = 0, j, windone, h, m, s, Si;
+	float winleft;
 	gint startpointoffset;
 	GTimeVal starttime, curtime, difftime;
 	struct timeval tv;
@@ -1629,8 +1633,9 @@ static void vna_sweep_frequency_range ()
 
 	/* Measure those frequency windows */
 	g_get_current_time (&starttime);
-	windone = 0;
-	winleft = (int) ceil((netwin->stop - netwin->start)/((gdouble)netwin->points*netwin->resol));
+	winleft = (float)((netwin->stop - netwin->start)/((gdouble)netwin->points*netwin->resol));
+	if (vna_func->get_capa (VNA_CAPA_VARPOINTS) == 0.0)
+		winleft = ceilf (winleft);
 	for (fstart=netwin->start; fstart<=netwin->stop; fstart+=netwin->resol*(gdouble)netwin->points)
 	{
 		fstop = fstart + netwin->resol * ((gdouble)netwin->points - 1.0);
@@ -1816,7 +1821,7 @@ static void vna_sweep_frequency_range ()
 			g_free (data[3]); data[3] = NULL;
 		}
 
-		if (winleft)
+		if (winleft > 0)
 		{
 			/* Recalcualte ETA (only if we aren't finished yet) */
 			g_get_current_time (&curtime);
@@ -1826,8 +1831,8 @@ static void vna_sweep_frequency_range ()
 			winleft--;	/* Those left to be measured */
 
 			netwin->estim_t = curtime.tv_sec - netwin->start_t
-				+ (glong)( (float)difftime.tv_sec  * ((float)winleft/(float)windone))
-				+ (glong)(((float)difftime.tv_usec * ((float)winleft/(float)windone))/1e6);
+				+ (glong)( (float)difftime.tv_sec  * (winleft/(float)windone))
+				+ (glong)(((float)difftime.tv_usec * (winleft/(float)windone))/1e6);
 		}
 
 		/* Has anyone canceled the measurement? */
@@ -1862,6 +1867,7 @@ static void vna_start ()
 {
 	NetworkWin *netwin;
 	GTimeVal curtime;
+	gdouble numwin;
 	gint i;
 
 	g_return_if_fail (glob->netwin);
@@ -1889,7 +1895,7 @@ static void vna_start ()
 	glob->flag |= FLAG_VNA_MEAS;
 
 	/* Connect to Ieee488Proxy */
-	if (glob->netwin->vna_func->connect (netwin->host) < 0)
+	if (netwin->vna_func->connect (netwin->host) < 0)
 		vna_thread_exit ("Could not connect to network analyzer.");
 
 	/* Set up time estimates */
@@ -1899,11 +1905,13 @@ static void vna_start ()
 	{
 		/* add time estimate for frequency sweep */
 		netwin->estim_t = 8;
-		netwin->estim_t += (glong) ( (((float)glob->netwin->vna_func->sweep_cal_sleep()/1000) + 0.56)
-				* ceil((netwin->stop - netwin->start)/netwin->resol/(gdouble)netwin->points));
+		numwin = (netwin->stop - netwin->start) / netwin->resol / (gdouble)netwin->points;
+		if (netwin->vna_func->get_capa (VNA_CAPA_VARPOINTS) == 0.0)
+			numwin = ceil (numwin);
+		netwin->estim_t += (glong) ( (((float)netwin->vna_func->sweep_cal_sleep()/1000) + 0.56) * numwin );
 		g_timeout_add (500, (GSourceFunc) vna_show_time_estimates, NULL);
 
-		if ((glob->netwin->vnamodel == 1) || glob->netwin->calmode != 2)
+		if ((netwin->vnamodel == 1) || netwin->calmode != 2)
 			/* Start the measurement */
 			vna_sweep_frequency_range ();
 		else

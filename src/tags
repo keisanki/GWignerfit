@@ -716,9 +716,9 @@ vna_cal_measurement_finished	calibrate_vna.c	/^static gboolean vna_cal_measureme
 vna_connect_backend	network.c	/^void vna_connect_backend (VnaBackend *vna_func)$/;"	f
 vna_measurement_finished	network.c	/^static gboolean vna_measurement_finished (gpointer data)$/;"	f	file:
 vna_ms_sleep	network.c	/^void vna_ms_sleep (glong ms)$/;"	f
-vna_n5230a_cal_recall	vna_n5230a.c	/^gchar* vna_n5230a_cal_recall (gdouble fstart, gdouble fstop, gdouble resol, gint num)$/;"	f
+vna_n5230a_cal_recall	vna_n5230a.c	/^gchar* vna_n5230a_cal_recall (gdouble fstart, gdouble fstop, gdouble resol, gint points, gint num)$/;"	f
 vna_n5230a_cal_verify	vna_n5230a.c	/^void vna_n5230a_cal_verify ()$/;"	f
-vna_n5230a_calibrate	vna_n5230a.c	/^gchar* vna_n5230a_calibrate (gdouble fstart, gdouble fstop, gdouble resol, gint num)$/;"	f
+vna_n5230a_calibrate	vna_n5230a.c	/^gchar* vna_n5230a_calibrate (gdouble fstart, gdouble fstop, gdouble resol, gint points, gint num)$/;"	f
 vna_n5230a_connect	vna_n5230a.c	/^int vna_n5230a_connect (const gchar *host)$/;"	f
 vna_n5230a_del_calsets	vna_n5230a.c	/^void vna_n5230a_del_calsets ()$/;"	f
 vna_n5230a_get_capa	vna_n5230a.c	/^gdouble vna_n5230a_get_capa (gint type)$/;"	f
@@ -740,6 +740,7 @@ vna_n5230a_select_trl	vna_n5230a.c	/^void vna_n5230a_select_trl (gint Si)$/;"	f
 vna_n5230a_send_cmd	vna_n5230a.c	/^int vna_n5230a_send_cmd (int fd, char *format, ...)$/;"	f
 vna_n5230a_sendall	vna_n5230a.c	/^int vna_n5230a_sendall (int s, char *buf, int len)$/;"	f
 vna_n5230a_set_numg	vna_n5230a.c	/^void vna_n5230a_set_numg (gint numg)$/;"	f
+vna_n5230a_set_points	vna_n5230a.c	/^void vna_n5230a_set_points (gint points)$/;"	f
 vna_n5230a_set_startstop	vna_n5230a.c	/^void vna_n5230a_set_startstop (gdouble start, gdouble stop)$/;"	f
 vna_n5230a_sweep_cal_sleep	vna_n5230a.c	/^glong vna_n5230a_sweep_cal_sleep ()$/;"	f
 vna_n5230a_sweep_prepare	vna_n5230a.c	/^void vna_n5230a_sweep_prepare ()$/;"	f
@@ -772,6 +773,7 @@ vna_proxy_trace_fourparam	vna_proxy.c	/^void vna_proxy_trace_fourparam ()$/;"	f
 vna_proxy_trace_scale_auto	vna_proxy.c	/^void vna_proxy_trace_scale_auto (gchar *sparam)$/;"	f
 vna_proxy_wait	vna_proxy.c	/^void vna_proxy_wait ()$/;"	f
 vna_set_netstat	network.c	/^static gboolean vna_set_netstat (gpointer data)$/;"	f	file:
+vna_setup_frq_win	network.c	/^static void vna_setup_frq_win (gdouble *fstart, gdouble *fstop, gint *startpointoffset)$/;"	f	file:
 vna_show_time_estimates	network.c	/^static gboolean vna_show_time_estimates ()$/;"	f	file:
 vna_start	network.c	/^static void vna_start ()$/;"	f	file:
 vna_sweep_frequency_range	network.c	/^static void vna_sweep_frequency_range ()$/;"	f	file:
