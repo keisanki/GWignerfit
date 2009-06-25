@@ -1090,7 +1090,7 @@ static gdouble import_get_unit (gchar *string)
 }
 
 /* Imports a list with resonance information from *filename. */
-gboolean import_resonance_list (gchar *filename)
+gboolean import_resonance_list (gchar *filename, GPtrArray *reslist)
 {
 	Resonance *res = NULL;
 	gchar dataline[200];
@@ -1104,8 +1104,8 @@ gboolean import_resonance_list (gchar *filename)
 	gdouble *frqs, *widths, *amps, *phases, unit;
 	gint col;
 
-	if (!filename)
-		return FALSE;
+	g_return_val_if_fail (filename, FALSE);
+	g_return_val_if_fail (reslist, FALSE);
 
 	import_resonance_list_parse (filename, &header, &rows);
 	if (header && rows)
@@ -1153,7 +1153,7 @@ gboolean import_resonance_list (gchar *filename)
 			res->width = widths[i] ? widths[i] : 3e5;
 			res->amp   = amps[i] ? amps[i] : 1e4;
 			res->phase = phases[i];
-			add_resonance_to_list (res);
+			g_ptr_array_add (reslist, res);
 			
 			g_free (rows[i]);
 		}
@@ -1330,12 +1330,11 @@ gboolean import_resonance_list (gchar *filename)
 				return FALSE;
 		}
 
-		add_resonance_to_list (res);
+		g_ptr_array_add (reslist, res);
 		i++;
 	}
 
 	fclose (datafile);
 	statusbar_message ("Imported %i resonance frequencies", numres);
-	spectral_resonances_changed ();
 	return TRUE;
 }

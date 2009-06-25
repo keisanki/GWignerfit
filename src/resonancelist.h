@@ -39,6 +39,6 @@ void resonance_check_all (gboolean type);
 
 void resonance_toggle_row ();
 
-gboolean import_resonance_list (gchar *filename);
+gboolean import_resonance_list (gchar *filename, GPtrArray *reslist);
 
 #endif

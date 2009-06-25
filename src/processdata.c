@@ -424,7 +424,7 @@ DataVector *import_datafile (gchar *filename, gboolean interactive)
 
 #ifdef NO_ZLIB
 	datafile = fopen (filename, "r");
-	if (datafile == NULL) {
+	if ((datafile == NULL) && (interactive)) {
 		dialog_message ("Error: Could not open file %s.", filename);
 		return NULL;
 	}

@@ -379,6 +379,9 @@ gboolean overlay_add_data (DataVector *overlaydata)
 gboolean overlay_file (gchar *filename)
 {
 	DataVector *overlaydata;
+#if 0
+	GPtrArray *reslist;
+#endif
 
 	g_return_val_if_fail (glob->data, FALSE);
 	g_return_val_if_fail (filename, FALSE);
@@ -386,7 +389,24 @@ gboolean overlay_file (gchar *filename)
 	overlaydata = import_datafile (filename, FALSE);
 
 	if (!overlaydata)
+	{
 		return FALSE;
+#if 0
+		/* Try to import as resonance list */
+		reslist = g_ptr_array_new ();
+		if (! import_resonance_list (filename, reslist))
+		{
+			/* Nope, neither a resonance list */
+			g_ptr_array_foreach (reslist, (GFunc) g_free, NULL);
+			g_ptr_array_free (reslist, TRUE);
+			return FALSE;
+		}
+
+		/* Add resonances as sticks */
+		g_ptr_array_foreach (reslist, (GFunc) g_free, NULL);
+		g_ptr_array_free (reslist, TRUE);
+#endif
+	}
 
 	if (!overlay_add_data (overlaydata))
 	{

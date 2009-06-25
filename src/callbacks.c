@@ -1004,13 +1004,26 @@ void on_import_resonance_list_activate (GtkMenuItem *menuitem, gpointer user_dat
 {
 	gchar *path = NULL;
 	gchar *filename = NULL;
+	GPtrArray *reslist = NULL;
 
 	path = get_defaultname (NULL);
 	filename = get_filename ("Select file with resonance list", path, 1);
 	g_free (path);
 
 	if (filename)
-		import_resonance_list (filename);
+	{
+		reslist = g_ptr_array_new ();
+		if (import_resonance_list (filename, reslist))
+		{
+			g_ptr_array_foreach (reslist, (GFunc) add_resonance_to_list, NULL);
+			spectral_resonances_changed ();
+		}
+		else
+		{
+			g_ptr_array_foreach (reslist, (GFunc) g_free, NULL);
+		}
+		g_ptr_array_free (reslist, TRUE);
+	}
 }
 
 void on_spectral_stat_activate (GtkMenuItem *menuitem, gpointer user_data)
