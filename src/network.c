@@ -274,7 +274,7 @@ void vna_connect_backend (VnaBackend *vna_func)
 		/* HP 8510C via Ieee488Proxy */
 		vna_func->connect = &vna_proxy_connect;
 		vna_func->recv_data = &vna_proxy_recv_data;
-		vna_func->recv_s2p_data = NULL;
+		vna_func->recv_s2p_data = &vna_proxy_recv_s2p_data;
 		vna_func->gtl = &vna_proxy_gtl;
 		vna_func->llo = &vna_proxy_llo;
 		vna_func->sweep_cal_sleep = &vna_proxy_sweep_cal_sleep;
@@ -1215,12 +1215,14 @@ static void vna_take_snapshot ()
 	if (glob->netwin->numparam == 1)
 	{
 		/* Read single parameter */
+		g_return_if_fail (vna_func->recv_data);
 		data = vna_func->recv_data (points);
 		g_return_if_fail (data);
 	}
 	else
 	{
 		/* Read complete S-matrix */
+		g_return_if_fail (vna_func->recv_s2p_data);
 		S2Pdata = vna_func->recv_s2p_data (points);
 		g_return_if_fail (S2Pdata);
 	}
@@ -1647,11 +1649,15 @@ static void vna_sweep_frequency_range ()
 		vna_update_netstat ("Measuring %6.3f - %6.3f GHz...", fstart/1e9, fstop/1e9);
 
 		if ((netwin->calmode == 1) || (netwin->calmode == 3))
+		{
+			g_return_if_fail (vna_func->cal_recall);
 			vna_func->cal_recall (netwin->start, netwin->stop, netwin->resol, netwin->points, -1);
+		}
 
 		vna_func->set_startstop (fstart, fstop);
 		if ((netwin->calmode == 1) || (netwin->calmode == 3))
 		{
+			g_return_if_fail (vna_func->cal_recall);
 			err = vna_func->cal_recall (netwin->start, netwin->stop, netwin->resol, netwin->points, windone+1);
 			if (err)
 			{
@@ -1668,8 +1674,11 @@ static void vna_sweep_frequency_range ()
 			vna_func->set_numg (netwin->avg+1);
 		}
 		else
+		{
 			/* Calibration verification */
+			g_return_if_fail (vna_func->cal_verify);
 			vna_func->cal_verify ();
+		}
 
 		if (startpointoffset)
 			/* Restore original start frequency */

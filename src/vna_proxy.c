@@ -364,6 +364,32 @@ ComplexDouble *vna_proxy_recv_data (int points)
 	return data;
 }
 
+/* Retrieve the measurement points for full S-matrix */
+ComplexDouble **vna_proxy_recv_s2p_data (int points)
+{
+	ComplexDouble **data;
+
+	g_return_val_if_fail (glob->netwin || glob->calwin, NULL);
+	g_return_val_if_fail (glob->netwin->sockfd > 0, NULL);
+
+	data    = g_new (ComplexDouble*, 4);
+	data[0] = g_new (ComplexDouble, points);
+	data[1] = g_new (ComplexDouble, points);
+	data[2] = g_new (ComplexDouble, points);
+	data[3] = g_new (ComplexDouble, points);
+
+	vna_proxy_select_s ("S11");
+	data[0] = vna_proxy_recv_data (points);
+	vna_proxy_select_s ("S21");
+	data[1] = vna_proxy_recv_data (points);
+	vna_proxy_select_s ("S12");
+	data[2] = vna_proxy_recv_data (points);
+	vna_proxy_select_s ("S22");
+	data[3] = vna_proxy_recv_data (points);
+
+	return data;
+}
+
 /* Get the network back into a reasonable mode and do not forget the GTL */
 void vna_proxy_gtl ()
 {

@@ -401,7 +401,7 @@ imatrix	nrutil.c	/^int **imatrix(nrl,nrh,ncl,nch)$/;"	f
 import_data	callbacks.c	/^void import_data (GtkMenuItem *menuitem, gpointer user_data)$/;"	f
 import_datafile	processdata.c	/^DataVector *import_datafile (gchar *filename, gboolean interactive)$/;"	f
 import_get_unit	resonancelist.c	/^static gdouble import_get_unit (gchar *string)$/;"	f	file:
-import_resonance_list	resonancelist.c	/^gboolean import_resonance_list (gchar *filename)$/;"	f
+import_resonance_list	resonancelist.c	/^gboolean import_resonance_list (gchar *filename, GPtrArray *reslist)$/;"	f
 import_resonance_list_parse	resonancelist.c	/^gboolean import_resonance_list_parse (gchar *filename, gchar ***in_header, gdouble ***in_rows)$/;"	f
 in	calibrate_vna.c	/^	DataVector *in;$/;"	m	struct:__anon9	file:
 is_datafile	processdata.c	/^gboolean is_datafile (gchar *filename)$/;"	f
@@ -758,6 +758,7 @@ vna_proxy_llo	vna_proxy.c	/^void vna_proxy_llo ()$/;"	f
 vna_proxy_receiveall	vna_proxy.c	/^int vna_proxy_receiveall (int s, char *buf, int len)$/;"	f
 vna_proxy_receiveall_full	vna_proxy.c	/^int vna_proxy_receiveall_full (int s, char *buf, int len, int failok)$/;"	f
 vna_proxy_recv_data	vna_proxy.c	/^ComplexDouble *vna_proxy_recv_data (int points)$/;"	f
+vna_proxy_recv_s2p_data	vna_proxy.c	/^ComplexDouble **vna_proxy_recv_s2p_data (int points)$/;"	f
 vna_proxy_round_bwid	vna_proxy.c	/^gdouble vna_proxy_round_bwid (gdouble bwid_in)$/;"	f
 vna_proxy_sel_first_par	vna_proxy.c	/^gboolean vna_proxy_sel_first_par ()$/;"	f
 vna_proxy_select_s	vna_proxy.c	/^void vna_proxy_select_s (gchar *sparam)$/;"	f

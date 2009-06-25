@@ -29,6 +29,7 @@ void vna_proxy_spoll_wait (int sockfd, int status);
 
 int vna_proxy_connect (const gchar *host);
 ComplexDouble *vna_proxy_recv_data (int points);
+ComplexDouble **vna_proxy_recv_s2p_data (int points);
 void vna_proxy_gtl ();
 void vna_proxy_llo ();
 glong vna_proxy_sweep_cal_sleep ();
