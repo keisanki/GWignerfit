@@ -807,7 +807,8 @@ gchar* vna_n5230a_calibrate (gdouble fstart, gdouble fstop, gdouble resol, gint 
 	gchar *err;
 
 	vna_n5230a_send_cmd (glob->netwin->sockfd, "*CLS");
-	vna_n5230a_send_cmd (glob->netwin->sockfd, "SENS:CORR:PREF:CSET:SAVU 1");
+//	vna_n5230a_send_cmd (glob->netwin->sockfd, "SENS:CORR:PREF:CSET:SAVU 1");
+	vna_n5230a_send_cmd (glob->netwin->sockfd, "SENS:CORR:PREF:CSET:SAVE USER");
 	vna_n5230a_send_cmd (glob->netwin->sockfd, "SENS:CORR:COLL:METH SPARSOLT");
 	vna_n5230a_send_cmd (glob->netwin->sockfd, "SENS:CORR:PREF:ECAL:ORI ON");
 	vna_n5230a_send_cmd (glob->netwin->sockfd, "SENS:CORR:COLL:ACQ ECAL1,CHAR%d", glob->netwin->ecal_char);
