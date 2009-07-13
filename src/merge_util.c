@@ -151,6 +151,7 @@ MergeNode* merge_get_nearnode (gint xpos, gint ypos, gint *xpix, gint *ypix, gbo
 	nodes = g_ptr_array_index (merge->nodelist, id);
 	nodefrq = -1.0;
 	i = 0;
+	diff = -1;
 	while ((nodefrq <= view->xmax) && (i < nodes->len))
 	{
 		nodefrq = ((MergeNode *) g_ptr_array_index (nodes, i))->res->frq;
