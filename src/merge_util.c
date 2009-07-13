@@ -95,8 +95,8 @@ MergeNode* merge_get_nearnode (gint xpos, gint ypos, gint *xpix, gint *ypix, gbo
 	GPtrArray *nodes;
 	GtkSpectVis *graph;
 	GtkSpectVisViewport *view;
-	gint i, diff, lastdiff, ypix2, id = -1;
-	gdouble pos;
+	gint i, diff, ypix2, id = -1;
+	gdouble pos, nodefrq;
 
 	graph = GTK_SPECTVIS (glade_xml_get_widget (merge->xmlmerge, "merge_spectvis"));
 	g_return_val_if_fail (graph, NULL);
@@ -149,17 +149,16 @@ MergeNode* merge_get_nearnode (gint xpos, gint ypos, gint *xpix, gint *ypix, gbo
 
 	/* Get the number of the node in the list */
 	nodes = g_ptr_array_index (merge->nodelist, id);
+	nodefrq = -1.0;
 	i = 0;
-	diff = 65000;
-	lastdiff = 65001;
-	while ((lastdiff >= diff) && (i < nodes->len))
+	while ((nodefrq <= view->xmax) && (i < nodes->len))
 	{
-		lastdiff = diff;
+		nodefrq = ((MergeNode *) g_ptr_array_index (nodes, i))->res->frq;
 		*xpix = view->graphboxxoff + (gdouble) view->graphboxwidth / (view->xmax - view->xmin) 
-			* (((MergeNode *) g_ptr_array_index (nodes, i))->res->frq - view->xmin);
+			* (nodefrq - view->xmin);
 		diff = abs (*xpix - xpos);
 
-		if (diff < MERGE_CATCH_RANGE)
+		if ((nodefrq >= view->xmin) && (diff < MERGE_CATCH_RANGE))
 			break;
 
 		i++;
