@@ -9,6 +9,8 @@
 #include "helpers.h"
 #include "export.h"
 
+#define EPSMAX 1000e6	// Maximal shift epsilon in Hz to calculate
+
 extern GlobalData *glob;
 extern GladeXML *gladexml;
 
@@ -64,8 +66,8 @@ static void correl_cal_correl ()
 
 	deltaf = glob->data->x[granularity] - glob->data->x[0];
 	epsmax = num/2;
-	if (epsmax*deltaf > 500e6)
-		epsmax = 500e6/deltaf;
+	if (epsmax*deltaf > EPSMAX)
+		epsmax = EPSMAX/deltaf;
 
 	/* Prepare new DataVector. */
 	if (correl->data)
@@ -474,7 +476,7 @@ gboolean on_corr_statistical_data_activate (GtkMenuItem *menuitem, gpointer user
 
 	fprintf (fh, "# eps [Hz]\t Re(C)\t\t Im(C)\r\n");
 	for (i=0; i<correl->data->len; i++)
-		fprintf (fh, DATAFRMT, correl->data->x[i], 
+		fprintf (fh, "%13.1f\t% 11.8g\t% 11.8g\r\n", correl->data->x[i], 
 				correl->data->y[i].re, correl->data->y[i].im);
 
 	fclose (fh);
