@@ -380,6 +380,7 @@ DataVector *import_datafile (gchar *filename, gboolean interactive)
 	struct stat filestat;
 	guint filesize, filebytepos;
 	gint scanresult;
+	void *data_new;
 	
 	ComplexDouble y;
 	gdouble f, dummy;
@@ -467,14 +468,14 @@ DataVector *import_datafile (gchar *filename, gboolean interactive)
 		/* Estimate original size of uncompressed file */
 		filesize *= 5;
 
-	/* Check dataset and count number of points */
+	/* Check for FFT data */
 	numpoints = 0;
 #ifdef NO_ZLIB
-	while (!feof (datafile)) {
+	while (!feof (datafile) && (numpoints < 10) ) {
 		if (!(fgets (dataline, 255, datafile)))
 			continue;
 #else
-	while (!gzeof (datafile)) {
+	while (!gzeof (datafile) && (numpoints < 10)) {
 		if (!(gzgets (datafile, dataline, 255)))
 			continue;
 #endif
@@ -505,36 +506,7 @@ DataVector *import_datafile (gchar *filename, gboolean interactive)
 			continue;
 		}
 
-		if (filesize > 3*1024*1025)
-		{
-			/* Show a progress indicator for files > 3 MB */
-#ifdef NO_ZLIB
-			filebytepos = ftell (datafile);
-#else
-			filebytepos = gztell (datafile);
-#endif
-			if (filebytepos % (filesize/100*2*1) < 100)
-				/* Progressbar from 0% to 50% in steps of 1% */
-				status_progressbar_set ((gdouble)filebytepos/(gdouble)filesize/2.0);
-		}
-
 		numpoints++;
-#if 0
-		if (sscanf (dataline, "%lf %lf %lf", &f, &y.re, &y.im) != 3) 
-		{
-			/* A line without data and not a comment */
-#ifdef NO_ZLIB
-			fclose (datafile);
-#else
-			gzclose (datafile);
-			g_free (tmpname);
-#endif
-			dialog_message("Error: Could not parse dataset #%d.", numpoints+1);
-			return NULL;
-		} else {
-			numpoints++;
-		}
-#endif
 	}
 	
 	if ((data_is_fft) && (interactive))
@@ -552,7 +524,8 @@ DataVector *import_datafile (gchar *filename, gboolean interactive)
 		}
 	}
 
-	data = new_datavector (numpoints);
+	/* Create data vector with a preliminary length estimate */
+	data = new_datavector (filesize / (guint) strlen (dataline));
 
 	if (g_path_is_absolute (filename))
 		data->file = normalize_path (filename);
@@ -623,6 +596,31 @@ DataVector *import_datafile (gchar *filename, gboolean interactive)
 			return NULL;
 		} else {
 			y.abs = sqrt(y.re*y.re + y.im*y.im);
+
+			if (numpoints >= data->len)
+			{
+				/* Grow data vector */
+				data->len += 10000;
+
+				if (!(data_new = realloc (data->x, (sizeof (gdouble)) * data->len)))
+				{
+					dialog_message ("Error: Could not reserve enough memory to import data.");
+					free_datavector (data);
+					return NULL;
+				}
+				else
+					data->x = (gdouble *) data_new;
+
+				if (!(data_new = realloc (data->y, (sizeof (ComplexDouble)) * data->len)))
+				{
+					dialog_message ("Error: Could not reserve enough memory to import data.");
+					free_datavector (data);
+					return NULL;
+				}
+				else
+					data->y = (ComplexDouble *) data_new;
+			}
+
 			if (numpoints < data->len)
 			{
 				data->x[numpoints] = f;
@@ -631,9 +629,18 @@ DataVector *import_datafile (gchar *filename, gboolean interactive)
 			}
 		}
 
-		if ((filesize > 3*1024*1025) && (numpoints % (data->len/100*2*1) == 0))
-			/* Progressbar from 50% to 100% in steps of 1% */
-			status_progressbar_set (0.5 + (gdouble)numpoints/(gdouble)data->len/2.0);
+		if (filesize > 3*1024*1025)
+		{
+			/* Show a progress indicator for files > 3 MB */
+#ifdef NO_ZLIB
+			filebytepos = ftell (datafile);
+#else
+			filebytepos = gztell (datafile);
+#endif
+			if (filebytepos % (filesize/100) < 100)
+				/* Progressbar from 0% to 100% in steps of 1% */
+				status_progressbar_set ((gdouble)filebytepos / (gdouble)filesize);
+		}
 	}
 
 #ifdef NO_ZLIB
@@ -641,6 +648,30 @@ DataVector *import_datafile (gchar *filename, gboolean interactive)
 #else
 	gzclose (datafile);
 #endif
+
+	if (numpoints < data->len)
+	{
+		/* Shrink data vector to match actual data size */
+		data->len = numpoints;
+
+		if (!(data_new = realloc (data->x, (sizeof (gdouble)) * data->len)))
+		{
+			dialog_message ("Error: Could not reserve enough memory to import data.");
+			free_datavector (data);
+			return NULL;
+		}
+		else
+			data->x = (gdouble *) data_new;
+
+		if (!(data_new = realloc (data->y, (sizeof (ComplexDouble)) * data->len)))
+		{
+			dialog_message ("Error: Could not reserve enough memory to import data.");
+			free_datavector (data);
+			return NULL;
+		}
+		else
+			data->y = (ComplexDouble *) data_new;
+	}
 
 	if (data_is_fft)
 	{
