@@ -777,7 +777,8 @@ static void fourier_export_data (DataVector *dataset, gchar *expln)
 */		
 	for (i=0; i<dataset->len; i++)
 	{
-		fprintf (datafile, "%12.6f\t%12.6f\t%12.6f\n",
+//		fprintf (datafile, "%12.6f\t%12.6f\t%12.6f\n",
+		fprintf (datafile, "%12.6f\t%12.6g\t%12.6g\n",
 //				glob->fft->times[i] / graph->xAxisScale, 
 				dataset->x[i] / 1e-9, 
 				dataset->y[i].re,
