@@ -178,8 +178,10 @@ gint main (gint argc, char *argv[])
 	glob->threads->theorylock = g_mutex_new ();
 	glob->threads->flaglock   = g_mutex_new ();
 	glob->threads->fitwinlock = g_mutex_new ();
+	glob->threads->numcpu  = get_num_cpu ();
 	glob->threads->aqueue1 = g_async_queue_new ();
 	glob->threads->aqueue2 = g_async_queue_new ();
+	glob->threads->theopool = NULL;
 	glob->threads->pool = g_thread_pool_new (
 			(GFunc) visualize_background_calc,
 			NULL,
@@ -207,6 +209,8 @@ gint main (gint argc, char *argv[])
 	g_mutex_free (glob->threads->theorylock);
 	g_mutex_free (glob->threads->fitwinlock);
 	g_thread_pool_free (glob->threads->pool, TRUE, TRUE);
+	if (glob->threads->theopool)
+		g_thread_pool_free (glob->threads->theopool, TRUE, TRUE);
 
 	g_free (glob->smp);
 

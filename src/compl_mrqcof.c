@@ -3,6 +3,7 @@
 #include <math.h>
 
 #include "structs.h"
+#include "helpers.h"
 #include "compl_mrqmin.h"
 
 extern GlobalData *glob;
@@ -179,40 +180,13 @@ void mrqcof (DataVector *d, double sig[], int ndata, double a[], int ia[],
 	}
 }
 
-/* Detect number of CPUs by counting "processor " in /proc/cpuinfo. */
-int mrqcof_get_num_cpu ()
-{
-	FILE *cpuinfo;
-	char dataline[255];
-	int num_cpu = 0;
-
-	cpuinfo = fopen ("/proc/cpuinfo", "r");
-
-	if (!cpuinfo)
-		return 1;
-
-	while (!feof (cpuinfo))
-	{
-		if (!fgets (dataline, 254, cpuinfo))
-			continue;
-
-		if (g_str_has_prefix (dataline, "processor"))
-			num_cpu++;
-	}
-
-	fclose (cpuinfo);
-
-	g_return_val_if_fail (num_cpu, 1);
-	return num_cpu;
-}
-
 /* Prepare a fit (determine number of CPUs, initialize threads, ...) */
 void mrqcof_prepare ()
 {
 	if (!glob->smp)
 	{
 		glob->smp = g_new (SMPdata, 1);
-		glob->smp->num_cpu = mrqcof_get_num_cpu ();
+		glob->smp->num_cpu = get_num_cpu ();
 		glob->smp->pool = NULL;
 	}
 

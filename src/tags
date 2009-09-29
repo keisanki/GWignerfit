@@ -3,7 +3,7 @@
 !_TAG_PROGRAM_AUTHOR	Darren Hiebert	/dhiebert@users.sourceforge.net/
 !_TAG_PROGRAM_NAME	Exuberant Ctags	//
 !_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
-!_TAG_PROGRAM_VERSION	5.7	//
+!_TAG_PROGRAM_VERSION	5.8	//
 ADD_MARK_DISTANCE	gtkspectvis.c	18;"	d	file:
 AMP_COL	export.c	/^	FRQ_COL, WID_COL, AMP_COL, PHAS_COL,$/;"	e	enum:__anon5	file:
 AMP_COL	resonancelist.c	/^	FRQ_COL, WID_COL, AMP_COL, PHAS_COL,$/;"	e	enum:__anon1	file:
@@ -27,6 +27,7 @@ EPS	spectral_numeric.c	132;"	d	file:
 EPS	spectral_numeric.c	167;"	d	file:
 EPS	spectral_numeric.c	190;"	d	file:
 EPS	spectral_numeric.c	62;"	d	file:
+EPSMAX	correl.c	12;"	d	file:
 EULER	spectral_numeric.c	133;"	d	file:
 EULER	spectral_numeric.c	63;"	d	file:
 ExportTextviewData	export.c	/^} ExportTextviewData;$/;"	t	typeref:struct:__anon6	file:
@@ -317,6 +318,7 @@ get_defaultname	helpers.c	/^gchar *get_defaultname (gchar *suffix)$/;"	f
 get_filename	helpers.c	/^gchar *get_filename (const gchar *title, const gchar *defaultname, gchar type)$/;"	f
 get_filename_helper	helpers.c	/^static gboolean get_filename_helper (char *filename, gchar check)$/;"	f	file:
 get_filename_old	helpers.c	/^gchar *get_filename_old (const gchar *title, const gchar *defaultname, gchar check)$/;"	f
+get_num_cpu	helpers.c	/^int get_num_cpu ()$/;"	f
 get_res_iter_by_id	resonancelist.c	/^GtkTreeIter *get_res_iter_by_id (gint wanted_id)$/;"	f
 get_resonance_id_by_cursur	resonancelist.c	/^gint get_resonance_id_by_cursur ()$/;"	f
 get_selected_resonance_ids	resonancelist.c	/^gint* get_selected_resonance_ids (gboolean failok)$/;"	f
@@ -473,7 +475,6 @@ merge_zoom_x_all	merge_util.c	/^void merge_zoom_x_all ()$/;"	f
 mrqcof	compl_mrqcof.c	/^void mrqcof (DataVector *d, double sig[], int ndata, double a[], int ia[],$/;"	f
 mrqcof_cal	compl_mrqcof.c	/^static void mrqcof_cal (MrqminData *data)$/;"	f	file:
 mrqcof_cleanup	compl_mrqcof.c	/^void mrqcof_cleanup ()$/;"	f
-mrqcof_get_num_cpu	compl_mrqcof.c	/^int mrqcof_get_num_cpu ()$/;"	f
 mrqcof_prepare	compl_mrqcof.c	/^void mrqcof_prepare ()$/;"	f
 mrqmin	compl_mrqmin.c	/^void mrqmin(DataVector *d, double sig[], int ndata, double a[], int ia[],$/;"	f
 mrqmin_chisq	compl_mrqmin.c	/^void mrqmin_chisq (DataVector *d, double sig[], int ndata, double a[],$/;"	f
@@ -624,8 +625,8 @@ quit_application	callbacks.c	/^gboolean quit_application (GtkWidget *widget, Gdk
 r	spectral_numeric.c	/^typedef struct FCOMPLEX {float r,i;} fcomplex;$/;"	m	struct:FCOMPLEX	file:
 read_datafile	processdata.c	/^gboolean read_datafile (gchar *selected_filename, gboolean called_from_open) $/;"	f
 read_resonancefile	processdata.c	/^gint read_resonancefile (gchar *selected_filename, const gchar *label)$/;"	f
-read_resonancefile_cleanup	processdata.c	1193;"	d	file:
-read_resonancefile_cleanup	processdata.c	830;"	d	file:
+read_resonancefile_cleanup	processdata.c	1224;"	d	file:
+read_resonancefile_cleanup	processdata.c	861;"	d	file:
 remove_resonance	resonancelist.c	/^void remove_resonance (GtkTreeIter iter)$/;"	f
 remove_selected_resonance	resonancelist.c	/^void remove_selected_resonance ()$/;"	f
 reslist_update_widthunit	resonancelist.c	/^void reslist_update_widthunit ()$/;"	f
@@ -705,6 +706,8 @@ visualize_handle_viewport_changed	visualize.c	/^void visualize_handle_viewport_c
 visualize_newgraph	visualize.c	/^void visualize_newgraph ()$/;"	f
 visualize_remove_difference_graph	visualize.c	/^void visualize_remove_difference_graph ()$/;"	f
 visualize_restore_cursor	visualize.c	/^void visualize_restore_cursor ()$/;"	f
+visualize_smp_calc_theory	visualize.c	/^void visualize_smp_calc_theory (ComplexDouble *theoryY, double *x, double *p, gint numparam, guint start, guint stop)$/;"	f
+visualize_smp_calc_theory_poolfunc	visualize.c	/^void visualize_smp_calc_theory_poolfunc (VisualizeSMPdata *data)$/;"	f
 visualize_stop_background_calc	visualize.c	/^gboolean visualize_stop_background_calc ()$/;"	f
 visualize_theory_graph	visualize.c	/^void visualize_theory_graph (gchar *type)$/;"	f
 visualize_update_min_max	visualize.c	/^void visualize_update_min_max (gboolean redraw)$/;"	f

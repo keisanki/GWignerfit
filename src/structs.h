@@ -96,6 +96,9 @@ typedef struct
 	GAsyncQueue *aqueue2;		/* Pass messages to the parent thread */
 	/* For the fitting stuff */
 	GMutex *fitwinlock;		/* Lock the FitWindowParam struct */
+	/* For SMP stuff */
+	gint numcpu;			/* Number of CPUs on current system */
+	GThreadPool *theopool;		/* ThreadPool for distributed theory calculation */
 } ThreadStuff;
 
 typedef struct

@@ -70,4 +70,6 @@ int adjustpriority ();
 
 void sec_to_hhmmss (glong sec, gint *h, gint *m, gint *s);
 
+int get_num_cpu ();
+
 #endif

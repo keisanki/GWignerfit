@@ -3,6 +3,16 @@
 #ifndef _VISUALIZE_H_
 #define _VISUALIZE_H_
 
+/* Struct for SMP calculation of theory data */
+typedef struct
+{
+	ComplexDouble *y;	/* Where to store calculation results */
+	double *x;		/* Frequency values */
+	double *p;		/* Global parameters */
+	gint numparam;		/* Number of global parameters */
+	guint delta;		/* Number of points to calculate */
+} VisualizeSMPdata;
+
 GtkWidget *NewGtkSpectvis (gchar *widget_name, gchar *string1, gchar *string2, gint int1, gint int2);
 
 void visualize_newgraph ();

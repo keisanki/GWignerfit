@@ -1392,3 +1392,30 @@ void sec_to_hhmmss (glong sec, gint *h, gint *m, gint *s)
 	*m = (gint) ((sec - *h * 3600) / 60);
 	*s = (gint) (sec - *h * 3600 - *m * 60);
 }
+
+/* Detect number of CPUs by counting "processor " in /proc/cpuinfo. */
+int get_num_cpu ()
+{
+	FILE *cpuinfo;
+	char dataline[255];
+	int num_cpu = 0;
+
+	cpuinfo = fopen ("/proc/cpuinfo", "r");
+
+	if (!cpuinfo)
+		return 1;
+
+	while (!feof (cpuinfo))
+	{
+		if (!fgets (dataline, 254, cpuinfo))
+			continue;
+
+		if (g_str_has_prefix (dataline, "processor"))
+			num_cpu++;
+	}
+
+	fclose (cpuinfo);
+
+	g_return_val_if_fail (num_cpu, 1);
+	return num_cpu;
+}

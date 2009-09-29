@@ -113,6 +113,7 @@ void visualize_theory_graph (gchar *type)
 		return;
 	}
 	else
+		/* No theory calculated yet, mark by -1001 */
 		for (i=0; i<glob->theory->len; i++)
 			glob->theory->y[i].abs = -1001;
 
@@ -671,8 +672,7 @@ void visualize_background_calc (GtkSpectVisData *data)
 	create_param_array (glob->param, glob->fcomp->data, glob->gparam, 
 			glob->numres, glob->fcomp->numfcomp, p);
 
-	i = data->xmax_arraypos;
-	while (i < glob->theory->len)
+	for (i=data->xmax_arraypos; i<glob->theory->len; i++)
 	{
 		if (theoryY[i].abs == -1001)
 		{
@@ -690,12 +690,10 @@ void visualize_background_calc (GtkSpectVisData *data)
 				return;
 			}
 		}
-
-		i++;
 	}
 
-	i = data->xmax_arraypos;
-	while (i > 0)
+	/* Break in next loop on buffer underrun of uint i */
+	for (i=data->xmin_arraypos; i<data->xmax_arraypos; i--)
 	{
 		if (theoryY[i].abs == -1001)
 		{
@@ -713,8 +711,6 @@ void visualize_background_calc (GtkSpectVisData *data)
 				return;
 			}
 		}
-
-		i--;
 	}
 
 	g_free (p);
@@ -764,6 +760,103 @@ gboolean visualize_stop_background_calc ()
 	return retval;
 }
 
+/* Multiprocessor calculation of theory spectrum - function to be run 
+ * by the individual threads */
+void visualize_smp_calc_theory_poolfunc (VisualizeSMPdata *data)
+{
+	guint i;
+
+	g_return_if_fail (data);
+	g_return_if_fail (data->y);
+	g_return_if_fail (data->x);
+	g_return_if_fail (data->p);
+	g_return_if_fail (data->numparam);
+	g_return_if_fail (data->delta >= 0);
+
+	//printf("starting pool calculation for %d datapoints\n", data->delta);
+
+	for (i=0; i<data->delta; i++)
+		data->y[i] = ComplexWigner (data->x[i], data->p, data->numparam);
+
+	data->numparam = 0;
+
+	//printf("finished pool calculation for %d datapoints\n", data->delta);
+}
+
+/* Multiprocessor calculation of theory spectrum */
+void visualize_smp_calc_theory (ComplexDouble *theoryY, double *x, double *p, gint numparam, guint start, guint stop)
+{
+	VisualizeSMPdata **data;
+	gint i, j;
+	guint delta, startpos;
+
+	g_return_if_fail (glob);
+	g_return_if_fail (glob->threads);
+
+	g_return_if_fail (theoryY);
+	g_return_if_fail (x);
+	g_return_if_fail (p);
+	g_return_if_fail (numparam > 2);
+	g_return_if_fail (stop >= start);
+
+	//printf ("Calculating for datapoints %d to %d\n", start, stop);
+
+	if (!glob->threads->theopool)
+		glob->threads->theopool = g_thread_pool_new (
+				(GFunc) visualize_smp_calc_theory_poolfunc,
+				NULL, glob->threads->numcpu, TRUE, NULL);
+
+	data  = g_new (VisualizeSMPdata *, glob->threads->numcpu);
+	delta = (stop - start + 1) / glob->threads->numcpu;
+	if (delta == 0)
+		delta = 1;
+
+	for (i=0; i<glob->threads->numcpu; i++)
+	{
+		data[i] = g_new (VisualizeSMPdata, 1);
+
+		startpos = start + i * delta;
+		if (startpos > stop)
+		{
+			/* No points left for further CPUs */
+			startpos = stop;
+			delta    = 0;
+		}
+		if ((delta > 0) && (i == glob->threads->numcpu-1))
+		{
+			/* Fix alignment with last CPU */
+			delta = stop - startpos + 1;
+		}
+
+		data[i]->y        = theoryY + startpos;
+		data[i]->x        = x + startpos;
+		data[i]->p        = p;
+		data[i]->numparam = numparam;
+		data[i]->delta    = delta;
+
+		g_thread_pool_push (
+				glob->threads->theopool,
+				data[i],
+				NULL);
+	}
+
+	/* Wait for calculation to finish */
+	j = 0;
+	while (j != glob->threads->numcpu)
+	{
+		usleep (10000); /* 10 ms */
+		j = 0;
+		for (i=0; i<glob->threads->numcpu; i++)
+			if (data[i]->numparam == 0)
+				j++;
+	}
+
+	/* Tidy up */
+	for (i=0; i<glob->threads->numcpu; i++)
+		g_free (data[i]);
+	g_free (data);
+}
+
 void visualize_handle_viewport_changed (GtkSpectVis *spectvis, gchar *zoomtype)
 {
 	GtkWidget *graph = glade_xml_get_widget (gladexml, "graph");
@@ -771,8 +864,11 @@ void visualize_handle_viewport_changed (GtkSpectVis *spectvis, gchar *zoomtype)
 	ComplexDouble *theoryY;
 	GdkColor color;
 	guint xmina, xmaxa, i = 0;
+	guint calcstart, calcstop;
 	gboolean flag = FALSE;
 	double *p;
+
+	/* zoomtype = 'n': Display a new graph */
 
 	//printf ("changed\n");
 
@@ -800,6 +896,7 @@ void visualize_handle_viewport_changed (GtkSpectVis *spectvis, gchar *zoomtype)
 			color, 'l');
 	}
 
+	/* Store visible data region in xmina and xmaxa (as array positions) */
 	if (glob->theory->index)
 	{
 		xmina = (gtk_spect_vis_get_data_by_uid (spectvis, glob->theory->index))->xmin_arraypos;
@@ -811,8 +908,11 @@ void visualize_handle_viewport_changed (GtkSpectVis *spectvis, gchar *zoomtype)
 		xmaxa = glob->theory->len-1;
 	}
 
-	if ((*zoomtype != 'i') && (*zoomtype != 'I') && (*zoomtype != 'O'))
+	if ((glob->viewtheory) && (glob->theory) && (*zoomtype != 'i') && (*zoomtype != 'I') && (*zoomtype != 'O'))
 	{
+		/* Some previously unseen part of the theory graph may be exposed */
+		/* Process only if theory is actually shown on screen */
+
 		visualize_stop_background_calc ();
 
 		view = spectvis->view;
@@ -827,34 +927,39 @@ void visualize_handle_viewport_changed (GtkSpectVis *spectvis, gchar *zoomtype)
 		i = xmina;
 		if (i > 0) 
 			i--;
+
+		/* Calculate theory graph in SMP mode */
+
+		/* Get array boundaries below and above old viewport */
+		calcstart = i;
 		while ((i <= xmaxa) && (i < glob->data->len) && (theoryY[i].abs < -1000))
-		{
-			theoryY[i] = ComplexWigner (glob->data->x[i], p, TOTALNUMPARAM);
-			if (glob->viewdifference)
-				visualize_calculate_difference (&theoryY[i], &theoryY[i], i);
-			flag = TRUE;
-
-			if ((*zoomtype == 'n') && (glob->data->len*glob->numres > 8010*10) && (i % (int)(glob->data->len*0.01) == 0))
-				/* A new theory is being calculated -> give some visual feedback */
-				status_progressbar_set ((gdouble)i/(gdouble)glob->data->len);
-
 			i++;
+		calcstop = i;
+
+		if (theoryY[calcstop].abs < -1000)
+		{
+			visualize_smp_calc_theory (theoryY, glob->data->x, p, TOTALNUMPARAM, calcstart, calcstop);
+			if (glob->viewdifference)
+				for (i = calcstart; i <= calcstop; i++)
+					visualize_calculate_difference (&theoryY[i], &theoryY[i], i);
+			flag = TRUE;
 		}
 
 		i = xmaxa;
 		if (i < glob->data->len - 1) 
 			i++;
-		while ((i > xmina) && (i >= 0) && (theoryY[i].abs < -1000))
-		{
-			theoryY[i] = ComplexWigner (glob->data->x[i], p, TOTALNUMPARAM);
-			if (glob->viewdifference)
-				visualize_calculate_difference (&theoryY[i], &theoryY[i], i);
-			flag = TRUE;
-
-			if ((*zoomtype == 'n') && (glob->data->len*glob->numres > 8010*10) && (i % (int)(glob->data->len*0.01) == 0))
-				/* A new theory is being calculated -> give some visual feedback */
-				status_progressbar_set ((gdouble)i/(gdouble)glob->data->len);
+		calcstop = i;
+		while ((i > xmina) && (i > 0) && (theoryY[i].abs < -1000))
 			i--;
+		calcstart = i;
+
+		if (theoryY[calcstart].abs < -1000)
+		{
+			visualize_smp_calc_theory (theoryY, glob->data->x, p, TOTALNUMPARAM, calcstart, calcstop);
+			if (glob->viewdifference)
+				for (i = calcstart; i <= calcstop; i++)
+					visualize_calculate_difference (&theoryY[i], &theoryY[i], i);
+			flag = TRUE;
 		}
 
 		g_free (p);
@@ -873,12 +978,14 @@ void visualize_handle_viewport_changed (GtkSpectVis *spectvis, gchar *zoomtype)
 	}
 
 //	if ((*zoomtype != 'I') && (*zoomtype != 'O') && (*zoomtype != 'i') && (*zoomtype != 'o'))
-	if (flag && glob->theory->index)
+	if (flag && glob->theory && glob->theory->index)
+		/* Rezoom y as a new part of the theory is exposed and the boundaries
+		 * might have changed to be outside the previously visible region. */
 		gtk_spect_vis_zoom_y_all (GTK_SPECTVIS (graph));
 
 	gtk_spect_vis_redraw (GTK_SPECTVIS (graph));
 	
-	if (flag && glob->theory->index)
+	if (flag && glob->theory && glob->theory->index)
 	/* Start calculation only if there had been values to be calculated
 	 * in the current viewport */
 	{
