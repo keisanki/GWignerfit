@@ -13,8 +13,8 @@
 void nrerror(char error_text[])
 /* Numerical Recipes standard error handler */
 {
-	fprintf(stderr,"Numerical Recipes run-time error...\n");
-	fprintf(stderr,"%s\n",error_text);
+	//fprintf(stderr,"Numerical Recipes run-time error...\n");
+	//fprintf(stderr,"%s\n",error_text);
 	g_timeout_add (1, (GSourceFunc) fit_nrerror, error_text);
 	
 	/* FIXME: This will produce memory leaks */

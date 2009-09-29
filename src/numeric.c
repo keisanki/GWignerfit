@@ -490,8 +490,9 @@ gboolean fit_nrerror (gchar error_text[])
 
 	fit_cleanup ();
 
-	if (dialog_question ("Fit aborted due to\nnumerical singularity.\n\n"
-			     "Recover dataset of last iteration?")
+	if (dialog_question ("Fit aborted due to\nerror during numerics.\n\n"
+			     "\"%s\"\n\n"
+			     "Recover dataset of last iteration?", error_text)
 			== GTK_RESPONSE_YES)
 	{
 		CheckAmplitudes (fitwinparam->paramarray, glob->numres, glob->fcomp->numfcomp);
