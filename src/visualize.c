@@ -228,7 +228,10 @@ gint visualize_handle_signal_marked (GtkSpectVis *spectvis, gdouble *xval, gdoub
 				{
 					tmpdata->x[i-respos+trypoints_low] = glob->data->x[i];
 
-					y = ComplexWigner(glob->data->x[i], p, TOTALNUMPARAM);
+					if ((glob->theory) && glob->theory->y[i].abs > -1000)
+						y = glob->theory->y[i];
+					else
+						y = ComplexWigner(glob->data->x[i], p, TOTALNUMPARAM);
 					tmpdata->y[i-respos+trypoints_low].abs = 
 						glob->data->y[i].abs - y.abs + glob->IsReflection*glob->gparam->scale;
 					tmpdata->y[i-respos+trypoints_low].re  = 
@@ -665,7 +668,11 @@ void visualize_background_calc (GtkSpectVisData *data)
 	g_mutex_lock (glob->threads->theorylock);
 
 	//printf("background start\n");
-	if (!glob->theory) return;
+	if (!glob->theory) 
+	{
+		g_mutex_unlock (glob->threads->theorylock);
+		return;
+	}
 
 	theoryY = glob->theory->y;
 	p = g_new (gdouble, TOTALNUMPARAM+1);
@@ -931,12 +938,13 @@ void visualize_handle_viewport_changed (GtkSpectVis *spectvis, gchar *zoomtype)
 		/* Calculate theory graph in SMP mode */
 
 		/* Get array boundaries below and above old viewport */
+		/* Remember, calcstop is uint, so it cannot be negative */
 		calcstart = i;
 		while ((i <= xmaxa) && (i < glob->data->len) && (theoryY[i].abs < -1000))
 			i++;
-		calcstop = i;
+		calcstop = i-1;
 
-		if (theoryY[calcstop].abs < -1000)
+		if ((calcstop < glob->data->len) && (theoryY[calcstop].abs < -1000))
 		{
 			visualize_smp_calc_theory (theoryY, glob->data->x, p, TOTALNUMPARAM, calcstart, calcstop);
 			if (glob->viewdifference)
@@ -951,9 +959,9 @@ void visualize_handle_viewport_changed (GtkSpectVis *spectvis, gchar *zoomtype)
 		calcstop = i;
 		while ((i > xmina) && (i > 0) && (theoryY[i].abs < -1000))
 			i--;
-		calcstart = i;
+		calcstart = i+1;
 
-		if (theoryY[calcstart].abs < -1000)
+		if ((calcstart < glob->data->len) && (theoryY[calcstart].abs < -1000))
 		{
 			visualize_smp_calc_theory (theoryY, glob->data->x, p, TOTALNUMPARAM, calcstart, calcstop);
 			if (glob->viewdifference)
