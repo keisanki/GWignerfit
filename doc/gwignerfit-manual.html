@@ -1,0 +1,7827 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN""http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>GWignerFit Manual</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="./gwf-style.css"></HEAD
+><BODY
+CLASS="article"
+BGCOLOR="#FFFFFF"
+TEXT="#000000"
+LINK="#0000FF"
+VLINK="#840084"
+ALINK="#0000FF"
+><DIV
+CLASS="ARTICLE"
+><DIV
+CLASS="TITLEPAGE"
+><H1
+CLASS="title"
+><A
+NAME="AEN2"
+><TT
+CLASS="application"
+>GWignerFit</TT
+> Manual</A
+></H1
+><DIV
+CLASS="authorgroup"
+><A
+NAME="AEN24"
+></A
+><H4
+CLASS="author"
+><A
+NAME="AEN25"
+>Florian Schäfer</A
+></H4
+><DIV
+CLASS="affiliation"
+><SPAN
+CLASS="orgname"
+>Technische Universität Darmstadt<BR></SPAN
+><DIV
+CLASS="address"
+> <DIV
+CLASS="email"
+>schaefer@ikp.tu-darmstadt.de</DIV
+> </DIV
+></DIV
+></DIV
+><P
+CLASS="copyright"
+>Copyright &copy; 2004, 2005, 2006, 2007, 2008, 2009 Florian Schäfer</P
+><DIV
+CLASS="legalnotice"
+><P
+></P
+><A
+NAME="legalnotice"
+></A
+><P
+>&#13;	  Permission is granted to copy, distribute and/or modify this
+	  document under the terms of the GNU Free Documentation
+	  License (GFDL), Version 1.1 or any later version published
+	  by the Free Software Foundation with no Invariant Sections,
+	  no Front-Cover Texts, and no Back-Cover Texts.  You can find
+	  a copy of the GFDL at this <A
+HREF="http://www.gnu.org/licenses/fdl.txt"
+TARGET="_top"
+>link</A
+> or 
+		in the file COPYING-DOCS distributed with this manual.
+  </P
+><P
+>&#13;	  DOCUMENT AND MODIFIED VERSIONS OF THE DOCUMENT ARE PROVIDED
+	  UNDER  THE TERMS OF THE GNU FREE DOCUMENTATION LICENSE
+	  WITH THE FURTHER UNDERSTANDING THAT:
+
+	  <P
+></P
+><OL
+TYPE="1"
+><LI
+><P
+>DOCUMENT IS PROVIDED ON AN "AS IS" BASIS,
+                    WITHOUT WARRANTY OF ANY KIND, EITHER EXPRESSED OR
+                    IMPLIED, INCLUDING, WITHOUT LIMITATION, WARRANTIES
+                    THAT THE DOCUMENT OR MODIFIED VERSION OF THE
+                    DOCUMENT IS FREE OF DEFECTS MERCHANTABLE, FIT FOR
+                    A PARTICULAR PURPOSE OR NON-INFRINGING. THE ENTIRE
+                    RISK AS TO THE QUALITY, ACCURACY, AND PERFORMANCE
+                    OF THE DOCUMENT OR MODIFIED VERSION OF THE
+                    DOCUMENT IS WITH YOU. SHOULD ANY DOCUMENT OR
+                    MODIFIED VERSION PROVE DEFECTIVE IN ANY RESPECT,
+                    YOU (NOT THE INITIAL WRITER, AUTHOR OR ANY
+                    CONTRIBUTOR) ASSUME THE COST OF ANY NECESSARY
+                    SERVICING, REPAIR OR CORRECTION. THIS DISCLAIMER
+                    OF WARRANTY CONSTITUTES AN ESSENTIAL PART OF THIS
+                    LICENSE. NO USE OF ANY DOCUMENT OR MODIFIED
+                    VERSION OF THE DOCUMENT IS AUTHORIZED HEREUNDER
+                    EXCEPT UNDER THIS DISCLAIMER; AND
+		  </P
+></LI
+><LI
+><P
+>UNDER NO CIRCUMSTANCES AND UNDER NO LEGAL
+                       THEORY, WHETHER IN TORT (INCLUDING NEGLIGENCE),
+                       CONTRACT, OR OTHERWISE, SHALL THE AUTHOR,
+                       INITIAL WRITER, ANY CONTRIBUTOR, OR ANY
+                       DISTRIBUTOR OF THE DOCUMENT OR MODIFIED VERSION
+                       OF THE DOCUMENT, OR ANY SUPPLIER OF ANY OF SUCH
+                       PARTIES, BE LIABLE TO ANY PERSON FOR ANY
+                       DIRECT, INDIRECT, SPECIAL, INCIDENTAL, OR
+                       CONSEQUENTIAL DAMAGES OF ANY CHARACTER
+                       INCLUDING, WITHOUT LIMITATION, DAMAGES FOR LOSS
+                       OF GOODWILL, WORK STOPPAGE, COMPUTER FAILURE OR
+                       MALFUNCTION, OR ANY AND ALL OTHER DAMAGES OR
+                       LOSSES ARISING OUT OF OR RELATING TO USE OF THE
+                       DOCUMENT AND MODIFIED VERSIONS OF THE DOCUMENT,
+                       EVEN IF SUCH PARTY SHALL HAVE BEEN INFORMED OF
+                       THE POSSIBILITY OF SUCH DAMAGES.
+		  </P
+></LI
+></OL
+>
+	</P
+><P
+></P
+></DIV
+><DIV
+CLASS="legalnotice"
+><A
+NAME="AEN33"
+></A
+><P
+><B
+>Feedback</B
+></P
+><P
+>To report a bug or make a suggestion regarding the <TT
+CLASS="application"
+>GWignerFit</TT
+> application or
+	      this manual, please contact the author via electronic mail
+	      <CODE
+CLASS="email"
+>&#60;<A
+HREF="mailto:schaefer@ikp.tu-darmstadt.de"
+>schaefer@ikp.tu-darmstadt.de</A
+>&#62;</CODE
+>.
+      </P
+></DIV
+><HR
+WIDTH="75%"
+ALIGN="CENTER"
+COLOR="#000000"
+SIZE="1"></DIV
+><DIV
+CLASS="TOC"
+><DL
+><DT
+><B
+>Table of Contents</B
+></DT
+><DT
+>1. <A
+HREF="#gwignerfit-introduction"
+>Introduction</A
+></DT
+><DT
+>2. <A
+HREF="#gwignerfit-getting-started"
+>Getting Started</A
+></DT
+><DD
+><DL
+><DT
+>2.1. <A
+HREF="#gwignerfit-start"
+>To Start <TT
+CLASS="application"
+>GWignerFit</TT
+></A
+></DT
+><DT
+>2.2. <A
+HREF="#gwignerfit-when-start"
+>When You Start <TT
+CLASS="application"
+>GWignerFit</TT
+></A
+></DT
+></DL
+></DD
+><DT
+>3. <A
+HREF="#gwignerfit-menubar"
+>The Menubar</A
+></DT
+><DD
+><DL
+><DT
+>3.1. <A
+HREF="#gwf-file-menu"
+>The <B
+CLASS="guimenu"
+>File</B
+> menu</A
+></DT
+><DT
+>3.2. <A
+HREF="#gwf-spectrum-menu"
+>The <B
+CLASS="guimenu"
+>Spectrum</B
+> menu</A
+></DT
+><DT
+>3.3. <A
+HREF="#gwf-analyze-menu"
+>The <B
+CLASS="guimenu"
+>Analyze</B
+> menu</A
+></DT
+><DT
+>3.4. <A
+HREF="#gwf-view-menu"
+>The <B
+CLASS="guimenu"
+>View</B
+> menu</A
+></DT
+><DT
+>3.5. <A
+HREF="#AEN391"
+>The <B
+CLASS="guimenu"
+>Help</B
+> menu</A
+></DT
+></DL
+></DD
+><DT
+>4. <A
+HREF="#gwignerfit-datasets"
+>Handling datasets</A
+></DT
+><DD
+><DL
+><DT
+>4.1. <A
+HREF="#gwf-import"
+>Import Spectrum Data</A
+></DT
+><DT
+>4.2. <A
+HREF="#gwf-import-reslist"
+>Import a Resonance Frequency List</A
+></DT
+><DT
+>4.3. <A
+HREF="#gwf-overlay"
+>Overlay Data</A
+></DT
+><DT
+>4.4. <A
+HREF="#gwf-graph-view-area"
+>The Graph view area</A
+></DT
+><DT
+>4.5. <A
+HREF="#gwf-export"
+>Export your Data</A
+></DT
+><DT
+>4.6. <A
+HREF="#gwf-dnd"
+>Drag and drop support</A
+></DT
+></DL
+></DD
+><DT
+>5. <A
+HREF="#gwignerfit-save-work"
+>Load and Save your Work</A
+></DT
+><DD
+><DL
+><DT
+>5.1. <A
+HREF="#gwf-files"
+>Structure of gwf files</A
+></DT
+><DT
+>5.2. <A
+HREF="#gwf-save"
+>Save a Session</A
+></DT
+><DT
+>5.3. <A
+HREF="#gwf-load"
+>Load a Session</A
+></DT
+><DT
+>5.4. <A
+HREF="#gwf-backup"
+>Backup Files</A
+></DT
+></DL
+></DD
+><DT
+>6. <A
+HREF="#gwignerfit-work-spectrum"
+>Work on the Spectrum</A
+></DT
+><DD
+><DL
+><DT
+>6.1. <A
+HREF="#gwf-theory"
+>A Primer on Theory</A
+></DT
+><DT
+>6.2. <A
+HREF="#gwf-res-list"
+>The Resonance list</A
+></DT
+><DT
+>6.3. <A
+HREF="#gwf-find-res"
+>Find and Add Resonances</A
+></DT
+><DT
+>6.4. <A
+HREF="#gwf-fit"
+>Fit!</A
+></DT
+><DT
+>6.5. <A
+HREF="#gwf-fit-check"
+>Check your Fit results</A
+></DT
+><DT
+>6.6. <A
+HREF="#gwf-fcomp"
+>Handle Periodic Transmission Modulations</A
+></DT
+><DT
+>6.7. <A
+HREF="#gwf-fit-err"
+>Accuracy of fit parameters</A
+></DT
+><DT
+>6.8. <A
+HREF="#gwf-calibrate"
+>Spectrum calibration</A
+></DT
+></DL
+></DD
+><DT
+>7. <A
+HREF="#gwignerfit-merge"
+>Merge Resonance Lists</A
+></DT
+><DD
+><DL
+><DT
+>7.1. <A
+HREF="#gwf-merge-menubar"
+>The Menubar of the Merge Window</A
+></DT
+><DT
+>7.2. <A
+HREF="#gwf-merge-nodes"
+>How to do a Merge</A
+></DT
+></DL
+></DD
+><DT
+>8. <A
+HREF="#gwignerfit-fft"
+>Working in the Time Domain</A
+></DT
+><DD
+><DL
+><DT
+>8.1. <A
+HREF="#gwf-fft-menubar"
+>The Menubar of the FFT Window</A
+></DT
+><DT
+>8.2. <A
+HREF="#gwf-fft-graph"
+>The Graph of the FFT Window</A
+></DT
+></DL
+></DD
+><DT
+>9. <A
+HREF="#gwignerfit-statistics"
+>Statistics</A
+></DT
+><DD
+><DL
+><DT
+>9.1. <A
+HREF="#gwignerfit-spectrum-stat"
+>Spectrum Statistics &#8212; The Autocorrelation Function</A
+></DT
+><DT
+>9.2. <A
+HREF="#gwignerfit-spectral"
+>Spectral Statistics</A
+></DT
+></DL
+></DD
+><DT
+>10. <A
+HREF="#gwignerfit-vna"
+>Measure Data directly from the Network Analyzer</A
+></DT
+><DD
+><DL
+><DT
+>10.1. <A
+HREF="#gwf-hard-software"
+>Required hard- and software</A
+></DT
+><DT
+>10.2. <A
+HREF="#AEN1932"
+>The process of measuring</A
+></DT
+></DL
+></DD
+><DT
+>11. <A
+HREF="#gwignerfit-custom"
+>Customize <TT
+CLASS="application"
+>GWignerFit</TT
+></A
+></DT
+><DT
+>12. <A
+HREF="#gwignerfet-bugs"
+>Known Bugs and Limitations</A
+></DT
+><DT
+>13. <A
+HREF="#gwignerfit-about"
+>About <TT
+CLASS="application"
+>GWignerFit</TT
+></A
+></DT
+></DL
+></DIV
+><DIV
+CLASS="sect1"
+><H2
+CLASS="sect1"
+><A
+NAME="gwignerfit-introduction"
+>1. Introduction</A
+></H2
+><P
+><TT
+CLASS="application"
+>GWignerFit</TT
+> provides an easy to use interface to analyze complex spectra of
+		microwave resonators taken with vectorial network analyzers such as the
+		HP8510C. Its primary aim is to provide a means to fit a theoretical curve
+		to a given dataset in order to extract crucial parameters such as
+		resonance frequencies and widths.</P
+><P
+>Some of <TT
+CLASS="application"
+>GWignerFit</TT
+>'s features:</P
+><P
+></P
+><UL
+><LI
+><P
+>Versatile methods of data visualization. <TT
+CLASS="application"
+>GWignerFit</TT
+> can read industry
+				standard Touchstone® spectrum datafiles as well its own datafile
+				format.</P
+></LI
+><LI
+><P
+>Support for transmission and reflection spectra.</P
+></LI
+><LI
+><P
+>"Unlimited" number of resonances for the theory.</P
+></LI
+><LI
+><P
+>Support for multiprocessor systems.</P
+></LI
+><LI
+><P
+>Possibility to overlay several spectra for better
+				comparison.</P
+></LI
+><LI
+><P
+>Implemented Fast Fourier Transform for visualization of the
+				time domain.</P
+></LI
+><LI
+><P
+>The most common spectral statistics can be calculated and
+				visualized in real time.</P
+></LI
+><LI
+><P
+>A special merge module allows an easy comparison of resonance
+				lists in order to build a complete set of resonances.</P
+></LI
+><LI
+><P
+>Spectral data can be measured directly through a HP8510 compatible
+				network analyzer.</P
+></LI
+><LI
+><P
+>Raw, uncalibrated spectrum data can be calibrated offline or online
+				utilizing a HP8510 compatible network analyzer.</P
+></LI
+></UL
+></DIV
+><DIV
+CLASS="sect1"
+><HR><H2
+CLASS="sect1"
+><A
+NAME="gwignerfit-getting-started"
+>2. Getting Started</A
+></H2
+><P
+>This section will show you the very first steps with <TT
+CLASS="application"
+>GWignerFit</TT
+>. It will
+		explain how to start the application and give a short overview about how
+		the main window is structured.</P
+><DIV
+CLASS="sect2"
+><HR><H3
+CLASS="sect2"
+><A
+NAME="gwignerfit-start"
+>2.1. To Start <TT
+CLASS="application"
+>GWignerFit</TT
+></A
+></H3
+><P
+>The best way to start <TT
+CLASS="application"
+><TT
+CLASS="application"
+>GWignerFit</TT
+></TT
+> is to start it
+		from a command line. To do this open a terminal and type the
+		following command, then press <B
+CLASS="keycap"
+>Return</B
+>:</P
+><P
+>&#13;		<B
+CLASS="command"
+>&#13;			gwignerfit
+			<TT
+CLASS="replaceable"
+><I
+>datafile1.dat datafile2.dat</I
+></TT
+>
+		</B
+>
+	</P
+><P
+>where the optional filenames
+		<TT
+CLASS="replaceable"
+><I
+>datafileX.dat</I
+></TT
+> can be the names of
+		resonance datafiles that you want to use. A description of the required
+		datafile format can be found in <A
+HREF="#gwf-datafile-format"
+>Section 4.1.1</A
+>.
+	</P
+><P
+><TT
+CLASS="application"
+>GWignerFit</TT
+> opens the first datafile as the main dataset. Each further
+		file will be added as an overlayed graph (see <A
+HREF="#gwf-overlay"
+>Section 4.3</A
+>
+		for further information on overlays). </P
+></DIV
+><DIV
+CLASS="sect2"
+><HR><H3
+CLASS="sect2"
+><A
+NAME="gwignerfit-when-start"
+>2.2. When You Start <TT
+CLASS="application"
+>GWignerFit</TT
+></A
+></H3
+><P
+>When you start <TT
+CLASS="application"
+><TT
+CLASS="application"
+>GWignerFit</TT
+></TT
+>, the window shown in
+			<A
+HREF="#mainwindow-start"
+>Figure 1</A
+> is displayed.</P
+><DIV
+CLASS="figure"
+><A
+NAME="mainwindow-start"
+></A
+><DIV
+CLASS="mediaobject"
+><P
+><IMG
+SRC="figures/gwf_start_window.png"></P
+></DIV
+><P
+><B
+>Figure 1. <TT
+CLASS="application"
+>GWignerFit</TT
+> Start Up Window</B
+></P
+></DIV
+><P
+>The <TT
+CLASS="application"
+>GWignerFit</TT
+> main window contains the following elements:</P
+><P
+></P
+><DIV
+CLASS="variablelist"
+><DL
+><DT
+>Window title</DT
+><DD
+><P
+>The title displays the title of the application, <TT
+CLASS="application"
+>GWignerFit</TT
+>, the
+						name of the currently loaded dataset or session file and an
+						asterisk if there are any unsaved changes.</P
+></DD
+><DT
+>Menubar</DT
+><DD
+><P
+>The menus of the menubar contain all of the commands you need
+						in order to work with <TT
+CLASS="application"
+>GWignerFit</TT
+>. Learn more about the menubar in
+						<A
+HREF="#gwignerfit-menubar"
+>Section 3</A
+>.</P
+></DD
+><DT
+>Graph view area</DT
+><DD
+><P
+>This is perhaps the most important part of the main window of
+						<TT
+CLASS="application"
+>GWignerFit</TT
+>. If a dataset is loaded it will be displayed here along with
+						the theoretical curve and any overlayed datasets. A detailed
+						description of the graph view area can be found in
+						<A
+HREF="#gwf-graph-view-area"
+>Section 4.4</A
+>.
+					</P
+></DD
+><DT
+>Parameter area</DT
+><DD
+><P
+>All relevant parameters are displayed here. Global parameters
+						(<TT
+CLASS="guilabel"
+><B
+>Phase</B
+></TT
+>, <TT
+CLASS="guilabel"
+><B
+>Scale</B
+></TT
+>,
+						<TT
+CLASS="guilabel"
+><B
+>Tau</B
+></TT
+>, <TT
+CLASS="guilabel"
+><B
+>Min</B
+></TT
+>,
+						<TT
+CLASS="guilabel"
+><B
+>Max</B
+></TT
+>) are displayed on the left side.  The
+						individual parameters for each resonance
+						(<TT
+CLASS="guilabel"
+><B
+>frequency</B
+></TT
+>, <TT
+CLASS="guilabel"
+><B
+>width</B
+></TT
+>,
+						<TT
+CLASS="guilabel"
+><B
+>amplitude</B
+></TT
+>, <TT
+CLASS="guilabel"
+><B
+>phase</B
+></TT
+>) will be
+						shown on the table at the right. The parameter area is explained in
+						<A
+HREF="#gwf-res-list"
+>Section 6.2</A
+>.
+					</P
+></DD
+><DT
+>Statusbar</DT
+><DD
+><P
+>The statusbar displays information about the current activities
+						of <TT
+CLASS="application"
+>GWignerFit</TT
+> and it gives feedback about the result of a operation,
+						i.e. saving a file. Each message the statusbar holds will be
+						cleared after five seconds.</P
+></DD
+></DL
+></DIV
+></DIV
+></DIV
+><DIV
+CLASS="sect1"
+><HR><H2
+CLASS="sect1"
+><A
+NAME="gwignerfit-menubar"
+>3. The Menubar</A
+></H2
+><P
+>&#13;		The Menubar allows access to nearly all relevant actions of <TT
+CLASS="application"
+>GWignerFit</TT
+>.
+	</P
+><DIV
+CLASS="sect2"
+><HR><H3
+CLASS="sect2"
+><A
+NAME="gwf-file-menu"
+>3.1. The <B
+CLASS="guimenu"
+>File</B
+> menu</A
+></H3
+><P
+>&#13;			With the <B
+CLASS="guimenu"
+>File</B
+> menu you can save and load your work,
+			import datafiles, export your results into various formats and quit <TT
+CLASS="application"
+>GWignerFit</TT
+>.
+			In detail you can choose one of the following actions:
+		</P
+><P
+></P
+><DIV
+CLASS="variablelist"
+><DL
+><DT
+><B
+CLASS="guimenuitem"
+>New</B
+></DT
+><DD
+><P
+>Basically <TT
+CLASS="application"
+>GWignerFit</TT
+> is resetted to the state it would be in after
+						starting it without any command line arguments. That is, all
+						resonances are deleted as well as the global parameters, all
+						datasets are removed from the memory and the graph view area is
+						cleared.</P
+></DD
+><DT
+><B
+CLASS="guimenuitem"
+>Open...</B
+></DT
+><DD
+><P
+>Use this menuitem to open a <TT
+CLASS="application"
+>GWignerFit</TT
+> session created by <TT
+CLASS="application"
+>GWignerFit</TT
+>'s
+						save function.</P
+></DD
+><DT
+><B
+CLASS="guimenuitem"
+>Save</B
+></DT
+><DD
+><P
+>With <B
+CLASS="guimenuitem"
+>Save</B
+> the current state of your
+						<TT
+CLASS="application"
+>GWignerFit</TT
+> session will be saved. The name of the dataset file, the
+						overlayed files, the global parameters and the parameters of the
+						individual resonances will be saved. If no file and section name
+						have been chosen yet, you will be prompted for them, otherwise
+						their current values will be taken and the corresponding section
+						will be overwritten with your current session. Please refer to
+						<A
+HREF="#gwignerfit-save-work"
+>Section 5</A
+> for further information on
+						<TT
+CLASS="application"
+>GWignerFit</TT
+>'s session files.</P
+></DD
+><DT
+><B
+CLASS="guimenuitem"
+>Save as...</B
+></DT
+><DD
+><P
+>This does in principle the same as
+						<B
+CLASS="guimenuitem"
+>Save</B
+> but you will always be asked for a
+						new filename and a new section name.</P
+></DD
+><DT
+><B
+CLASS="guimenuitem"
+>Import data...</B
+></DT
+><DD
+><P
+>This is perhaps one of the most important items in the
+						<B
+CLASS="guimenu"
+>File</B
+> menu. You can import a dataset that you
+						want to work with or a list with resonance frequencies. See
+						<A
+HREF="#gwf-import"
+>Section 4.1</A
+> and <A
+HREF="#gwf-import-reslist"
+>Section 4.2</A
+> for further information on
+						datafiles.</P
+></DD
+><DT
+><B
+CLASS="guimenuitem"
+>Export</B
+></DT
+><DD
+><P
+>For further usage of the knowledge gained by using <TT
+CLASS="application"
+>GWignerFit</TT
+> you
+						can export various aspects of your work here, see
+						<A
+HREF="#gwf-export"
+>Section 4.5</A
+>.</P
+></DD
+><DT
+><B
+CLASS="guimenuitem"
+>Comment...</B
+></DT
+><DD
+><P
+>This function will open a small text entry dialog. You can use
+						it to enter arbitrary information. The commentary is being saved
+						together with all the other data of a <TT
+CLASS="application"
+>GWignerFit</TT
+> session if you use the
+						<B
+CLASS="guimenuitem"
+>Save</B
+> function mentioned above.
+					</P
+></DD
+><DT
+><B
+CLASS="guimenuitem"
+>Quit</B
+></DT
+><DD
+><P
+>Quit the application.</P
+></DD
+></DL
+></DIV
+></DIV
+><DIV
+CLASS="sect2"
+><HR><H3
+CLASS="sect2"
+><A
+NAME="gwf-spectrum-menu"
+>3.2. The <B
+CLASS="guimenu"
+>Spectrum</B
+> menu</A
+></H3
+><P
+>&#13;			This menu holds actions that are related to the adding of resonances to
+			the theory and fitting them. You may think of the
+			<B
+CLASS="guimenu"
+>Spectrum</B
+> menu as doing work <I
+CLASS="emphasis"
+>on</I
+>
+			the spectrum. In detail you can choose one of the following actions:
+		</P
+><P
+></P
+><DIV
+CLASS="variablelist"
+><DL
+><DT
+><B
+CLASS="guimenuitem"
+>Fit spectrum</B
+></DT
+><DD
+><P
+>This is what <TT
+CLASS="application"
+>GWignerFit</TT
+> is all about. To take a set of parameters
+						and fit a theoretical curve to the dataset. With <B
+CLASS="guimenuitem"
+>Fit
+						spectrum</B
+> the actual fitting process is
+						initiated. You can learn more about the fit in
+						<A
+HREF="#gwf-fit"
+>Section 6.4</A
+>.</P
+></DD
+><DT
+><B
+CLASS="guimenuitem"
+>Undo last fit</B
+></DT
+><DD
+><P
+>Sometimes the theory will look worse after a fit has been
+						performed, use undo to revert to the state before the fit.
+						<B
+CLASS="guimenuitem"
+>Undo last fit</B
+> will always restore the
+						parameter settings from before the last fit. You cannot use undo if
+						no fit has been done yet or if a new dataset has been imported
+						meanwhile.</P
+></DD
+><DT
+><B
+CLASS="guimenuitem"
+>Add resonance by click</B
+></DT
+><DD
+><P
+>Add a single resonance to the list of resonances. After choosing
+						this item you will have to click with the left mouse button on the
+						graph at the frequency where a new resonance should be added. You
+						are allowed to change the view for this. <TT
+CLASS="application"
+>GWignerFit</TT
+> will then try to
+						calculate some reasonable initial parameters for this resonance and
+						add it to the list.</P
+></DD
+><DT
+><B
+CLASS="guimenuitem"
+>Find isolated resonances</B
+></DT
+><DD
+><P
+>If the spectrum contains many resonances that are to be fitted
+						it may be very inconvenient to add them all by hand. Use
+						<B
+CLASS="guimenuitem"
+>Find isolated resonances</B
+> to add all
+						resonances above a certain threshold.</P
+><P
+><TT
+CLASS="application"
+>GWignerFit</TT
+> now expects you to mark this threshold on the graph.
+						Click with the left mouse button on the graph to mark the height
+						that should be this threshold. <TT
+CLASS="application"
+>GWignerFit</TT
+> will now try to identify all
+						resonances that are higher than this value. For this operation only
+						the frequency range between the Min- and the Max-frequency is
+						considered. Read <A
+HREF="#gwf-find-res"
+>Section 6.3</A
+> for further
+						information.</P
+></DD
+><DT
+><B
+CLASS="guimenuitem"
+>Estimate global parameters</B
+></DT
+><DD
+><P
+>Use this to re-estimate the three global parameters Phase,
+						Scale and Tau. The results may not be very exact in may cases but
+						they may provide a starting point.</P
+></DD
+><DT
+><B
+CLASS="guimenuitem"
+>Set frequency window</B
+></DT
+><DD
+><P
+>There are many operations that are not performed on the whole
+						frequency range of the dataset but only on a smaller part of it.
+						This range is determined by the Min- and Max-frequency global
+						parameters. Use <B
+CLASS="guimenuitem"
+>Set frequency window</B
+> to
+						change this window.</P
+><P
+>After selecting this item you will have to mark those to
+						frequencies with a click of the left mouse button on the graph. It
+						is mandatory to first mark the lower frequency and then the higher
+						frequency. You are free to change the view during this
+						operation.</P
+></DD
+><DT
+><B
+CLASS="guimenuitem"
+>Reflection</B
+> and
+					    <B
+CLASS="guimenuitem"
+>Transmission</B
+></DT
+><DD
+><P
+><TT
+CLASS="application"
+>GWignerFit</TT
+> tries to guess what kind of spectrum is currently loaded
+						during importing it. Sometimes the algorithm will not decide
+						correctly. Use those two radio-menuitems to change the spectrum
+						type by hand.</P
+></DD
+><DT
+><B
+CLASS="guimenuitem"
+>Overlay spectra...</B
+></DT
+><DD
+><P
+>It is possible to view more than just on spectrum at the same
+						time. This may be handy if you want to compare certain aspects of
+						several spectra. This menuitem opens the dialog to manage those
+						overlayed spectra. You cannot select this option if no main
+						spectrum has been imported yet. See <A
+HREF="#gwf-overlay"
+>Section 4.3</A
+>
+						for an in depth treatment of overlays.</P
+></DD
+><DT
+><B
+CLASS="guimenuitem"
+>Calibrate spectrum...</B
+></DT
+><DD
+><P
+>This opens the calibration dialog to calibrate transmission and
+						reflection spectra, see <A
+HREF="#gwf-calibrate"
+>Section 6.8</A
+> for a
+						detailed explanation of the process of data calibration.</P
+></DD
+><DT
+><B
+CLASS="guimenuitem"
+>Preferences...</B
+></DT
+><DD
+><P
+>There are some preferences that change the general behavior of
+						<TT
+CLASS="application"
+>GWignerFit</TT
+>. You can change them in the preferences dialog, see
+						<A
+HREF="#gwignerfit-custom"
+>Section 11</A
+>.</P
+></DD
+></DL
+></DIV
+></DIV
+><DIV
+CLASS="sect2"
+><HR><H3
+CLASS="sect2"
+><A
+NAME="gwf-analyze-menu"
+>3.3. The <B
+CLASS="guimenu"
+>Analyze</B
+> menu</A
+></H3
+><P
+>The <B
+CLASS="guimenu"
+>Analyze</B
+> menu allows you to perform an even
+			deeper analysis of you spectrum that have nothing to do with finding and
+			fitting resonances in the first place.
+			In detail you can choose one of the following actions:
+		</P
+><P
+></P
+><DIV
+CLASS="variablelist"
+><DL
+><DT
+><B
+CLASS="guimenuitem"
+>Measure distance</B
+></DT
+><DD
+><P
+>To measure the frequency interval between two arbitrary points
+						on the spectrum select this item and then click with the left mouse
+						button on the two frequency positions between which you want to
+						know the distance. You may select the higher frequency first, <TT
+CLASS="application"
+>GWignerFit</TT
+>
+						will always calculate the absolute value of the difference. Once
+						again, you are free to change the view during this
+						operation.</P
+></DD
+><DT
+><B
+CLASS="guimenuitem"
+>Integrate Spectrum</B
+></DT
+><DD
+><P
+><B
+CLASS="guimenuitem"
+>Integrate Spectrum</B
+> calculates the
+						area under the graph of the main dataset in the given frequency
+						range. You will have to mark the frequency boundaries with clicks
+						of the left mouse button on the graph. You may select the higher
+						frequency first, <TT
+CLASS="application"
+>GWignerFit</TT
+> will always calculate the absolute value of
+						the integral. Once again, you are free to change the view during
+						this operation.</P
+></DD
+><DT
+><B
+CLASS="guimenuitem"
+>Fourier transform all</B
+></DT
+><DD
+><P
+>The mathematical operation to change between the frequency
+						domain and the time domain is a Fourier transform. Selecting this
+						item you will open a new window that displays the Fourier
+						transformed graphs. An extensive explanation of the time domain and
+						the Fourier transform window is given
+						<A
+HREF="#gwignerfit-fft"
+>Section 8</A
+>.</P
+></DD
+><DT
+><B
+CLASS="guimenuitem"
+>Fourier transform frqwin</B
+></DT
+><DD
+><P
+>This does in principle the same as <B
+CLASS="guimenuitem"
+>Fourier
+						transform</B
+>. However, it does only take those data
+						values into account that are within the selected Min- and
+						Max-frequency window.</P
+></DD
+><DT
+><B
+CLASS="guimenuitem"
+>Spectral statistics</B
+></DT
+><DD
+><P
+>This module evaluates the most common statistical properties of
+						resonance lists. Your current list of resonance frequencies will be
+						the source of the analysis. See <A
+HREF="#gwignerfit-spectral"
+>Section 9.2</A
+> for a thorough explanation of this function.</P
+></DD
+><DT
+><B
+CLASS="guimenuitem"
+>Merge resonance lists</B
+></DT
+><DD
+><P
+>Use this module if you have several resonance lists and want to
+						merge them into one to get a complete resonance level scheme. A
+						detailed description of this function can be found in <A
+HREF="#gwignerfit-merge"
+>Section 7</A
+>.</P
+></DD
+><DT
+><B
+CLASS="guimenuitem"
+>Fourier components</B
+></DT
+><DD
+><P
+>If you have done transmission measurements in small cavities or
+						using bad cables you may get annoying periodic transmission
+						modulations that cannot be described by the "normal" theory of
+						complex Wigner functions. Use this dialog to identify those
+						fluctuations in the time domain and to take them into account as
+						additional Fourier components. See <A
+HREF="#gwf-fcomp"
+>Section 6.6</A
+> for
+						more detailed explanations.</P
+></DD
+><DT
+><B
+CLASS="guimenuitem"
+>Autocorrelation function</B
+></DT
+><DD
+><P
+>This function calculates the so called autocorrelation function
+						of the currently active main dataset. It provides the correlation
+						length and additionally some further statistical data for the
+						spectrum. Further explanations can be found in <A
+HREF="#gwignerfit-spectrum-stat"
+>Section 9.1</A
+>.</P
+></DD
+></DL
+></DIV
+></DIV
+><DIV
+CLASS="sect2"
+><HR><H3
+CLASS="sect2"
+><A
+NAME="gwf-view-menu"
+>3.4. The <B
+CLASS="guimenu"
+>View</B
+> menu</A
+></H3
+><P
+>&#13;			This menu contains all actions that are connected to what the graph
+			view area shows you.
+			You can choose one of the following actions:
+		</P
+><P
+></P
+><DIV
+CLASS="variablelist"
+><DL
+><DT
+><B
+CLASS="guimenuitem"
+>Absolute value</B
+></DT
+><DD
+><P
+>This is the standard view. <TT
+CLASS="application"
+>GWignerFit</TT
+> calculates the absolute values
+						of the given complex parameter sets and displays them. The values
+						are <I
+CLASS="emphasis"
+>not</I
+> squared.</P
+></DD
+><DT
+><B
+CLASS="guimenuitem"
+>Real part</B
+></DT
+><DD
+><P
+>Displays that real part of each graph.</P
+></DD
+><DT
+><B
+CLASS="guimenuitem"
+>Imaginary part</B
+></DT
+><DD
+><P
+>Displays that imaginary part of each graph.</P
+></DD
+><DT
+><B
+CLASS="guimenuitem"
+>Phase</B
+></DT
+><DD
+><P
+>Displays that phase of the complex values. <TT
+CLASS="application"
+>GWignerFit</TT
+> calculates it
+						by taking the arctan of the quotient between imaginary and real
+						part of the datasets. The signs of both arguments are used to
+						determine the quadrant of the result that is, the phase takes all
+						values between -&#960; and +&#960;.</P
+></DD
+><DT
+><B
+CLASS="guimenuitem"
+>Log power in dB</B
+></DT
+><DD
+><P
+>The values calculated with the <B
+CLASS="guimenuitem"
+>Absolute
+						value</B
+> setting are being squared and converted into a
+						logarithmic scale, the dB scale. The ordinate now reads the values
+						in dB. To prevent possible singularities all values of zero are
+						defined to be -100 dB and negative values are reversed in sign
+						before converting them to dB.</P
+></DD
+><DT
+><B
+CLASS="guimenuitem"
+>View theory</B
+></DT
+><DD
+><P
+>Check or uncheck this option to enable or disable the display
+						of the blue theory graph in the main graph view area as well in the
+						graph of the time spectrum (see <A
+HREF="#gwignerfit-fft"
+>Section 8</A
+>).
+						The start-up default of <TT
+CLASS="application"
+>GWignerFit</TT
+> is to not display the theory graph. It
+						will, however, be automatically be shown if a resonance gets added
+						so that the theory graph becomes meaningful. This default behavior
+						can in any case be overruled with this menu item.
+					</P
+></DD
+><DT
+><B
+CLASS="guimenuitem"
+>View difference</B
+></DT
+><DD
+><P
+>When activating this checkbox the graph view area will not show
+						the individual graphs for the main dataset and the theory any more
+						but calculate the difference between the to datasets first and
+						display the result. The difference is calculated by subtracting the
+						complex values of the theory graph from the complex values of the
+						main dataset. The graph of this difference is purple in color.
+					</P
+></DD
+><DT
+><B
+CLASS="guimenuitem"
+>Zoom selection</B
+></DT
+><DD
+><P
+>Changes the range of the displayed frequencies so that the
+						whole frequency window between the Min- and Max-frequency fits
+						nicely onto the graph view area.</P
+></DD
+></DL
+></DIV
+></DIV
+><DIV
+CLASS="sect2"
+><HR><H3
+CLASS="sect2"
+><A
+NAME="AEN391"
+>3.5. The <B
+CLASS="guimenu"
+>Help</B
+> menu</A
+></H3
+><P
+>&#13;			This menu is supposed to give the user some help in his working with
+			<TT
+CLASS="application"
+>GWignerFit</TT
+>, however, right now its functionality is rather limited.
+			Only two menuitems are present at the moment:
+		</P
+><P
+></P
+><DIV
+CLASS="variablelist"
+><DL
+><DT
+><B
+CLASS="guimenuitem"
+>User manual...</B
+></DT
+><DD
+><P
+><TT
+CLASS="application"
+>GWignerFit</TT
+> ships with an extensive user manual, that is the one you
+						are reading right now. With this option you will get a hint where
+						to find the HTML version of the documentation on your system.
+					</P
+></DD
+><DT
+><B
+CLASS="guimenuitem"
+>About...</B
+></DT
+><DD
+><P
+>This item will open the obligatory hall of fame window.</P
+></DD
+></DL
+></DIV
+></DIV
+></DIV
+><DIV
+CLASS="sect1"
+><HR><H2
+CLASS="sect1"
+><A
+NAME="gwignerfit-datasets"
+>4. Handling datasets</A
+></H2
+><P
+>It is <TT
+CLASS="application"
+>GWignerFit</TT
+>'s purpose to make the work with measured data as
+		comfortable as possible. This section will explain how to load some data
+		into <TT
+CLASS="application"
+>GWignerFit</TT
+>, how to use the graph view effectively and how to export your
+		results again.</P
+><DIV
+CLASS="sect2"
+><HR><H3
+CLASS="sect2"
+><A
+NAME="gwf-import"
+>4.1. Import Spectrum Data</A
+></H3
+><P
+>The starting point for many of your <TT
+CLASS="application"
+>GWignerFit</TT
+> sessions will be to import
+			some spectrum data. You can do this by choosing
+			<B
+CLASS="guimenu"
+>File</B
+>-&gt;<B
+CLASS="guimenuitem"
+>Import</B
+>-&gt;<B
+CLASS="guimenuitem"
+>Spectrum data...</B
+>
+			(the shortcut is
+			<B
+CLASS="keycap"
+>Ctrl</B
+>-<B
+CLASS="keycap"
+>I</B
+>)
+			from the menubar. A file selector will open where you can browse to and
+			select the name of the file that contains the dataset. If the selected
+			datafile follows the <TT
+CLASS="filename"
+>S2P</TT
+> standard, that is it
+			includes information on a full 2×2 measurement, <TT
+CLASS="application"
+>GWignerFit</TT
+> will then
+			bring up a new dialog. Use this dialog to choose which scattering
+			parameter actually to import. The current version of <TT
+CLASS="application"
+>GWignerFit</TT
+> cannot
+			import all four matrix elements at once.
+		</P
+><P
+>You can either import the raw spectrum data of the frequency domain
+			or the Fourier transformed data of a time domain spectrum (see <A
+HREF="#gwignerfit-fft"
+>Section 8</A
+>). Both types of spectra must abide by the
+			datafile standard defined in <A
+HREF="#gwf-datafile-format"
+>Section 4.1.1</A
+>. The
+			preferred extension for datafiles is <TT
+CLASS="filename"
+>.s1p</TT
+>,
+			<TT
+CLASS="filename"
+>.s2p</TT
+> or <TT
+CLASS="filename"
+>.dat</TT
+>. All datafiles can
+			be compressed with the zlib algorithm, too, which <TT
+CLASS="application"
+>GWignerFit</TT
+> can decompress on
+			the fly. This algorithm is used for example by the Unix
+			<B
+CLASS="command"
+>gzip</B
+> command. Compressed datafiles should have the
+			additional suffix <TT
+CLASS="filename"
+>.gz</TT
+>.
+		</P
+><DIV
+CLASS="sect3"
+><HR><H4
+CLASS="sect3"
+><A
+NAME="gwf-datafile-format"
+>4.1.1. Datafile Format</A
+></H4
+><P
+><TT
+CLASS="application"
+>GWignerFit</TT
+> expects all datafiles to abide by the Touchstone®
+				industry standard (as defined in <A
+HREF="http://www.vhdl.org/pub/ibis/connector/touchstone_spec11.pdf"
+TARGET="_top"
+>Rev
+				1.1</A
+>, filename suffixes <TT
+CLASS="filename"
+>.s1p</TT
+> or
+			  <TT
+CLASS="filename"
+>.s2p</TT
+>) or to follow the following rules (which are
+				similar to a special variant of the <TT
+CLASS="filename"
+>S1P</TT
+>
+				standard):</P
+><P
+></P
+><UL
+><LI
+><P
+>All lines containing actual data must consist of three floating
+						numbers (for the programmers: long floats, a point as the decimal
+						separator) divided by white space, that is any combination of
+						spaces and tabs. The first column represents the frequency measured
+						in Hz or the time of the FFT data in nanoseconds. The second and
+						third column hold the real and imaginary value of the complex
+						S-Parameter value for this frequency or of the complex Fourier
+						coefficient for this time.</P
+></LI
+><LI
+><P
+>A line can start with a hash (a '#'). Those lines will be
+						ignored by <TT
+CLASS="application"
+>GWignerFit</TT
+> and can thus be used for comments.</P
+></LI
+><LI
+><P
+>The file <I
+CLASS="emphasis"
+>must not</I
+> contain any other lines
+						than those of the type above. This includes that there must not be
+						any empty lines in the datafile.</P
+></LI
+><LI
+><P
+><TT
+CLASS="application"
+>GWignerFit</TT
+> expects the frequency/time intervals between two
+						successive lines to be equal, i.e. plus 200 kHz between each
+						frequency dataset.</P
+></LI
+><LI
+><P
+>The following applies only to time domain data: The first two
+						lines of the datafile <I
+CLASS="emphasis"
+>must</I
+> look very much like
+						this:
+						<TABLE
+BORDER="0"
+BGCOLOR="#E0E0E0"
+WIDTH="100%"
+><TR
+><TD
+><PRE
+CLASS="screen"
+>&#13;# FFT of 'filename.dat' measured data
+# Source frequency range: 2.000000000 - 8.438000000 GHz
+						</PRE
+></TD
+></TR
+></TABLE
+></P
+><P
+>The string <TT
+CLASS="replaceable"
+><I
+>filename.dat</I
+></TT
+> should hold
+						the filename of the original frequency domain dataset. The values
+						of the second line, <TT
+CLASS="replaceable"
+><I
+>2.000000000</I
+></TT
+> and
+						<TT
+CLASS="replaceable"
+><I
+>8.438000000</I
+></TT
+> in this example, must be
+						equal to the first and last frequency datapoint of the original
+						datafile.</P
+><P
+>The number of datapoints in the file must be one more than a
+						power of two (like 3, 5, 9, 17, 33) and the time range must be
+						centered around time t=0 ns.</P
+><P
+>However, you do not need to worry too much about this datafile
+						format. If you use <TT
+CLASS="application"
+>GWignerFit</TT
+>'s export function (see
+						<A
+HREF="#gwf-fft-file-menu"
+>Section 8.1.1</A
+>) everything will be set up
+						correctly.</P
+></LI
+></UL
+><P
+>A valid frequency domain spectrum datafile could look like this:</P
+><TABLE
+BORDER="0"
+BGCOLOR="#E0E0E0"
+WIDTH="100%"
+><TR
+><TD
+><PRE
+CLASS="screen"
+>&#13;# A test measurement
+8026000000.000000 0.027552 -0.001667
+8026200000.000000 -0.027308 -0.000603
+8026400000.000000 -0.027080 0.000438
+8026600000.000000 -0.026746 0.001457
+			</PRE
+></TD
+></TR
+></TABLE
+><P
+>A valid time domain spectrum datafile could start like this:</P
+><TABLE
+BORDER="0"
+BGCOLOR="#E0E0E0"
+WIDTH="100%"
+><TR
+><TD
+><PRE
+CLASS="screen"
+>&#13;# FFT of 'test_measurement.dat' measured data
+# Source frequency range: 1.910000000 - 2.598564295 GHz
+# t[ns]            Re            Im
+ -580.918882	   -0.710359	    0.388424
+ -579.784275	   -0.517703	   -0.016882
+ -578.649667	   -0.205626	   -0.183095
+ -577.515060	    0.263812	    0.299154
+			</PRE
+></TD
+></TR
+></TABLE
+></DIV
+></DIV
+><DIV
+CLASS="sect2"
+><HR><H3
+CLASS="sect2"
+><A
+NAME="gwf-import-reslist"
+>4.2. Import a Resonance Frequency List</A
+></H3
+><P
+>It will eventually happen that you already have a list with
+			resonance frequencies that you would like to use for your further work
+			(i.e. for a spectral analysis, see <A
+HREF="#gwignerfit-spectral"
+>Section 9.2</A
+>).
+			You can import such a list with the function
+			<B
+CLASS="guimenu"
+>File</B
+>-&gt;<B
+CLASS="guimenuitem"
+>Import</B
+>-&gt;<B
+CLASS="guimenuitem"
+>Resonance list...</B
+>
+			from the menubar of the main window. The resonance list file can either
+			have been created by <TT
+CLASS="application"
+>GWignerFit</TT
+>'s export function (see <A
+HREF="#gwf-export"
+>Section 4.5</A
+>) or it can be "self made". If the file has not
+			been created by <TT
+CLASS="application"
+>GWignerFit</TT
+> it will have to stick to the following rules:
+		</P
+><P
+></P
+><UL
+><LI
+><P
+>All lines that are either empty (not even white space) or start
+					with a hash ("#") will be ignored by <TT
+CLASS="application"
+>GWignerFit</TT
+>.
+				</P
+></LI
+><LI
+><P
+>The resonance information itself may be formatted in several
+					ways. The following column layouts are possible:
+				</P
+><P
+></P
+><UL
+><LI
+><P
+>&#60;frequency&#62;</P
+></LI
+><LI
+><P
+>&#60;ID&#62; &#60;frequency&#62;</P
+></LI
+><LI
+><P
+>&#60;frequency&#62; &#60;width&#62; &#60;amplitude&#62; &#60;phase&#62;</P
+></LI
+><LI
+><P
+>&#60;ID&#62; &#60;frequency&#62; &#60;width&#62; &#60;amplitude&#62; &#60;phase&#62;</P
+></LI
+></UL
+><P
+>&#13;					An ID column must consist of integer numbers that increase by one
+					with each line. Frequencies can either be in Hz or in GHz. Widths
+					must be in MHz and phase information must be given in degree. The
+					decimal separator has to be a period. <TT
+CLASS="application"
+>GWignerFit</TT
+> will try to outsmart
+					itself and autodetect what format the datafile follows.
+				</P
+></LI
+></UL
+><P
+>The imported resonances will be added to your resonance list. In the
+			case that not all resonance parameters are defined through the imported
+			file, the width, amplitude and phase parameters will be set to some
+			default value so that the resonances will be visible and a fit will not
+			fail with a numerical exception. <TT
+CLASS="application"
+>GWignerFit</TT
+> will, however, not try to find
+			more sensible values for those parameters, this is left up to you. A
+			resonance frequency list can be imported, too, if there is no main
+			spectrum datafile loaded.
+		</P
+></DIV
+><DIV
+CLASS="sect2"
+><HR><H3
+CLASS="sect2"
+><A
+NAME="gwf-overlay"
+>4.3. Overlay Data</A
+></H3
+><P
+>Besides having the main dataset and the theoretical graph you can add
+			further datafiles to your graph. <TT
+CLASS="application"
+>GWignerFit</TT
+> calls those graphs
+			<I
+CLASS="emphasis"
+>overlays</I
+>. This section will show you how to use them
+			effectively.</P
+><P
+>For all operations with overlays you will need to open the Overlay
+			Window, you can do this by choosing
+			<B
+CLASS="guimenu"
+>Spectrum</B
+>-&gt;<B
+CLASS="guimenuitem"
+>Overlay spectra...</B
+>
+			from the menubar.
+		</P
+><DIV
+CLASS="figure"
+><A
+NAME="overlay-fig"
+></A
+><DIV
+CLASS="mediaobject"
+><P
+><IMG
+SRC="figures/gwf_overlay_window.png"></P
+></DIV
+><P
+><B
+>Figure 2. The Overlay Window</B
+></P
+></DIV
+><P
+>The Overlay Window (as shown in <A
+HREF="#overlay-fig"
+>Figure 2</A
+>)
+			contains the following elements:</P
+><P
+></P
+><DIV
+CLASS="variablelist"
+><DL
+><DT
+><SPAN
+CLASS="interface"
+>List of all overlays</SPAN
+></DT
+><DD
+><P
+>This list shows the filenames of all overlayed datasets that
+						are currently loaded and therefore displayed, too. Whenever you
+						intend to do something with a dataset select it in this list. It is
+						possible to select several datasets at the same time.</P
+><P
+>Each filename has a colored bar prepended. This bar shows the
+						color of the dataset in the graph (with a light gray as the
+						default color). You can do a double click on a row to change this
+						color. Those graphs that are selected in the list will be drawn in
+						a darker variant of this color.</P
+></DD
+><DT
+><B
+CLASS="guibutton"
+>OK</B
+></DT
+><DD
+><P
+>Closes the Overlay Window. Otherwise nothing special
+						happens.</P
+></DD
+><DT
+><B
+CLASS="guibutton"
+>Add</B
+></DT
+><DD
+><P
+>Adds a new dataset to the list of overlayed graphs. Pressing
+						this button will open a file selector dialog where you can select
+						one or several datasets to be loaded. The overlayed datasets do
+						<I
+CLASS="emphasis"
+>not</I
+> need to have the same frequency points as
+						the main dataset.</P
+><P
+>You can add a time domain spectrum (see <A
+HREF="#gwf-datafile-format"
+>Section 4.1.1</A
+> for a description of the required
+						file format) as an overlay, too. <TT
+CLASS="application"
+>GWignerFit</TT
+> will convert it into the
+						frequency domain before adding it.</P
+></DD
+><DT
+><B
+CLASS="guibutton"
+>Remove</B
+></DT
+><DD
+><P
+>For <B
+CLASS="guibutton"
+>Remove</B
+> to work, you will first have
+						to select those overlays in the overlay list that you want to
+						remove from the graph. After pressing the
+						<B
+CLASS="guibutton"
+>Remove</B
+> button the selected datasets will be
+						removed. The files will not be removed physically, they are just
+						removed from the memory of <TT
+CLASS="application"
+>GWignerFit</TT
+>.</P
+></DD
+><DT
+><B
+CLASS="guibutton"
+>Activate</B
+></DT
+><DD
+><P
+>With <B
+CLASS="guibutton"
+>Activate</B
+> you can exchange the
+						current main dataset with an overlayed graph. To do this you have
+						to select the overlay filename from the overlay list (select
+						exactly one filename) and click the <B
+CLASS="guibutton"
+>Activate</B
+>
+						button. The selected overlay graph will become the new main
+						dataset. The former main dataset will replace the former overlay
+						dataset in the overlay list.</P
+></DD
+></DL
+></DIV
+><P
+>Though this feature calls itself "overlay", those graphs actually
+			appear below all other graphs. The default is that all overlays are
+			displayed in a light gray color, however, all overlays that are
+			currently selected in the overlay list are shown in a darker shade of
+			gray. This way you can more easily distinguish several overlays if
+			several datasets are overlayed. To change the color of a graph you can
+			open a color selection dialog with a double click on filename in the
+			list.</P
+><P
+>Everything that has been said about overlays in the main graph
+			view area applies to the Fourier Transform window (see
+			<A
+HREF="#gwignerfit-fft"
+>Section 8</A
+>) as well.</P
+></DIV
+><DIV
+CLASS="sect2"
+><HR><H3
+CLASS="sect2"
+><A
+NAME="gwf-graph-view-area"
+>4.4. The Graph view area</A
+></H3
+><P
+>To an unfamiliar user <TT
+CLASS="application"
+>GWignerFit</TT
+>'s graph view area may seem a bit
+			confusing at first glance but once you have learned what the different
+			lines are for, it should be quite easy to understand.</P
+><DIV
+CLASS="figure"
+><A
+NAME="res-graph-view"
+></A
+><DIV
+CLASS="mediaobject"
+><P
+><IMG
+SRC="figures/gwf_action.png"></P
+></DIV
+><P
+><B
+>Figure 3. <TT
+CLASS="application"
+>GWignerFit</TT
+> with several datasets</B
+></P
+></DIV
+><P
+>The meaning of the different lines in <A
+HREF="#res-graph-view"
+>Figure 3</A
+>:
+		</P
+><P
+></P
+><UL
+><LI
+><P
+>Black: The coordinate axes are in black. The abscissa shows the
+					frequency in GHz, the ordinate is in this screenshot the squared
+					transmission in dB.</P
+></LI
+><LI
+><P
+>Red: The main dataset graph is in red.</P
+></LI
+><LI
+><P
+>Blue: The theory graph, if enabled (see <B
+CLASS="guimenuitem"
+>View
+					theory</B
+> in <A
+HREF="#gwf-view-menu"
+>Section 3.4</A
+>), is colored
+					blue.</P
+></LI
+><LI
+><P
+>Grey: Grey is the color for all overlayed graphs. You can see in
+					the screenshot that there are two gray graphs which translate into
+					two additional overlayed datasets.</P
+></LI
+><LI
+><P
+>Orange: The two vertical orange lines mark the boundaries of the
+					frequency window. They correspond to the Min and Max values in the
+					global parameter area.</P
+></LI
+><LI
+><P
+>Green: As you can see in the resonance list there is one resonance
+					currently selected (it has a blue background). A selected resonance
+					is marked with a green bar in the graph view. The shade of green
+					represents the strength of a single Wigner resonance with a width of
+					the same value as the selected resonance. In short: The green bar
+					visualizes the position and width of the currently selected
+					resonance.</P
+></LI
+></UL
+><DIV
+CLASS="sect3"
+><HR><H4
+CLASS="sect3"
+><A
+NAME="gwf-navigate"
+>4.4.1. Navigating the Graph view</A
+></H4
+><P
+>You have got several options how to influence the part of the graph
+				that should be shown. You can zoom both axes independently and move the
+				whole viewport around. For nearly all operations a mouse is needed. For
+				optimal handling a three-button mouse with a scroll-wheel is
+				recommended. Working with a two or three button mouse is possible,
+				too, but it is not very comfortable this way.
+			</P
+><P
+>Changing the view with the mouse:</P
+><P
+></P
+><DIV
+CLASS="variablelist"
+><DL
+><DT
+>Zoom</DT
+><DD
+><P
+>You can zoom into and out of the graph using the scroll-wheel
+							of your mouse. To zoom around a certain point position the mouse
+							crosshairs on this point and zoom using the wheel. Scrolling up
+							translates into zooming into the graph whereas scrolling down
+							does the opposite. Zooming this way will only affect the frequency
+							axis, the ordinate will be scaled automatically. The frequency
+							marked by the mouse crosshairs will always stay at the same
+							position on the screen. Holding <B
+CLASS="keycap"
+>Ctrl</B
+> while
+							scrolling will zoom the ordinate without changing the frequency
+							axis. If you want to zoom the abscissa (that is the frequency
+							axis) without affecting the ordinate scaling press
+							<B
+CLASS="keycap"
+>Shift</B
+> while using the scroll-wheel. You can also
+							use <B
+CLASS="keycap"
+>Shift-Lock</B
+> if you do not want to keep
+							<B
+CLASS="keycap"
+>Shift</B
+> pressed all the time.
+						</P
+><P
+>&#13;							If you cannot use a scroll-wheel you can zoom in using
+							<B
+CLASS="keycap"
+>Shift</B
+> + right mouse button and zoom out using
+							<B
+CLASS="keycap"
+>Ctrl</B
+> + right mouse button. You will not be able
+							to zoom the ordinate this way though.
+						</P
+><P
+>&#13;							All graphs represent discrete datapoints. The lines you can see
+							do just connect those points by straight lines, they should
+							"guide the eye". Once you have zoomed so much into the graph that
+							the distance between two adjacent datapoints is more than 20
+							pixel, <TT
+CLASS="application"
+>GWignerFit</TT
+> marks the positions of the actual datapoints by short
+							vertical lines. If you do not like this behavior see <A
+HREF="#gwignerfit-custom"
+>Section 11</A
+> on how to disable those datapoint
+							markers.
+						</P
+></DD
+><DT
+>Jumping around</DT
+><DD
+><P
+>Pressing the middle mouse button will center the graph on the
+							frequency that is currently marked by the mouse crosshairs.
+						</P
+></DD
+><DT
+>Zoom to frequency window</DT
+><DD
+><P
+>To adjust the view in such a way that the whole graph inside
+							the current frequency window (determined by the global Min and Max
+							parameters) fits nicely onto the screen use
+							<B
+CLASS="guimenu"
+>View</B
+>-&gt;<B
+CLASS="guimenuitem"
+>Zoom selection</B
+>
+							or the corresponding keyboard shortcut <B
+CLASS="keycap"
+>S</B
+>.
+						</P
+></DD
+><DT
+>View complete graph</DT
+><DD
+><P
+>Pressing <B
+CLASS="keycap"
+>Ctrl</B
+> + middle mouse button will
+							adjust the view so that the whole graph will be visible.
+						</P
+></DD
+></DL
+></DIV
+><P
+>One final feature of the graph view area, though it has nothing to
+				do with changing the viewport, should be mentioned here: You can click
+				with the left mouse button anywhere on the graph to mark the position
+				with a small cross. Beside the mark the coordinates of this point will
+				be printed in a (x,y) like style. This is really useful if you want to
+				get a better reading on some special positions on the graph. The mark
+				is not permanent, it will be cleared the next time the graph is being
+				redrawn.</P
+></DIV
+></DIV
+><DIV
+CLASS="sect2"
+><HR><H3
+CLASS="sect2"
+><A
+NAME="gwf-export"
+>4.5. Export your Data</A
+></H3
+><P
+>Aside from saving your work as gwf files you can export only certain
+			information, too. <TT
+CLASS="application"
+>GWignerFit</TT
+> allows you to export selected parameters of your
+			resonances in a tabular fashion, a dataset of the theoretical graph can
+			be created and the current view of the graph view area can be saved as
+			a postscript file.</P
+><P
+>You can find the different export methods as a submenu of the
+			<B
+CLASS="guimenu"
+>File</B
+>-&gt;<B
+CLASS="guimenuitem"
+>Export</B
+>
+			menu. The three possible actions are:</P
+><P
+></P
+><DIV
+CLASS="variablelist"
+><DL
+><DT
+><B
+CLASS="guimenuitem"
+>Resonance data...</B
+></DT
+><DD
+><P
+>If you want to export a certain parameter of all resonances,
+						i.e. the widths of all resonances, you can use this function.
+						The calculated standard deviations of the resonance parameters can
+						be displayed, too (see <A
+HREF="#gwf-fit-err"
+>Section 6.7</A
+>). <TT
+CLASS="application"
+>GWignerFit</TT
+> will
+						open a window with a textview where the exported parameters are
+						shown. Below this textview you can select what parameters are to be
+						exported. You are free to select several parameters, i.e. frequency
+						and width. The last checkbox enables the display of error the error
+						estimates.</P
+><P
+>The textview will then display for each resonance a line which
+						contains the selected parameters. If you have selected
+						<TT
+CLASS="guilabel"
+><B
+>Add error estimates for each included
+						parameter</B
+></TT
+> the errors for each parameter will be
+						displayed in a column directly behind the parameter itself. The
+						order of the list is determined by the current order of the
+						resonance list of the main window. You can select the data now to
+						copy and paste it into an application of your choice or you can use
+						the <B
+CLASS="guibutton"
+>Save</B
+> button to save the content of the
+						textview as plain text into a file of your choice.</P
+></DD
+><DT
+><B
+CLASS="guimenuitem"
+>Theory Graph data...</B
+></DT
+><DD
+><P
+>This will open a file selection dialog asking you for the
+						filename of the dataset that is to be exported. <TT
+CLASS="application"
+>GWignerFit</TT
+> will write
+						into this file the dataset of the complex theoretical graph. The
+						format of this file is the same as for any other dataset that <TT
+CLASS="application"
+>GWignerFit</TT
+>
+						understands.</P
+></DD
+><DT
+><A
+NAME="gwf-export-ps"
+></A
+><B
+CLASS="guimenuitem"
+>Graph as postscript...</B
+></DT
+><DD
+><P
+>For documentation purposes it is sometimes very useful to take
+						some kind of screenshot of a particular graph. This option allows
+						you to save the currently visible graph as a postscript file.</P
+><P
+>The export function depends on the open source program
+						<TT
+CLASS="application"
+>gnuplot</TT
+> and thus only works if it is
+						installed on your system in a location mentioned in your
+						<CODE
+CLASS="envar"
+>PATH</CODE
+> environment variable.</P
+><DIV
+CLASS="figure"
+><A
+NAME="export-ps"
+></A
+><DIV
+CLASS="mediaobject"
+><P
+><IMG
+SRC="figures/gwf_export_ps.png"></P
+></DIV
+><P
+><B
+>Figure 4. Export graph to postscript window</B
+></P
+></DIV
+><P
+>The "Export graph to postscript" window contains the following
+						elements (see <A
+HREF="#export-ps"
+>Figure 4</A
+>):</P
+><P
+></P
+><UL
+><LI
+><P
+><TT
+CLASS="guilabel"
+><B
+>Path</B
+></TT
+> and <TT
+CLASS="guilabel"
+><B
+>Filename</B
+></TT
+>:
+								This gives the filename of the postscript file to be created
+								divided into its path and the filename itself. You can use the
+								<B
+CLASS="guibutton"
+>Select</B
+> button to bring up a file
+								selector dialog to select a filename.
+							</P
+></LI
+><LI
+><P
+><TT
+CLASS="guilabel"
+><B
+>Title</B
+></TT
+>:
+								The title string will be displayed above the graph. Leave it
+								empty if you do not want a title to be shown.
+							</P
+></LI
+><LI
+><P
+><TT
+CLASS="guilabel"
+><B
+>Footer</B
+></TT
+>:
+								The footer will be included in a smaller font at the lower
+								right of the graph. As you can see <TT
+CLASS="application"
+>GWignerFit</TT
+> will show the name of
+								the datafile here by default but you are free to enter an
+								arbitrary string here, too. If you don't want to have a footer
+								delete any text in the footer textentry.
+							</P
+></LI
+><LI
+><P
+><TT
+CLASS="guilabel"
+><B
+>Include theory graph</B
+></TT
+>:
+								The blue theory graph will only be included in the postscript
+								if this checkbox is checked.
+							</P
+></LI
+><LI
+><P
+><TT
+CLASS="guilabel"
+><B
+>Include overlay graphs</B
+></TT
+>:
+								Overlayed graphs will only be included in the postscript if
+								this checkbox is checked.
+							</P
+></LI
+><LI
+><P
+><TT
+CLASS="guilabel"
+><B
+>Create legend at</B
+></TT
+>:
+								It is optional to include a legend in the postscript. The
+								legend will mark the graphs as "data", "theory" and "overlay".
+								To prevent the legend box from obscuring the graph you can
+								either position it at the <TT
+CLASS="guilabel"
+><B
+>top</B
+></TT
+> right or at
+								the <TT
+CLASS="guilabel"
+><B
+>bottom</B
+></TT
+> right of the graph.
+							</P
+></LI
+></UL
+></DD
+></DL
+></DIV
+></DIV
+><DIV
+CLASS="sect2"
+><HR><H3
+CLASS="sect2"
+><A
+NAME="gwf-dnd"
+>4.6. Drag and drop support</A
+></H3
+><P
+><TT
+CLASS="application"
+>GWignerFit</TT
+> supports drag and drop to import datafiles. This functionality
+			is restricted to applications that support the Gtk way of drag and drop,
+			that is all other Gtk and Gnome applications. QT applications which are
+			common to KDE programs use another protocol for drag and drop and are
+			therefore incompatible.</P
+><P
+>To import a datafile into <TT
+CLASS="application"
+>GWignerFit</TT
+> just drag and drop it on its main
+			application window. If no main dataset is loaded the file will be
+			imported as a new main dataset. Otherwise it will be added as an
+			overlayed dataset.</P
+></DIV
+></DIV
+><DIV
+CLASS="sect1"
+><HR><H2
+CLASS="sect1"
+><A
+NAME="gwignerfit-save-work"
+>5. Load and Save your Work</A
+></H2
+><P
+>This section explains the concept of saved <TT
+CLASS="application"
+>GWignerFit</TT
+> sessions, how the
+		files are structured and how to actually save and load them.</P
+><P
+>The preferred extension for all <TT
+CLASS="application"
+>GWignerFit</TT
+> session files is
+		<TT
+CLASS="filename"
+>.gwf</TT
+> which is short for <TT
+CLASS="application"
+>GWignerFit</TT
+>. Though you are free to
+		choose any filenames you wish it is recommended to stick to this
+		convention. This manual assumes that saved sessions have the extension
+		<TT
+CLASS="filename"
+>.gwf</TT
+> and will refer to them as "gwf files".</P
+><DIV
+CLASS="sect2"
+><HR><H3
+CLASS="sect2"
+><A
+NAME="gwf-files"
+>5.1. Structure of gwf files</A
+></H3
+><P
+><TT
+CLASS="application"
+>GWignerFit</TT
+> session files are simple plain text files that are processed in
+			a line oriented manner. A gwf file can store the state of several
+			sessions. This is done by introducing <I
+CLASS="emphasis"
+>sections</I
+>. Each
+			file can contain several sections where each section is an independent
+			entity representing a saved <TT
+CLASS="application"
+>GWignerFit</TT
+> session.</P
+><P
+>Each section has an unique <I
+CLASS="emphasis"
+>label</I
+> by which the
+			section is identified by <TT
+CLASS="application"
+>GWignerFit</TT
+> and presented to you as the user. A label
+			may be any string (without line breaks). It is recommended that you give
+			the label a meaningful name as it represents some part of your
+			work.</P
+><P
+>The typical structure of a gwf file could look like this:</P
+><P
+></P
+><UL
+><LI
+><P
+>filename: <TT
+CLASS="filename"
+>cavity_1.gwf</TT
+></P
+></LI
+><LI
+><P
+>sections:</P
+><P
+></P
+><UL
+><LI
+><P
+>1-4 GHz</P
+></LI
+><LI
+><P
+>4-8 GHz</P
+></LI
+><LI
+><P
+>full spectrum</P
+></LI
+><LI
+><P
+>test (strange resonances)</P
+></LI
+></UL
+></LI
+></UL
+></DIV
+><DIV
+CLASS="sect2"
+><HR><H3
+CLASS="sect2"
+><A
+NAME="gwf-save"
+>5.2. Save a Session</A
+></H3
+><P
+>To save a session select
+			<B
+CLASS="guimenu"
+>File</B
+>-&gt;<B
+CLASS="guimenuitem"
+>Save as...</B
+>
+			from the menubar. A dialog will ask you for the label of the section.
+			Enter the name and select <B
+CLASS="guibutton"
+>OK</B
+>. You will now see a
+			file selector dialog where you can enter the filename of the gwf file.
+			If no filename has been given to this session yet, <TT
+CLASS="application"
+>GWignerFit</TT
+> will propose one
+			by replacing the extension of the datafile by <TT
+CLASS="filename"
+>gwf</TT
+>.
+			Press <B
+CLASS="guibutton"
+>OK</B
+> to continue. Pressing
+			<B
+CLASS="guibutton"
+>Cancel</B
+> in any of the two last windows will abort
+			the entire save process, no changes are being made to any files.</P
+><P
+>Depending on the filename you selected there are three possible ways
+			how <TT
+CLASS="application"
+>GWignerFit</TT
+> will continue:</P
+><P
+></P
+><UL
+><LI
+><P
+>The file does not exist. &#8212;
+					A new file is created with the appropriate section.</P
+></LI
+><LI
+><P
+>The file exists but no section with the given label. &#8212;
+					You will be asked whether <TT
+CLASS="application"
+>GWignerFit</TT
+> should append a new section to the
+					file or whether the operation should be aborted. The confirmation
+					dialog can be disabled through the preferences, see
+					<A
+HREF="#gwignerfit-custom"
+>Section 11</A
+>.</P
+></LI
+><LI
+><P
+>The file exists and the section exists as well. &#8212;
+					You will be asked whether <TT
+CLASS="application"
+>GWignerFit</TT
+> should overwrite the section of the
+					file or whether the operation should be aborted. <TT
+CLASS="application"
+>GWignerFit</TT
+> will only
+					change the relevant section. The rest of the file will stay
+					unaffected.</P
+></LI
+></UL
+><P
+>Once you have done the steps above it is sufficient to use
+		<B
+CLASS="guimenu"
+>File</B
+>-&gt;<B
+CLASS="guimenuitem"
+>Save</B
+>
+		or
+		<B
+CLASS="keycap"
+>Ctrl</B
+>-<B
+CLASS="keycap"
+>S</B
+>
+		for a quick save with the same file and section names.</P
+></DIV
+><DIV
+CLASS="sect2"
+><HR><H3
+CLASS="sect2"
+><A
+NAME="gwf-load"
+>5.3. Load a Session</A
+></H3
+><P
+>Loading a file is the reversed counterpart to saving it. Choose
+			<B
+CLASS="guimenu"
+>File</B
+>-&gt;<B
+CLASS="guimenuitem"
+>Load...</B
+>
+			from the menubar or press
+			<B
+CLASS="keycap"
+>Ctrl</B
+>-<B
+CLASS="keycap"
+>O</B
+>
+			and select the filename in the file selector. <TT
+CLASS="application"
+>GWignerFit</TT
+> will now scan the
+			file for available sections. It then displays a small dialog where you
+			can select the label of the section to be loaded.</P
+></DIV
+><DIV
+CLASS="sect2"
+><HR><H3
+CLASS="sect2"
+><A
+NAME="gwf-backup"
+>5.4. Backup Files</A
+></H3
+><P
+>Each time you start a fit <TT
+CLASS="application"
+>GWignerFit</TT
+> will try to make a backup of your
+			current parameter set. A new file will be created with the name of your
+			normal session file and an appended tilde ("~") character. In this file a
+			section with the label of your current session will be created where the
+			current state of <TT
+CLASS="application"
+>GWignerFit</TT
+> will be saved. The backup file will be deleted if
+			<TT
+CLASS="application"
+>GWignerFit</TT
+> is closed properly or a new gwf file is opened.</P
+><P
+>Please note: The backup function will only work
+			<I
+CLASS="emphasis"
+>after</I
+> you have created a gwf file by yourself.
+			Otherwise <TT
+CLASS="application"
+>GWignerFit</TT
+> cannot know where and under which name it should create a
+			backup file.</P
+><P
+>Should you now have the need for a disaster recovery you can load the
+			backup file as a normal <TT
+CLASS="application"
+>GWignerFit</TT
+> gwf file and continue your work. The first
+			thing you should do now is to save your work again with the correct
+			filename.</P
+></DIV
+></DIV
+><DIV
+CLASS="sect1"
+><HR><H2
+CLASS="sect1"
+><A
+NAME="gwignerfit-work-spectrum"
+>6. Work on the Spectrum</A
+></H2
+><P
+>This section will introduce the mathematics behind <TT
+CLASS="application"
+>GWignerFit</TT
+>, teach you how
+		to add resonances to your theory and how to fit them effectively. However,
+		nothing replaces personal experience.  You should just work with <TT
+CLASS="application"
+>GWignerFit</TT
+> to
+		find out what works best for you.</P
+><DIV
+CLASS="sect2"
+><HR><H3
+CLASS="sect2"
+><A
+NAME="gwf-theory"
+>6.1. A Primer on Theory</A
+></H3
+><P
+>In order to use <TT
+CLASS="application"
+>GWignerFit</TT
+> effectively you should understand the model on
+			which the theory is based and the meanings of the resulting parameters
+			that need to be fitted. This section will try to explain the basic ideas.
+		</P
+><P
+>You can interpret experiments with microwave resonators as scattering
+			experiments: Energy is fed into the resonator through an input channel
+			where it is subject to some complex interaction mechanism and eventually
+			exits through a second antenna, the output channel. The transition
+			amplitude between input channel <I
+CLASS="emphasis"
+>b</I
+> and
+			output channel <I
+CLASS="emphasis"
+>a</I
+> can be written as
+		</P
+><DIV
+CLASS="informalequation"
+><P
+></P
+><A
+NAME="AEN807"
+></A
+><IMG
+SRC="figures/eqn_scatter.png"><P
+></P
+></DIV
+><P
+>&#13;			where the sum is taken over all resonances <I
+CLASS="emphasis"
+>&#956;</I
+> of the system and <I
+CLASS="emphasis"
+>V</I
+> is the interaction which couples the
+			wavefunctions in the scattering channels to the scattering system itself
+			(that is the resonator). The energies of the resonances are denoted by
+			<IMG
+SRC="figures/eqn_mathcalE.png">.
+		</P
+><P
+>Adjusting the above equation to the experimental reality one arrives
+			at a slightly different expression:
+		</P
+><DIV
+CLASS="equation"
+><A
+NAME="eqn-main"
+></A
+><P
+><B
+>Equation 1. The main equation of <TT
+CLASS="application"
+>GWignerFit</TT
+></B
+></P
+><IMG
+SRC="figures/eqn_main.png"></DIV
+><P
+>&#13;			Please note <I
+CLASS="emphasis"
+>the minus sign</I
+> in front of the
+			i<I
+CLASS="emphasis"
+>&#915;<SUB
+>&#956;</SUB
+></I
+>/2
+			expression. This should normally be a plus sign. However, it turned out
+			that spectra measured with a HP8510 VNA cannot be described by <A
+HREF="#eqn-main"
+>Equation 1</A
+> unless there is a negative sign in front of the
+			width expression. It seems that the VNA uses a different sign convention
+			to express phase differences than the "normal" scattering formalism.
+			Additionally there is a <I
+CLASS="emphasis"
+>plus sign</I
+> in front of the
+			sum over all resonance terms. This should normally be a minus sign but is
+			chosen to be this way here so that reflection amplitudes have phases
+			<I
+CLASS="emphasis"
+>&#981;<SUB
+>&#956;</SUB
+></I
+>
+			around zero. Without this plus sign they would all be around 180 degree
+			due to the minus sign in the denominator that has been explained above.
+		</P
+><P
+><A
+HREF="#eqn-main"
+>Equation 1</A
+> describes essentially the same thing as
+			the raw scattering formula but adopts the typical parameters of an
+			experiment and allows for unavoidable, additional contributions to the
+			S-parameter. The S-parameter is a function of the stimulus frequency
+			<I
+CLASS="emphasis"
+>&#957;</I
+>. The formula features three
+			global parameters (<I
+CLASS="emphasis"
+>s, &#945;, &#964;</I
+>),
+			four parameters per resonance <I
+CLASS="emphasis"
+>&#956;</I
+>
+			(<I
+CLASS="emphasis"
+>&#957;<SUB
+>&#956;</SUB
+>,
+			&#915;<SUB
+>&#956;</SUB
+>, A<SUB
+>&#956;</SUB
+>,
+			&#981;<SUB
+>&#956;</SUB
+></I
+>) and a further factor
+			<I
+CLASS="emphasis"
+>f(&#957;)</I
+>. The global parameters are
+			described in <A
+HREF="#gwf-global-param"
+>Section 6.2.1</A
+> while <A
+HREF="#gwf-resonance-param"
+>Section 6.2.2</A
+> deals with the resonance parameters. The
+			factor <I
+CLASS="emphasis"
+>f(&#957;)</I
+> is a complex function
+			of the frequency and takes periodic transmission modulations into
+			account, it is normally equal to unity and its absolute value does not
+			exceed one. A more detailed description of <I
+CLASS="emphasis"
+>f(&#957;)
+			</I
+> is given in <A
+HREF="#gwf-fcomp"
+>Section 6.6</A
+>.
+		</P
+></DIV
+><DIV
+CLASS="sect2"
+><HR><H3
+CLASS="sect2"
+><A
+NAME="gwf-res-list"
+>6.2. The Resonance list</A
+></H3
+><P
+>The first thing you need to know, is how the parameter area of the
+			main application window works. Typically it may look like
+			<A
+HREF="#res-list-fig"
+>Figure 5</A
+>.</P
+><DIV
+CLASS="figure"
+><A
+NAME="res-list-fig"
+></A
+><DIV
+CLASS="mediaobject"
+><P
+><IMG
+SRC="figures/gwf_resonance_list.png"></P
+></DIV
+><P
+><B
+>Figure 5. The resonance list and global parameters</B
+></P
+></DIV
+><DIV
+CLASS="sect3"
+><HR><H4
+CLASS="sect3"
+><A
+NAME="gwf-global-param"
+>6.2.1. The Global parameters area</A
+></H4
+><P
+>The entries of the global parameters area are (cf. <A
+HREF="#eqn-main"
+>Equation 1 in Section 6.1</A
+>):</P
+><P
+></P
+><UL
+><LI
+><P
+><TT
+CLASS="guilabel"
+><B
+>Phase</B
+></TT
+> <I
+CLASS="emphasis"
+>&#945;</I
+>:
+						The global phase of the spectrum in degree. For transmission data
+						this value is kind of arbitrary since it can be absorbed into the
+						phase values of each resonance.</P
+></LI
+><LI
+><P
+><TT
+CLASS="guilabel"
+><B
+>Scale</B
+></TT
+> <I
+CLASS="emphasis"
+>s</I
+>:
+						The whole theory graph is multiplied by this scaling factor. As you
+						can see, it is inactive for transmissions datasets.</P
+></LI
+><LI
+><P
+><TT
+CLASS="guilabel"
+><B
+>Tau [ns]</B
+></TT
+> <I
+CLASS="emphasis"
+>&#964;</I
+>:
+						This parameter adds a phase to the theory that increases linear in
+						frequency. It may be interpreted as the time (hence its units in
+						nanoseconds) the signal travels in the connecting cables. This
+						effect is very important for uncalibrated transmission
+						measurements. It can, however, be useful for (calibrated)
+						reflection measurements, too.</P
+></LI
+><LI
+><P
+><TT
+CLASS="guilabel"
+><B
+>Min [GHz]</B
+></TT
+>: The lower frequency boundary for
+						the frequency window in GHz.</P
+></LI
+><LI
+><P
+><TT
+CLASS="guilabel"
+><B
+>Max [GHz]</B
+></TT
+>: The upper frequency boundary for
+						the frequency window in GHz.</P
+></LI
+></UL
+><P
+>Each value can be changed by yourself easily. Just change the value
+				of the corresponding entry-box by overwriting it with a new one. Press
+				<B
+CLASS="keycap"
+>Enter</B
+> to accept the changes.</P
+></DIV
+><DIV
+CLASS="sect3"
+><HR><H4
+CLASS="sect3"
+><A
+NAME="gwf-resonance-param"
+>6.2.2. The Resonance data area:</A
+></H4
+><P
+>This part of the main window shows a list of all resonances that
+				the theory takes into account. Each resonance is defined by four
+				parameters: its resonance frequency <I
+CLASS="emphasis"
+>A<SUB
+>&#956;</SUB
+></I
+>, the FWHM width
+				<I
+CLASS="emphasis"
+>&#915;<SUB
+>&#956;</SUB
+></I
+>,
+				the amplitude <I
+CLASS="emphasis"
+>A<SUB
+>&#956;</SUB
+>
+				</I
+> and a phase factor <I
+CLASS="emphasis"
+>&#981;</I
+>. The last column of the list shows the
+				quality value for the resonance obtained by dividing the resonance
+				frequency through its width.</P
+><P
+>You can click on one of the parameter column headers to sort the
+				list by the entries of this column.</P
+><P
+>The values of the parameters in the list can be changed in a rather
+				direct way as well. First, select the resonance whose parameter you
+				want to change. Then click once with the left mouse button on the value
+				you want to modify and the appropriate cell will change into an entry
+				field. You can now enter a new value. Press <B
+CLASS="keycap"
+>Enter</B
+> to
+				accept the changes or <B
+CLASS="keycap"
+>Esc</B
+> to discard your
+				changes.</P
+></DIV
+><DIV
+CLASS="sect3"
+><HR><H4
+CLASS="sect3"
+><A
+NAME="gwf-checkboxes"
+>6.2.3. Checkboxes behind parameters</A
+></H4
+><P
+>Behind each global and checkbox parameter you will find a checkbox.
+				This checkbox is very important for the fitting procedure. All
+				parameters whose checkboxes are checked are free parameters to be
+				optimized by the fitting algorithm. Those parameters with an unchecked
+				box are considered static and will not be changed. This way you have
+				got a high degree of control on the fitting process which is very
+				important if you want to get good results. To change the state of a
+				checkbox just click on it with the left mouse button.</P
+><P
+>The checkboxes of the resonance list can be toggled by clicking on
+				the header above a column of resonances. This will cause all resonances
+				outside the frequency window to be unchecked. The checkboxes of the
+				resonances within will either all be checked or all be unchecked
+				depending on whether there are currently more than half of them checked
+				or unchecked. <TT
+CLASS="application"
+>GWignerFit</TT
+> will thus try to check or uncheck them the way that
+				would have been the most work for you if you would have done it by
+				hand. This may sound complicated now but it is really rather simple.
+				Just give it a try and see for yourself.</P
+><P
+>You can make a double click on a resonance row, too. This will have
+				the same effect on this row that a click on the header of a column
+				has for this column. This way one can quickly check or uncheck all
+				resonance parameters of one row.</P
+></DIV
+><DIV
+CLASS="sect3"
+><HR><H4
+CLASS="sect3"
+><A
+NAME="gwf-res-popup"
+>6.2.4. The Resonance data popup menu</A
+></H4
+><P
+>If you click with the right mouse button somewhere on the resonance
+				list area a popup menu (<A
+HREF="#res-list-popup"
+>Figure 6</A
+>) will appear
+				allowing further manipulation of the resonance list.</P
+><DIV
+CLASS="figure"
+><A
+NAME="res-list-popup"
+></A
+><DIV
+CLASS="mediaobject"
+><P
+><IMG
+SRC="figures/gwf_popup.png"></P
+></DIV
+><P
+><B
+>Figure 6. The Resonance list popup menu</B
+></P
+></DIV
+><P
+>The popup menu allows you to perform the following
+				operations:</P
+><P
+></P
+><DIV
+CLASS="variablelist"
+><DL
+><DT
+><B
+CLASS="guimenuitem"
+>Check all</B
+></DT
+><DD
+><P
+>Activates all checkboxes (all boxes are checked) of the
+							resonance list. Thus all parameters are now considered "free" by
+							the fitting algorithm.</P
+></DD
+><DT
+><B
+CLASS="guimenuitem"
+>Uncheck all</B
+></DT
+><DD
+><P
+>Deactivates all checkboxes (all boxes are cleared) of the
+							resonance list. Not a single resonance parameter would be changed
+							in the next fitting procedure.</P
+></DD
+><DT
+><B
+CLASS="guimenuitem"
+>Fit selected resonances</B
+></DT
+><DD
+><P
+>This is some kind of a shortcut if you only want to optimize
+							the parameters of the currently selected resonances but don't want
+							to uncheck the checkboxes of all other resonance parameters.
+							Choosing this item will start a fitting process that considers
+							only those parameters to be free that are a) of the currently
+							selected resonances and b) whose checkboxes are checked. No global
+							parameters will be changed during the fit.</P
+></DD
+><DT
+><B
+CLASS="guimenuitem"
+>Remove resonances</B
+></DT
+><DD
+><P
+>Deletes the currently selected resonances from the resonance
+							list and thus from the theory graph. The shortcut
+							<B
+CLASS="keycap"
+>Delete</B
+> may come in handy for this. You will get
+							a confirmation dialog for this operation. To get rid of this
+							precaution see the preferences (<A
+HREF="#gwignerfit-custom"
+>Section 11</A
+>).
+						</P
+></DD
+><DT
+><B
+CLASS="guimenuitem"
+>Clear resonancelist</B
+></DT
+><DD
+><P
+>Clears the entire resonancelist, that is all resonances are
+							removed. As this is a rather drastic step a confirmation dialog
+							will ask you to confirm this operation.
+						</P
+></DD
+><DT
+><B
+CLASS="guimenuitem"
+>Add resonance by click</B
+></DT
+><DD
+><P
+>This is the same as selecting
+							<B
+CLASS="guimenu"
+>Spectrum</B
+>-&gt;<B
+CLASS="guimenuitem"
+>Add resonance by click</B
+>.
+						</P
+></DD
+><DT
+><B
+CLASS="guimenuitem"
+>Add empty resonance</B
+></DT
+><DD
+><P
+>This will add a resonance to the list whose parameters are
+							all set to zero. You can use this option if you want to add a
+							resonance whose parameter you already know. Just add an empty
+							resonance and adjust the parameters by hand as you wish.</P
+></DD
+></DL
+></DIV
+></DIV
+></DIV
+><DIV
+CLASS="sect2"
+><HR><H3
+CLASS="sect2"
+><A
+NAME="gwf-find-res"
+>6.3. Find and Add Resonances</A
+></H3
+><P
+>The first step to reproduce your spectrum by a good theoretical curve
+			is to add the resonances of the spectrum. You can either add resonances
+			by hand, which may be rather tedious for large spectra, or you can let
+			<TT
+CLASS="application"
+>GWignerFit</TT
+> try to find them for you, which is rather inaccurate as <TT
+CLASS="application"
+>GWignerFit</TT
+> is
+			very likely to miss some resonances. The best way is probably to first
+			use the resonance finder and to add the missed resonances by hand
+			afterward.</P
+><P
+>The automatic resonance finder can be accessed via
+			<B
+CLASS="guimenu"
+>Spectrum</B
+>-&gt;<B
+CLASS="guimenuitem"
+>Find isolated resonances</B
+>
+			or by its shortcut
+			<B
+CLASS="keycap"
+>Ctrl</B
+>-<B
+CLASS="keycap"
+>R</B
+>.
+			You will now have to select a threshold on the graph. <TT
+CLASS="application"
+>GWignerFit</TT
+> will then
+			consider everything as one resonance that comes from below the threshold,
+			rises above it and then goes below the threshold again. You can enhance
+			your results by applying the resonance finder several times with
+			different thresholds.</P
+><P
+>Do not wonder too much if the resonance finder aborts with the
+			message "Resonance finder stopped due to abnormal behavior". This part
+			of the code sometimes goes "berserk" and this message means that the
+			finder has been aborted in order to prevent infinite loops. Sorry for the
+			inconvenience.</P
+><P
+>You can now add the resonances still missing by hand. To add a new
+			resonance at a certain frequency choose
+			<B
+CLASS="guimenu"
+>Spectrum</B
+>-&gt;<B
+CLASS="guimenuitem"
+>Add resonance by click</B
+>
+			or by its shortcut
+			<B
+CLASS="keycap"
+>Ctrl</B
+>-<B
+CLASS="keycap"
+>A</B
+>
+			(which you should really consider to remember, as you will need this
+			function quite often). Then click on the graph at the frequency where a
+			new resonance should be added. <TT
+CLASS="application"
+>GWignerFit</TT
+> will now try to find some reasonable
+			initial values for this resonance.</P
+></DIV
+><DIV
+CLASS="sect2"
+><HR><H3
+CLASS="sect2"
+><A
+NAME="gwf-fit"
+>6.4. Fit!</A
+></H3
+><P
+>Before starting the actual fitting procedure here are some things you
+			should consider:</P
+><P
+></P
+><UL
+><LI
+><P
+>You should have added all relevant resonances in the frequency
+					area you want to fit, of course.</P
+></LI
+><LI
+><P
+>Adjust the frequency window around the interesting area that all
+					resonances fit nicely into it but do not choose it overly large as
+					additional resonances in the dataset within the frequency window can
+					"irritate" the algorithm. Furthermore using too big frequency windows
+					will increase the time required for the fit unnecessarily.</P
+></LI
+><LI
+><P
+>Think about what parameters are to be made free and which should
+					be kept fixed. The global parameters should only be fitted some times
+					at the beginning of your work. Especially after changing the
+					frequency window so that some of your already fitted theoretical
+					resonances are outside of it, it is recommended to uncheck the boxes
+					behind the global parameters. Changing the global parameters will
+					affect all resonances but the fit algorithm is only aware of those
+					inside the frequency window.</P
+><P
+>For the parameters of the resonance list a rule of thumb could
+					be: <I
+CLASS="emphasis"
+>Start from the right!</I
+> That means that in a
+					first run you should only make the phase a free parameter as a fit of
+					the width will go grossly wrong if the resonance has a wrong phase.
+					The next run should fit the phase and the amplitude. After this you
+					could check the widths, too. Finally a last run should fit all
+					parameters at once.</P
+><P
+>The scenario just described may give you good results in many
+					cases but there is just no general rule. Go and experiment yourself
+					and get a feeling of how things work.</P
+></LI
+></UL
+><P
+>OK, now it's time to rock! Let's fit!</P
+><P
+>To start the fitting procedure choose
+			<B
+CLASS="guimenu"
+>Spectrum</B
+>-&gt;<B
+CLASS="guimenuitem"
+>Fit spectrum</B
+>
+			or type the shortcut
+			<B
+CLASS="keycap"
+>Ctrl</B
+>-<B
+CLASS="keycap"
+>F</B
+>.
+			<TT
+CLASS="application"
+>GWignerFit</TT
+> will now fit the theory to the datapoints within your selected
+			frequency window by varying all parameters that you have selected to be
+			free.</P
+><P
+>During the fit you will see a status window (like the one shown in
+			<A
+HREF="#fit-win"
+>Figure 7</A
+>) which gives some information about the
+			current state of the fit.</P
+><DIV
+CLASS="figure"
+><A
+NAME="fit-win"
+></A
+><DIV
+CLASS="mediaobject"
+><P
+><IMG
+SRC="figures/gwf_fit.png"></P
+></DIV
+><P
+><B
+>Figure 7. The fit information window</B
+></P
+></DIV
+><P
+>The content of the fit information window:</P
+><P
+></P
+><DIV
+CLASS="variablelist"
+><DL
+><DT
+><TT
+CLASS="guilabel"
+><B
+>Frequency range</B
+></TT
+></DT
+><DD
+><P
+>Only datapoints of the main dataset whose frequencies are within
+						this frequency range are taken into account for this fit. The range
+						is identical to the frequency window you chose with the global Min
+						and Max parameters.
+					</P
+></DD
+><DT
+><TT
+CLASS="guilabel"
+><B
+>Number of datapoints</B
+></TT
+></DT
+><DD
+><P
+>The frequency range as given above translates into the number of
+						datapoints shown here. More points result in a longer computation.
+					</P
+></DD
+><DT
+><TT
+CLASS="guilabel"
+><B
+>Free parameters</B
+></TT
+></DT
+><DD
+><P
+>Every variable that <TT
+CLASS="application"
+>GWignerFit</TT
+> is allowed to change during a fit is a
+						free parameter. It is equal to the number of checked boxes in the
+						parameter area of the main window (an exception to this is if you
+						used <B
+CLASS="guimenuitem"
+>Fit selected resonance</B
+>).
+					</P
+></DD
+><DT
+><TT
+CLASS="guilabel"
+><B
+>Current rms error</B
+></TT
+></DT
+><DD
+><P
+>To give a measure of the quality of the fit, <TT
+CLASS="application"
+>GWignerFit</TT
+> calculates the
+						root mean square error after each iteration. It is the goal of the
+						fit to minimize this value.
+					</P
+></DD
+><DT
+><TT
+CLASS="guilabel"
+><B
+>Last iteration</B
+></TT
+></DT
+><DD
+><P
+> The fit algorithm of <TT
+CLASS="application"
+>GWignerFit</TT
+> uses the so called Marquard-Levenberg
+						algorithm. It is an iterative method that tries to find the minimum
+						of the rms error function. It implements varying step sizes in each
+						iteration. If <TT
+CLASS="guilabel"
+><B
+>Last iteration</B
+></TT
+> states "success"
+						the rms value could be reduced in the last iteration, otherwise
+						"failure" is displayed. If the iteration has been successful it is
+						accepted and the step size is reduced to allow for a finer search
+						grid. Has the iteration "failed" its results are discarded and the
+						step size is increased in order to look for a minimum that may be
+						farther away in the parameter space.
+					</P
+></DD
+><DT
+><TT
+CLASS="guilabel"
+><B
+>Progress bar</B
+></TT
+></DT
+><DD
+><P
+>It gives a visual representation of the progress of the fit. By
+						default <TT
+CLASS="application"
+>GWignerFit</TT
+> uses 50 iterations for each fit. The text in the
+						progress bar informs you on the number of the current iteration and
+						how many iterations <TT
+CLASS="application"
+>GWignerFit</TT
+> will try to calculate.
+					</P
+></DD
+><DT
+><B
+CLASS="guibutton"
+>Take current values</B
+></DT
+><DD
+><P
+>Should the fit take too long to complete or you just want to see
+						the results right now you can stop the fit with this button. <TT
+CLASS="application"
+>GWignerFit</TT
+>
+						will then take the parameter set of the last iteration as the new
+						dataset.
+					</P
+></DD
+><DT
+><B
+CLASS="guibutton"
+>Cancel</B
+></DT
+><DD
+><P
+>In case you really want to abort the fit without changing your
+						parameter set press this <B
+CLASS="guibutton"
+>Cancel</B
+> button. The
+						fit will be stopped at once and no changes to your parameters will be
+						made.
+					</P
+></DD
+></DL
+></DIV
+><P
+>One final note about fits: The author of <TT
+CLASS="application"
+>GWignerFit</TT
+> has to admit that <TT
+CLASS="application"
+>GWignerFit</TT
+>
+			is not without errors and bugs. This is especially apparent if you use the
+			fit function. If the program crashes during a fit do not despair but seek
+			help in the automatic backup function. For further information please read
+			<A
+HREF="#gwf-backup"
+>Section 5.4</A
+>.</P
+></DIV
+><DIV
+CLASS="sect2"
+><HR><H3
+CLASS="sect2"
+><A
+NAME="gwf-fit-check"
+>6.5. Check your Fit results</A
+></H3
+><P
+>After a fitting cycle has been successfully finished, that is either
+			the maximal number of iterations has been reached or <B
+CLASS="guibutton"
+>Take
+			current values</B
+> has been used <TT
+CLASS="application"
+>GWignerFit</TT
+> applies some rough sanity
+			checks on the new parameter set. Should a parameter be outside its
+			sensible range you will be asked about what should be done by a
+			dialog.</P
+><DIV
+CLASS="figure"
+><A
+NAME="check-res-win"
+></A
+><DIV
+CLASS="mediaobject"
+><P
+><IMG
+SRC="figures/gwf_check_res.png"></P
+></DIV
+><P
+><B
+>Figure 8. Inspect resonance parameter dialog</B
+></P
+></DIV
+><P
+>The content of the inspect resonance window (see
+			<A
+HREF="#check-res-win"
+>Figure 8</A
+>):</P
+><P
+></P
+><DIV
+CLASS="variablelist"
+><DL
+><DT
+>Parameters of resonance</DT
+><DD
+><P
+>The frequency, width, amplitude and phase of the resonance that
+						should be reviewed is shown. All values that <TT
+CLASS="application"
+>GWignerFit</TT
+> thinks are
+						unreasonable are marked in red.
+					</P
+></DD
+><DT
+><TT
+CLASS="guilabel"
+><B
+>Take old parameters for this resonance</B
+></TT
+></DT
+><DD
+><P
+>The parameters of this resonance will not be changed. Instead,
+						the four old parameters will still be used.
+					</P
+></DD
+><DT
+><TT
+CLASS="guilabel"
+><B
+>Use those parameters anyway</B
+></TT
+></DT
+><DD
+><P
+>If you think those parameters are OK, use this option. <TT
+CLASS="application"
+>GWignerFit</TT
+>
+						will then use those values anyway.
+					</P
+></DD
+><DT
+><TT
+CLASS="guilabel"
+><B
+>Skip entire fit, revert to old parameter set</B
+></TT
+></DT
+><DD
+><P
+>No parameters will be changed (not even any global parameters).
+						This is as if you would have aborted the whole fit before or as if
+						you would not have fitted anything in the first place.
+					</P
+></DD
+><DT
+><B
+CLASS="guibutton"
+>OK</B
+></DT
+><DD
+><P
+>You have selected one of the three options above and want to
+						execute it.
+					</P
+></DD
+></DL
+></DIV
+><P
+>To make it easier for you to decide what to do, the main window will
+			show you the corresponding resonance with its old parameters in the graph
+			view area and the resonance list.</P
+><P
+>If you are, after the whole fit procedure is finished, not satisfied
+			with the result of your fit you can still revert to the parameter set you
+			had before the fit via
+			<B
+CLASS="guimenu"
+>Spectrum</B
+>-&gt;<B
+CLASS="guimenuitem"
+>Undo last fit</B
+>
+			or by typing the corresponding shortcut
+			<B
+CLASS="keycap"
+>Ctrl</B
+>-<B
+CLASS="keycap"
+>Z</B
+>.
+		</P
+></DIV
+><DIV
+CLASS="sect2"
+><HR><H3
+CLASS="sect2"
+><A
+NAME="gwf-fcomp"
+>6.6. Handle Periodic Transmission Modulations</A
+></H3
+><P
+>Using the methods described in the last sections a very good
+			agreement between theory and data can normally be achieved. This may,
+			however, not be true if the data describes small cavities. The absolute
+			transmission is then likely to show the general resonance structure with
+			small periodic modulations (one may call them "ripples"). They correspond
+			to standing wave patterns that are a result of the cable lengths, the
+			antennae used for coupling to the cavity and impedance mismatches between
+			cavity and coaxial cable. Using bad cables may make things worse, too.
+			Having a look at the time domain would reveal those signal travel times
+			that contribute to those ripples. Those <I
+CLASS="emphasis"
+>Fourier
+			components</I
+> can then be taken into account as a factor with
+			additional complex exponential functions in the frequency domain. This is
+			the factor <I
+CLASS="emphasis"
+>f(&#957;)</I
+> in <A
+HREF="#eqn-main"
+>Equation 1 in Section 6.1</A
+>. It can be written as in <A
+HREF="#eqn-fcomp"
+>Equation 2</A
+>.
+		</P
+><DIV
+CLASS="equation"
+><A
+NAME="eqn-fcomp"
+></A
+><P
+><B
+>Equation 2. The equation for general Fourier components</B
+></P
+><IMG
+SRC="figures/eqn_fcomp.png"></DIV
+><P
+>&#13;			As you can see, <I
+CLASS="emphasis"
+>f(&#957;)</I
+> is just a
+			Fourier series expansion that should be suitable for a general
+			description of periodic fluctuations. The only constraint is given by the
+			denominator which guarantees 
+			|<I
+CLASS="emphasis"
+>f(&#957;)</I
+>|&#8804;1.
+		</P
+><DIV
+CLASS="figure"
+><A
+NAME="fcomp-win"
+></A
+><DIV
+CLASS="mediaobject"
+><P
+><IMG
+SRC="figures/gwf_fcomp.png"></P
+></DIV
+><P
+><B
+>Figure 9. Screenshot of what the "Fourier components" window could look like
+				in action.</B
+></P
+></DIV
+><P
+>In <TT
+CLASS="application"
+>GWignerFit</TT
+> the process of identifying the travel times and adding them
+			to the theory is done in a special window, the <TT
+CLASS="guilabel"
+><B
+>Fourier
+			components</B
+></TT
+> window. This window can be accessed with
+			<B
+CLASS="guimenu"
+>Analyze</B
+>-&gt;<B
+CLASS="guimenuitem"
+>Fourier components</B
+>.
+			You can see a screenshot in figure <A
+HREF="#fcomp-win"
+>Figure 9</A
+>. The
+			window is divided into two parts: <TT
+CLASS="guilabel"
+><B
+>Timedomain view of spectra
+			quotient</B
+></TT
+> and <TT
+CLASS="guilabel"
+><B
+>Current fourier components</B
+></TT
+>.
+		</P
+><P
+></P
+><DIV
+CLASS="variablelist"
+><DL
+><DT
+><TT
+CLASS="guilabel"
+><B
+>Timedomain view of spectra quotient</B
+></TT
+></DT
+><DD
+><P
+>This graph will help you to identify the required additional
+						Fourier components. The red graph displays the Fourier transform of
+						the quotient between the measured data and the theoretical graph of
+						all fitted Wigner resonances. If this theory is correct, the data
+						should be described perfectly and the resulting quotient should be
+						one. The Fourier transform of one is a very high peak at
+						t=0 sec. Any periodical deviations should result in a peak at
+						another time value. To suppress the expected peak at zero, <TT
+CLASS="application"
+>GWignerFit</TT
+>
+						does not calculate the Fourier transform of the raw quotient but of
+						<I
+CLASS="emphasis"
+>one minus</I
+> the quotient thus removing the
+						expectation value from the data basis. The Fourier transform is
+						only applied to the data between the global minimal and maximal
+						frequency window to allow for a more detailed analysis.
+					</P
+><P
+>The graph in the example screenshot (<A
+HREF="#fcomp-win"
+>Figure 9</A
+>) has at least three outstanding peaks: at 0, 26 and 32 sec.
+						The peak at 0 sec exists, as the average value has not exactly
+						been a real one, but rather something close to it. Therefore this
+						peak has only been suppressed, not removed. The two other peaks are
+						"real" periodic contributions. To add them to the new theory just
+						click on the graph at the appropriate time value, <TT
+CLASS="application"
+>GWignerFit</TT
+> will then
+						try to come up with reasonable initial parameters for this
+						contribution. Clicking anywhere will always add a new component, as
+						long as the checkbox <TT
+CLASS="guilabel"
+><B
+>Add new fourier components by click
+						on graph</B
+></TT
+> is activated. Otherwise it will just produce a
+						mark on the graph reading the coordinate values. The Fourier
+						transform of the sum of all Fourier components is displayed as the
+						blue graph.
+					</P
+></DD
+><DT
+><TT
+CLASS="guilabel"
+><B
+>Fourier components</B
+></TT
+></DT
+><DD
+><P
+>Each Fourier component consists of three parameters (see <A
+HREF="#eqn-fcomp"
+>Equation 2</A
+>): a time value, an amplitude and a phase
+						value. The time gives the position of the contribution in the above
+						graph and can be interpreted as a travel time of a signal between
+						the two network ports. Amplitude and phase value form a complex
+						prefactor to the exponential function and determine the strength of
+						the influence of the component. All those Fourier components build
+						a sum of exponential functions that are normalized in such a way
+						that its absolute value will for all frequencies always be
+						<I
+CLASS="emphasis"
+>smaller than 1</I
+>. This guarantees a physical
+						interpretation as a damping factor.
+					</P
+><P
+>All parameters have the well known checkboxes behind them. With
+						them you can once again select which parameters are to be included
+						in a fit run (click the column header to change all checkboxes of
+						the column at once). Those parameters are then optimized with the
+						"normal" Wigner resonance parameters during a standard fit run. It
+						is once again advisable to start with fitting the phase parameters
+						alone. If the Fourier components window is closed, all parameters
+						are considered to be <I
+CLASS="emphasis"
+>fixed</I
+> thus preventing
+						<TT
+CLASS="application"
+>GWignerFit</TT
+> to change parameters that you cannot see on the screen.
+					</P
+><P
+>&#13;						All that is left is to explain how to delete a Fourier component if
+						it is no longer needed. This is done by selecting the appropriate
+						row in the listview and pressing the <B
+CLASS="keycap"
+>Delete</B
+> key.
+					</P
+></DD
+></DL
+></DIV
+><P
+>Producing satisfying results with those Fourier components is not
+			easy and gets harder the larger the frequency range for the fit gets.
+			Fast oscillations correspond to large signal travel times. This is why
+			you should start with contributions from large times. The bigger your
+			frequency window gets, the more important are effects by long range
+			oscillations, that is short signal times, thus more of them need to be
+			included. As with the rest of this whole fitting business no manual can
+			replace personal experience. Just get down to the work and try it for
+			yourself.
+		</P
+></DIV
+><DIV
+CLASS="sect2"
+><HR><H3
+CLASS="sect2"
+><A
+NAME="gwf-fit-err"
+>6.7. Accuracy of fit parameters</A
+></H3
+><P
+>What good is a fit result if you don't know the uncertainties of the
+			final parameterset? The fit algorithm calculates a so called "covariance
+			matrix" that can be used to gain information about the parameter
+			uncertainties. <TT
+CLASS="application"
+>GWignerFit</TT
+> gives you the possibility to have a look at those
+			mathematically calculated error estimates. If the errors of the original
+			dataset (the spectrum data from the network analyzer) have a Gaussian
+			distribution, the calculated error estimates denote the standard
+			deviation.</P
+><P
+>This standard deviation information is only available after a fit
+			procedure completed successfully <I
+CLASS="emphasis"
+>by itself</I
+>, that
+			means there must not have been a numerical error and the fit must not
+			have been stopped by choosing <B
+CLASS="guibutton"
+>Take current values</B
+>
+			or <B
+CLASS="guibutton"
+>Cancel</B
+>. In fact, <TT
+CLASS="application"
+>GWignerFit</TT
+> is very picky about its
+			error estimates. Any changes in the parameter area will invalidate them
+			and a new fit run is required to update them.</P
+><P
+>The actual error estimates can be seen and used for further analysis
+			through the export <B
+CLASS="guimenuitem"
+>Resonance data...</B
+> menu. See
+			<A
+HREF="#gwf-export"
+>Section 4.5</A
+> for further explanations.</P
+></DIV
+><DIV
+CLASS="sect2"
+><HR><H3
+CLASS="sect2"
+><A
+NAME="gwf-calibrate"
+>6.8. Spectrum calibration</A
+></H3
+><P
+>Doing calibrated measurements with the HP8510C network analyzer is an
+			altogether unpleasant task. To make the process simpler <TT
+CLASS="application"
+>GWignerFit</TT
+> can perform
+			an "offline" calibration of reflection and transmission data. The
+			mathematics involved with the calibration are described in the PhD thesis
+			by <A
+HREF="http://archiv.ub.uni-marburg.de/diss/z2002/0043/"
+TARGET="_top"
+>&#13;			<I
+CLASS="citetitle"
+>Michael Barth (Marburg, 2001)</I
+></A
+>, appendix
+			A.2. Furthermore, <TT
+CLASS="application"
+>GWignerFit</TT
+> can do "online" calibrations (simple reflection,
+			full two-port and thru-reflection-line), too, by feeding the spectra data
+			back to the HP8510C network analyzer.</P
+><P
+>For the calibration <TT
+CLASS="application"
+>GWignerFit</TT
+> needs additional data which is obtained
+			by measurements of certain standards. This data has to be available for
+			each datapoint of your uncalibrated raw data. For reflection spectra you
+			need calibration measurements with the <I
+CLASS="emphasis"
+>open</I
+>,
+			<I
+CLASS="emphasis"
+>close</I
+> and <I
+CLASS="emphasis"
+>load</I
+> standard
+			attached to the end of your coaxial cable. Transmission calibrations need
+			a so called <I
+CLASS="emphasis"
+>thru</I
+> measurement (the two coaxial cables
+			coming from and leading to the network analyzer are connected directly
+			with each other) and an optional <I
+CLASS="emphasis"
+>isolation</I
+>
+			measurement which means that both ports have to be isolated to determine
+			the crosstalk.</P
+><P
+>The full two-port and thru-reflection-line (TRL) calibration methods,
+			which are only available in "online" mode, are a bit more involved. The
+			full two-port variant requires ten standard measurements: open, close and
+			load reflection information for both ports and the full S-matrix of the
+			thru. For a TRL calibration even more information has to be provided: You
+			need a thru measurement and a reflection measurement (short or open
+			standard) for each port. Additionally, a <I
+CLASS="emphasis"
+>line</I
+>, which
+			is a transmission line with a finite length between the coaxial cables,
+			is needed. For the HP 85056A 2.4 mm calibration kit this is just one
+			of the short adapter pieces.</P
+><DIV
+CLASS="figure"
+><A
+NAME="check-cal-win"
+></A
+><DIV
+CLASS="mediaobject"
+><P
+><IMG
+SRC="figures/gwf_calib.png"></P
+></DIV
+><P
+><B
+>Figure 10. Calibration dialog</B
+></P
+></DIV
+><P
+>To perform the calibration open the calibration window via
+			<B
+CLASS="guimenu"
+>Spectrum</B
+>-&gt;<B
+CLASS="guimenuitem"
+>Calibrate spectrum...</B
+>.
+			This dialog is shown in <A
+HREF="#check-cal-win"
+>Figure 10</A
+>. It is divided
+			into three parts to select the <TT
+CLASS="guilabel"
+><B
+>Calibration type</B
+></TT
+> and
+			the <TT
+CLASS="guilabel"
+><B
+>Calibration method</B
+></TT
+> and to show the calibration
+			<TT
+CLASS="guilabel"
+><B
+>Progress</B
+></TT
+>.</P
+><P
+>The <TT
+CLASS="guilabel"
+><B
+>Calibration type</B
+></TT
+> part consists of three
+			notebooks for the three different calibration schemes. You can choose
+			between a <TT
+CLASS="guilabel"
+><B
+>Reflection</B
+></TT
+>, a
+			<TT
+CLASS="guilabel"
+><B
+>Transmission</B
+></TT
+>, a <TT
+CLASS="guilabel"
+><B
+>Full 2-port</B
+></TT
+> and
+			a <TT
+CLASS="guilabel"
+><B
+>TRL</B
+></TT
+> calibration. For each type all the required
+			datafiles must be specified, only the isolation data for transmission
+			calibration is optional. You can either enter the filenames directly or
+			use the <B
+CLASS="guibutton"
+>Select</B
+> buttons. Those will give you a file
+			selector for the corresponding datafile. The calibrated dataset will be
+			saved into the file given with the <TT
+CLASS="guilabel"
+><B
+>Output data file</B
+></TT
+>
+			entry. The full 2-port calibration is a bit more complicated as it
+			requires the full S-matrix as raw data input and outputs all four
+			S-parameters, too. Additionally, ten standard measurements are required.
+			Therefore, this notebook is itself subdivided into four additional ones
+			(see <A
+HREF="#check-cal-win"
+>Figure 10</A
+>). The same applies to the TRL
+			calibration, the data input is spread over five notebooks. However, the
+			thru and line standards require &#8212; besides the full S-matrix &#8212;
+			two datasets which are called <I
+CLASS="emphasis"
+>a1</I
+> and
+			<I
+CLASS="emphasis"
+>a2</I
+> by <TT
+CLASS="application"
+>GWignerFit</TT
+>. Those are special measurements of
+			absolute power values the VNA requires for an online calibration. See
+			<A
+HREF="#gwignerfit-vna"
+>Section 10</A
+> on how to measure them.</P
+><P
+>The <TT
+CLASS="guilabel"
+><B
+>Calibration method</B
+></TT
+> is either
+			<TT
+CLASS="guilabel"
+><B
+>Offline</B
+></TT
+> or <TT
+CLASS="guilabel"
+><B
+>Online</B
+></TT
+>. Reflection
+			calibrations can be done in both modes, transmission calibrations can
+			only be done offline and full 2-port as well as TRL calibrations are only
+			available via the online method. For online calibrations the host of the
+			<TT
+CLASS="application"
+>Ieee488Proxy</TT
+> has to be entered, see <A
+HREF="#gwf-hard-software"
+>Section 10.1</A
+> for more information on how to connect
+			<TT
+CLASS="application"
+>GWignerFit</TT
+> to a HP8510C network analyzer. To start the calibration press the
+			<B
+CLASS="guibutton"
+>OK</B
+> button. The progressbar informs you about the
+			progress of the calibration. The calibrated data will be displayed in the
+			main graph window after the calibration has finished, either as a new
+			main dataset or as an overlay depending on the number of graphs already
+			being displayed.</P
+><P
+>The offline reflection calibration algorithm needs some knowledge of
+			the standards being used. Currently only the HP 85056A 2.4 mm
+			calibration kit is supported by <TT
+CLASS="application"
+>GWignerFit</TT
+>.</P
+></DIV
+></DIV
+><DIV
+CLASS="sect1"
+><HR><H2
+CLASS="sect1"
+><A
+NAME="gwignerfit-merge"
+>7. Merge Resonance Lists</A
+></H2
+><P
+>A spectrum does only contain a part of the information of the measured
+		resonator because the antennae do only probe the system at at most two
+		different points. This makes the task of compiling complete resonance lists
+		somewhat difficult as one has to make measurements using different antennae
+		combinations, identify the visible resonances in each spectra and deduce the
+		complete resonance list from those subsets. Though the basic problem cannot
+		be overcome, <TT
+CLASS="application"
+>GWignerFit</TT
+> includes a tool to simplify the last step of this
+		process: To merge many resonance lists into one (hopefully) complete list.
+	</P
+><DIV
+CLASS="figure"
+><A
+NAME="merge-win"
+></A
+><DIV
+CLASS="mediaobject"
+><P
+><IMG
+SRC="figures/gwf_merge.png"></P
+></DIV
+><P
+><B
+>Figure 11. Merge resonance lists window</B
+></P
+></DIV
+><P
+>This module, which works more or less independently from the rest of
+		the program, can be accessed via
+		<B
+CLASS="guimenu"
+>Analyze</B
+>-&gt;<B
+CLASS="guimenuitem"
+>Merge resonance lists</B
+> (or use the shortcut
+		<B
+CLASS="keycap"
+>Ctrl</B
+>-<B
+CLASS="keycap"
+>J</B
+>).
+		A screenshot of the corresponding window (with some work already done in
+		it) is shown in <A
+HREF="#merge-win"
+>Figure 11</A
+>. It consists of five main
+		elements:
+	</P
+><P
+></P
+><DIV
+CLASS="variablelist"
+><DL
+><DT
+>Menubar</DT
+><DD
+><P
+>Through this menubar all relevant actions can be started. Its
+					elements will be discussed in <A
+HREF="#gwf-merge-menubar"
+>Section 7.1</A
+>.
+				</P
+></DD
+><DT
+>Resonance nodes view</DT
+><DD
+><P
+>This is the part of the window where most of the actual work is
+					done. Each resonance of each resonance list is represented by a short
+					blue line, and will be referred to as a <I
+CLASS="emphasis"
+>node</I
+>
+					here. Orange lines connect nodes from different lists and symbolize
+					that those nodes belong to the same physical resonance of the system.
+					A much more detailed description of this is given in
+					<A
+HREF="#gwf-merge-nodes"
+>Section 7.2</A
+>.
+				</P
+></DD
+><DT
+>Spectra graph</DT
+><DD
+><P
+>Sometimes the very abstract representation of the nodes view may
+					not provide sufficient information to be able to decide which
+					resonances belong together and which do not. The spectra graph
+					displays the raw spectra corresponding to each resonance list. See
+					<A
+HREF="#gwf-merge-nodes"
+>Section 7.2</A
+> for more information.
+				</P
+></DD
+><DT
+>Resonance lists overview</DT
+><DD
+><P
+>This list has an entry for each resonance list that has been
+					imported and is thus visualized in the nodes view. It displays the
+					ID, the name of the <TT
+CLASS="application"
+>GWignerFit</TT
+> session file and the number of resonances
+					for each resonance list.
+				</P
+></DD
+><DT
+>Statusbar</DT
+><DD
+><P
+>The statusbar provides some feedback about what <TT
+CLASS="application"
+>GWignerFit</TT
+> does and
+					reports on the success or failure of many actions.
+				</P
+></DD
+></DL
+></DIV
+><DIV
+CLASS="sect2"
+><HR><H3
+CLASS="sect2"
+><A
+NAME="gwf-merge-menubar"
+>7.1. The Menubar of the Merge Window</A
+></H3
+><P
+>This section will explain all menu entries that can be found in the
+			menubar of the merge window.</P
+><DIV
+CLASS="sect3"
+><HR><H4
+CLASS="sect3"
+><A
+NAME="gwf-merge-file"
+>7.1.1. The merge <B
+CLASS="guimenu"
+>File</B
+> menu</A
+></H4
+><P
+>Through the <B
+CLASS="guimenu"
+>File</B
+> you can load and save earlier
+				merge sessions, import resonance lists and export that result of your
+				work, a merged resonance list.</P
+><P
+></P
+><DIV
+CLASS="variablelist"
+><DL
+><DT
+><B
+CLASS="guimenuitem"
+>New</B
+></DT
+><DD
+><P
+>This will reset the merge window to the same state it has
+							been in after you opened it. Your current changes in this window
+							will be lost if they haven't been saved yet.
+						</P
+></DD
+><DT
+><B
+CLASS="guimenuitem"
+>Open</B
+></DT
+><DD
+><P
+>You can restore a complete merge session with the
+							<B
+CLASS="guimenuitem"
+>Open</B
+> function. This must not be mixed
+							with the session files created by the main save functionality of
+							<TT
+CLASS="application"
+>GWignerFit</TT
+>. If you have resonance <I
+CLASS="emphasis"
+>and</I
+> merge
+							information in one file <TT
+CLASS="application"
+>GWignerFit</TT
+> will only show you the merge
+							sections, as the other are not of use here. Please read the
+							explanation for the <B
+CLASS="guimenuitem"
+>Save</B
+> function,
+							which comes next in this manual, too.
+						</P
+></DD
+><DT
+><B
+CLASS="guimenuitem"
+>Save</B
+></DT
+><DD
+><P
+>Just as with the main <B
+CLASS="guimenuitem"
+>Save</B
+>
+							function of <TT
+CLASS="application"
+>GWignerFit</TT
+> the complete current state of the merge window
+							can be saved. The session files are structured in the same way as
+							the "normal" session files, also called gwf files (see <A
+HREF="#gwignerfit-save-work"
+>Section 5</A
+>). You can use the same gwf file
+							to store sections with resonance information and sections with
+							merge information. The sections are internally marked so that
+							<TT
+CLASS="application"
+>GWignerFit</TT
+> can distinguish between both types to guarantee that
+							nothing gets mixed up.
+						</P
+><P
+><I
+CLASS="emphasis"
+>Warning:</I
+> <TT
+CLASS="application"
+>GWignerFit</TT
+> does not save the
+							position of each resonance node. It just saves what resonance
+							lists have been imported, what resonances have been deleted (see
+							<A
+HREF="#gwf-merge-resonance"
+>Section 7.1.3</A
+>) and the links that have
+							been created. This means that the original resonance sections
+							must <I
+CLASS="emphasis"
+>not</I
+> be altered afterward (or only if
+							you really know what you are doing) as this may invalidate your
+							saved merge session.
+						</P
+><P
+>You will only be asked for a section label and a filename the
+							first time you use this function. On consecutive calls <TT
+CLASS="application"
+>GWignerFit</TT
+> uses
+							those values to overwrite the old section with the new state.
+						</P
+></DD
+><DT
+><B
+CLASS="guimenuitem"
+>Save As...</B
+></DT
+><DD
+><P
+>This function does in principle the same thing as the
+							<B
+CLASS="guimenuitem"
+>Save</B
+> function explained above. It
+							will, however, <I
+CLASS="emphasis"
+>always</I
+> ask for a section
+							label and filename.
+						</P
+></DD
+><DT
+><B
+CLASS="guimenuitem"
+>Add resonance list</B
+></DT
+><DD
+><P
+>Before you can do anything with the merge window, resonance
+							lists need to be imported. This is done with <B
+CLASS="guimenuitem"
+>Add
+							resonance list</B
+>. The resonance list <TT
+CLASS="application"
+>GWignerFit</TT
+> expects
+							now is just a normal resonance section of a gwf file that has
+							been created using the main save function of <TT
+CLASS="application"
+>GWignerFit</TT
+>.
+						</P
+></DD
+><DT
+><B
+CLASS="guimenuitem"
+>Remove resonance list</B
+></DT
+><DD
+><P
+>This action will remove the resonance list which is currently
+							selected in the "resonance lists overview". Any affected links
+							will up updated accordingly. A convenient shortcut for this menu
+							item is <B
+CLASS="keycap"
+>Delete</B
+>.
+						</P
+></DD
+><DT
+><B
+CLASS="guimenuitem"
+>Export merged list</B
+></DT
+><DD
+><P
+>The whole merge module has been created to compile a single,
+							complete list with all resonance frequencies from several
+							measurements. Use this export function to save this list into a
+							text file. It will contain the following information: A header
+							with some information about what resonance lists have been
+							included in this merge and two columns with a consecutively
+							numbered ID and the actual resonance frequency. Each resonance
+							frequency is calculated as the average between all resonances in
+							a link group.
+						</P
+></DD
+><DT
+><B
+CLASS="guimenuitem"
+>Close window</B
+></DT
+><DD
+><P
+>This will just close the merge window, all unsaved changes
+							will be lost. <TT
+CLASS="application"
+>GWignerFit</TT
+> itself keeps on running.
+						</P
+></DD
+></DL
+></DIV
+></DIV
+><DIV
+CLASS="sect3"
+><HR><H4
+CLASS="sect3"
+><A
+NAME="gwf-merge-links"
+>7.1.2. The merge <B
+CLASS="guimenu"
+>Links</B
+> menu</A
+></H4
+><P
+>All actions that concern the links between resonance nodes are
+				collected in this menu.</P
+><P
+></P
+><DIV
+CLASS="variablelist"
+><DL
+><DT
+><B
+CLASS="guimenuitem"
+>Add link</B
+></DT
+><DD
+><P
+>Resonance nodes that belong to the same physical resonance
+							are linked together. This is done by choosing <B
+CLASS="guimenuitem"
+>Add
+							link</B
+> and selecting the two nodes that should be
+							linked together in the "resonance nodes view" (see <A
+HREF="#gwf-merge-nodes"
+>Section 7.2</A
+>. For this operation the ends of the
+							blue lines representing the resonance node are sensitive to
+							clicks with the left mouse button. If you get within some pixels
+							of such a point with the mouse pointer a rectangle will be drawn
+							around it as visual feedback. 
+						</P
+></DD
+><DT
+><B
+CLASS="guimenuitem"
+>Delete link</B
+></DT
+><DD
+><P
+>Links that are not correct can be deleted with this function.
+							The sensitive points in the "resonance nodes view" are again the
+							ends of the resonance node lines. Click on those to delete a
+							joining link.
+						</P
+></DD
+><DT
+><B
+CLASS="guimenuitem"
+>Delete all links</B
+></DT
+><DD
+><P
+>This action removes all links between all resonance
+							nodes.
+						</P
+></DD
+><DT
+><B
+CLASS="guimenuitem"
+>Automatic merge</B
+></DT
+><DD
+><P
+>Drawing obvious links between some hundred resonances is
+							tiring and error-prone. The <B
+CLASS="guimenuitem"
+>Automatic
+							merge</B
+> tries to create links between resonance nodes
+							that have, within their widths, the same frequencies. The
+							algorithm used is not really that sophisticated, make sure to
+							check its work. The automatic merger works best if no links are
+							defined yet, as it considers only nodes that do not already have
+							any links associated with them. Therefore this is typically the
+							first action to be done after the required resonance lists have
+							been added.
+						</P
+></DD
+></DL
+></DIV
+></DIV
+><DIV
+CLASS="sect3"
+><HR><H4
+CLASS="sect3"
+><A
+NAME="gwf-merge-resonance"
+>7.1.3. The merge <B
+CLASS="guimenu"
+>Resonance</B
+> menu</A
+></H4
+><P
+>The entries of the <B
+CLASS="guimenu"
+>Resonance</B
+> menu provide
+				functions that work on the resonance and frequency level. Information
+				about individual resonances can be obtained, resonances can be removed
+				from a list and frequency intervals can be measured.</P
+><P
+></P
+><DIV
+CLASS="variablelist"
+><DL
+><DT
+><B
+CLASS="guimenuitem"
+>Highlight width</B
+></DT
+><DD
+><P
+>With this function you can get further information on a
+							selected resonance. Choose this menu item and then click on the
+							resonance node that you are interested in (for this operation the
+							whole blue resonance node line is sensitive). Three things will
+							happen then:
+							<P
+></P
+><UL
+><LI
+><P
+>The width of the resonance will be visualized by a
+										green bar in the "resonance nodes view". The width of this
+										bar is exactly one FWHM.</P
+></LI
+><LI
+><P
+>The resonance frequency and width are numerically
+										displayed behind the <TT
+CLASS="guilabel"
+><B
+>Selected
+										resonance</B
+></TT
+> label.</P
+></LI
+><LI
+><P
+>The "spectra graph" zooms to the selected resonance,
+										the corresponding spectrum is drawn in a darker color.
+										Again a green bar marks the FWHM of the resonance.</P
+></LI
+></UL
+>
+							To unmark the resonance choose this menu item again and click
+							somewhere on the "resonance nodes view" where no node is drawn.
+						</P
+><P
+>A very convenient shortcut for highlighting a resonance is to
+							use <B
+CLASS="keycap"
+>Ctrl</B
+> + left mouse button on a resonance
+							node.
+						</P
+></DD
+><DT
+><B
+CLASS="guimenuitem"
+>Remove resonance</B
+></DT
+><DD
+><P
+>You will notice that some spectra can only be fitted by
+							adding "ghost" resonances. Resonances that should not correspond
+							to any physical resonances but are just needed to account for
+							background effects or miscalibration. Those resonances are
+							typically much broader that the "real" ones. As those resonances
+							should of course not be included in the merged list they need to
+							be removed.
+						</P
+><P
+>To remove such a "ghost" resonance select <B
+CLASS="guimenuitem"
+>Remove
+							resonance</B
+> and click on the corresponding resonance
+							node. For this operation the whole blue line is sensitive.
+						</P
+></DD
+><DT
+><B
+CLASS="guimenuitem"
+>Measure distance</B
+></DT
+><DD
+><P
+>This is well the known function most of <TT
+CLASS="application"
+>GWignerFit</TT
+>'s graphical
+							displays feature. Click on two positions on the "resonance nodes
+							view" and <TT
+CLASS="application"
+>GWignerFit</TT
+> will display the frequency difference between the
+							two points. Note: This function does <I
+CLASS="emphasis"
+>not</I
+>
+							work with the "spectra graph".
+						</P
+></DD
+></DL
+></DIV
+></DIV
+><DIV
+CLASS="sect3"
+><HR><H4
+CLASS="sect3"
+><A
+NAME="gwf-merge-view"
+>7.1.4. The merge <B
+CLASS="guimenu"
+>View</B
+> menu</A
+></H4
+><P
+>You can change the appearance of the spectra graph with the options
+				from this menu. The possible actions are:
+			</P
+><P
+></P
+><DIV
+CLASS="variablelist"
+><DL
+><DT
+><B
+CLASS="guimenuitem"
+>Normal scale</B
+></DT
+><DD
+><P
+>Use this menuitem to view absolute values in the spectra
+							graph in a linear scale.
+						</P
+></DD
+><DT
+><B
+CLASS="guimenuitem"
+>Log scale</B
+></DT
+><DD
+><P
+>With this option set the ordinate of the spectra graph will
+							have a logarithmic scale thus displaying the power spectrum in
+							dB.
+						</P
+></DD
+></DL
+></DIV
+></DIV
+></DIV
+><DIV
+CLASS="sect2"
+><HR><H3
+CLASS="sect2"
+><A
+NAME="gwf-merge-nodes"
+>7.2. How to do a Merge</A
+></H3
+><P
+>This section will give you a detailed step-by-step instruction of
+			<I
+CLASS="emphasis"
+>how</I
+> to do a complete merge.
+		</P
+><P
+>After opening the merge window
+			(<B
+CLASS="guimenu"
+>Analyze</B
+>-&gt;<B
+CLASS="guimenuitem"
+>Merge resonance lists</B
+>) the first step is to import the resonance lists that are
+			to be merged. This is done with
+			<B
+CLASS="guimenu"
+>File</B
+>-&gt;<B
+CLASS="guimenuitem"
+>Add resonance list</B
+>. You have to choose a <TT
+CLASS="filename"
+>.gwf</TT
+> file there
+			with resonance information created by <TT
+CLASS="application"
+>GWignerFit</TT
+>. After selecting the label of
+			the section <TT
+CLASS="application"
+>GWignerFit</TT
+> reads all resonances and the filename of the measured
+			spectrum. The spectrum is then loaded and displayed in the "spectra
+			graph". All resonances in this section build a new resonance list that is
+			visualized in the "resonance nodes view". This view has a vertical blue
+			line for each resonance. The abscissa gives the frequency in GHz, the
+			ordinate just enumerates the resonance lists. Do this import procedure
+			for all lists that you wish to merge.
+		</P
+><P
+>Now that all resonances are imported it is time to introduce two
+			terms: <I
+CLASS="emphasis"
+>node</I
+> and <I
+CLASS="emphasis"
+>link</I
+>. Each
+			resonance forms a node and links can be drawn between nodes. A node is
+			represented by a blue line, a link by an orange one in the "resonance
+			nodes view". The idea is that all nodes which are connected by links
+			represent the same physical resonance and thus need to be merged into one
+			resonance later. You need to know how to create links now. The first step
+			will normally be to let <TT
+CLASS="application"
+>GWignerFit</TT
+> create an initial set of links for you.
+			This is done by
+			<B
+CLASS="guimenu"
+>Links</B
+>-&gt;<B
+CLASS="guimenuitem"
+>Automatic merge</B
+>.
+			The result will by no means be perfect but it should provide a good
+			starting point for your further work. You can manipulate links with the
+			<B
+CLASS="guimenuitem"
+>Add link</B
+> and <B
+CLASS="guimenuitem"
+>Delete
+			link</B
+> functions of the <B
+CLASS="guimenu"
+>Links</B
+> menu. The
+			<B
+CLASS="guimenuitem"
+>Add link</B
+> function requires you to click on two
+			nodes that you want to connect, that is the endpoints of the blue lines. A
+			link is being deleted with the <B
+CLASS="guimenuitem"
+>Delete link</B
+>
+			function. Click on an endpoint of a link and it will be removed.
+		</P
+><P
+>In many cases the information of the "resonance nodes view" will not
+			be sufficient to decide where a resonance belongs to. This is where
+			resonance highlighting and the "spectra graph" come into play. You can
+			select a resonance either via
+			<B
+CLASS="guimenu"
+>Resonance</B
+>-&gt;<B
+CLASS="guimenuitem"
+>Highlight width</B
+>
+			or by just doing a <B
+CLASS="keycap"
+>Ctrl</B
+> + left mouse button click on a
+			resonance node. The resonance will now be highlighted by a green bar
+			whose width is exactly the FWHM of the resonance (see <A
+HREF="#gwf-merge-resonance"
+>Section 7.1.3</A
+>). The numerical values of the resonance
+			frequency and the width are displayed next to the <TT
+CLASS="guilabel"
+><B
+>Selected
+			resonance</B
+></TT
+> label. Finally the "spectra graph" draws the
+			spectrum of the selected resonance in a darker color and zooms to the
+			appropriate resonance. This should help you to determine the
+			relationships between resonances. To unmark a resonance choose the
+			<B
+CLASS="guimenuitem"
+>Highlight width</B
+> option once again and click
+			somewhere on the "resonance nodes view" with no resonance node nearby.
+		</P
+><P
+>The "spectra graph" behaves like any other graph in <TT
+CLASS="application"
+>GWignerFit</TT
+> which
+			means that you can navigate through it in the usual manner (see <A
+HREF="#gwf-navigate"
+>Section 4.4.1</A
+>) to view any part of the spectrum. However,
+			you cannot change the display type, that is the graph can only show
+			absolute values in normal scale.
+		</P
+><P
+>Having taken a closer look at a resonance node you might have come to
+			the conclusion that there really is <I
+CLASS="emphasis"
+>no</I
+> physical
+			resonance at this place. This can happen if a resonance has only been
+			needed during the fit to take background effects into account. Those
+			"ghosts" must be removed from the list of resonances, of course. Choose
+			<B
+CLASS="guimenu"
+>Resonance</B
+>-&gt;<B
+CLASS="guimenuitem"
+>Remove resonance</B
+>
+			from the menubar and click somewhere on a node to remove it. You cannot
+			delete the last resonance node in a resonance list as this would leave
+			you with an empty resonance list. Remove the whole list instead.
+		</P
+><P
+>Now that all links are placed it is time to talk about the save and
+			export functions: You can save the current state of the "merge resonance
+			lists" window into a <TT
+CLASS="filename"
+>.gwf</TT
+> file and you can export
+			the merged resonance list into a separate file. The save functions works
+			exactly the same way as already described in <A
+HREF="#gwf-save"
+>Section 5.2</A
+>.
+			Sections that contain merge information are completely independent from
+			sections with resonance information. Thus they can coexist peacefully in
+			the same <TT
+CLASS="filename"
+>.gwf</TT
+> file. You could even use the same
+			section label twice, for a resonance section and a merge section.
+		</P
+><P
+>Finally, we are at the point where all this merge business leads to a
+			list with resonance frequencies. This list is created and saved through
+			the export function that can be accessed via
+			<B
+CLASS="guimenu"
+>File</B
+>-&gt;<B
+CLASS="guimenuitem"
+>Export merged list</B
+>.
+			You can now choose a filename under which the list is to be saved. The
+			resulting file consists of a header with information on the utilized
+			resonance lists and a data part. The data part is divided into two
+			columns. The first column gives each resonance a number starting at one.
+			The second column contains the resonance frequencies in Hz. The resonance
+			frequencies are calculated as the average between all resonances in a
+			link group.
+		</P
+></DIV
+></DIV
+><DIV
+CLASS="sect1"
+><HR><H2
+CLASS="sect1"
+><A
+NAME="gwignerfit-fft"
+>8. Working in the Time Domain</A
+></H2
+><P
+>Most measurements on microwave cavities are done in the frequency
+		domain. In the experiment the response of the system is measured for a
+		large range of frequencies. This tells you how the system reacts to a
+		certain frequency but not, what the time development of the energy stored
+		in the cavity looks like. This would be the time domain. Luckily, one can
+		reconstruct this information from the transmission spectrum.</P
+><P
+>The interpretation of the time domain is rather simple: Imagine that
+		you send a very short pulse of energy into the system at time t=0. The time
+		domain graph will then tell you after which time how much energy comes out
+		of the system again. The sharpness of your input pulse is defined by the
+		frequency range you measured. The broader it has been, the sharper the
+		pulse gets until it would eventually get a singular delta-peak if you would
+		know the response of the system for all frequencies.</P
+><P
+>The mathematical method to switch from the frequency domain into the
+		time domain is the Fourier transformation. <TT
+CLASS="application"
+>GWignerFit</TT
+> uses the Fast Fourier
+		Transform (FFT) to perform this conversion. This is the reason why the
+		window with the time domain information is just called the "FFT window" in
+		<TT
+CLASS="application"
+>GWignerFit</TT
+>.</P
+><P
+>To open the FFT window choose
+		<B
+CLASS="guimenu"
+>Analyze</B
+>-&gt;<B
+CLASS="guimenuitem"
+>Fourier transform all</B
+>
+		from the menubar of the main window or type
+		<B
+CLASS="keycap"
+>Ctrl</B
+>-<B
+CLASS="keycap"
+>T</B
+>.
+		A new window will appear with the Fourier transformed graphs of the main
+		dataset, the theoretical curve and &#8212; in case the are overlayed
+		datasets &#8212; of the overlays as well. You can see an example of this in
+		<A
+HREF="#fft-win"
+>Figure 12</A
+>.
+		If you choose
+		<B
+CLASS="guimenu"
+>Analyze</B
+>-&gt;<B
+CLASS="guimenuitem"
+>Fourier transform frqwin</B
+>
+		(<B
+CLASS="keycap"
+>Ctrl</B
+>-<B
+CLASS="keycap"
+>Shift</B
+>-<B
+CLASS="keycap"
+>T</B
+>)
+		you will not get the Fourier transformed graphs of the complete datasets
+		but only of those parts that are within the frequency window defined by the
+		Min- and Max-frequency values.
+	</P
+><DIV
+CLASS="figure"
+><A
+NAME="fft-win"
+></A
+><DIV
+CLASS="mediaobject"
+><P
+><IMG
+SRC="figures/gwf_fft.png"></P
+></DIV
+><P
+><B
+>Figure 12. The FFT Window</B
+></P
+></DIV
+><DIV
+CLASS="sect2"
+><HR><H3
+CLASS="sect2"
+><A
+NAME="gwf-fft-menubar"
+>8.1. The Menubar of the FFT Window</A
+></H3
+><P
+>This section will explain the different entries of the FFT window's
+			menubar. You should already be familiar with most of them as they are
+			very similar to those of <TT
+CLASS="application"
+>GWignerFit</TT
+>'s main window.</P
+><DIV
+CLASS="sect3"
+><HR><H4
+CLASS="sect3"
+><A
+NAME="gwf-fft-file-menu"
+>8.1.1. The FFT <B
+CLASS="guimenu"
+>File</B
+> menu</A
+></H4
+><P
+>The <B
+CLASS="guimenu"
+>File</B
+> menu contains the following
+			entries:</P
+><P
+></P
+><DIV
+CLASS="variablelist"
+><DL
+><DT
+><B
+CLASS="guimenuitem"
+>Export</B
+></DT
+><DD
+><P
+>You can export the Fourier transformed datasets of the main
+							graph and the theory graph here. Furthermore, the whole graph can
+							be exported as a postscript file, too.
+						</P
+><P
+>This menu has the following submenus:</P
+><P
+></P
+><UL
+><LI
+><P
+><B
+CLASS="guimenuitem"
+>Measurement data...</B
+>:
+									Exports the complex data of the Fourier transformed main
+									dataset into a file. You can import the exported data through
+									the normal import function of <TT
+CLASS="application"
+>GWignerFit</TT
+>. The application will
+									detect that the file contains time domain information and
+									give you the possibility to convert it back into the
+									frequency domain.
+								</P
+></LI
+><LI
+><P
+><B
+CLASS="guimenuitem"
+>Theory data...</B
+>:
+									Exports the complex data of the Fourier transformed
+									theoretical curve into a file. This file can then be
+									re-imported, too.
+								</P
+></LI
+><LI
+><P
+><B
+CLASS="guimenuitem"
+>Graph as postscript...</B
+>:
+									Saves the current view of the time domain graph as a
+									postscript file. For a description of the export dialog see
+									<A
+HREF="#gwf-export-ps"
+><I
+CLASS="term"
+><B
+CLASS="guimenuitem"
+>Graph as postscript...</B
+></I
+></A
+>.
+								</P
+></LI
+></UL
+></DD
+><DT
+><B
+CLASS="guimenuitem"
+>Close window</B
+></DT
+><DD
+><P
+>Closes the FFT window, <TT
+CLASS="application"
+>GWignerFit</TT
+> will keep on running.</P
+></DD
+></DL
+></DIV
+></DIV
+><DIV
+CLASS="sect3"
+><HR><H4
+CLASS="sect3"
+><A
+NAME="gwf-fft-analyze-menu"
+>8.1.2. The FFT <B
+CLASS="guimenu"
+>Analyze</B
+> menu</A
+></H4
+><P
+>The <B
+CLASS="guimenu"
+>Analyze</B
+> menu contains two groups of entries
+			right now:</P
+><P
+></P
+><DIV
+CLASS="variablelist"
+><DL
+><DT
+><B
+CLASS="guimenuitem"
+>Complex data</B
+>, <B
+CLASS="guimenuitem"
+>Absolute
+							of data</B
+> and <B
+CLASS="guimenuitem"
+>Absolute squared of data</B
+></DT
+><DD
+><P
+>The standard mode of operation of <TT
+CLASS="application"
+>GWignerFit</TT
+> is to calculate the
+							complex FFT of the <B
+CLASS="guimenuitem"
+>Complex data</B
+>
+							information. However, in some cases it might be desired to take
+							the absolute value of even the square of the absolute value of
+							the datasets before applying the FFT. This can be done by
+							choosing the appropriate menu entry here.
+						</P
+></DD
+><DT
+><B
+CLASS="guimenuitem"
+>Measure distance</B
+></DT
+><DD
+><P
+>You can measure the time or length distance (depending on
+							your current abscissa scaling) between two points of the FFT
+							graph. The usage is the same as for the main graph (see
+							<A
+HREF="#gwf-analyze-menu"
+>Section 3.3</A
+>).
+						</P
+></DD
+></DL
+></DIV
+></DIV
+><DIV
+CLASS="sect3"
+><HR><H4
+CLASS="sect3"
+><A
+NAME="gwf-fft-view-menu"
+>8.1.3. The FFT <B
+CLASS="guimenu"
+>View</B
+> menu</A
+></H4
+><P
+>The <B
+CLASS="guimenu"
+>View</B
+> menu contains the following
+			entries:</P
+><P
+></P
+><DIV
+CLASS="variablelist"
+><DL
+><DT
+><B
+CLASS="guimenuitem"
+>Absolute value</B
+>,
+					      <B
+CLASS="guimenuitem"
+>Real part</B
+>,
+								<B
+CLASS="guimenuitem"
+>Imaginary part</B
+>,
+								<B
+CLASS="guimenuitem"
+>Phase</B
+> and
+								<B
+CLASS="guimenuitem"
+>Log power in dB</B
+></DT
+><DD
+><P
+>Choose one of these view types to select which part of the
+							Fourier transformed data should be shown or how it should be
+							presented. The different types of views are identical the ones
+							for the main graph (see <A
+HREF="#gwf-view-menu"
+>Section 3.4</A
+>).</P
+></DD
+><DT
+><B
+CLASS="guimenuitem"
+>Abscissa in ns</B
+> and
+					      <B
+CLASS="guimenuitem"
+>Abscissa in m</B
+></DT
+><DD
+><P
+>Normally the unit of the abscissa of the time domain graph is
+							in nanoseconds (ns). However, by multiplying the values of the
+							axis by the speed of light one can interpret it as a length in
+							meter (m), that is the distance light would travel in vacuum
+							during the given time. Use those two options to switch between
+							the two possible scalings.</P
+></DD
+><DT
+><B
+CLASS="guimenuitem"
+>Rectangular window</B
+>,
+					      <B
+CLASS="guimenuitem"
+>Hamming window</B
+>,
+					      <B
+CLASS="guimenuitem"
+>Welch window</B
+> and
+					      <B
+CLASS="guimenuitem"
+>Blackman window</B
+></DT
+><DD
+><P
+>Taking the Fourier transform of a finite dataset will always
+							produce artifacts due to missing information. Mathematically this
+							can be described as a convulsion of the complete (infinite)
+							dataset with a certain windowing function. For the standard FFT
+							this window is just a rectangular window selecting the dataset
+							that has actually been measured.
+						</P
+><P
+>The deep slopes at the sides of such a rectangular window
+							produce undesired side lobes. This effect can be reduced by using
+							windowing functions with smoother slopes. They can reduce the
+							side lobes (and thus background noise) but, as a tradeoff, will
+							broaden the main peak, too.
+						</P
+><P
+><TT
+CLASS="application"
+>GWignerFit</TT
+> gives you the possibility to choose between three such
+							windowing functions. It is recommended to try each of them, so
+							that you can decide which is best suited for your
+							purposes.</P
+></DD
+></DL
+></DIV
+></DIV
+></DIV
+><DIV
+CLASS="sect2"
+><HR><H3
+CLASS="sect2"
+><A
+NAME="gwf-fft-graph"
+>8.2. The Graph of the FFT Window</A
+></H3
+><P
+>By and large the graph of the FFT window looks and behaves the same
+			way as the main graph. Of course, you do not see the original data but
+			the result of its Fourier transformation but that is about all the
+			changes there are.</P
+><P
+>In particular the following features are similar (see
+			<A
+HREF="#gwf-graph-view-area"
+>Section 4.4</A
+>, too):</P
+><P
+></P
+><UL
+><LI
+><P
+>Colors: The colors of the different datasets are the same: data
+				is in red, theory in blue, overlays in light gray. Currently selected
+				overlays are drawn in a darker gray.</P
+></LI
+><LI
+><P
+>Navigation: You can zoom and jump through the graph just the way
+					you are used to it by the main graph. All mouse and key bindings have
+					stayed the same.</P
+></LI
+><LI
+><P
+>Markers: Markers can still be set by clicking somewhere on the
+					graph with the left mouse button.</P
+></LI
+></UL
+><P
+>You can keep the FFT window open while working in your main window.
+			All changes will be applied to the Fourier transformed graphs at once so
+			that the display of the FFT window is always up to date.</P
+></DIV
+></DIV
+><DIV
+CLASS="sect1"
+><HR><H2
+CLASS="sect1"
+><A
+NAME="gwignerfit-statistics"
+>9. Statistics</A
+></H2
+><P
+>One primary method in the field of quantum chaos is the statistical
+		analysis of the data at hand. Statistics can be done on a large variety of
+		raw data. <TT
+CLASS="application"
+>GWignerFit</TT
+> tries to help you with two common types of analyses:
+		<I
+CLASS="emphasis"
+>spectrum statistics</I
+> and <I
+CLASS="emphasis"
+>spectral
+		statistics</I
+>. The former deals with the measured spectrum itself
+		and is explained in <A
+HREF="#gwignerfit-spectrum-stat"
+>Section 9.1</A
+>, the latter
+		analyzes a set of resonances that have been deduced from a spectrum. The
+		module for spectral statistics is described in 
+		<A
+HREF="#gwignerfit-spectral"
+>Section 9.2</A
+>.
+	</P
+><DIV
+CLASS="sect2"
+><HR><H3
+CLASS="sect2"
+><A
+NAME="gwignerfit-spectrum-stat"
+>9.1. Spectrum Statistics &#8212; The Autocorrelation Function</A
+></H3
+><P
+>A very direct approach to the analysis of a spectrum is to 
+			analyze just the spectrum itself. One such tool for the analysis of a
+			spectrum is the <I
+CLASS="emphasis"
+>autocorrelation function</I
+>. Its definition
+			is given in <A
+HREF="#eqn-correl"
+>Equation 3</A
+>, the brackets denote a
+			spectral average. The square of the autocorrelation function's absolute
+			value should have &#8212; in the limit of strongly overlapping resonances
+			&#8212; a Lorentz like shape. The value of <I
+CLASS="emphasis"
+>&#949;</I
+> where this squared function value is
+			equal to half its starting value, that is 
+			<IMG
+SRC="figures/eqn_correl_len.png">,
+			is called <I
+CLASS="emphasis"
+>correlation length</I
+>.
+		</P
+><DIV
+CLASS="equation"
+><A
+NAME="eqn-correl"
+></A
+><P
+><B
+>Equation 3. The autocorrelation function</B
+></P
+><IMG
+SRC="figures/eqn_correl.png"></DIV
+><P
+>To calculate and visualize the autocorrelation function select
+			<B
+CLASS="guimenu"
+>Analyze</B
+>-&gt;<B
+CLASS="guimenuitem"
+>Autocorrelation function</B
+>
+			from the menubar of the main window. The new window will look similar to
+			the one shown in <A
+HREF="#correl-win"
+>Figure 13</A
+>. It is divided into four
+			parts: A menubar, an area for the graph, a region for the frequency range
+			settings and a part to display the results of the analysis.
+		</P
+><DIV
+CLASS="figure"
+><A
+NAME="correl-win"
+></A
+><DIV
+CLASS="mediaobject"
+><P
+><IMG
+SRC="figures/gwf_correl_window.png"></P
+></DIV
+><P
+><B
+>Figure 13. The autocorrelation function window</B
+></P
+></DIV
+><P
+></P
+><DIV
+CLASS="variablelist"
+><DL
+><DT
+><B
+CLASS="guimenuitem"
+>The menubar</B
+></DT
+><DD
+><P
+>It gives you access to fundamental functions of this window to
+						export your data or to change the view of the graph. See <A
+HREF="#gwf-correl-menubar"
+>Section 9.1.1</A
+> for an explanation of the menu
+						entries.
+					</P
+></DD
+><DT
+><B
+CLASS="guimenuitem"
+>The autocorrelation graph</B
+></DT
+><DD
+><P
+>This graph displays the <I
+CLASS="emphasis"
+>square</I
+> of the
+						autocorrelation function's absolute value (see <A
+HREF="#eqn-correl"
+>Equation 3</A
+>). The abscissa gives the value of
+						<I
+CLASS="emphasis"
+>&#949;</I
+> in MHz, the ordinate
+						reads the corresponding function's value. You can choose between a
+						normal scale (the default) or a logarithmic scale by pressing
+						either <B
+CLASS="keycap"
+>n</B
+> or <B
+CLASS="keycap"
+>l</B
+> (cf. <A
+HREF="#gwf-correl-menubar"
+>Section 9.1.1</A
+>).
+				</P
+></DD
+><DT
+><B
+CLASS="guimenuitem"
+>The frequency range area</B
+></DT
+><DD
+><P
+>The integral of the autocorrelation function has to be taken over a
+						certain frequency range. The default range is taken from the Min
+						and Max frequencies of the main window. You can modify this range
+						here. Input the new boundaries into the <TT
+CLASS="guilabel"
+><B
+>Start
+						frequency</B
+></TT
+> and <TT
+CLASS="guilabel"
+><B
+>Stop frequency</B
+></TT
+> fields
+						(in GHz). Each input operation has to be ended by pressing
+						<B
+CLASS="keycap"
+>Enter</B
+> which will cause the changes to be adopted
+						and the the graph to be recalculated.</P
+><P
+>If many datapoints are in the selected frequency range the
+						calculation can become very time consuming. The
+						<TT
+CLASS="guilabel"
+><B
+>Granularity</B
+></TT
+> setting has been introduced to
+						accommodate for this. If this value is set to 1 every single data
+						point is taken into account for the calculation. If it is set to 2
+						only every other datapoint is considered and so on. <TT
+CLASS="application"
+>GWignerFit</TT
+> sets this
+						to a default value so that the first calculation will not take
+						unnecessarily much time. Updates to the
+						<TT
+CLASS="guilabel"
+><B
+>Granularity</B
+></TT
+> do not take effect at once. Press
+						<B
+CLASS="keycap"
+>Enter</B
+> in one of the frequency range fields to
+						update the calculation.
+					</P
+></DD
+><DT
+><B
+CLASS="guimenuitem"
+>Numerical analysis results</B
+></DT
+><DD
+><P
+>This part provides you a) with the <TT
+CLASS="guilabel"
+><B
+>Correlation
+						length</B
+></TT
+> value and b) with further <TT
+CLASS="guilabel"
+><B
+>Spectrum
+						averages</B
+></TT
+>. The correlation length is the frequency where
+						the above graph is equal to 1/2. As the autocorrelation function
+						can for a discrete dataset only be evaluated at discrete points,
+						<TT
+CLASS="application"
+>GWignerFit</TT
+> interpolates the correlation length from the two closest
+						lying points on the graph. The spectrum averages provide some very
+						basic information on the spectrum in your selected frequency range.
+						The angle brackets denote the average over all points. Those
+						averages are not influenced by the granularity value, all
+						datapoints are always included.
+					</P
+></DD
+></DL
+></DIV
+><DIV
+CLASS="sect3"
+><HR><H4
+CLASS="sect3"
+><A
+NAME="gwf-correl-menubar"
+>9.1.1. The Menubar of the Autocorrelation Function Window</A
+></H4
+><P
+>The autocorrelation window's menubar has only a fistful of entries.
+				They will be explained in this section. First, the
+				<B
+CLASS="guimenu"
+>File</B
+> menu:
+			</P
+><P
+></P
+><DIV
+CLASS="variablelist"
+><DL
+><DT
+><B
+CLASS="guimenuitem"
+>Export</B
+></DT
+><DD
+><P
+>This menuitem contains a submenu with the two menuitems
+							<B
+CLASS="guimenuitem"
+>Graph as postscript...</B
+> and
+							<B
+CLASS="guimenuitem"
+>Statistical data...</B
+>. Use them to
+							make a postscript from the current graph (see <A
+HREF="#gwf-export"
+>Section 4.5</A
+> for further details on the postscript
+							export) or to export the datapoints of the graph into a datafile.
+							The statistical data will also include the spectrum average
+							values at the beginning of the file.
+						</P
+></DD
+><DT
+><B
+CLASS="guimenuitem"
+>Close</B
+></DT
+><DD
+><P
+>Use this to close the autocorrelation function window. <TT
+CLASS="application"
+>GWignerFit</TT
+>
+							itself will keep on running.
+						</P
+></DD
+></DL
+></DIV
+><P
+>And now the <B
+CLASS="guimenu"
+>View</B
+> menu:</P
+><P
+></P
+><DIV
+CLASS="variablelist"
+><DL
+><DT
+><B
+CLASS="guimenuitem"
+>Normal scale</B
+></DT
+><DD
+><P
+>If this option is active the ordinate axis is in normal
+							scale.
+						</P
+></DD
+><DT
+><B
+CLASS="guimenuitem"
+>Log scale</B
+></DT
+><DD
+><P
+>Activate this item to change the ordinate of the graph to a
+							logarithmic scale. Unlike the logarithmic scale of the main
+							graph, the function value is <I
+CLASS="emphasis"
+>not</I
+> squared
+							before the conversion into dB takes place, that is an absolute
+							value of 0.5 is converted into roughly -3 dB.
+						</P
+></DD
+></DL
+></DIV
+></DIV
+></DIV
+><DIV
+CLASS="sect2"
+><HR><H3
+CLASS="sect2"
+><A
+NAME="gwignerfit-spectral"
+>9.2. Spectral Statistics</A
+></H3
+><P
+>This section will explain how to examine statistical properties of a
+			given set of resonance frequencies (or widths) using <TT
+CLASS="application"
+>GWignerFit</TT
+>. Those
+			statistics are called <I
+CLASS="emphasis"
+>spectral statistics</I
+> because
+			the resonances represent the spectrum of the Laplace operator that
+			describes the electrical field inside the cavity.</P
+><P
+><TT
+CLASS="application"
+>GWignerFit</TT
+> can evaluate the following statistical measures (refer to
+			<A
+HREF="#gwf-spectral-view-menu"
+>Section 9.2.2.3</A
+> to learn how to choose the
+			statistic to be shown):</P
+><P
+></P
+><UL
+><LI
+><P
+>Staircase: This is the most fundamental level statistic. The
+					number of levels up to a certain frequency is given as a function of
+					this frequency. The Weyl formula says that the level density for a
+					two dimensional system should increase like a polynomial of second
+					order. <TT
+CLASS="application"
+>GWignerFit</TT
+> calculates the best fit polynomial, adds it to the
+					graph and displays the corresponding Weyl coefficients.</P
+></LI
+><LI
+><P
+>Fluctuations: If you subtract the Weyl curve from the staircase
+					function you will get a function fluctuating around zero. Missing
+					levels will become visible as jumps in this graph.</P
+></LI
+><LI
+><P
+>NND: This is the nearest neighbor distribution which is a
+					statistic of the spacings between adjacent resonance frequencies (that
+					have been unfolded to a mean spacing of unity). The spacings are binned
+					and displayed as a histogram. Random matrix theory provides predictions
+					for Poisson, GOE and GUE like spectra, those can be displayed,
+					too.</P
+></LI
+><LI
+><P
+>Integrated NND: As the name already suggests, this is the
+					integrated version of the NND. Think of it as a information of how many
+					spacings are smaller than the value given on the abscissa. The
+					integrated random matrix predictions can again be included.</P
+></LI
+><LI
+><P
+>Sigma 2: This is one possible measure for correlations on larger
+					scales. It expresses the variance of the number of levels (the
+					ordinate) in intervals of a certain length (the abscissa). This is a
+					rather complex measure and may take some time to calculate depending on
+					the speed of your computer and the number of resonances in your
+					dataset. Poisson, GOE and GUE graphs are available.</P
+></LI
+><LI
+><P
+>Delta 3: The statistical test (also known as Dyson-Metha
+					statistics) measures the long-range correlations, the rigidity of the
+					graph, and thus provides similar information as the Sigma 2 statistics.
+					The idea behind Delta 3 is to approximate the unfolded staircase
+					function (which should be a straight line) by segments of straight
+					lines of a given length (again the abscissa). The average root mean
+					square error of this approximation is the Delta 3 value. A Sigma 2
+					value can be converted into the Delta 3 measure with a simple integral.
+					The theoretical predictions are obtained by numerically integrating the
+					Sigma 2 predictions.</P
+></LI
+><LI
+><P
+>Length spectrum: This is the Fourier-transformed spectrum of the
+					eigenvalue density (where the trivial Weyl contribution has already
+					been subtracted). Every peak in this spectrum corresponds according to
+					Gutzwiller's trace formula to a classical periodic orbit. The abscissa
+					gives the length of the orbit in meters.</P
+></LI
+><LI
+><P
+>Width evolution: In contrast to the statistics described till
+					now, this and the next method take the resonance
+					<I
+CLASS="emphasis"
+>widths</I
+> into account. This graph displays the
+					resonance width as a function of the resonance frequency. The
+					frequency is given as the abscissa in GHz. At each resonance
+					frequency there is a straight vertical line that marks the width of
+					this resonance. The ordinate then reads the withs in MHz.</P
+></LI
+><LI
+><P
+>Width histogram: This histogram does statistics with the
+					resonance widths. The resonance widths are sorted into a given number
+					of bins. The graph displays how many widths ended up in which bin.
+					The abscissa gives the width in MHz. The ordinate can either show the
+					total number of widths in each bin (that is without normalization) or
+					the fraction of all resonances considered (the normalized
+					case).</P
+></LI
+></UL
+><DIV
+CLASS="sect3"
+><HR><H4
+CLASS="sect3"
+><A
+NAME="gwf-spectral-usage"
+>9.2.1. How to use the Spectral Statistics Window</A
+></H4
+><P
+>You will need to add at least four resonances to your resonance list
+				(see <A
+HREF="#gwf-find-res"
+>Section 6.3</A
+>) before you can use the spectral
+				statistics module. To activate this function and to open the spectral
+				statistics window choose
+				<B
+CLASS="guimenu"
+>Analyze</B
+>-&gt;<B
+CLASS="guimenuitem"
+>Spectral statistics</B
+>
+				from the menubar of the main window or type
+				<B
+CLASS="keycap"
+>Ctrl</B
+>-<B
+CLASS="keycap"
+>C</B
+>.
+				<DIV
+CLASS="figure"
+><A
+NAME="spectral-win"
+></A
+><DIV
+CLASS="mediaobject"
+><P
+><IMG
+SRC="figures/gwf_spectral.png"></P
+></DIV
+><P
+><B
+>Figure 14. The spectral statistics window</B
+></P
+></DIV
+>
+				Up comes a new window which should look similar to <A
+HREF="#spectral-win"
+>Figure 14</A
+>. The red graph is the staircase function of your
+				dataset and the blue one is the fitted Weyl function. At the bottom of the
+				window there are three text-entries that display the current coefficients
+				of the Weyl function: The area, the perimeter and a constant offset. The
+				spinbutton labeled <TT
+CLASS="guilabel"
+><B
+># 1st res</B
+></TT
+> allows you to specify
+				the level number of the resonance with the lowest frequency. If the first
+				frequency	of your considered resonances belongs to  the ground state of
+				your system this entry should display "1". If the lowest frequency
+				represents the first excited state you should set this to "2", and so on.
+				You can change the value of each entry be entering a new number and
+				pressing <B
+CLASS="keycap"
+>Enter</B
+> or you can use the up and down arrows of
+				the spinbutton. To get back to a best-fit Weyl function press the
+				<B
+CLASS="guibutton"
+>Fit Weyl</B
+> button.
+			</P
+><DIV
+CLASS="figure"
+><A
+NAME="spectral-bottom"
+></A
+><DIV
+CLASS="mediaobject"
+><P
+><IMG
+SRC="figures/gwf_bottom.png"></P
+></DIV
+><P
+><B
+>Figure 15. The alternate bottom of the spectral statistics window</B
+></P
+></DIV
+><P
+>The entries described in the last paragraph are only available, if the
+				graph type is set to "Staircase" or "Fluctuations". The bottom of the
+				spectral statistics window will change if one of the other possible
+				statistics is selected (see <A
+HREF="#spectral-bottom"
+>Figure 15</A
+>). The
+				leftmost entry shows the <TT
+CLASS="guilabel"
+><B
+>Number of bins</B
+></TT
+> for the NND
+				histogram, it is disabled for the other statistics. You can choose whether
+				the NND and the Integrated NND graphs are to be normalized to one with the
+				<TT
+CLASS="guilabel"
+><B
+>normalize</B
+></TT
+> checkbox. If you disable it, the ordinate
+				will display the total number of resonances in each bin or up to a certain
+				frequency.
+			</P
+><P
+>There are predictions for most of the statistical measures. <TT
+CLASS="application"
+>GWignerFit</TT
+> can
+				overlay them into the graph so that they will provide a means for
+				statistical tests. You can select which predictions are to be included with
+				the checkboxes behind the label <TT
+CLASS="guilabel"
+><B
+>Include theory predictions
+				for</B
+></TT
+>. The colors of the checkboxes are used in the graph for
+				the corresponding plot.
+			</P
+><P
+><TT
+CLASS="application"
+>GWignerFit</TT
+> keeps the graphs of the spectral statistics window always up to
+				date. This means that every change to your resonance list or the number
+				of resonances to be taken into account have an immediate effect on the
+				statistics graph. This is especially useful in combination with the
+				"Fluctuations" graph as you can see online where a resonance may be
+				missing in your resonance list.
+			</P
+></DIV
+><DIV
+CLASS="sect3"
+><HR><H4
+CLASS="sect3"
+><A
+NAME="gwf-spectral-menubar"
+>9.2.2. The Menubar of the Spectral Statistics Window</A
+></H4
+><P
+>This section will explain the different entries of the menubar of the
+				spectral statistics window.</P
+><DIV
+CLASS="sect4"
+><HR><H5
+CLASS="sect4"
+><A
+NAME="gwf-spectral-file-menu"
+>9.2.2.1. The spectral statistics <B
+CLASS="guimenu"
+>File</B
+> menu</A
+></H5
+><P
+>The <B
+CLASS="guimenu"
+>File</B
+> menu contains the following
+				entries:</P
+><P
+></P
+><DIV
+CLASS="variablelist"
+><DL
+><DT
+><B
+CLASS="guimenuitem"
+>Export</B
+></DT
+><DD
+><P
+>The main task of the spectral statistics module is to
+								calculate several statistical measures for your frequency
+								dataset. You can export the datapoints of the resulting graph
+								here or you can create a postscript of the whole graph.
+							</P
+><P
+>This menu has the following submenus:</P
+><P
+></P
+><UL
+><LI
+><P
+><B
+CLASS="guimenuitem"
+>Statistical data...</B
+>:
+										This exports the datapoints (that is the red curve in the
+										graph view) of the currently displayed statistic into a file.
+										<TT
+CLASS="application"
+>GWignerFit</TT
+> will add a descriptive header to the file that explains
+										what statistic has been used and includes the crucial
+										parameters such as Weyl coefficients, number of resonances
+										and frequency range.
+									</P
+></LI
+><LI
+><P
+><B
+CLASS="guimenuitem"
+>Graph as postscript...</B
+>:
+										Saves the current view of the statistics graph as a
+										postscript file. For a description of the export dialog see
+										<A
+HREF="#gwf-export-ps"
+><I
+CLASS="term"
+><B
+CLASS="guimenuitem"
+>Graph as postscript...</B
+></I
+></A
+> (the only difference is that
+										you cannot include overlays here, as the statistics module
+										does not know such a thing).
+									</P
+></LI
+></UL
+></DD
+><DT
+><B
+CLASS="guimenuitem"
+>Close window</B
+></DT
+><DD
+><P
+>Closes the spectral statistics window, <TT
+CLASS="application"
+>GWignerFit</TT
+> will keep on
+								running.
+							</P
+></DD
+></DL
+></DIV
+></DIV
+><DIV
+CLASS="sect4"
+><HR><H5
+CLASS="sect4"
+><A
+NAME="gwf-spectral-selection-menu"
+>9.2.2.2. The spectral statistics <B
+CLASS="guimenu"
+>Selection</B
+> menu</A
+></H5
+><P
+>The <B
+CLASS="guimenu"
+>Selection</B
+> menu allows you to specify what
+					resonances are to be taken into account for the statistical analysis.
+					It contains the following entries:</P
+><P
+></P
+><DIV
+CLASS="variablelist"
+><DL
+><DT
+><B
+CLASS="guimenuitem"
+>All resonances</B
+></DT
+><DD
+><P
+>The resonance frequency of each resonance in the main
+								resonance list are used for the statistical analysis.
+							</P
+></DD
+><DT
+><B
+CLASS="guimenuitem"
+>Windowed resonances</B
+></DT
+><DD
+><P
+>All resonances whose frequencies are within the selected Min-
+								and Max-frequency window are included in the analysis.
+							</P
+></DD
+><DT
+><B
+CLASS="guimenuitem"
+>Checked resonances</B
+></DT
+><DD
+><P
+>Only those resonance frequencies whose checkboxes are checked
+								(that is, they are considered as free parameters for a fit) are
+								to be taken into account.
+							</P
+></DD
+></DL
+></DIV
+></DIV
+><DIV
+CLASS="sect4"
+><HR><H5
+CLASS="sect4"
+><A
+NAME="gwf-spectral-view-menu"
+>9.2.2.3. The spectral statistics <B
+CLASS="guimenu"
+>View</B
+> menu</A
+></H5
+><P
+>The <B
+CLASS="guimenu"
+>View</B
+> has two tasks. You can change the
+					appearance of the graph (logarithmic or normal scale) and the type of
+					spectral analysis that should be performed.</P
+><P
+></P
+><DIV
+CLASS="variablelist"
+><DL
+><DT
+><B
+CLASS="guimenuitem"
+>Normal scale</B
+></DT
+><DD
+><P
+>Everything on the statistics graph will be displayed in
+								normal scale.
+							</P
+></DD
+><DT
+><B
+CLASS="guimenuitem"
+>Logarithmic scale</B
+></DT
+><DD
+><P
+>This option will display cause the graph to be in logarithmic
+								scale which is similar to the dB scale of the main graph.
+								However, the absolute values are <I
+CLASS="emphasis"
+>not</I
+> squared
+								before taking the logarithm. This means that there is a factor of
+								two with respect of the "normal" dB scale.
+							</P
+></DD
+><DT
+><B
+CLASS="guimenuitem"
+>Staircase</B
+>,
+									<B
+CLASS="guimenuitem"
+>Fluctuations</B
+>,
+									<B
+CLASS="guimenuitem"
+>NND</B
+>,
+									<B
+CLASS="guimenuitem"
+>Integrated NND</B
+>,
+									<B
+CLASS="guimenuitem"
+>Sigma 2</B
+>,
+									<B
+CLASS="guimenuitem"
+>Delta 3</B
+> and
+									<B
+CLASS="guimenuitem"
+>Length spectrum</B
+>
+									<B
+CLASS="guimenuitem"
+>Width evolution</B
+>
+									<B
+CLASS="guimenuitem"
+>Width histogram</B
+></DT
+><DD
+><P
+><TT
+CLASS="application"
+>GWignerFit</TT
+> will calculate and display the selected spectral
+								measure. See the beginning of <A
+HREF="#gwignerfit-spectral"
+>Section 9.2</A
+>
+								for an explanation of the different statistical measures.
+							</P
+></DD
+></DL
+></DIV
+></DIV
+></DIV
+></DIV
+></DIV
+><DIV
+CLASS="sect1"
+><HR><H2
+CLASS="sect1"
+><A
+NAME="gwignerfit-vna"
+>10. Measure Data directly from the Network Analyzer</A
+></H2
+><P
+>Before you can start to analyze your data you would probably like to
+		measure it first. <TT
+CLASS="application"
+>GWignerFit</TT
+> can help you in doing such a measurement. This
+		section will describe what hard- and software is required and how to use
+		<TT
+CLASS="application"
+>GWignerFit</TT
+>'s measurement dialog.
+	</P
+><DIV
+CLASS="sect2"
+><HR><H3
+CLASS="sect2"
+><A
+NAME="gwf-hard-software"
+>10.1. Required hard- and software</A
+></H3
+><P
+>In general, a vector network analyzer (VNA) understands a special set
+			of commands that allows a computer program to "remote control" the
+			device. As each VNA has its own set of command and usage concept, there
+			is no way for <TT
+CLASS="application"
+>GWignerFit</TT
+> to work together with all VNA models. Currently only
+			devices compatible with the venerable <I
+CLASS="emphasis"
+>Hewlett-Packard
+			8510</I
+> series and the <I
+CLASS="emphasis"
+>Agilent PNA N5230A</I
+>
+			series are supported.</P
+><P
+>The communication link between <TT
+CLASS="application"
+>GWignerFit</TT
+> and the
+			<I
+CLASS="emphasis"
+>N5320A</I
+> is easily established via a normal Ethernet
+			TCP/IP connection. In order not to unnecessarily depend on any
+			commercial libraries <TT
+CLASS="application"
+>GWignerFit</TT
+> connects to a special socket (on port 5025)
+			which can be enabled on the N5320A via 
+			<B
+CLASS="guimenu"
+>System</B
+>-&gt;<B
+CLASS="guimenuitem"
+>Configure</B
+>-&gt;<B
+CLASS="guimenuitem"
+>SICL/GPIB/SCPI...</B
+>+<TT
+CLASS="guilabel"
+><B
+>Sockets Enabled</B
+></TT
+>.
+			All you then really need to know is the IP of the VNA to enter it into
+			the appropriate fields of <TT
+CLASS="application"
+>GWignerFit</TT
+> (see further down this section).</P
+><P
+>Setting up a way of communication with the
+			<I
+CLASS="emphasis"
+>HP8510</I
+> is a bit more involved. The bus system used
+			to communicate with the HP8510 is called IEEE 488. This is an
+			industrial standard which allows a large variety of devices to talk to
+			each other. There exist IEEE 488 adapter cards for PCs. Those cards
+			have their own set of commands and driver libraries, too. <TT
+CLASS="application"
+>GWignerFit</TT
+> is again
+			designed to work with a special kind of adapter card, namely those
+			produced by Keithly.</P
+><P
+><TT
+CLASS="application"
+>GWignerFit</TT
+> does not access the IEEE 488 adapter cards directly. It
+			rather sends out commands via a normal TCP/IP network to a special proxy
+			program, <TT
+CLASS="application"
+>Ieee488Proxy</TT
+>, which has been written
+			by the same author as <TT
+CLASS="application"
+>GWignerFit</TT
+>. This proxy has to run on a computer with the
+			Microsoft Windows operating system. The computer needs on the one hand
+			access the to TCP/IP network and on the other hand a built in IEEE 488
+			adapter card. This card needs to be connected with the VNA, of
+			course.</P
+><P
+>To summarize the method of communication between the <TT
+CLASS="application"
+>GWignerFit</TT
+>
+			application and a HP8510 compatible VNA: <TT
+CLASS="application"
+>GWignerFit</TT
+> sends a request over a
+			normal TCP/IP network to a computer that has
+			<TT
+CLASS="application"
+>Ieee488Proxy</TT
+> running. This proxy will convert
+			the request into the IEEE 488 protocol and send it to the VNA. The reply
+			from the VNA will be received by the proxy and sent back to <TT
+CLASS="application"
+>GWignerFit</TT
+> over
+			the network. This way the place of data acquisition and data recording do
+			not need be the same and you are free to run <TT
+CLASS="application"
+>GWignerFit</TT
+> wherever access to
+			the proxy program is possible.</P
+></DIV
+><DIV
+CLASS="sect2"
+><HR><H3
+CLASS="sect2"
+><A
+NAME="AEN1932"
+>10.2. The process of measuring</A
+></H3
+><P
+>The first step to make a measurement is to open the "Measure data
+			from VNA" dialog. This can be done by choosing
+			<B
+CLASS="guimenu"
+>File</B
+>-&gt;<B
+CLASS="guimenuitem"
+>Import</B
+>-&gt;<B
+CLASS="guimenuitem"
+>Measure data...</B
+>
+			from the menubar of the main window or by typing the shortcut
+			<B
+CLASS="keycap"
+>Ctrl</B
+>-<B
+CLASS="keycap"
+>G</B
+>.
+			The dialog should look like the one shown in <A
+HREF="#vna-win"
+>Figure 16</A
+>.
+			It is divided into four logical groups that will be explained now.
+		</P
+><DIV
+CLASS="figure"
+><A
+NAME="vna-win"
+></A
+><DIV
+CLASS="mediaobject"
+><P
+><IMG
+SRC="figures/gwf_vna_window.png"></P
+></DIV
+><P
+><B
+>Figure 16. The "Measure data from VNA" dialog</B
+></P
+></DIV
+><P
+></P
+><DIV
+CLASS="variablelist"
+><DL
+><DT
+><TT
+CLASS="guilabel"
+><B
+>I/O-System</B
+></TT
+></DT
+><DD
+><P
+>This is short for "Input/Output System". Here you can define
+						how <TT
+CLASS="application"
+>GWignerFit</TT
+> can connect to the VNA or proxy computer and how the measured data
+						should be saved. First you need to specify your VNA model using the
+						<TT
+CLASS="guilabel"
+><B
+>VNA model</B
+></TT
+> radio buttons. Then the
+						<TT
+CLASS="guilabel"
+><B
+>VNA/Proxy host</B
+></TT
+> entry holds the hostname or IP
+						of the N230A of the the computer where the
+						<TT
+CLASS="application"
+>Ieee488Proxy</TT
+> program is running. Your
+						computer must be able to contact the remote device with this
+						address.
+					</P
+><P
+>The place and name of the generated datafile are specified with
+						the <TT
+CLASS="guilabel"
+><B
+>Output path</B
+></TT
+> and <TT
+CLASS="guilabel"
+><B
+>Output
+						filename</B
+></TT
+> entries. The first one contains just the path
+						information and may be empty if the datafile should be created in
+						the directory where you started <TT
+CLASS="application"
+>GWignerFit</TT
+>. The filename entry is
+						mandatory, the name should have the suffix
+						<TT
+CLASS="filename"
+>.dat</TT
+>. You can use the <B
+CLASS="guibutton"
+>Select
+						file</B
+> button to select a path and/or filename through a
+						file chooser dialog. The created datafile(s) can be compressed to
+						save disk space. This is enabled through the <TT
+CLASS="guilabel"
+><B
+>Compress
+						output file</B
+></TT
+> checkbox. Compressed files will get an
+						additional suffix, <TT
+CLASS="filename"
+>.gz</TT
+>, which you must not
+						append to the filename yourself. See <A
+HREF="#gwf-import"
+>Section 4.1</A
+>
+						for more information on compressed datafiles.
+					</P
+><P
+>The created datafile can either follow the <TT
+CLASS="guilabel"
+><B
+>DAT
+						format</B
+></TT
+> native to <TT
+CLASS="application"
+>GWignerFit</TT
+> or it can abide by the
+						Touchstone® standard (<TT
+CLASS="guilabel"
+><B
+>SNP format</B
+></TT
+>).
+						If you want to measure all four S-matrix elements in one run and
+						use the <TT
+CLASS="guilabel"
+><B
+>DAT format</B
+></TT
+> you have to include the two
+						characters "%%" somewhere in the filename, <TT
+CLASS="application"
+>GWignerFit</TT
+> will later replace
+						this wild-card by the appropriate S-matrix element number, i.e. 11,
+						12, 21 or 22.
+					</P
+><P
+>The generated datafile will contain a header with the most
+						important information of the measurement parameters (like date of
+						measurement, frequency range, averaging, etc.). You can add an
+						additional line to this header with the optional
+						<TT
+CLASS="guilabel"
+><B
+>Comment</B
+></TT
+> entry. Any text you enter here will be
+						added as a commentary field.
+					</P
+></DD
+><DT
+><TT
+CLASS="guilabel"
+><B
+>Measurement mode</B
+></TT
+></DT
+><DD
+><P
+>You can choose between two major measurement modes that <TT
+CLASS="application"
+>GWignerFit</TT
+>
+						provides: A whole frequency range can be sweeped or a snapshot of
+						the current VNA display can be taken.
+					</P
+><P
+>The <TT
+CLASS="guilabel"
+><B
+>Sweep a frequency range</B
+></TT
+> mode allows
+						you to measure a given frequency interval with a certain
+						resolution, averaging, etc. The details will be covered later.
+						Right now it is important to understand, that <TT
+CLASS="application"
+>GWignerFit</TT
+> will
+						<I
+CLASS="emphasis"
+>reset</I
+> the VNA (to user preset eight) and
+						<I
+CLASS="emphasis"
+>change</I
+> the frequency window during the
+						measurement. That means that any setting that cannot be accessed
+						through the measurement dialog and cannot be saved to user preset
+						eight will be lost during the measurement. This is especially
+						important for calibrated measurements where the frequency window
+						must not be changed.
+					</P
+><P
+>If you cannot use or you do not want to use the sweep mode you
+						can still <TT
+CLASS="guilabel"
+><B
+>Take a snapshot</B
+></TT
+>. In this mode <TT
+CLASS="application"
+>GWignerFit</TT
+>
+						will try to change as little on the VNA as possible. The data
+						currently being displayed on the VNA will be extracted as complex
+						numbers and written to the datafile. No measurement settings are
+						changed and no calibrations are invalidated. The drawback is that
+						this mode is restricted to the measurement of at most 801
+						datapoints (a restriction of HP8510 VNAs).
+					</P
+></DD
+><DT
+><TT
+CLASS="guilabel"
+><B
+>Frequency sweep settings</B
+></TT
+></DT
+><DD
+><P
+>The settings of this section are only relevant if
+						<TT
+CLASS="guilabel"
+><B
+>Sweep a frequency range</B
+></TT
+> has been selected. It
+						will be grayed out for the snapshot mode.
+					</P
+><P
+>The frequency range is defined through the <TT
+CLASS="guilabel"
+><B
+>Start
+						frq</B
+></TT
+> and <TT
+CLASS="guilabel"
+><B
+>Stop frq</B
+></TT
+> entries. <TT
+CLASS="application"
+>GWignerFit</TT
+>
+						will sweep this range with the given
+						<TT
+CLASS="guilabel"
+><B
+>Resolution</B
+></TT
+>. Furthermore, the
+						<TT
+CLASS="guilabel"
+><B
+>S-Parameter</B
+></TT
+> that the VNA should measure can be
+						chosen. Setting this <TT
+CLASS="guilabel"
+><B
+>S-Parameter</B
+></TT
+> to just "S"
+						means that <TT
+CLASS="application"
+>GWignerFit</TT
+> measures all four S-matrix elements in one run
+						(see above for what the output filename has too look like for such
+						a measurement type). The "TRL" option is an extension of the
+						complete S-matrix measurement suited to measure the TRL thru and
+						line standards (see <A
+HREF="#gwf-calibrate"
+>Section 6.8</A
+>) and can only
+						be used in conjunction with the HP8510 VNA. It will measure, in
+						addition to the four S-parameters, two user-defined parameters and
+						save the resulting spectra as additional files with
+						<I
+CLASS="emphasis"
+>a1</I
+> and <I
+CLASS="emphasis"
+>a2</I
+> instead of the
+						wild-card characters. TRL data can only be stored using the
+						<TT
+CLASS="guilabel"
+><B
+>DAT format</B
+></TT
+>. The given
+						<TT
+CLASS="guilabel"
+><B
+>Averaging</B
+></TT
+> value increases the signal-to-noise
+						ratio but a measurement will take longer, too. Finally, there is
+						the <TT
+CLASS="guilabel"
+><B
+>Stimulus</B
+></TT
+> entry. It can either be "ramp
+						mode" or "step mode", this refers to the two major frequency
+						generation methods of the VNA. Please refer the manual of your VNA
+						for further information on those modes. A rule of thumb may be that
+						the ramp mode allows for quicker measurements whereas the step mode
+						measures with a higher frequency precision.
+					</P
+></DD
+><DT
+><TT
+CLASS="guilabel"
+><B
+>Advanced Settings</B
+></TT
+></DT
+><DD
+><P
+>The options available here do only affect measurements
+						conducted the the N5230A. In fact, the whole section is only
+						enabled for measurements with this device.
+					</P
+><P
+>The two text entries give you control over the <TT
+CLASS="guilabel"
+><B
+>IF
+						bandwidth</B
+></TT
+> (in kHz) and the <TT
+CLASS="guilabel"
+><B
+>Dwell
+						time</B
+></TT
+> (in &#956;s). Please note that <TT
+CLASS="application"
+>GWignerFit</TT
+> disables the
+						automatic IF bandwidth reduction of the N5320A for low frequencies
+						to prevent artificial jumps in measured spectra.
+					</P
+><P
+>The most outstanding feature of the N5230A is its ease of
+						calibration using the ECal modules. Using the
+						<TT
+CLASS="guilabel"
+><B
+>Calibration</B
+></TT
+> drop down menu you gain access to
+						the most common operations with regard to calibration needs, i.e.
+						calibrating the device, verification of your calibration and, of
+						course, doing a fully calibrated measurement. All calibrations are
+						done using the full 2-port SOLT calibration technique. You options
+						in more detail:
+					</P
+><P
+></P
+><UL
+><LI
+><P
+>&#13;								<TT
+CLASS="guilabel"
+><B
+>disabled</B
+></TT
+>: Choose this to do uncalibrated
+								measurements.
+							</P
+></LI
+><LI
+><P
+>&#13;								<TT
+CLASS="guilabel"
+><B
+>acquire</B
+></TT
+>: Before you can start doing
+								calibrated measurements the N5230A has to be calibrated. To do
+								this, define your complete measurement settings in the
+								measurement dialog and set the calibration mode to
+								<TT
+CLASS="guilabel"
+><B
+>acquire</B
+></TT
+>. If you have stored user
+								characterizations in your ECal module and you need to use one
+								of these for the calibration run choose the appropriate storage
+								ID from the <TT
+CLASS="guilabel"
+><B
+>ECal charact.</B
+></TT
+> drop down list.
+								Otherwise let it at the default <TT
+CLASS="guilabel"
+><B
+>Factory</B
+></TT
+>
+								setting. After having made your choices click on
+								<B
+CLASS="guibutton"
+>Start</B
+> after which <TT
+CLASS="application"
+>GWignerFit</TT
+> will ask you to
+								make sure that the ECal is connected to the VNA and properly
+								warmed up and start the calibration run afterward. As each
+								window of your defined measurement sweep is calibrated, <TT
+CLASS="application"
+>GWignerFit</TT
+>
+								creates Cal Sets on the VNA. The names of those Cal Sets encode
+								the start and stop frequency as well as the measurement
+								resolution. This is the only way for <TT
+CLASS="application"
+>GWignerFit</TT
+> to later identify
+								the proper Cal Sets to recall for a calibrated measurement.
+								Please note that <TT
+CLASS="application"
+>GWignerFit</TT
+> will overwrite any existing Cal Sets
+								that happen to have the same name.
+							</P
+></LI
+><LI
+><P
+>&#13;								<TT
+CLASS="guilabel"
+><B
+>enabled</B
+></TT
+>: Do a calibrated measurement.
+								<TT
+CLASS="application"
+>GWignerFit</TT
+> uses the start and stop frequency together with the
+								resolution to determine which Cal Sets to recall for calibrated
+								measurements. Therefore make sure that all other settings of
+								the measurement dialog are compatible with your earlier choices
+								during the acquirement run. Please remember that <TT
+CLASS="application"
+>GWignerFit</TT
+> always
+								uses the full 2-port SOLT calibration even if you are only
+								measuring a single parameter. This might have implications on
+								the test leads that need to be connected to the VNA.
+							</P
+></LI
+><LI
+><P
+>&#13;								<TT
+CLASS="guilabel"
+><B
+>verify</B
+></TT
+>: The N5230A has this nice feature
+								called "ECal Confidence Check" where you reconnect the VNA to
+								the ECal module, measure the module as a DUT (device under
+								test) and compare the result with what the ECal says a perfect
+								calibration should look like. Taking the ratio between the
+								actual measurement and the expected result should then be equal
+								to unity. <TT
+CLASS="application"
+>GWignerFit</TT
+> can do exactly this procedure with your defined
+								frequency sweep and store the resulting ratios to your output
+								file so that you can ascertain the quality of your calibration.
+								If you used a user defined ECal characterization for the
+								calibration do not forget to change the <TT
+CLASS="guilabel"
+><B
+>ECal
+								charact.</B
+></TT
+> value for a valid verification process.
+							</P
+></LI
+></UL
+></DD
+><DT
+><TT
+CLASS="guilabel"
+><B
+>Status</B
+></TT
+></DT
+><DD
+><P
+>The status area will provide some feedback during a
+						measurement. The most prominent feature is the progress bar that
+						represents the total progress of the measurement based on
+						calculated time estimates. Those are given in more detail behind
+						the <TT
+CLASS="guilabel"
+><B
+>Time estimates</B
+></TT
+> label, where the time
+						already passed, the estimated duration for the whole process and
+						the difference between those two times are displayed. Progress bar
+						and time estimates are only available for sweep measurement mode.
+						The snapshot is just too quick for any reasonable estimates.
+					</P
+><P
+>The <TT
+CLASS="guilabel"
+><B
+>Network status</B
+></TT
+> field describes the
+						state of the connection to the proxy computer and &#8212; after a
+						connection has been established &#8212; gives a rough explanation
+						what the VNA is doing right now.
+					</P
+></DD
+></DL
+></DIV
+><P
+>To start the measurement press the <B
+CLASS="guibutton"
+>Start</B
+>
+			button. <TT
+CLASS="application"
+>GWignerFit</TT
+> will do some sanity checks on your input and commences the
+			measurement thereafter. To close the dialog or to abort a running
+			measurement press the <B
+CLASS="guibutton"
+>Cancel</B
+> button.</P
+><P
+>During a measurement <TT
+CLASS="application"
+>GWignerFit</TT
+> will display the data received so far in
+			real time on the main graph, either as a main dataset (if there isn't one
+			yet) or as an overlay. You are free to use it just like a normal dataset
+			(e.g. transformation into time domain, switching of active datasets,
+			adding of resonances, fitting, etc.), you can even discard the graph and
+			start with something new. As long as you do not cancel the measurement or
+			quit <TT
+CLASS="application"
+>GWignerFit</TT
+> the measurement will continue.</P
+></DIV
+></DIV
+><DIV
+CLASS="sect1"
+><HR><H2
+CLASS="sect1"
+><A
+NAME="gwignerfit-custom"
+>11. Customize <TT
+CLASS="application"
+>GWignerFit</TT
+></A
+></H2
+><P
+>You can change some aspects of <TT
+CLASS="application"
+>GWignerFit</TT
+> through the preferences dialog
+		that can be accessed via
+		<B
+CLASS="guimenu"
+>Spectrum</B
+>-&gt;<B
+CLASS="guimenuitem"
+>Preferences...</B
+>
+		and which looks like <A
+HREF="#check-pref-win"
+>Figure 17</A
+>. All preferences are
+		persistent (they are saved in the file <TT
+CLASS="filename"
+>.gwignerfitrc</TT
+>
+		in your home directory) and will be restored the next time you run <TT
+CLASS="application"
+>GWignerFit</TT
+>.
+	</P
+><DIV
+CLASS="figure"
+><A
+NAME="check-pref-win"
+></A
+><DIV
+CLASS="mediaobject"
+><P
+><IMG
+SRC="figures/gwf_prefs.png"></P
+></DIV
+><P
+><B
+>Figure 17. Preferences dialog</B
+></P
+></DIV
+><P
+>The preferences dialog is divided into four major logical sections
+		(<TT
+CLASS="guilabel"
+><B
+>Display, Files, Fitting, Network Analyzer</B
+></TT
+>). The
+		currently available preferences are:</P
+><P
+></P
+><DIV
+CLASS="variablelist"
+><DL
+><DT
+><TT
+CLASS="guilabel"
+><B
+>Unit for width column</B
+></TT
+></DT
+><DD
+><P
+>The default is to present all width values in the parameter area
+					in MHz. If your spectrum has many very sharp resonances and you do
+					not want all those small numbers you can change the unit to kHz here.
+				</P
+></DD
+><DT
+><TT
+CLASS="guilabel"
+><B
+>Angle units</B
+></TT
+></DT
+><DD
+><P
+>Here you can choose, whether the ordinate of phase graphs should
+					display radians (<TT
+CLASS="guilabel"
+><B
+>rad</B
+></TT
+>, the default) or degrees
+					(<TT
+CLASS="guilabel"
+><B
+>deg</B
+></TT
+>).
+				</P
+></DD
+><DT
+><TT
+CLASS="guilabel"
+><B
+>Sort resonance IDs by frequency</B
+></TT
+></DT
+><DD
+><P
+>Newly added resonances do normally get an ID which is just the
+					next unused number. Those IDs represent the order in which the
+					resonances have been added to the resonance list. You can enable this
+					options if the IDs should be sorted by the resonance frequencies.
+					This is especially useful for spectral statistics as the IDs can then
+					be interpreted as level numbers (given that you have not missed any
+					levels). Adding a resonance will then increase the IDs of all
+					resonances with a higher resonance frequency by one.
+				</P
+></DD
+><DT
+><TT
+CLASS="guilabel"
+><B
+>Enable datapoint marker in graphs</B
+></TT
+></DT
+><DD
+><P
+>If you zoom close enough into a graph with measured data you will
+					get short vertical lines that mark the positions of the datapoints
+					(remember: the lines between the points are just "to guide the eye").
+					Unchecking this box will disable this feature.
+				</P
+></DD
+><DT
+><TT
+CLASS="guilabel"
+><B
+>Confirm deletion of resonances</B
+></TT
+></DT
+><DD
+><P
+>Enable this to get a confirmation dialog each time you try to
+					delete a resonance from the resonance list. This can be useful if you
+					want to be protected from accidentally hitting the
+					<B
+CLASS="keycap"
+>Delete</B
+> key.
+				</P
+></DD
+><DT
+><TT
+CLASS="guilabel"
+><B
+>Confirm appending of sections</B
+></TT
+></DT
+><DD
+><P
+>If you save a <TT
+CLASS="application"
+>GWignerFit</TT
+> session by appending it to an already present
+					gwf file, <TT
+CLASS="application"
+>GWignerFit</TT
+> will normally show a confirmation dialog. You can
+					disable this behavior here. This will <I
+CLASS="emphasis"
+>not</I
+>
+					disable the confirmation dialog when you try to overwrite a section.
+				</P
+></DD
+><DT
+><TT
+CLASS="guilabel"
+><B
+>Include overlayed graphs in gwf files</B
+></TT
+></DT
+><DD
+><P
+><TT
+CLASS="application"
+>GWignerFit</TT
+>'s saved sessions will normally include the filenames of all
+					overlayed datasets, too. If you do not want them to be included in
+					the gwf file disable this checkbox.
+				</P
+></DD
+><DT
+><TT
+CLASS="guilabel"
+><B
+>Use relative paths in gwf files</B
+></TT
+></DT
+><DD
+><P
+>You can define how <TT
+CLASS="application"
+>GWignerFit</TT
+> includes datafile names in
+					<TT
+CLASS="filename"
+>.gwf</TT
+> files. If this option is
+					<I
+CLASS="emphasis"
+>not</I
+> checked, all filenames are stored as
+					absolute positions. That means that you can move the
+					<TT
+CLASS="filename"
+>.gwf</TT
+> file around and <TT
+CLASS="application"
+>GWignerFit</TT
+> will still find the
+					files with the spectra data, but the position of the spectra files
+					must not be changed. If this option <I
+CLASS="emphasis"
+>is</I
+> enabled,
+					<TT
+CLASS="application"
+>GWignerFit</TT
+> stores only relative positions in the session file, that is the
+					position of the spectra files relative to the
+					<TT
+CLASS="filename"
+>.gwf</TT
+> file. This way you can move both (the data
+					and the session files) around as long as their relative positions in
+					the filesystem stay the same.
+				</P
+></DD
+><DT
+><TT
+CLASS="guilabel"
+><B
+>Number of fit iterations</B
+></TT
+></DT
+><DD
+><P
+>Normally a complete fit procedure consists of 50 iterations of
+					the mathematical algorithm. This value can be changed here. You can
+					choose any integer number between (including) 1 and 100.
+				</P
+></DD
+><DT
+><TT
+CLASS="guilabel"
+><B
+>Process nice priority</B
+></TT
+></DT
+><DD
+><P
+>You can influence the priority of the <TT
+CLASS="application"
+>GWignerFit</TT
+> process with this
+					value. This is useful if you are doing a lengthy fit and you do not
+					wish to consume all available system resources. The <TT
+CLASS="guilabel"
+><B
+>nice
+					priority</B
+></TT
+> can take values between 0 and 19, where 19 is
+				  "very nice to the system" (i.e. low priority) and 0 is "not so nice
+					to the system" (i.e. high priority). <TT
+CLASS="application"
+>GWignerFit</TT
+> can apply an increased
+					nice priority at once. Lowering its value for an already running
+					process is not possible without superuser privileges, you will have
+					to restart <TT
+CLASS="application"
+>GWignerFit</TT
+> in this case.
+				</P
+></DD
+><DT
+><TT
+CLASS="guilabel"
+><B
+>Detect convergence of fit</B
+></TT
+></DT
+><DD
+><P
+>Enable this option if <TT
+CLASS="application"
+>GWignerFit</TT
+> should automatically stop a running
+					fit that seems to have converged. A fit is declared to have converged
+					by <TT
+CLASS="application"
+>GWignerFit</TT
+> if there are five consecutive failed iterations and the
+					stepwidth parameter for the first failed iteration has been greater
+					than 10.
+				</P
+></DD
+><DT
+><TT
+CLASS="guilabel"
+><B
+>Default model</B
+></TT
+></DT
+><DD
+><P
+>You can specify which network analyzer you are normally using for
+					measurements with <TT
+CLASS="application"
+>GWignerFit</TT
+>, either the Agilent N5230A PNA-L or the
+					Hewlett Packard HP-8510C are currently supported. This model
+					selection will be entered into the measurement dialog when it is
+					first opened.
+				</P
+></DD
+><DT
+><TT
+CLASS="guilabel"
+><B
+>Default host</B
+></TT
+></DT
+><DD
+><P
+>This is either the hostname/IP of the N5230A network analyzer or
+					the hostname/IP of the computer running the
+					<TT
+CLASS="application"
+>Ieee488Proxy</TT
+> application. This hostname
+					will be entered into the measurement dialog as well.
+				</P
+></DD
+><DT
+><B
+CLASS="guibutton"
+>Cancel</B
+></DT
+><DD
+><P
+>Close the preferences dialog discarding any changes made.
+				</P
+></DD
+><DT
+><B
+CLASS="guibutton"
+>OK</B
+></DT
+><DD
+><P
+>Close the preferences dialog and accept the changes. They will
+					be applied at once. Your new preferences will be saved in <TT
+CLASS="application"
+>GWignerFit</TT
+>'s
+					configuration file.
+				</P
+></DD
+></DL
+></DIV
+></DIV
+><DIV
+CLASS="sect1"
+><HR><H2
+CLASS="sect1"
+><A
+NAME="gwignerfet-bugs"
+>12. Known Bugs and Limitations</A
+></H2
+><P
+>Though the author has done his best to make <TT
+CLASS="application"
+>GWignerFit</TT
+> a stable application
+		he was till now not able to make this wish come true. <TT
+CLASS="application"
+>GWignerFit</TT
+> will crash
+		occasionally. According to Murphy's Law, it is very likely that this will
+		happen at the worst possible moment.</P
+><P
+>Please make sure to save your work really often and learn how to use
+		the backup function described in <A
+HREF="#gwf-backup"
+>Section 5.4</A
+>.</P
+><P
+>The author deeply apologizes for any inconvenience the shortcomings of
+		<TT
+CLASS="application"
+>GWignerFit</TT
+> may cause to you.</P
+></DIV
+><DIV
+CLASS="sect1"
+><HR><H2
+CLASS="sect1"
+><A
+NAME="gwignerfit-about"
+>13. About <TT
+CLASS="application"
+>GWignerFit</TT
+></A
+></H2
+><P
+> <TT
+CLASS="application"
+>GWignerFit</TT
+> was written by Florian Schäfer.
+		
+	</P
+><P
+> To report a bug or make a suggestion regarding the <TT
+CLASS="application"
+>GWignerFit</TT
+> application
+		or this manual, please contact the author via electronic mail
+		<CODE
+CLASS="email"
+>&#60;<A
+HREF="mailto:schaefer@ikp.tu-darmstadt.de"
+>schaefer@ikp.tu-darmstadt.de</A
+>&#62;</CODE
+>.
+	</P
+><P
+> This program is distributed under the terms of the GNU General
+		Public license as published by the Free Software Foundation; either
+		version 2 of the License, or (at your option)
+		any later version. A copy of this license can be found at this
+		<A
+HREF="http://www.gnu.org/licenses/gpl.txt"
+TARGET="_top"
+>link</A
+>,
+		or in the file COPYING included with the source code of this
+		program.</P
+></DIV
+></DIV
+></BODY
+></HTML
+>
