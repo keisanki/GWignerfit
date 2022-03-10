@@ -14,7 +14,7 @@ DOCDIR  = doc
 INSTALL = install
 STRIP   = strip
 
-ARCH = pentium4
+ARCH = native
 SPEEDOPTIMIZE = "-march=$(ARCH)"
 
 all:
