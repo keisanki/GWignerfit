@@ -166,7 +166,7 @@ gboolean is_datafile (gchar *filename)
 	
 	datafile = fopen (filename, "r");
 #else
-	gzFile *datafile;
+	gzFile datafile;
 
 	if (g_file_test (filename, G_FILE_TEST_IS_DIR))
 		return FALSE;
@@ -371,7 +371,7 @@ DataVector *import_datafile (gchar *filename, gboolean interactive)
 #ifdef NO_ZLIB
 	FILE *datafile;
 #else
-	gzFile *datafile;
+	gzFile datafile;
 	gchar *tmpname = NULL;
 #endif
 	gdouble fmin, fmax;

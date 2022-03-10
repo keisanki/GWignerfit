@@ -59,7 +59,7 @@ DataVector* cal_vna_calibrate (DataVector *in, DataVector *a, DataVector *b, Dat
 	threadinfo->fullout = NULL;
 
 	glob->calwin->cal_GThread = 
-		g_thread_create ((GThreadFunc) cal_vna_start, threadinfo, TRUE, NULL);
+		g_thread_new ("calthread", (GThreadFunc) cal_vna_start, threadinfo);
 
 	/* Wait for measurement thread to finish. Ugly but works. */
 	while (glob->flag & FLAG_VNA_CAL)
@@ -93,7 +93,7 @@ gboolean cal_vna_full_calibrate (DataVector **indata, DataVector **outdata, gcha
 	threadinfo->type     = type;
 
 	glob->calwin->cal_GThread = 
-		g_thread_create ((GThreadFunc) cal_vna_start, threadinfo, TRUE, NULL);
+		g_thread_new ("calthread", (GThreadFunc) cal_vna_start, threadinfo);
 
 	/* Wait for measurement thread to finish. Ugly but works. */
 	while (glob->flag & FLAG_VNA_CAL)

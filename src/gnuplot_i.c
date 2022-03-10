@@ -394,7 +394,7 @@ void gnuplot_plot_x(
 )
 {
     int     i ;
-	int		tmpfd ;
+    int	    tmpfd ;
     char    name[128] ;
     char    cmd[GP_CMD_SIZE] ;
     char    line[GP_CMD_SIZE] ;

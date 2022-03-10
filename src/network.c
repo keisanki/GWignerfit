@@ -778,7 +778,7 @@ void on_vna_start_activate (GtkMenuItem *menuitem, gpointer user_data)
 
 	/* Fork the actual measurement into another process */
 	glob->netwin->vna_GThread = 
-		g_thread_create ((GThreadFunc) vna_start, NULL, TRUE, NULL);
+		g_thread_new ("vnathread", (GThreadFunc) vna_start, NULL);
 	
 	if (!glob->netwin->vna_GThread)
 	{
@@ -1171,7 +1171,7 @@ static void vna_take_snapshot ()
 	DataVector *dvec;
 	FILE *outfh;
 #ifndef NO_ZLIB
-	gzFile *gzoutfh;
+	gzFile gzoutfh;
 #endif
 	struct timeval tv;
 	struct tm* ptm;
@@ -1565,7 +1565,7 @@ static void vna_sweep_frequency_range ()
 {
 	NetworkWin *netwin;
 	VnaBackend *vna_func;
-	int i = 0, j, windone, h, m, s, Si;
+	int i = 0, j, windone = 0, h, m, s, Si;
 	float winleft;
 	gint startpointoffset;
 	GTimeVal starttime, curtime, difftime;

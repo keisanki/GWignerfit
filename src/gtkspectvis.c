@@ -1904,7 +1904,6 @@ gtk_spect_vis_button_press (GtkWidget *widget, GdkEventButton *event)
 	gdouble xval, yval, xmin, xmax;
 	GtkSpectVisViewport *view;
 	GtkSpectVis *spectvis;
-	GList *datalist;
 
 	g_return_val_if_fail (GTK_IS_SPECTVIS (widget), FALSE);
 	g_return_val_if_fail (event != NULL, FALSE);
@@ -1915,7 +1914,6 @@ gtk_spect_vis_button_press (GtkWidget *widget, GdkEventButton *event)
 	if (spectvis->data == NULL) return FALSE;
 
 	view = spectvis->view;
-	datalist = spectvis->data;
 	gtk_spect_vis_pixel_to_units (spectvis, event->x, event->y, &xval, &yval);
 	
 	if ((event->button == 2) && !(event->state & GDK_CONTROL_MASK))
@@ -2329,7 +2327,7 @@ gtk_spect_vis_export_ps (GtkSpectVis *spectvis, GArray *uids,
 	if (footer)
 		gnuplot_cmd (g, "set label 1 \"%s\" at screen 0.99,0.015 right font \"Helvetica,9\"", footer);
 
-	gnuplot_cmd (g, "set terminal postscript color solid");
+	gnuplot_cmd (g, "set terminal postscript enhanced color solid");
 	gnuplot_cmd (g, "set output \"%s\"", filename);
 	gnuplot_cmd (g, "replot");
 

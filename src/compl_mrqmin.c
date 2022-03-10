@@ -4,6 +4,7 @@
 
 #include "structs.h"
 #include "compl_mrqcof.h"
+#include "compl_mrqmin.h"
 
 #define NR_END 1
 #define FREE_ARG char*
@@ -24,19 +25,13 @@ void free_cdvector(ComplexDouble *v, long nl, long nh)
 	free((FREE_ARG) (v+nl-NR_END));
 }
 
-inline ComplexDouble cc(ComplexDouble x) {
+extern inline ComplexDouble cc(ComplexDouble x) {
 	x.im *= -1;
 
 	return x;
 }
 
-inline double cmulti_re(ComplexDouble a, ComplexDouble b) {
-	// ComplexDouble c;
-
-	// c.re = a.re*b.re - a.im*b.im;
-	// c.im = a.re*b.im + a.im*b.re;
-	// c.abs = a.abs*b.abs;
-
+extern inline double cmulti_re(ComplexDouble a, ComplexDouble b) {
 	return a.re*b.re - a.im*b.im;
 }
 

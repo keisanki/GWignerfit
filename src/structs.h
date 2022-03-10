@@ -209,7 +209,7 @@ typedef struct
 	ComplexDouble *ydata[6];	/* The measured data */
 	guint index[6];			/* The graph index of the measured data */
 #ifndef NO_ZLIB
-	gzFile *gzoutfh[6];		/* Filehandle for the compressed data file */
+	gzFile gzoutfh[6];		/* Filehandle for the compressed data file */
 #endif
 } NetworkWin;
 

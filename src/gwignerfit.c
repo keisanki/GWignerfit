@@ -110,7 +110,7 @@ gint main (gint argc, char *argv[])
 	gint i;
 	
 	/* Prepare Glib thread support and Gtk */
-	g_thread_init (NULL);
+	//g_thread_init (NULL); //Not necessary any more
 	gtk_init (&argc, &argv);
 
 	/* Initialize the glade system */
@@ -175,9 +175,12 @@ gint main (gint argc, char *argv[])
 
 	/* Initialize the thread system */
 	glob->threads = g_new (ThreadStuff, 1);
-	glob->threads->theorylock = g_mutex_new ();
-	glob->threads->flaglock   = g_mutex_new ();
-	glob->threads->fitwinlock = g_mutex_new ();
+	glob->threads->theorylock = g_new (GMutex, 1);
+	glob->threads->flaglock   = g_new (GMutex, 1);
+	glob->threads->fitwinlock = g_new (GMutex, 1);
+	g_mutex_init (glob->threads->theorylock);
+	g_mutex_init (glob->threads->flaglock);
+	g_mutex_init (glob->threads->fitwinlock);
 	glob->threads->numcpu  = get_num_cpu ();
 	glob->threads->aqueue1 = g_async_queue_new ();
 	glob->threads->aqueue2 = g_async_queue_new ();
@@ -205,9 +208,9 @@ gint main (gint argc, char *argv[])
 	visualize_stop_background_calc ();
 	g_async_queue_unref (glob->threads->aqueue1);
 	g_async_queue_unref (glob->threads->aqueue2);
-	g_mutex_free (glob->threads->flaglock);
-	g_mutex_free (glob->threads->theorylock);
-	g_mutex_free (glob->threads->fitwinlock);
+	g_mutex_clear (glob->threads->flaglock);
+	g_mutex_clear (glob->threads->theorylock);
+	g_mutex_clear (glob->threads->fitwinlock);
 	g_thread_pool_free (glob->threads->pool, TRUE, TRUE);
 	if (glob->threads->theopool)
 		g_thread_pool_free (glob->threads->theopool, TRUE, TRUE);

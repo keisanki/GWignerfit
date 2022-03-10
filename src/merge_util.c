@@ -267,11 +267,8 @@ static void merge_draw_remove (GList *link)
 /* Remove all links from the graph */
 void merge_draw_remove_all ()
 {
-	GtkSpectVis *graph;
 	gint i;
 
-	graph = GTK_SPECTVIS (glade_xml_get_widget (glob->merge->xmlmerge, "merge_spectvis"));
-	
 	for (i=0; i<glob->merge->links->len; i++)
 		merge_draw_remove ((GList *) g_ptr_array_index (glob->merge->links, i));
 }

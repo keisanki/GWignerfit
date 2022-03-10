@@ -69,7 +69,6 @@ gboolean dialog_message (gchar *format, ...)
 	GladeXML *xmldialog;
 	GtkWidget *dialog;
 	gchar *message;
-	gint result;
 
 	xmldialog = glade_xml_new (GLADEFILE, "message_dialog", NULL);
 	visualize_restore_cursor ();
@@ -83,7 +82,7 @@ gboolean dialog_message (gchar *format, ...)
 	g_free (message);
 
 	dialog = glade_xml_get_widget (xmldialog, "message_dialog");
-	result = gtk_dialog_run (GTK_DIALOG (dialog));
+	gtk_dialog_run (GTK_DIALOG (dialog));
 	gtk_widget_destroy (dialog);
 
 	return FALSE;

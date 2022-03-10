@@ -257,13 +257,11 @@ static gdouble* spectral_get_frequencies (guint *numres, gboolean unfold)
 /* Prepares an array with all resonance width for the spectral statistics. */
 static gdouble* spectral_get_width (guint *numres)
 {
-	SpectralWin *spectral;
 	GPtrArray *resarray;
 	gdouble *res;
 	guint i;
 
 	g_return_val_if_fail (glob->spectral, NULL);
-	spectral = glob->spectral;
 
 	resarray = spectral_get_resonances ();
 	if (!resarray)
@@ -404,7 +402,6 @@ static void spectral_nfluc ()
 static void spectral_nnd ()
 {
 	GtkSpectVis *graph;
-	SpectralWin *spectral;
 	ComplexDouble *bins, *theoryY;
 	gdouble *resonances, *binX, *theoryX;
 	gdouble delta, maxdelta;
@@ -412,7 +409,6 @@ static void spectral_nnd ()
 	guint i, binnr, numres=0;
 
 	g_return_if_fail (glob->spectral);
-	spectral = glob->spectral;
 
 	g_return_if_fail (glob->spectral->bins);
 
@@ -537,14 +533,12 @@ static void spectral_nnd ()
 static void spectral_integrated_nnd ()
 {
 	GtkSpectVis *graph;
-	SpectralWin *spectral;
 	ComplexDouble *intY, *theoryY;
 	gdouble *resonances, *theoryX, *spaceings;
 	GdkColor color;
 	guint i, numres;
 
 	g_return_if_fail (glob->spectral);
-	spectral = glob->spectral;
 
 	g_return_if_fail (glob->spectral->bins);
 
@@ -668,7 +662,6 @@ gfloat spectral_cal_s2_gue (gfloat L)
 static void spectral_sigma2 ()
 {
 	GtkSpectVis *graph;
-	SpectralWin *spectral;
 	ComplexDouble *dataY, *theoryY;
 	gdouble *resonances, *dataX, *theoryX;
 	GdkColor color;
@@ -676,8 +669,6 @@ static void spectral_sigma2 ()
 	gdouble sum, l, lstepwidth, lmax, eps0, eps0stepwidth;
 
 	g_return_if_fail (glob->spectral);
-	spectral = glob->spectral;
-
 	g_return_if_fail (glob->spectral->bins);
 
 	graph = GTK_SPECTVIS (glade_xml_get_widget (glob->spectral->xmlspect, "spectral_spectvis"));
@@ -836,7 +827,6 @@ gfloat spectral_cal_d3_gue (gfloat L, gfloat x)
 static void spectral_delta3 ()
 {
 	GtkSpectVis *graph;
-	SpectralWin *spectral;
 	ComplexDouble *dataY, *theoryY;
 	gdouble *resonances, *dataX, *theoryX;
 	GdkColor color;
@@ -847,7 +837,6 @@ static void spectral_delta3 ()
 	gdouble delta3, xtilde, x1, x2, x3;
 
 	g_return_if_fail (glob->spectral);
-	spectral = glob->spectral;
 
 	g_return_if_fail (glob->spectral->bins);
 
@@ -1083,15 +1072,12 @@ static void spectral_length ()
 static void spectral_widths_evol ()
 {
 	GtkSpectVis *graph;
-	SpectralWin *spectral;
 	ComplexDouble *Yval;
 	gdouble *widths, *frqs;
 	GdkColor color;
 	guint i, numres;
 
 	g_return_if_fail (glob->spectral);
-	spectral = glob->spectral;
-
 	g_return_if_fail (glob->spectral->bins);
 
 	graph = GTK_SPECTVIS (glade_xml_get_widget (glob->spectral->xmlspect, "spectral_spectvis"));
@@ -1131,7 +1117,6 @@ static void spectral_widths_evol ()
 static void spectral_widths_hist ()
 {
 	GtkSpectVis *graph;
-	SpectralWin *spectral;
 	ComplexDouble *bins;
 	gdouble *widths, *binX;
 	gdouble maxwidth;
@@ -1139,8 +1124,6 @@ static void spectral_widths_hist ()
 	guint i, binnr, numres=0;
 
 	g_return_if_fail (glob->spectral);
-	spectral = glob->spectral;
-
 	g_return_if_fail (glob->spectral->bins);
 
 	graph = GTK_SPECTVIS (glade_xml_get_widget (glob->spectral->xmlspect, "spectral_spectvis"));

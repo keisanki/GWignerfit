@@ -627,10 +627,18 @@ void vna_n5230a_sweep_prepare ()
 	vna_n5230a_send_cmd (sockfd, "SENS:SWE:POIN 16001");
 	vna_n5230a_wait ();
 
-	if (netwin->stop < 35e9)
-		vna_n5230a_send_cmd (sockfd, "SOUR:POW1 0");
-	else
-		vna_n5230a_send_cmd (sockfd, "SOUR:POW1 -6");
+	if (netwin->calmode != 2)
+	{
+		/* not in calibration aquire mode */
+		if (netwin->stop < 35e9)
+			vna_n5230a_send_cmd (sockfd, "SOUR:POW1 0");
+		else
+			vna_n5230a_send_cmd (sockfd, "SOUR:POW1 -6");
+	} else {
+		/* in calibration aquire mode */
+		/* -> recent E-Cal sets require a low power level for best results */
+		vna_n5230a_send_cmd (sockfd, "SOUR:POW1 -15");
+	}
 
 	if (netwin->dwell > 0)
 		vna_n5230a_send_cmd (sockfd, "SENS:SWE:DWEL %f", netwin->dwell);
@@ -746,11 +754,8 @@ void vna_n5230a_select_s (gchar *sparam)
 /* Prepare VNA for special TRL measurements */
 void vna_n5230a_select_trl (gint Si)
 {
-	int sockfd;
-
 	g_return_if_fail (glob->netwin);
 	g_return_if_fail (glob->netwin->sockfd > 0);
-	sockfd = glob->netwin->sockfd;
 
 	/* Si selects the TRL parameter to measure
 	 * Si = 4 : Prepare VNA for TRL measurement and select first parameter

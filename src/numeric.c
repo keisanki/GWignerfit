@@ -649,7 +649,7 @@ void fit (gint *ia)
 
 	/* Fork the actual fit into another process */
 	glob->fitwindow.fit_GThread = 
-		g_thread_create ((GThreadFunc) start_fit, (gpointer) ia, FALSE, NULL);
+		g_thread_new ("fitthread", (GThreadFunc) start_fit, (gpointer) ia);
 	
 	if (!glob->fitwindow.fit_GThread)
 	{

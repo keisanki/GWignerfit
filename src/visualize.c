@@ -867,7 +867,6 @@ void visualize_smp_calc_theory (ComplexDouble *theoryY, double *x, double *p, gi
 void visualize_handle_viewport_changed (GtkSpectVis *spectvis, gchar *zoomtype)
 {
 	GtkWidget *graph = glade_xml_get_widget (gladexml, "graph");
-	GtkSpectVisViewport *view = NULL;
 	ComplexDouble *theoryY;
 	GdkColor color;
 	guint xmina, xmaxa, i = 0;
@@ -921,8 +920,6 @@ void visualize_handle_viewport_changed (GtkSpectVis *spectvis, gchar *zoomtype)
 		/* Process only if theory is actually shown on screen */
 
 		visualize_stop_background_calc ();
-
-		view = spectvis->view;
 
 		theoryY = glob->theory->y;
 		p = g_new (gdouble, TOTALNUMPARAM+1);
